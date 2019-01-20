@@ -249,18 +249,206 @@ The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders]
 
 This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext) to ensure the async appenders empty their queues before the application shuts down.
 
-To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is **ridiculously good enough**, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
+To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is ridiculously good enough, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
 
-> You should not factor in "fast enough" into your logging framework until you have sat down and done the math on how much logging it would take to stress out the system, and then you should go ask your ops team about the operational costs of keeping all those logs.
+In general, you should only be concerned about the latency or throughput of your logging framework when you have sat down and done the math on how much logging it would take to stress out the system, asked about your operational requirements, and determined the operational costs and a budget for logging.  Logging doesn't come for free.
 
-### Sensible Console, Text and JSON Encoders
+### Joran (Logback XML) Configuration
+
+The XML for the main file is in `terse-logback.xml` and is as follows:
+
+```xml
+<configuration>
+    <jmxConfigurator />
+
+    <!-- for debugging logback -->
+    <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
+
+    <!-- Add a custom action hook https://logback.qos.ch/manual/onJoran.html -->
+    <newRule pattern="*/set-logger-levels" actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+
+    <conversionRule conversionWord="coloredLevel" converterClass="com.tersesystems.logback.ColoredLevel" />
+
+    <!-- give the async appenders time to shutdown -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
+        <delay>${shutdownHook.delay}</delay>
+    </shutdownHook>
+
+    <include resource="terse-logback/appenders/console-appenders.xml"/>
+    <include resource="terse-logback/appenders/jsonfile-appenders.xml"/>
+    <include resource="terse-logback/appenders/textfile-appenders.xml"/>
+
+    <root>
+        <appender-ref ref="ASYNCCONSOLE"/>
+        <appender-ref ref="ASYNCJSONFILE"/>
+        <appender-ref ref="ASYNCTEXTFILE"/>
+    </root>
+
+    <!-- Set the logger levels at the very end -->
+    <set-logger-levels/>
+</configuration>
+```
 
 All the encoders have been configured to use UTC as the timezone, and are packaged individually using [file inclusion](https://logback.qos.ch/manual/configuration.html#fileInclusion) for ease of use.
 
-The console appender uses colored logging for the log level, just to demonstrate how you can create your own custom conversion rules.  Jansi is included so that Windows can benefit from colored logging as well.  It uses `"%coloredLevel %logger{15} - %message%n%xException{10}"` as the pattern.
+#### Console
 
-The text encoder uses `"%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %message%n%xException"` as the pattern. Colored logging is not used in the file-based appender, because some editors tend to show ANSI codes specifically.
+The console appender uses the following XML configuration:
 
-The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with no modifications.  If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
+```xml
+<included>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${console.encoder.pattern}</pattern>
+        </encoder>
+        <withJansi>${console.withJansi}</withJansi>
+    </appender>
+
+    <!--
+      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
+    -->
+    <appender name="ASYNCCONSOLE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender-ref ref="CONSOLE" />
+    </appender>
+
+</included>
+```
+
+with the HOCON settings as follows:
+
+```hocon
+console {
+  withJansi = true # allow colored logging on windows
+  encoder {
+    pattern = "%coloredLevel %logger{15} - %message%n%xException{10}"
+  }
+}
+```
+
+The console appender uses colored logging for the log level, just to demonstrate how you can create your own custom conversion rules.  Jansi is included so that Windows can benefit from colored logging as well.  
+
+#### Text
+
+The text encoder uses the following configuration:
+
+```xml
+<included>
+    <appender name="TEXTFILE" class="ch.qos.logback.core.FileAppender">
+        <file>${textfile.location}</file>
+        <append>${textfile.append}</append>
+
+        <!--
+          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+         -->
+        <immediateFlush>${textfile.immediateFlush}</immediateFlush>
+
+        <encoder>
+            <pattern>${textfile.encoder.pattern}</pattern>
+            <outputPatternAsHeader>${textfile.encoder.outputPatternAsHeader}</outputPatternAsHeader>
+        </encoder>
+    </appender>
+
+    <!--
+      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
+    -->
+    <appender name="ASYNCTEXTFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender-ref ref="TEXTFILE" />
+    </appender>>
+</included>
+```
+
+with the HOCON settings as:
+
+```hocon
+textfile {
+  location = log/application.log
+  append = true
+  immediateFlush = true
+
+  rollingPolicy {
+    fileNamePattern = "log/application.log.%d{yyyy-MM-dd}"
+    maxHistory = 30
+  }
+
+  encoder {
+    outputPatternAsHeader = true
+    pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %message%n%xException"
+  }
+}
+```
+
+Colored logging is not used in the file-based appender, because some editors tend to show ANSI codes specifically.
+
+#### JSON
+
+The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print modifications.  
+
+The XML is as follows:
+
+```xml
+<included>
+
+    <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${jsonfile.location}</file>
+        <append>${jsonfile.append}</append>
+
+        <!--
+          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+         -->
+        <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
+            <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
+        </rollingPolicy>
+
+        <!--
+          Take out the \ because you cannot have - and - next to each other:
+          https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
+        -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- don't include the properties from typesafe config -->
+            <includeContext>${jsonfile.encoder.includeContext}</includeContext>
+            <!-- UTC is the best server consistent timezone -->
+            <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+
+            <!-- Pretty print for better end user experience. -->
+            <!-- In production you may want to turn this off. -->
+            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+        </encoder>
+    </appender>
+
+    <!--
+      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
+    -->
+    <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender-ref ref="JSONFILE" />
+    </appender>>
+</included>
+```
+
+with the following HOCON configuration:
+
+```hocon
+jsonfile {
+  location = "log/application.json"
+  append = true
+  immediateFlush = true
+
+  rollingPolicy {
+    fileNamePattern = "log/application.json.%d{yyyy-MM-dd}"
+    maxHistory = 30
+  }
+
+  encoder {
+    includeContext = false
+    timeZone = "UTC"
+  }
+}
+```
+
+If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
 
 
