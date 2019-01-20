@@ -38,44 +38,21 @@ These are handled through [`net.logstash.logback.argument.StructuredArguments`](
 `StructuredArguments` write out both to the text appenders and to the JSON appenders.  There is extra "key information" added to the JSON.
 
 ```java
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static net.logstash.logback.argument.StructuredArguments.*;
+import static net.logstash.logback.marker.Markers.append;
+import static org.slf4j.LoggerFactory.getLogger;
 
-public class ClassWithStructuredArguments {
-    private final Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-    
-    public void doThings(String correlationId) {
-      if (logger.isInfoEnabled()) {
-        logger.info("id is {}", value("correlationId", correlationId)); // "id is 12345"
-        
-        logger.info("id is {}", keyValue("correlationId", correlationId)); // "id is correlationId 12345"
-        
-        logger.info("id is {}", keyValue("correlationId", correlationId, "{0}=[{1}]")); // "id is correlationId=[12345]"    
-      }      
-    }
-}
-```
-
-If you want to add more context and don't want it to show up in the text logs, you can use `LogstashMarker` instead:
-
-```java
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static net.logstash.logback.argument.StructuredArguments.*;
-import static net.logstash.logback.marker.Markers.*;
-        
 public class ClassWithMarkers {
-    private final Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-        
+    private final Logger logger = getLogger(getClass());
+
     private final LogstashMarker baseContext;
-    
+
     public ClassWithMarkers(LogstashMarker baseContext) {
         this.baseContext = baseContext;
     }
-    
+
     public void doThings(String correlationId) {
         if (logger.isInfoEnabled()) {
             // Any existing context AND the new correlation id
@@ -84,8 +61,80 @@ public class ClassWithMarkers {
             logger.info(context, "id is whatever");
         }
     }
+
+    public static void main(String[] args) {
+        LogstashMarker context = append("foo", "bar");
+        ClassWithMarkers classWithMarkers = new ClassWithMarkers(context);
+        classWithMarkers.doThings("12345");
+    }
 }
 ```
+
+This produces the following output in text:
+
+```text
+[INFO] e.ClassWithStructuredArguments - id is 12345
+[INFO] e.ClassWithStructuredArguments - id is correlationId=12345
+[INFO] e.ClassWithStructuredArguments - id is correlationId=[12345]
+```
+
+and in JSON:
+
+```json
+{"@timestamp":"2019-01-20T02:57:48.823+00:00","@version":"1","message":"id is 12345","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"12345"}
+{"@timestamp":"2019-01-20T02:57:48.825+00:00","@version":"1","message":"id is correlationId=12345","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"12345"}
+{"@timestamp":"2019-01-20T02:57:48.825+00:00","@version":"1","message":"id is correlationId=[12345]","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"12345"}
+```
+
+If you want to add more context and don't want it to show up in the text logs, you can use `LogstashMarker` instead:
+
+```java
+
+import net.logstash.logback.marker.LogstashMarker;
+import org.slf4j.Logger;
+
+import static net.logstash.logback.marker.Markers.append;
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class ClassWithMarkers {
+    private final Logger logger = getLogger(getClass());
+
+    private final LogstashMarker baseContext;
+
+    public ClassWithMarkers(LogstashMarker baseContext) {
+        this.baseContext = baseContext;
+    }
+
+    public void doThings(String correlationId) {
+        if (logger.isInfoEnabled()) {
+            // Any existing context AND the new correlation id
+            LogstashMarker context = baseContext.and(append("correlationId", correlationId));
+            // Use markers if you don't want any correlation id to show up in text output
+            logger.info(context, "id is whatever");
+        }
+    }
+
+    public static void main(String[] args) {
+        LogstashMarker context = append("foo", "bar");
+        ClassWithMarkers classWithMarkers = new ClassWithMarkers(context);
+        classWithMarkers.doThings("12345");
+    }
+}
+```
+
+This produces the following text:
+
+```text
+[INFO] e.ClassWithMarkers - id is whatever
+```
+
+and the following JSON:
+
+```json
+{"@timestamp":"2019-01-20T03:01:04.330+00:00","@version":"1","message":"id is whatever","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"foo":"bar","correlationId":"12345"}
+```
+
+## Avoid MDC
 
 Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.
 
