@@ -157,9 +157,11 @@ Note that appender logic is not available here.  If you need to update the appen
 
 The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders](https://github.com/logstash/logstash-logback-encoder#async-appenders).  
 
-To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is **ridiculously good enough**, and will never be the bottleneck in your application. 
+This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext) to ensure the async appenders empty their queues before the application shuts down.
 
-This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext).
+To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is **ridiculously good enough**, and will [never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
+
+You should not factor in "fast enough" into your logging framework until you have sat down and done the math on how much logging it would take to stress out the system, and then you should go ask your ops team about the operational costs of keeping all those logs.
 
 ### Sensible Console, Text and JSON Encoders
 
