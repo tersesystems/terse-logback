@@ -1,0 +1,35 @@
+<included>
+
+    <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${jsonfile.location}</file>
+        <append>${jsonfile.append}</append>
+
+        <!--
+          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+         -->
+        <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
+            <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
+        </rollingPolicy>
+
+        <!--
+          Take out the \ because you cannot have - and - next to each other:
+          https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
+        -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- don't include the properties from typesafe config -->
+            <includeContext>${jsonfile.encoder.includeContext}</includeContext>
+            <!-- UTC is the best server consistent timezone -->
+            <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+        </encoder>
+    </appender>
+
+    <!--
+      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
+    -->
+    <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender-ref ref="JSONFILE" />
+    </appender>>
+</included>

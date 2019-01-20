@@ -1,0 +1,42 @@
+// SBT is not what people are used to for Java projects, but it's what I know.
+//
+// "brew install sbt" to install sbt.
+//
+// "sbt run" to run the example.
+//
+lazy val root = (project in file(".")).
+  settings(
+    inThisBuild(List(
+      organization := "com.tersesystems",
+      crossPaths := false,
+      autoScalaLibrary := false,      
+      version      := "0.1.0-SNAPSHOT"
+    )),
+    name := "terse-logback-root",
+    publish / skip := true,
+    mainClass in Compile := (mainClass in Compile in example).value
+  ).aggregate(classic, example).dependsOn(example) // dependsOn for the mainClass
+
+// A "classic" project with the underlying appenders and infrastructure.
+// Create your own github repository for something like this, and publish it to your artifactory or locally.
+// THIS IS NOT INTENDED TO BE A DROP IN REPLACEMENT, but an example of structured logging with Logback.
+lazy val classic = (project in file("classic")).
+  settings(
+    name := "terse-logback-classic",
+    // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+    libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.2",
+    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3",
+    libraryDependencies += "org.fusesource.jansi" % "jansi" % "1.17.1", // color on windows
+    libraryDependencies += "com.typesafe" % "config" % "1.3.3",
+    libraryDependencies += "com.udojava" % "JMXWrapper" % "1.4"
+  )
+
+// Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
+lazy val example = (project in file("example")).
+  settings(
+    name := "terse-logback-example",
+    publish / skip := true,
+    mainClass := Some("example.Main")
+  ).dependsOn(classic).aggregate(classic)
+
+  

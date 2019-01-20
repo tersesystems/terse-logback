@@ -1,0 +1,17 @@
+<included>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${console.encoder.pattern}</pattern>
+        </encoder>
+        <withJansi>${console.withJansi}</withJansi>
+    </appender>
+
+    <!--
+      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
+    -->
+    <appender name="ASYNCCONSOLE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender-ref ref="CONSOLE" />
+    </appender>
+
+</included>

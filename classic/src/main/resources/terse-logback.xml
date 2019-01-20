@@ -1,0 +1,41 @@
+<!--
+  This is an example configuration of Logback using async appenders from logstash-logback-encoder and with
+  some custom configuration using Typesafe Config, so you only have to touch logback.conf in your project
+  and have sensible structured logging defaults.
+
+  THIS IS NOT INTENDED TO BE A DROP IN REPLACEMENT.  Please see the documentation at
+
+  https://github.com/logstash/logstash-logback-encoder/blob/master/README.md
+
+  and the links in the comments.
+-->
+<configuration>
+
+    <jmxConfigurator />
+
+    <!-- for debugging logback -->
+    <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
+
+    <!-- Add a custom action hook https://logback.qos.ch/manual/onJoran.html -->
+    <newRule pattern="*/set-logger-levels" actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+
+    <conversionRule conversionWord="coloredLevel" converterClass="com.tersesystems.logback.ColoredLevel" />
+
+    <!-- give the async appenders time to shutdown -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
+        <delay>${shutdownHook.delay}</delay>
+    </shutdownHook>
+
+    <include resource="terse-logback/appenders/console-appenders.xml"/>
+    <include resource="terse-logback/appenders/jsonfile-appenders.xml"/>
+    <include resource="terse-logback/appenders/textfile-appenders.xml"/>
+
+    <root>
+        <appender-ref ref="ASYNCCONSOLE"/>
+        <appender-ref ref="ASYNCJSONFILE"/>
+        <appender-ref ref="ASYNCTEXTFILE"/>
+    </root>
+
+    <!-- Set the logger levels at the very end -->
+    <set-logger-levels/>
+</configuration>
