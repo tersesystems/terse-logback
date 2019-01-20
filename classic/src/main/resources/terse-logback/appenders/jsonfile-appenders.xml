@@ -23,6 +23,11 @@
             <includeContext>${jsonfile.encoder.includeContext}</includeContext>
             <!-- UTC is the best server consistent timezone -->
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+
+            <!-- Pretty print for better end user experience. -->
+            <!-- In production you may want to turn this off. -->
+            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
         </encoder>
     </appender>
 

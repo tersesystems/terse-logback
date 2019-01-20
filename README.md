@@ -81,12 +81,39 @@ This produces the following output in text:
 and in JSON:
 
 ```json
-{"@timestamp":"2019-01-20T02:57:48.823+00:00","@version":"1","message":"id is 12345","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"12345"}
-{"@timestamp":"2019-01-20T02:57:48.825+00:00","@version":"1","message":"id is correlationId=12345","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"12345"}
-{"@timestamp":"2019-01-20T02:57:48.825+00:00","@version":"1","message":"id is correlationId=[12345]","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"12345"}
+{
+  "@timestamp" : "2019-01-20T03:08:14.008+00:00",
+  "@version" : "1",
+  "message" : "id is 12345",
+  "logger_name" : "example.ClassWithStructuredArguments",
+  "thread_name" : "main",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "correlationId" : "12345"
+}
+{
+  "@timestamp" : "2019-01-20T03:08:14.010+00:00",
+  "@version" : "1",
+  "message" : "id is correlationId=12345",
+  "logger_name" : "example.ClassWithStructuredArguments",
+  "thread_name" : "main",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "correlationId" : "12345"
+}
+{
+  "@timestamp" : "2019-01-20T03:08:14.011+00:00",
+  "@version" : "1",
+  "message" : "id is correlationId=[12345]",
+  "logger_name" : "example.ClassWithStructuredArguments",
+  "thread_name" : "main",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "correlationId" : "12345"
+}
 ```
 
-If you want to add more context and don't want it to show up in the text logs, you can use `LogstashMarker` instead:
+If you want to add more context and don't want it to show up in the text logs, you can use `net.logstash.logback.marker.LogstashMarker` instead:
 
 ```java
 
@@ -131,7 +158,17 @@ This produces the following text:
 and the following JSON:
 
 ```json
-{"@timestamp":"2019-01-20T03:01:04.330+00:00","@version":"1","message":"id is whatever","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"foo":"bar","correlationId":"12345"}
+{
+  "@timestamp" : "2019-01-20T03:07:48.500+00:00",
+  "@version" : "1",
+  "message" : "id is whatever",
+  "logger_name" : "example.ClassWithMarkers",
+  "thread_name" : "main",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "foo" : "bar",
+  "correlationId" : "12345"
+}
 ```
 
 ## Avoid MDC
