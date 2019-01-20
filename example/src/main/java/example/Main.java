@@ -1,13 +1,12 @@
 package example;
 
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
-
-import static net.logstash.logback.argument.StructuredArguments.*;
-import static net.logstash.logback.marker.Markers.*;
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+import static net.logstash.logback.marker.Markers.append;
 import static org.slf4j.Logger.ROOT_LOGGER_NAME;
 
 /**
@@ -35,14 +34,18 @@ public class Main {
 
         // Add extra JSON fields using StructuredArguments and Markers
         // https://github.com/logstash/logstash-logback-encoder#event-specific-custom-fields
+        IdGenerator idgen = IdGenerator.getInstance();
+        String correlationId = idgen.generateCorrelationId();
+        LogstashMarker context = append("correlationId", correlationId);
+
         if (exampleLogger.isDebugEnabled()) {
-            String correlationId = UUID.randomUUID().toString();
-            exampleLogger.debug(append("correlationId", correlationId), "This is a message with context that will show up in JSON");
+            exampleLogger.debug(context, "This is a message with context that will show up in JSON");
         }
 
         if (nestedLogger.isTraceEnabled()) {
             //  Add "name":"value" to the JSON output and add name=[value] to the formatted message using a custom format.
-            nestedLogger.trace("log message {}", keyValue("name", "value", "{0}=[{1}]"));
+            nestedLogger.trace(context, "log message {}", keyValue("name", "value", "{0}=[{1}]"));
         }
     }
 }
+

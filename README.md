@@ -1,6 +1,6 @@
 # Structured Logging Example with Logback
 
-This is a Java project that shows how to use Logback effectively for structured logging.
+This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.
 
 There isn't too much code here, but it should show how you configure Logback, and how you can reduce the amount of complexity in your end projects.
 
@@ -8,7 +8,7 @@ This is not intended to be a drop in replacement or a straight library dependenc
 
 ## What is Structured Logging?
 
-It's logging in JSON.  Technically, you could be logging in XML, but everyone uses JSON.  It's been around for [a while](https://www.kartar.net/2015/12/structured-logging/).
+It's logging in JSON.  Technically, you could be logging in another structure like XML or JSON, but almost everyone uses JSON.  It's been around for [a while](https://www.kartar.net/2015/12/structured-logging/).
 
 Logging JSON means that you can add more context to logs and do more with them without having to do regexes.  As [Honeycomb](https://honeycomb.io) [describes it](
 https://www.honeycomb.io/blog/you-could-have-invented-structured-logging/):
@@ -25,47 +25,55 @@ There are some things you should [always add to an event](https://www.honeycomb.
 
 You should add [context to your logs](https://www.honeycomb.io/blog/event-foo-moar-context-better-events/) that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.
 
-Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/).  You don't need to use a UUID: a flake id like [FauxFlake](https://github.com/rholder/fauxflake) will probably be better.
+Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/).  You don't need to use a UUID: a [flake id](https://github.com/boundary/flake) will probably be better for you.  I'm using [idem](https://github.com/mguenther/idem/) here, but most things will work.
 
 So, we know what structured logging is now.  What does it look like in SLF4J?
 
 ## Adding Structure to Logging
 
-SLF4J doesn't have specific support for structured logging, but [logstash-logback-encoder]() does.
+SLF4J doesn't have specific support for structured logging, but [logstash-logback-encoder](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#logback-json-encoder) does.
 
-These are handled through [`net.logstash.logback.argument.StructuredArguments`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/argument/StructuredArguments.java), which handles [name / value pairs](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#event-specific-custom-fields)
+These are handled through [`net.logstash.logback.argument.StructuredArguments`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/argument/StructuredArguments.java), which handles [name / value pairs](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#event-specific-custom-fields).
+
+### StructuredArguments
 
 `StructuredArguments` write out both to the text appenders and to the JSON appenders.  There is extra "key information" added to the JSON.
 
 ```java
-import net.logstash.logback.marker.LogstashMarker;
+package example;
+
 import org.slf4j.Logger;
 
-import static net.logstash.logback.marker.Markers.append;
-import static org.slf4j.LoggerFactory.getLogger;
+import static net.logstash.logback.argument.StructuredArguments.*;
+import static org.slf4j.LoggerFactory.*;
 
-public class ClassWithMarkers {
+public class ClassWithStructuredArguments {
     private final Logger logger = getLogger(getClass());
 
-    private final LogstashMarker baseContext;
-
-    public ClassWithMarkers(LogstashMarker baseContext) {
-        this.baseContext = baseContext;
-    }
-
-    public void doThings(String correlationId) {
+    public void logValue(String correlationId) {
         if (logger.isInfoEnabled()) {
-            // Any existing context AND the new correlation id
-            LogstashMarker context = baseContext.and(append("correlationId", correlationId));
-            // Use markers if you don't want any correlation id to show up in text output
-            logger.info(context, "id is whatever");
+            logger.info("id is {}", value("correlationId", correlationId));
         }
     }
 
+    public void logNameAndValue(String correlationId) {
+        logger.info("id is {}", keyValue("correlationId", correlationId));
+    }
+
+    public void logNameAndValueWithFormat(String correlationId) {
+        logger.info("id is {}", keyValue("correlationId", correlationId, "{0}=[{1}]"));
+    }
+
+    public void doThings(String correlationId) {
+        logValue(correlationId);
+        logNameAndValue(correlationId);
+        logNameAndValueWithFormat(correlationId);
+    }
+
     public static void main(String[] args) {
-        LogstashMarker context = append("foo", "bar");
-        ClassWithMarkers classWithMarkers = new ClassWithMarkers(context);
-        classWithMarkers.doThings("12345");
+        String correlationId = IdGenerator.getInstance().generateCorrelationId();
+        ClassWithStructuredArguments classWithStructuredArguments = new ClassWithStructuredArguments();
+        classWithStructuredArguments.doThings(correlationId);
     }
 }
 ```
@@ -73,78 +81,52 @@ public class ClassWithMarkers {
 This produces the following output in text:
 
 ```text
-[INFO] e.ClassWithStructuredArguments - id is 12345
-[INFO] e.ClassWithStructuredArguments - id is correlationId=12345
-[INFO] e.ClassWithStructuredArguments - id is correlationId=[12345]
+2019-01-20T23:24:40.004+0000 [INFO ] example.ClassWithStructuredArguments in main - id is FXtylIyzDbj9rfs7BRCAAA
+2019-01-20T23:24:40.006+0000 [INFO ] example.ClassWithStructuredArguments in main - id is correlationId=FXtylIyzDbj9rfs7BRCAAA
+2019-01-20T23:24:40.006+0000 [INFO ] example.ClassWithStructuredArguments in main - id is correlationId=[FXtylIyzDbj9rfs7BRCAAA]
 ```
 
 and in JSON:
 
 ```json
-{
-  "@timestamp" : "2019-01-20T03:08:14.008+00:00",
-  "@version" : "1",
-  "message" : "id is 12345",
-  "logger_name" : "example.ClassWithStructuredArguments",
-  "thread_name" : "main",
-  "level" : "INFO",
-  "level_value" : 20000,
-  "correlationId" : "12345"
-}
-{
-  "@timestamp" : "2019-01-20T03:08:14.010+00:00",
-  "@version" : "1",
-  "message" : "id is correlationId=12345",
-  "logger_name" : "example.ClassWithStructuredArguments",
-  "thread_name" : "main",
-  "level" : "INFO",
-  "level_value" : 20000,
-  "correlationId" : "12345"
-}
-{
-  "@timestamp" : "2019-01-20T03:08:14.011+00:00",
-  "@version" : "1",
-  "message" : "id is correlationId=[12345]",
-  "logger_name" : "example.ClassWithStructuredArguments",
-  "thread_name" : "main",
-  "level" : "INFO",
-  "level_value" : 20000,
-  "correlationId" : "12345"
-}
+{"@timestamp":"2019-01-20T23:24:40.004+00:00","@version":"1","message":"id is FXtylIyzDbj9rfs7BRCAAA","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIyzDbj9rfs7BRCAAA"}
+{"@timestamp":"2019-01-20T23:24:40.006+00:00","@version":"1","message":"id is correlationId=FXtylIyzDbj9rfs7BRCAAA","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIyzDbj9rfs7BRCAAA"}
+{"@timestamp":"2019-01-20T23:24:40.006+00:00","@version":"1","message":"id is correlationId=[FXtylIyzDbj9rfs7BRCAAA]","logger_name":"example.ClassWithStructuredArguments","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIyzDbj9rfs7BRCAAA"}
 ```
 
-If you want to add more context and don't want it to show up in the text logs, you can use `net.logstash.logback.marker.LogstashMarker` instead:
+### Markers
+
+If you want to add more context and don't want it to show up in the text logs, you can use [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java) instead.
+
+If you don't want to pass through anything at all, and instead use a proxy logger, you can use `com.tersesystems.logback.ProxyContextLogger`, which applies it under the hood.
 
 ```java
-
+import com.tersesystems.logback.ProxyContextLogger;
 import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
 
-import static net.logstash.logback.marker.Markers.append;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ClassWithMarkers {
     private final Logger logger = getLogger(getClass());
 
-    private final LogstashMarker baseContext;
-
-    public ClassWithMarkers(LogstashMarker baseContext) {
-        this.baseContext = baseContext;
+    public void doThings(String correlationId) {
+        LogstashMarker context = Markers.append("correlationId", correlationId);
+        logger.info(context, "log with marker explicitly");
     }
 
-    public void doThings(String correlationId) {
-        if (logger.isInfoEnabled()) {
-            // Any existing context AND the new correlation id
-            LogstashMarker context = baseContext.and(append("correlationId", correlationId));
-            // Use markers if you don't want any correlation id to show up in text output
-            logger.info(context, "id is whatever");
-        }
+    public void doThingsWithContext(String correlationId) {
+        LogstashMarker context = Markers.append("correlationId", correlationId);
+        Logger contextLogger = new ProxyContextLogger(context, logger);
+
+        contextLogger.info("log with marker provided by the underlying proxy"); // no context param
     }
 
     public static void main(String[] args) {
-        LogstashMarker context = append("foo", "bar");
-        ClassWithMarkers classWithMarkers = new ClassWithMarkers(context);
-        classWithMarkers.doThings("12345");
+        String correlationId = IdGenerator.getInstance().generateCorrelationId();
+        ClassWithMarkers classWithMarkers = new ClassWithMarkers();
+        classWithMarkers.doThings(correlationId);
     }
 }
 ```
@@ -152,54 +134,44 @@ public class ClassWithMarkers {
 This produces the following text:
 
 ```text
-[INFO] e.ClassWithMarkers - id is whatever
+2019-01-20T23:26:50.351+0000 [INFO ] example.ClassWithMarkers in main - log with marker explicitly
+2019-01-20T23:26:50.353+0000 [INFO ] example.ClassWithMarkers in main - log with marker provided by the underlying proxy
 ```
 
 and the following JSON:
 
 ```json
-{
-  "@timestamp" : "2019-01-20T03:07:48.500+00:00",
-  "@version" : "1",
-  "message" : "id is whatever",
-  "logger_name" : "example.ClassWithMarkers",
-  "thread_name" : "main",
-  "level" : "INFO",
-  "level_value" : 20000,
-  "foo" : "bar",
-  "correlationId" : "12345"
-}
+{"@timestamp":"2019-01-20T23:26:50.351+00:00","@version":"1","message":"log with marker explicitly","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIy0T878gCNIdfWAAA"}
+{"@timestamp":"2019-01-20T23:26:50.353+00:00","@version":"1","message":"log with marker provided by the underlying proxy","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIy0T878gCNIdfWAAA"}
 ```
 
 ## Avoid MDC
 
-Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.
+Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.  
 
-MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  There are numerous workarounds, but it's safer and easier to use an explicit context as a field or parameter.
+MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
-MDC breaks silently.  When MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
-
-MDC also is a flat map of keys and values, which does not allow for richer context that may be nested.
+There are numerous workarounds, but it's safer and easier to use an explicit context as a field or parameter.
 
 ## Logback Specific Things
 
 This section deals with the specific configuration in `terse-logback/classic`.
 
-Logback doesn't come with a default `logback.xml` file, and the configuration page is written at a very low level that is not very useful for people.  The example has been written so that it doesn't "overwhelm" with too much detail, but in rough order of initialization:
+Logback doesn't come with a default `logback.xml` file, and the [configuration page](https://logback.qos.ch/manual/configuration.html#auto_configuration) is written at a very low level that is not very useful for people.  The example has been written so that it doesn't "overwhelm" with too much detail, but in rough order of initialization:
 
 * Custom Service Loader
 * Setting Log Levels through JMX
 * Log Levels and Properties through Typesafe Config
 * High Performance Async Appenders
-* Sensible Console, Text and JSON Encoders
+* Sensible Joran (Logback XML) Configuration
 
 ### Service Loader
 
-The entry point of the system is the `TerseLogbackConfigurator`, which is set up through the `META-INF/services` service loader pattern.
+The entry point of the system is the `TerseLogbackConfigurator`, which is set up through the `META-INF/services` [service loader pattern](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html).
   
-TerseLogbackConfigurator sets up the Logback MXBean, determines what XML file to load for configuration, loads the Typesafe Config options and makes them available to Logback's `LoggingContext`.
-
 ### Setting Log Levels through JMX
+
+`TerseLogbackConfigurator` sets up the Logback MXBean, determines what XML file to load for configuration, loads the Typesafe Config options and makes them available to Logback's `LoggingContext`.
 
 The [JMX Configurator](https://logback.qos.ch/manual/jmxConfig.html) lets you change a logger's level, but makes you type out the level.  The `LogbackMXBean` will let you change a logger's level without having to enter the level specifically.  
 
@@ -237,7 +209,28 @@ properties {
 include "myothersettings"
 ```
 
-There is a `logback-reference.conf` file that handles the default configuration for the appenders, and those settings can be overridden.
+For tests, there's a `logback-test.conf` that will override (rather than completely replace) any settings that you have in `logback.conf`:
+
+```hocon
+levels {
+  example = TRACE
+}
+
+properties {
+  textfile {
+    location = "log/test/application-test.log"
+    append = false
+  }
+
+  jsonfile {
+    location = "log/test/application-test.json"
+    prettyprint = true
+  }
+}
+```
+
+There is also a `logback-reference.conf` file that handles the default configuration for the appenders, and those settings can be overridden.  They are written out individually in the encoder configuration so I won't go over it here.
+
 
 Note that appender logic is not available here.  If you need to update the appenders, you should release a new version of the classic library and get your projects updated.
 
@@ -249,23 +242,18 @@ The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders]
 
 This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext) to ensure the async appenders empty their queues before the application shuts down.
 
-To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is ridiculously good enough, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
+To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but async logging is ridiculously performant, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
 
-In general, you should only be concerned about the latency or throughput of your logging framework when you have sat down and done the math on how much logging it would take to stress out the system, asked about your operational requirements, and determined the operational costs and a budget for logging.  Logging doesn't come for free.
+In general, you should only be concerned about the latency or throughput of your logging framework when you have sat down and done the math on how much logging it would take to stress out the system, asked about your operational requirements, and determined the operational costs, including IO and [rate limits](https://segment.com/blog/bob-loblaws-log-blog/#the-case-of-the-missing-logs), and a budget for logging.  Logging doesn't come for free.
 
-### Joran (Logback XML) Configuration
+### Sensible Joran (Logback XML) Configuration
 
-The XML for the main file is in `terse-logback.xml` and is as follows:
+The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax) for the main file is in `terse-logback.xml` and is as follows:
 
 ```xml
 <configuration>
     <jmxConfigurator />
-
-    <!-- for debugging logback -->
-    <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
-
-    <!-- Add a custom action hook https://logback.qos.ch/manual/onJoran.html -->
-    <newRule pattern="*/set-logger-levels" actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+    <logbackMXBean />
 
     <conversionRule conversionWord="coloredLevel" converterClass="com.tersesystems.logback.ColoredLevel" />
 
@@ -285,7 +273,7 @@ The XML for the main file is in `terse-logback.xml` and is as follows:
     </root>
 
     <!-- Set the logger levels at the very end -->
-    <set-logger-levels/>
+    <setLoggerLevels/>
 </configuration>
 ```
 
@@ -382,7 +370,7 @@ Colored logging is not used in the file-based appender, because some editors ten
 
 #### JSON
 
-The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print modifications.  
+The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print options.  
 
 The XML is as follows:
 
@@ -414,9 +402,12 @@ The XML is as follows:
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
             <!-- Pretty print for better end user experience. -->
-            <!-- In production you may want to turn this off. -->
-            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+            <if condition='p("jsonfile.prettyprint").contains("true")'>
+                <then>
+                    <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+                    <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+                </then>
+            </if>
         </encoder>
     </appender>
 
@@ -436,6 +427,7 @@ jsonfile {
   location = "log/application.json"
   append = true
   immediateFlush = true
+  prettyprint = false
 
   rollingPolicy {
     fileNamePattern = "log/application.json.%d{yyyy-MM-dd}"
@@ -451,4 +443,8 @@ jsonfile {
 
 If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
 
+## Further Reading
 
+There are various wrappers and APIs on top of SLF4J, such as [Godaddy Logger](https://github.com/godaddy/godaddy-logger), [LogMachine](https://github.com/UnquietCode/LogMachine), or [structlog4j](https://github.com/jacek99/structlog4j).  I don't know that much about them, but YMMV.
+
+I do generally prefer encoders that are under the hood of Logback, such as [concurrent-build-logger](https://github.com/takari/concurrent-build-logger).

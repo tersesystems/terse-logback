@@ -25,9 +25,12 @@
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
             <!-- Pretty print for better end user experience. -->
-            <!-- In production you may want to turn this off. -->
-            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+            <if condition='p("jsonfile.prettyprint").contains("true")'>
+                <then>
+                    <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+                    <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+                </then>
+            </if>
         </encoder>
     </appender>
 

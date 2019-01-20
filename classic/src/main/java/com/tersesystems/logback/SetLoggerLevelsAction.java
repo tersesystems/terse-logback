@@ -31,8 +31,8 @@ public class SetLoggerLevelsAction extends Action {
 
     public void doConfigure() {
         LoggerContext context = (LoggerContext) getContext();
-        Config rootConfig = (Config) context.getObject(Constants.TYPESAFE_CONFIG);
-        Config levelsConfig = rootConfig.getConfig("levels");
+        Config rootConfig = (Config) context.getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
+        Config levelsConfig = rootConfig.getConfig(ConfigConstants.LEVELS_KEY);
         Set<Map.Entry<String, ConfigValue>> levelsEntrySet = levelsConfig.entrySet();
         for (Map.Entry<String, ConfigValue> entry : levelsEntrySet) {
             String name = entry.getKey();

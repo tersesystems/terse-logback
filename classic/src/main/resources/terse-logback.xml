@@ -10,14 +10,8 @@
   and the links in the comments.
 -->
 <configuration>
-
     <jmxConfigurator />
-
-    <!-- for debugging logback -->
-    <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
-
-    <!-- Add a custom action hook https://logback.qos.ch/manual/onJoran.html -->
-    <newRule pattern="*/set-logger-levels" actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+    <logbackMXBean />
 
     <conversionRule conversionWord="coloredLevel" converterClass="com.tersesystems.logback.ColoredLevel" />
 
@@ -37,5 +31,5 @@
     </root>
 
     <!-- Set the logger levels at the very end -->
-    <set-logger-levels/>
+    <setLoggerLevels/>
 </configuration>
