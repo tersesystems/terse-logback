@@ -207,7 +207,9 @@ You can use [VisualVM](https://visualvm.github.io/) or another JMX client to con
 
 ### Log Levels and Properties through Typesafe Config
 
-Configuration of properties and setting log levels is done through Typesafe Config.  Here's the `logback.conf` from the example application.
+Configuration of properties and setting log levels is done through Typesafe Config.  
+
+Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
 
 ```hocon
 # Set logger levels here.
@@ -239,15 +241,17 @@ There is a `logback-reference.conf` file that handles the default configuration 
 
 Note that appender logic is not available here.  If you need to update the appenders, you should release a new version of the classic library and get your projects updated.
 
+Using Typesafe Config is not a requirement -- the point here is to show that there are more options to configuring Logback than using a straight XML file.
+
 ### High Performance Async Appenders
 
 The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders](https://github.com/logstash/logstash-logback-encoder#async-appenders).  
 
 This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext) to ensure the async appenders empty their queues before the application shuts down.
 
-To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is **ridiculously good enough**, and will [never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
+To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but in general async logging is **ridiculously good enough**, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
 
-You should not factor in "fast enough" into your logging framework until you have sat down and done the math on how much logging it would take to stress out the system, and then you should go ask your ops team about the operational costs of keeping all those logs.
+> You should not factor in "fast enough" into your logging framework until you have sat down and done the math on how much logging it would take to stress out the system, and then you should go ask your ops team about the operational costs of keeping all those logs.
 
 ### Sensible Console, Text and JSON Encoders
 
