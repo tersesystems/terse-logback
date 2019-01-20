@@ -17,6 +17,16 @@ https://www.honeycomb.io/blog/you-could-have-invented-structured-logging/):
 
 Structured logs are [different from events](https://www.honeycomb.io/blog/how-are-structured-logs-different-from-events/).  All events can be represented as structured logs, but not all structured logs are events.  Many logs are only portions of events.  An event is a conceptual abstraction and a structured log is one possible representation of that abstraction.
 
+## Adding Context 
+
+There is a question of what you want to add when you log.  This is a matter of taste, but in general you should log so that you [create a consistent narrative](https://www.honeycomb.io/blog/event-foo-constructing-a-coherent-narrative/).  As previously mentioned, a log may indicate a portion of an event, so you want to log where doing so would help tell a story of what happened afterwards.
+
+There are some things you should [always add to an event](https://www.honeycomb.io/blog/event-foo-what-should-i-add-to-an-event/), such as who is talking to your service, what they're asking, business relevant fields, additional context around your service / environment, response time and particulars. You should add units to your field names when you measure a quantity, i.e. `response_time_ms`, and add a "human readable" version of internal information if available.
+
+You should add [context to your logs](https://www.honeycomb.io/blog/event-foo-moar-context-better-events/) that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.
+
+Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/).  You don't need to use a UUID: a flake id like [FauxFlake](https://github.com/rholder/fauxflake) will probably be better.
+
 So, we know what structured logging is now.  What does it look like in SLF4J?
 
 ## Adding Structure to Logging
@@ -84,16 +94,6 @@ MDC does not deal well with multi-threaded applications which may pass execution
 MDC breaks silently.  When MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
 MDC also is a flat map of keys and values, which does not allow for richer context that may be nested.
-
-## Adding Context 
-
-There is a question of what you want to add when you log.  This is a matter of taste, but in general you should log so that you [create a consistent narrative](https://www.honeycomb.io/blog/event-foo-constructing-a-coherent-narrative/).  As previously mentioned, a log may indicate a portion of an event, so you want to log where doing so would help tell a story of what happened afterwards.
-
-There are some things you should [always add to an event](https://www.honeycomb.io/blog/event-foo-what-should-i-add-to-an-event/), such as who is talking to your service, what they're asking, business relevant fields, additional context around your service / environment, response time and particulars. You should add units to your field names when you measure a quantity, i.e. `response_time_ms`, and add a "human readable" version of internal information if available.
-
-You should add [context to your logs](https://www.honeycomb.io/blog/event-foo-moar-context-better-events/) that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.
-
-Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/).  You don't need to use a UUID: a flake id like [FauxFlake](https://github.com/rholder/fauxflake) will probably be better.
 
 ## Logback Specific Things
 
