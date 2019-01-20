@@ -207,7 +207,7 @@ You can use [VisualVM](https://visualvm.github.io/) or another JMX client to con
 
 ### Log Levels and Properties through Typesafe Config
 
-Configuration of properties and setting log levels is done through Typesafe Config.  
+Configuration of properties and setting log levels is done through [Typesafe Config](https://github.com/lightbend/config#overview).  
 
 Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
 
