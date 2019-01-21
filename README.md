@@ -1,23 +1,31 @@
 # Structured Logging Example with Logback
 
-This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.
+This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.  It should show how you configure Logback, and how you can reduce the amount of complexity in your end projects by packaging your logging appenders and configurators in a distinct project.
 
-There isn't too much code here, but it should show how you configure Logback, and how you can reduce the amount of complexity in your end projects.
+## Project Setup
+
+The project is configured into two modules, `classic` and `example`.  There isn't too much code here, but The `classic` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `classic`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
+
+Notably, the `example` project cannot touch the appenders directly, and has no control over the semantic format of the log files.  By enforcing a [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) between **logger configuration** and **logger levels**, it is easy and simple to manage appenders in one place, e.g. going from file appenders to TCP appenders, adding filters for sensitive information, or collapsing repeated log information.
 
 This is not intended to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
 
 ## What is Structured Logging?
 
-It's logging in JSON.  Technically, you could be logging in another structure like XML or JSON, but almost everyone uses JSON.  It's been around for [a while](https://www.kartar.net/2015/12/structured-logging/).
+It's logging in JSON.  Technically, you could be logging in another structure like XML or JSON, but almost everyone uses JSON.  It's been around for [a while](https://www.kartar.net/2015/12/structured-logging/).  Technically, since there are several JSON objects all in one file / stream, this is called "newline delimited JSON" or [NDJSON](http://ndjson.org/) or [jsonlines](http://jsonlines.org/).  In the project, both text and JSON formats are rendered independently, but you can read JSON logs as text with a special log viewer like [jl](https://github.com/koenbollen/jl/blob/master/README.md).
 
-Logging JSON means that you can add more context to logs and do more with them without having to do regexes.  As [Honeycomb](https://honeycomb.io) [describes it](
+Semantically, a log entry typically has multiple pieces of information associated with it, described as "high cardinality" by observability geeks.  Structured logging means that the cardinality goes from "closed" -- you can only log things that you have defined fields for -- to "open", where you can add arbitrary fields and objects to your log entry as long as it's JSON.
+
+Structured logging means that you can add more context to logs and do more with them without having to do regexes.  As [Honeycomb](https://honeycomb.io) [describes it](
 https://www.honeycomb.io/blog/you-could-have-invented-structured-logging/):
 
 > Structured logging is really all about giving yourself — and your team — a logging API to help you provide consistent context in events. An unstructured logger accepts strings. A structured logger accepts a map, hash, or dictionary that describes all the attributes you can think of for an event.
 
-Structured logs are [different from events](https://www.honeycomb.io/blog/how-are-structured-logs-different-from-events/).  All events can be represented as structured logs, but not all structured logs are events.  Many logs are only portions of events.  An event is a conceptual abstraction and a structured log is one possible representation of that abstraction.
+Logs are [different from events](https://www.honeycomb.io/blog/how-are-structured-logs-different-from-events/).  All events can be represented as logs, but not all logs are events.  Many logs are only portions of events.  An event is a conceptual abstraction and a log is one possible representation of that abstraction.
 
-## Adding Context 
+Logs are also different from metrics.  A metric represents a single number.  You can extract metrics from logs, but it's a very expensive way of going about it.
+
+## Adding Context
 
 There is a question of what you want to add when you log.  This is a matter of taste, but in general you should log so that you [create a consistent narrative](https://www.honeycomb.io/blog/event-foo-constructing-a-coherent-narrative/).  As previously mentioned, a log may indicate a portion of an event, so you want to log where doing so would help tell a story of what happened afterwards.
 
@@ -25,7 +33,7 @@ There are some things you should [always add to an event](https://www.honeycomb.
 
 You should add [context to your logs](https://www.honeycomb.io/blog/event-foo-moar-context-better-events/) that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.
 
-Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/).  You don't need to use a UUID: a [flake id](https://github.com/boundary/flake) will probably be better for you.  I'm using [idem](https://github.com/mguenther/idem/) here, but most things will work.
+Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/) and tie your logs into a coherent event.  You don't need to use a UUID: a [flake id](https://github.com/boundary/flake) will probably be better for you.  I'm using [idem](https://github.com/mguenther/idem/) here, but most things will work.
 
 So, we know what structured logging is now.  What does it look like in SLF4J?
 
@@ -463,3 +471,8 @@ I have not used these personally, and I tend to roll my own when I need somethin
 There's a useful blog post on [writing your own appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/) for [logzio](https://github.com/logzio/logzio-logback-appender).
 
 There are also additional encoders and console appenders in [concurrent-build-logger](https://github.com/takari/concurrent-build-logger).
+
+### Best Practices
+
+* [Logging Best Practices](https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience)
+* [Logging Cheat Sheet](https://www.owasp.org/index.php/Logging_Cheat_Sheet)
