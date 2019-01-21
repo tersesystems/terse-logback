@@ -445,6 +445,21 @@ If you want to modify the format of the JSON encoder, you should use [`LoggingEv
 
 ## Further Reading
 
-There are various wrappers and APIs on top of SLF4J, such as [Godaddy Logger](https://github.com/godaddy/godaddy-logger), [LogMachine](https://github.com/UnquietCode/LogMachine), or [structlog4j](https://github.com/jacek99/structlog4j).  I don't know that much about them, but YMMV.
+### APIs
 
-I do generally prefer encoders that are under the hood of Logback, such as [concurrent-build-logger](https://github.com/takari/concurrent-build-logger).
+SLF4J is essentially the assembly language of Java logging at this point, so if you want to use something else it had better wrap or interoperate with SLF4J.
+
+There are various wrappers and APIs on top of SLF4J:
+
+* [Godaddy Logger](https://github.com/godaddy/godaddy-logger)
+* [LogMachine](https://github.com/UnquietCode/LogMachine)
+* [structlog4j](https://github.com/jacek99/structlog4j)
+* [slf4j-fluent](https://github.com/ffissore/slf4j-fluent)
+
+I have not used these personally, and I tend to roll my own when I need something on top of SLF4J.
+
+### Logback Encoders and Appenders
+
+There's a useful blog post on [writing your own appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/) for [logzio](https://github.com/logzio/logzio-logback-appender).
+
+There are also additional encoders and console appenders in [concurrent-build-logger](https://github.com/takari/concurrent-build-logger).

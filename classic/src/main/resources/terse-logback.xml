@@ -13,7 +13,7 @@
     <jmxConfigurator />
     <logbackMXBean />
 
-    <conversionRule conversionWord="coloredLevel" converterClass="com.tersesystems.logback.ColoredLevel" />
+    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
     <!-- give the async appenders time to shutdown -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
