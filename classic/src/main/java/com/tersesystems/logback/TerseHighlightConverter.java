@@ -10,7 +10,7 @@ import static ch.qos.logback.core.pattern.color.ANSIConstants.*;
 /**
  * Prints out a colored level using ANSI codes.  Jansi is included here for Windows.
  *
- * This is like %highlight from but uses playframework colors instead.
+ * This is like %highlight but uses playframework colors instead.
  *
  * https://logback.qos.ch/manual/layouts.html#customConversionSpecifier
  */
