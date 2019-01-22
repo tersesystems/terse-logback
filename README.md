@@ -4,7 +4,7 @@ This is a Java project that shows how to use [Logback](https://logback.qos.ch/ma
 
 ## Project Setup
 
-The project is configured into two modules, `classic` and `example`.  There isn't too much code here, but The `classic` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `classic`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
+The project is configured into two modules, `classic` and `example`.  The `classic` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `classic`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
 
 Notably, the `example` project cannot touch the appenders directly, and has no control over the semantic format of the log files.  By enforcing a [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) between **logger configuration** and **logger levels**, it is easy and simple to manage appenders in one place, e.g. going from file appenders to TCP appenders, adding filters for sensitive information, or collapsing repeated log information.
 
