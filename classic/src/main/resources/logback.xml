@@ -10,8 +10,15 @@
   and the links in the comments.
 -->
 <configuration>
+    <newRule pattern="*/typesafeConfig"
+             actionClass="com.tersesystems.logback.TypesafeConfigAction"/>
+
+    <newRule pattern="*/setLoggerLevels"
+             actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+
+    <typesafeConfig />
+
     <jmxConfigurator />
-    <logbackMXBean />
 
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 

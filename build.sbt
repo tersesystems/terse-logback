@@ -20,7 +20,7 @@ lazy val root = (project in file(".")).
     publish / skip := true,
 
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(classic, example).dependsOn(example) // dependsOn for the mainClass
+  ).aggregate(classic, example, `play-module`).dependsOn(example) // dependsOn for the mainClass
 
 // A "classic" project with the underlying appenders and infrastructure.
 // Create your own github repository for something like this, and publish it to your artifactory or locally.
@@ -33,7 +33,6 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3",
     libraryDependencies += "org.fusesource.jansi" % "jansi" % "1.17.1", // color on windows
     libraryDependencies += "com.typesafe" % "config" % "1.3.3",
-    libraryDependencies += "com.udojava" % "JMXWrapper" % "1.4",
     libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
   )
 
@@ -46,4 +45,9 @@ lazy val example = (project in file("example")).
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
   ).dependsOn(classic).aggregate(classic)
 
-  
+// Provide easy packaging for Play projects.
+lazy val `play-module` = (project in file("play-module"))
+  .settings(
+    scalaVersion := "2.12.8",
+    libraryDependencies += "com.typesafe.play" %% "play" % "2.6.21"
+  ).aggregate(classic).dependsOn(classic)

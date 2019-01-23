@@ -167,23 +167,48 @@ This section deals with the specific configuration in `terse-logback/classic`.
 
 Logback doesn't come with a default `logback.xml` file, and the [configuration page](https://logback.qos.ch/manual/configuration.html#auto_configuration) is written at a very low level that is not very useful for people.  The example has been written so that it doesn't "overwhelm" with too much detail, but in rough order of initialization:
 
-* Custom Service Loader
-* Setting Log Levels through JMX
+* Logback XML with Custom Actions
+* Loading Typesafe Config
 * Log Levels and Properties through Typesafe Config
 * High Performance Async Appenders
 * Sensible Joran (Logback XML) Configuration
 
-### Service Loader
+### Logback XML with Custom Actions
 
-The entry point of the system is the `TerseLogbackConfigurator`, which is set up through the `META-INF/services` [service loader pattern](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html).
-  
-### Setting Log Levels through JMX
+The entry point of the system is a `logback.xml` file which has custom actions added to it to do additional configuration, `TypesafeConfigAction` and `SetLoggerLevelsAction`.
 
-`TerseLogbackConfigurator` sets up the Logback MXBean, determines what XML file to load for configuration, loads the Typesafe Config options and makes them available to Logback's `LoggingContext`.
+This approach is not as fancy as using a service loader pattern, but there are issues integrating into web frameworks, as those frameworks may look directly for XML files and skip service loader patterns.  Using a `logback.xml` file is the most well known pattern, and Joran makes adding custom actions fairly easy.
 
-The [JMX Configurator](https://logback.qos.ch/manual/jmxConfig.html) lets you change a logger's level, but makes you type out the level.  The `LogbackMXBean` will let you change a logger's level without having to enter the level specifically.  
+### Loading Typesafe Config
 
-You can use [VisualVM](https://visualvm.github.io/) or another JMX client to connect to the MBean Console.
+The `TypesafeConfigAction` will search in a variety of places for configuration using [standard fallback behavior](https://github.com/lightbend/config#standard-behavior) for Typesafe Config, which gives a richer experience to end users.
+
+```java
+Config config = systemProperties        // Look for a property from system properties first...
+        .withFallback(file)          // if we don't find it, then look in an explicitly defined file...
+        .withFallback(testResources) // if not, then if logback-test.conf exists, look for it there...
+        .withFallback(resources)     // then look in logback.conf...
+        .withFallback(reference)     // and then finally in logback-reference.conf.
+        .resolve();                  // Tell config that we want to use ${?ENV_VAR} type stuff.
+```
+
+The configuration is then placed in the `LoggerContext` which is available to all of Logback.
+
+```java
+lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
+```
+
+And then all properties are made available to Logback:
+
+```java
+for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
+    String key = propertyEntry.getKey();
+    String value = propertyEntry.getValue().unwrapped().toString();
+    lc.putProperty(key, value);
+}
+```
+
+Technically, I think that it's possible to use an [`ImplicitAction`](https://logback.qos.ch/manual/onJoran.html#implicit) to fallback to resolving to the `Config` if no property is found, but that would require instantiating a `Configurator` which again doesn't work so well with frameworks.
 
 ### Log Levels and Properties through Typesafe Config
 
@@ -208,8 +233,14 @@ levels = {
 
 # Overrides the properties from logback-reference.conf
 properties {
+    # Overwrite text file on every run.
     textfile {
         append = false
+    }
+
+    # Override the color code in console for info statements
+    highlight {
+        info = "black"
     }
 }
 
@@ -260,10 +291,17 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
 
 ```xml
 <configuration>
-    <jmxConfigurator />
-    <logbackMXBean />
+    <newRule pattern="*/typesafeConfig"
+             actionClass="com.tersesystems.logback.TypesafeConfigAction"/>
 
-    <conversionRule conversionWord="coloredLevel" converterClass="com.tersesystems.logback.ColoredLevel" />
+    <newRule pattern="*/setLoggerLevels"
+             actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+
+    <typesafeConfig />
+
+    <jmxConfigurator />
+
+    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
     <!-- give the async appenders time to shutdown -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
@@ -317,12 +355,12 @@ with the HOCON settings as follows:
 console {
   withJansi = true # allow colored logging on windows
   encoder {
-    pattern = "%coloredLevel %logger{15} - %message%n%xException{10}"
+    pattern = "[%terseHighlight(%-5level)] %logger{15} - %message%n%xException{10}"
   }
 }
 ```
 
-The console appender uses colored logging for the log level, just to demonstrate how you can create your own custom conversion rules.  Jansi is included so that Windows can benefit from colored logging as well.  
+The console appender uses colored logging for the log level, but you can override config to set the colors you want for which levels.  Jansi is included so that Windows can benefit from colored logging as well.  
 
 #### Text
 
