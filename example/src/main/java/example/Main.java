@@ -46,6 +46,11 @@ public class Main {
             //  Add "name":"value" to the JSON output and add name=[value] to the formatted message using a custom format.
             nestedLogger.trace(context, "log message {}", keyValue("name", "value", "{0}=[{1}]"));
         }
+
+        // Censoring information can be done under the hood as part of a defense in depth strategy
+        nestedLogger.trace("My password is hunter2"); // http://bash.org/?244321
+        nestedLogger.trace(append("password", "hunter2"), "I have added password as a marker");
+
     }
 }
 

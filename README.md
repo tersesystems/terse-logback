@@ -41,7 +41,7 @@ So, we know what structured logging is now.  What does it look like in SLF4J?
 
 SLF4J doesn't have specific support for structured logging, but [logstash-logback-encoder](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#logback-json-encoder) does.  It's complete and comprehensive, but buried in a section called [Event specific custom fields](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#event-specific-custom-fields).
 
-Event specific custom fields aren implemented in two ways: through [`net.logstash.logback.argument.StructuredArguments`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/argument/StructuredArguments.java), which adds structured information through parameters, and [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java), which adds structured information through the `org.slf4j.Marker` API.
+Event specific custom fields are implemented in two ways: through [`net.logstash.logback.argument.StructuredArguments`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/argument/StructuredArguments.java), which adds structured information through parameters, and [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java), which adds structured information through the `org.slf4j.Marker` API.
 
 ### StructuredArguments
 
@@ -216,6 +216,8 @@ Configuration of properties and setting log levels is done through [Typesafe Con
 
 Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
 
+Censoring information from messages is part of a defense in depth strategy, and should not be relied on.
+
 ```hocon
 # Set logger levels here.
 levels = {
@@ -229,6 +231,12 @@ levels = {
     deeply.nested {
         package = TRACE
     }
+}
+
+censor {
+    regex += """hunter2""" // http://bash.org/?244321
+    replacement = "*******"
+    json.keys += "password" // adding password key will remove the key/value pair entirely
 }
 
 # Overrides the properties from logback-reference.conf
@@ -303,6 +311,8 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
 
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
+    <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
+
     <!-- give the async appenders time to shutdown -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
         <delay>${shutdownHook.delay}</delay>
@@ -355,7 +365,7 @@ with the HOCON settings as follows:
 console {
   withJansi = true # allow colored logging on windows
   encoder {
-    pattern = "[%terseHighlight(%-5level)] %logger{15} - %message%n%xException{10}"
+    pattern = "[%terseHighlight(%-5level)] %logger{15} - %censoredMessage%n%xException{10}"
   }
 }
 ```
@@ -407,7 +417,7 @@ textfile {
 
   encoder {
     outputPatternAsHeader = true
-    pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %message%n%xException"
+    pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %censoredMessage%n%xException"
   }
 }
 ```
@@ -446,13 +456,16 @@ The XML is as follows:
             <includeContext>${jsonfile.encoder.includeContext}</includeContext>
             <!-- UTC is the best server consistent timezone -->
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
-
-            <!-- Pretty print for better end user experience. -->
+            
+            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
             <if condition='p("jsonfile.prettyprint").contains("true")'>
                 <then>
-                    <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-                    <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+                    <!-- Pretty print for better end user experience. -->
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>
                 </then>
+                <else>
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator"/>
+                </else>
             </if>
         </encoder>
     </appender>
@@ -502,7 +515,7 @@ There are various wrappers and APIs on top of SLF4J:
 * [structlog4j](https://github.com/jacek99/structlog4j)
 * [slf4j-fluent](https://github.com/ffissore/slf4j-fluent)
 
-I have not used these personally, and I tend to roll my own when I need something on top of SLF4J.
+I have not used these personally, and I usually roll my own when I need something on top of SLF4J, because the wrappers tend to set their own encoders on top.
 
 ### Logback Encoders and Appenders
 
