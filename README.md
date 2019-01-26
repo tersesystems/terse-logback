@@ -155,7 +155,7 @@ and the following JSON:
 
 ## Tracer Bullet Logging
 
-Using a `ProxyContextLogger` also allows you the option to do "tracer bullet" logging, where a query parameter in an HTTP request could cause a logger to log at a lower level than it would normally do to a special marker.  
+Using a `ProxyContextLogger` also allows you the option to do "tracer bullet" logging, where some extra context, such as a query parameter in an HTTP request, could cause a logger to log at a lower level than it would normally do to a special marker.  You can use this for debugging on the fly without changing logger levels, or use it for random sampling of some number of operations.
 
 Defining the following turbo filter in `logback.xml`:
 
