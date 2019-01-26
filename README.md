@@ -153,6 +153,100 @@ and the following JSON:
 {"@timestamp":"2019-01-20T23:26:50.353+00:00","@version":"1","message":"log with marker provided by the underlying proxy","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIy0T878gCNIdfWAAA"}
 ```
 
+## Tracer Bullet Logging
+
+Using a `ProxyContextLogger` also allows you the option to do "tracer bullet" logging, where a query parameter in an HTTP request could cause a logger to log at a lower level than it would normally do to a special marker.  
+
+Defining the following turbo filter in `logback.xml`:
+
+```xml
+<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+  <Name>TRACER_FILTER</Name>
+  <Marker>TRACER</Marker>
+  <OnMatch>ACCEPT</OnMatch>
+</turboFilter>
+```
+
+and adding it to an existing marker and wrapping it in a `ProxyContextLogger`, you can get:
+
+```java
+package example;
+
+import com.tersesystems.logback.ProxyContextLogger;
+import com.tersesystems.logback.TracerFactory;
+import net.logstash.logback.marker.LogstashMarker;
+import org.slf4j.Logger;
+
+import static net.logstash.logback.marker.Markers.*;
+import static org.slf4j.LoggerFactory.*;
+
+public class ClassWithTracer {
+
+    // Add a TRACER marker to the request, and use a proxy context wrapper
+    private Logger getContextLogger(Request request) {
+        final TracerFactory tracerFactory = TracerFactory.getInstance();
+        final LogstashMarker context;
+        if (request.queryStringContains("trace")) {
+            context = tracerFactory.createTracer(request.context());
+        } else {
+            context = request.context();
+        }
+        return new ProxyContextLogger(context, getLogger(getClass()));
+    }
+
+    public void doThings(Request request) {
+        Logger logger = getContextLogger(request);
+
+        // This class is not logged at a TRACE level, so this should not show under
+        // normal circumstances...
+        if (logger.isTraceEnabled()) {
+            logger.trace("This log message is only shown if the request has trace in the query string!");
+        }
+    }
+
+    public static void main(String[] args) {
+        ClassWithTracer classWithTracer = new ClassWithTracer();
+
+        // run it without the trace flag
+        Request request = new Request("foo=bar");
+        classWithTracer.doThings(request);
+
+        // run it WITH the trace flag
+        Request requestWithTrace = new Request("foo=bar&trace=on");
+        classWithTracer.doThings(requestWithTrace);
+    }
+}
+
+class Request {
+    private final LogstashMarker context;
+    private final String queryString;
+
+    Request(String queryString) {
+        String correlationId = IdGenerator.getInstance().generateCorrelationId();
+        this.context = append("correlationId", correlationId);
+        this.queryString = queryString;
+    }
+
+    public LogstashMarker context() {
+        return context;
+    }
+
+    public boolean queryStringContains(String key) {
+        return (queryString.contains(key));
+    }
+}
+```
+
+which gives the following output:
+
+```text
+2019-01-26T18:40:39.088+0000 [TRACE] example.ClassWithTracer in main - This log message is only shown if the request has trace in the query string!
+```
+
+```json
+{"@timestamp":"2019-01-26T18:40:39.088+00:00","@version":"1","message":"This log message is only shown if the request has trace in the query string!","logger_name":"example.ClassWithTracer","thread_name":"main","level":"TRACE","level_value":5000,"tags":["TRACER"],"correlationId":"FX1UlmU3VfqlX0qxArsAAA"}
+```
+
 ## Avoid MDC
 
 Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.  
@@ -216,7 +310,7 @@ Configuration of properties and setting log levels is done through [Typesafe Con
 
 Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
 
-Censoring information from messages is part of a defense in depth strategy, and should not be relied on.
+You can also censor text at both the message and at the JSON level.  Censoring information from messages is part of a defense in depth strategy, and should not be relied on.
 
 ```hocon
 # Set logger levels here.
@@ -312,6 +406,12 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
     <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
+
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Name>TRACER_FILTER</Name>
+        <Marker>TRACER</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
 
     <!-- give the async appenders time to shutdown -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">

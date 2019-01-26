@@ -26,7 +26,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isTraceEnabled() {
-        return logger.isTraceEnabled();
+        return logger.isTraceEnabled(context);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isTraceEnabled(Marker marker) {
-        return logger.isTraceEnabled(marker);
+        return logger.isTraceEnabled(context.and(marker));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isDebugEnabled() {
-        return logger.isDebugEnabled();
+        return logger.isDebugEnabled(context);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isDebugEnabled(Marker marker) {
-        return logger.isDebugEnabled(marker);
+        return logger.isDebugEnabled(context.and(marker));
     }
 
     @Override
@@ -148,7 +148,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isInfoEnabled() {
-        return logger.isInfoEnabled();
+        return logger.isInfoEnabled(context);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isInfoEnabled(Marker marker) {
-        return logger.isInfoEnabled(marker);
+        return logger.isInfoEnabled(context.and(marker));
     }
 
     @Override
@@ -209,7 +209,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isWarnEnabled() {
-        return logger.isWarnEnabled();
+        return logger.isWarnEnabled(context);
     }
 
     @Override
@@ -239,7 +239,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isWarnEnabled(Marker marker) {
-        return logger.isWarnEnabled(marker);
+        return logger.isWarnEnabled(context.and(marker));
     }
 
     @Override
@@ -270,7 +270,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isErrorEnabled() {
-        return logger.isErrorEnabled();
+        return logger.isErrorEnabled(context);
     }
 
     @Override
@@ -300,7 +300,7 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isErrorEnabled(Marker marker) {
-        return logger.isErrorEnabled(marker);
+        return logger.isErrorEnabled(context.and(marker));
     }
 
     @Override

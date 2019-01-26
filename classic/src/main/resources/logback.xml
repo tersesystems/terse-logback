@@ -33,6 +33,12 @@
         <delay>${shutdownHook.delay}</delay>
     </shutdownHook>
 
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Name>TRACER_FILTER</Name>
+        <Marker>TRACER</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
     <include resource="terse-logback/appenders/console-appenders.xml"/>
     <include resource="terse-logback/appenders/jsonfile-appenders.xml"/>
     <include resource="terse-logback/appenders/textfile-appenders.xml"/>
