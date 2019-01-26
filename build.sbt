@@ -33,6 +33,7 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3",
     libraryDependencies += "org.fusesource.jansi" % "jansi" % "1.17.1", // color on windows
     libraryDependencies += "com.typesafe" % "config" % "1.3.3",
+    libraryDependencies += "org.slf4j" % "jul-to-slf4j" % "1.7.25",
     libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
   )
 
