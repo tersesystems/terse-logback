@@ -1,69 +1,42 @@
-    @for(status <- Seq(
-      Status("trace", "Trace"),
-      Status("debug", "Debug"),
-      Status("info", "Info"),
-      Status("warn", "Warn"),
-      Status("error", "Error"),
+package com.tersesystems.logback;
+
+import org.slf4j.Logger;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+@* "sbt generateSources" autogenerates in target/sources/txt.Results *@
+public class ProxyLogControl implements LogControl @ob
+
+    private final Logger logger;
+    private final Supplier<Boolean> predicate;
+
+    public ProxyLogControl(Logger logger) {
+        this.logger = logger;
+        this.predicate = () -> true;
+    }
+
+    public ProxyLogControl(Logger logger, Supplier<Boolean> predicate) {
+        this.logger = logger;
+        this.predicate = predicate;
+    }
+
+    @for(level <- Seq(
+      Level("trace", "Trace"),
+      Level("debug", "Debug"),
+      Level("info", "Info"),
+      Level("warn", "Warn"),
+      Level("error", "Error"),
     )) {
-
-    @Override
-    public boolean is@{status.capitalizedName}Enabled() @ob
-        return logger.is@{status.capitalizedName}Enabled();
+    public void if@{level.capitalizedName}(Consumer<Logger> lc) @ob
+        if (logger.is@{level.capitalizedName}Enabled() && predicate.get()) @ob
+            lc.accept(logger);
+        @cb
     @cb
 
-    @Override
-    public void @{status.name}(String msg) @ob
-         logger.@{status.name}(context, msg);
+    public void if@{level.capitalizedName}(Supplier<Boolean> condition, Consumer<Logger> lc) @ob
+        if (logger.is@{level.capitalizedName}Enabled() && predicate.get() && condition.get()) @ob
+            lc.accept(logger);
+        @cb
     @cb
-
-    @Override
-    public void @{status.name}(String format, Object arg) @ob
-         logger.@{status.name}(context, format, arg);
-    @cb
-
-    @Override
-    public void @{status.name}(String format, Object arg1, Object arg2) @ob
-         logger.@{status.name}(context, format, arg1, arg2);
-    @cb
-
-    @Override
-    public void @{status.name}(String format, Object... arguments) @ob
-         logger.@{status.name}(context, format, arguments);
-    @cb
-
-    @Override
-    public void @{status.name}(String msg, Throwable t) @ob
-         logger.@{status.name}(context, msg, t);
-    @cb
-
-    @Override
-    public boolean is@{status.capitalizedName}Enabled(Marker marker) @ob
-         return logger.is@{status.capitalizedName}Enabled(marker);
-    @cb
-
-    @Override
-    public void @{status.name}(Marker marker, String msg) @ob
-         logger.@{status.name}(context.and(marker), msg);
-    @cb
-
-    @Override
-    public void @{status.name}(Marker marker, String format, Object arg) @ob
-         logger.@{status.name}(context.and(marker), format, arg);
-    @cb
-
-    @Override
-    public void @{status.name}(Marker marker, String format, Object arg1, Object arg2) @ob
-         logger.@{status.name}(context.and(marker), format, arg1, arg2);
-    @cb
-
-    @Override
-    public void @{status.name}(Marker marker, String format, Object... argArray) @ob
-         logger.@{status.name}(context.and(marker), format, argArray);
-    @cb
-
-    @Override
-    public void @{status.name}(Marker marker, String msg, Throwable t) @ob
-     logger.@{status.name}(context.and(marker), msg, t);
-    @cb
-
-}
+    }
+@cb

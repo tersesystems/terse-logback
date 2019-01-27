@@ -5,5 +5,5 @@ package object txt {
 
   def Override = "@Override"
 
-  case class Status(name: String, capitalizedName: String)
+  case class Level(name: String, capitalizedName: String)
 }

@@ -247,6 +247,65 @@ which gives the following output:
 {"@timestamp":"2019-01-26T18:40:39.088+00:00","@version":"1","message":"This log message is only shown if the request has trace in the query string!","logger_name":"example.ClassWithTracer","thread_name":"main","level":"TRACE","level_value":5000,"tags":["TRACER"],"correlationId":"FX1UlmU3VfqlX0qxArsAAA"}
 ```
 
+
+## Controlling Logging
+
+Tracer Bullet logging is one situation where you want to log information you wouldn't normally log.  The opposite is also true: there are reasons why you would not want to log information you may normally log.
+
+The historical reason for not logging is that there is a construction cost involved in creating parameters.  This is still true in a way today -- CPU and memory are not typically constraints for logging statements, but there are storage costs involved in producing logs.  Accumulated logs must be parsed and searched, making queries slower.
+
+There is a `com.tersesystems.logback.LogControl` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
+
+```java
+package example;
+
+import com.tersesystems.logback.LogControl;
+import com.tersesystems.logback.ProxyLogControl;
+import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.Markers;
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class ClassWithLogControl {
+
+    private ClassWithLogControl() {
+    }
+
+    private final Logger logger = getLogger(getClass());
+
+    private void doStuff() {
+        // Set up log control to filter all log statements
+        final LogControl logControl = new ProxyLogControl(logger, this::isMyMachine);
+
+        String correlationId = IdGenerator.getInstance().generateCorrelationId();
+        LogstashMarker context = Markers.append("correlationId", correlationId);
+
+        // Log only if the level is info and the given condition has been met:
+        logControl.ifInfo(logger -> logger.info(context, "log if INFO && user.name == wsargent"));
+
+        // Log only if the level is info and the above conditions are met AND it's tuesday
+        logControl.ifInfo(this::objectIsTooLargeToLog, logger -> {
+            // Log very large thing in here...
+            logger.info(context, "log if INFO && user.name == wsargent && objectIsTooLargeToLog()");
+        });
+    }
+
+    private Boolean objectIsTooLargeToLog() {
+        return true;
+    }
+
+    private Boolean isMyMachine() {
+        return "wsargent".equals(System.getProperty("user.name"));
+    }
+
+    public static void main(String[] args) {
+        ClassWithLogControl classWithLogControl = new ClassWithLogControl();
+        classWithLogControl.doStuff();
+    }
+}
+```
+
 ## Logging with Injected Context
 
 When you're using structured logging, you'll inevitably have to pass around the `LogstashMarker` or `StructuredArgument` with it so that you can add context to your logging.  In the past, the recommended way to do this was MDC.

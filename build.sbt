@@ -13,6 +13,7 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
       crossPaths := false,
       autoScalaLibrary := false,      
       version      := "0.1.0-SNAPSHOT",
+      javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8"),
       testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
       libraryDependencies += junitInterface % Test,
     )),
