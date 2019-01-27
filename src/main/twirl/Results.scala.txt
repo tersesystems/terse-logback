@@ -1,0 +1,69 @@
+    @for(status <- Seq(
+      Status("trace", "Trace"),
+      Status("debug", "Debug"),
+      Status("info", "Info"),
+      Status("warn", "Warn"),
+      Status("error", "Error"),
+    )) {
+
+    @Override
+    public boolean is@{status.capitalizedName}Enabled() @ob
+        return logger.is@{status.capitalizedName}Enabled();
+    @cb
+
+    @Override
+    public void @{status.name}(String msg) @ob
+         logger.@{status.name}(context, msg);
+    @cb
+
+    @Override
+    public void @{status.name}(String format, Object arg) @ob
+         logger.@{status.name}(context, format, arg);
+    @cb
+
+    @Override
+    public void @{status.name}(String format, Object arg1, Object arg2) @ob
+         logger.@{status.name}(context, format, arg1, arg2);
+    @cb
+
+    @Override
+    public void @{status.name}(String format, Object... arguments) @ob
+         logger.@{status.name}(context, format, arguments);
+    @cb
+
+    @Override
+    public void @{status.name}(String msg, Throwable t) @ob
+         logger.@{status.name}(context, msg, t);
+    @cb
+
+    @Override
+    public boolean is@{status.capitalizedName}Enabled(Marker marker) @ob
+         return logger.is@{status.capitalizedName}Enabled(marker);
+    @cb
+
+    @Override
+    public void @{status.name}(Marker marker, String msg) @ob
+         logger.@{status.name}(context.and(marker), msg);
+    @cb
+
+    @Override
+    public void @{status.name}(Marker marker, String format, Object arg) @ob
+         logger.@{status.name}(context.and(marker), format, arg);
+    @cb
+
+    @Override
+    public void @{status.name}(Marker marker, String format, Object arg1, Object arg2) @ob
+         logger.@{status.name}(context.and(marker), format, arg1, arg2);
+    @cb
+
+    @Override
+    public void @{status.name}(Marker marker, String format, Object... argArray) @ob
+         logger.@{status.name}(context.and(marker), format, argArray);
+    @cb
+
+    @Override
+    public void @{status.name}(Marker marker, String msg, Throwable t) @ob
+     logger.@{status.name}(context.and(marker), msg, t);
+    @cb
+
+}
