@@ -247,13 +247,157 @@ which gives the following output:
 {"@timestamp":"2019-01-26T18:40:39.088+00:00","@version":"1","message":"This log message is only shown if the request has trace in the query string!","logger_name":"example.ClassWithTracer","thread_name":"main","level":"TRACE","level_value":5000,"tags":["TRACER"],"correlationId":"FX1UlmU3VfqlX0qxArsAAA"}
 ```
 
-## Avoid MDC
+## Logging with Injected Context
+
+When you're using structured logging, you'll inevitably have to pass around the `LogstashMarker` or `StructuredArgument` with it so that you can add context to your logging.  In the past, the recommended way to do this was MDC.
 
 Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.  
 
 MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
-There are numerous workarounds, but it's safer and easier to use an explicit context as a field or parameter.
+There are numerous workarounds, but it's safer and easier to use an explicit context as a field or parameter.  If you don't want to manage this in your logger directly, then the safest way is to handle it through injection, also known as using constructor parameters.
+
+When you create an instance, you can pass in a single `org.slf4j.ILoggerFactory` instance that will create your loggers for you.  
+
+```java
+package example;
+
+import com.tersesystems.logback.ProxyContextLoggerFactory;
+import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.Markers;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+
+public class ClassWithContext {
+
+    static class ObliviousToContext {
+        private final Logger logger;
+
+        public ObliviousToContext(ILoggerFactory lf) {
+            this.logger = lf.getLogger(this.getClass().getName());
+        }
+
+        public void doStuff() {
+            logger.info("hello world!");
+        }
+    }
+
+    public static void main(String[] args) {
+        String correlationId = IdGenerator.getInstance().generateCorrelationId();
+        LogstashMarker context = Markers.append("correlationId", correlationId);
+        ILoggerFactory loggerFactory = ProxyContextLoggerFactory.createLoggerFactory(context);
+
+        ObliviousToContext obliviousToContext = new ObliviousToContext(loggerFactory);
+        obliviousToContext.doStuff();
+    }
+}
+```
+
+```json
+{"@timestamp":"2019-01-26T22:10:46.518+00:00","@version":"1","message":"hello world!","logger_name":"example.ClassWithContext$ObliviousToContext","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FX1XWgmWpfERZni5rwIAAA"}
+```
+
+This style of programming does assume that you can control the instantiation of your objects, and it doesn't go into some of the details such as accumulating extra context.  
+
+If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then `MDC` (or other thread-local hacks) may be your only option.
+
+### Dependency Injection with Guice
+
+Finally, if you're using a DI framework like Guice, you can leverage some of the contextual code in [Sangria](https://tavianator.com/announcing-sangria/) to do some of the gruntwork for you.  For example, here's how you configure a `Logger` instance in Guice:
+
+```java
+package example;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.spi.InjectionPoint;
+import com.tavianator.sangria.contextual.ContextSensitiveBinder;
+import com.tavianator.sangria.contextual.ContextSensitiveProvider;
+import com.tersesystems.logback.ProxyContextLoggerFactory;
+import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.Markers;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
+public class GuiceAssistedLogging {
+
+    public static class MyClass {
+        private final Logger logger;
+
+        @Inject
+        MyClass(Logger logger) {
+            this.logger = logger;
+        }
+
+        public void doStuff() {
+            logger.info("hello world!");
+        }
+    }
+
+    @Singleton
+    static class Slf4jLoggerProvider implements ContextSensitiveProvider<Logger> {
+        private final ILoggerFactory loggerFactory;
+
+        @Inject
+        Slf4jLoggerProvider(ILoggerFactory loggerFactory) {
+            this.loggerFactory = loggerFactory;
+        }
+
+        @Override
+        public Logger getInContext(InjectionPoint injectionPoint) {
+            return loggerFactory.getLogger(injectionPoint.getDeclaringType().getRawType().getName());
+        }
+
+        @Override
+        public Logger getInUnknownContext() {
+            return loggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        }
+    }
+
+    static class ILoggerFactoryProvider implements Provider<ILoggerFactory> {
+        @Override
+        public ILoggerFactory get() {
+            // This would be hooked up to @RequestScoped in a real application
+            LogstashMarker context = Markers.append("threadName", Thread.currentThread().getName());
+            return ProxyContextLoggerFactory.createLoggerFactory(context);
+        }
+    }
+
+    public static void main(String[] args) {
+        Injector injector = Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                install(new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(ILoggerFactory.class).toProvider(ILoggerFactoryProvider.class);
+                        ContextSensitiveBinder.create(binder())
+                                .bind(Logger.class)
+                                .toContextSensitiveProvider(Slf4jLoggerProvider.class);
+                    }
+                });
+            }
+        });
+
+        MyClass instance = injector.getInstance(MyClass.class);
+        // Assume this is running in an HTTP request that is @RequestScoped
+        instance.doStuff();
+    }
+}
+```
+
+which yields:
+
+```json
+{"@timestamp":"2019-01-27T00:19:08.628+00:00","@version":"1","message":"hello world!","logger_name":"example.GuiceAssistedLogging$MyClass","thread_name":"main","level":"INFO","level_value":20000,"threadName":"main"}
+```
+
+If you are using a Servlet based API, then you can piggyback of Guice's [servlet extensions](https://github.com/google/guice/wiki/Servlets) and then integrate the logging context as part of the [`CDI / JSR 299 / @RequestScoped`](https://docs.oracle.com/javaee/6/tutorial/doc/gjbbk.html).  I have not tried this myself.
 
 ## Logback Specific Things
 

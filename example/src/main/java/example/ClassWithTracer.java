@@ -5,8 +5,8 @@ import com.tersesystems.logback.TracerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 
-import static net.logstash.logback.marker.Markers.*;
-import static org.slf4j.LoggerFactory.*;
+import static net.logstash.logback.marker.Markers.append;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class ClassWithTracer {
 

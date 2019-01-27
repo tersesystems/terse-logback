@@ -15,7 +15,11 @@ public class ProxyContextLogger implements Logger {
     private final LogstashMarker context;
 
     public ProxyContextLogger(LogstashMarker context, Logger logger) {
-        this.context = context;
+        if (logger instanceof ProxyContextLogger) {
+            this.context = context.and(((ProxyContextLogger) logger).context);
+        } else {
+            this.context = context;
+        }
         this.logger = logger;
     }
 

@@ -20,7 +20,7 @@ lazy val root = (project in file(".")).
     publish / skip := true,
 
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(classic, example, `play-module`).dependsOn(example) // dependsOn for the mainClass
+  ).aggregate(classic, example, guice).dependsOn(example) // dependsOn for the mainClass
 
 // A "classic" project with the underlying appenders and infrastructure.
 // Create your own github repository for something like this, and publish it to your artifactory or locally.
@@ -46,9 +46,16 @@ lazy val example = (project in file("example")).
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
   ).dependsOn(classic).aggregate(classic)
 
-// Provide easy packaging for Play projects.
-lazy val `play-module` = (project in file("play-module"))
-  .settings(
-    scalaVersion := "2.12.8",
-    libraryDependencies += "com.typesafe.play" %% "play" % "2.6.21"
-  ).aggregate(classic).dependsOn(classic)
+
+// Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
+lazy val guice = (project in file("guice")).
+  settings(
+    name := "terse-logback-guice",
+    publish / skip := true,
+    mainClass := Some("example.Main"),
+    libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0",
+    libraryDependencies += "com.google.inject" % "guice" % "4.2.2",
+    // https://tavianator.com/cgit/sangria.git
+    libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1"
+  ).dependsOn(classic).aggregate(classic)
+
