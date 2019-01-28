@@ -1,0 +1,49 @@
+package com.tersesystems.logback.proxy;
+
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.event.Level;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.function.Predicate;
+
+@* "sbt generateSources" autogenerates in target/sources/txt.Results *@
+public class ProxyLazyLogger @ob
+
+    private final Logger logger;
+
+    public ProxyLazyLogger(Logger logger) {
+        this.logger = logger;
+    }
+
+    @for(level <- Seq(
+      Level("trace", "Trace"),
+      Level("debug", "Debug"),
+      Level("info", "Info"),
+      Level("warn", "Warn"),
+      Level("error", "Error"),
+    )) {
+    public boolean is@{level.capitalizedName}Enabled() {
+        return logger.is@{level.capitalizedName}Enabled();
+    }
+
+    public boolean is@{level.capitalizedName}Enabled(Marker marker) {
+        return logger.is@{level.capitalizedName}Enabled(marker);
+    }
+
+    public void @{level.name}(Consumer<LoggerStatement> lc) {
+        if (is@{level.capitalizedName}Enabled()) {
+           LoggerStatement stmt = new LoggerStatement.@{level.capitalizedName}(logger);
+           lc.accept(stmt);
+        }
+    }
+
+    public void @{level.name}(Marker marker, Consumer<LoggerStatement> lc) {
+        if (is@{level.capitalizedName}Enabled(marker)) {
+           LoggerStatement stmt = new LoggerStatement.@{level.capitalizedName}(logger);
+           lc.accept(stmt);
+        }
+    }
+
+    }
+@cb

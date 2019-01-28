@@ -7,7 +7,7 @@ import play.twirl.api.Txt
 object SourcesGenerator extends App {
 
   val outDir = new File("target/sources")
-  val templates = Seq("txt.LoggerStatement", "txt.ProxyConditionalLogger")
+  val templates = Seq("txt.LoggerStatement", "txt.ProxyConditionalLogger", "txt.ProxyLazyLogger")
 
   templates.foreach { template =>
     val templateClazz = Class.forName(template + "$")
