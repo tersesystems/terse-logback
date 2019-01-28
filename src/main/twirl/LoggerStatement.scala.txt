@@ -1,0 +1,110 @@
+package com.tersesystems.logback;
+
+import org.slf4j.Marker;
+import org.slf4j.Logger;
+
+/**
+ * A statement that is tied to the particular level of the logger.
+ */
+public interface LoggerStatement {
+    boolean isEnabled();
+
+    void apply(String message);
+
+    void apply(String format, Object arg);
+
+    void apply(String format, Object arg1, Object arg2);
+
+    void apply(String format, Object... arguments);
+
+    void apply(String msg, Throwable t);
+
+    boolean isEnabled(Marker marker);
+
+    void apply(Marker marker, String msg);
+
+    void apply(Marker marker, String format, Object arg);
+
+    void apply(Marker marker, String format, Object arg1, Object arg2);
+
+    void apply(Marker marker, String format, Object... argArray);
+
+    void apply(Marker marker, String msg, Throwable t);
+
+    @for(level <- Seq(
+      Level("trace", "Trace"),
+      Level("debug", "Debug"),
+      Level("info", "Info"),
+      Level("warn", "Warn"),
+      Level("error", "Error"),
+    )) {
+    public static class @{level.capitalizedName} implements LoggerStatement @ob
+        private final Logger logger;
+
+        public @{level.capitalizedName}(Logger logger) @ob
+            this.logger = logger;
+        @cb
+
+        @Override
+        public boolean isEnabled() @ob
+            return logger.is@{level.capitalizedName}Enabled();
+        @cb
+
+        @Override
+        public void apply(String msg) @ob
+            logger.@{level.name}(msg);
+        @cb
+
+        @Override
+        public void apply(String format, Object arg) @ob
+            logger.@{level.name}(format, arg);
+        @cb
+
+        @Override
+        public void apply(String format, Object arg1, Object arg2) @ob
+            logger.@{level.name}(format, arg1, arg2);
+        @cb
+
+        @Override
+        public void apply(String format, Object... arguments) @ob
+            logger.@{level.name}(format, arguments);
+        @cb
+
+        @Override
+        public void apply(String msg, Throwable t) @ob
+                logger.@{level.name}(msg, t);
+        @cb
+
+        @Override
+        public boolean isEnabled(Marker marker) @ob
+            return logger.is@{level.capitalizedName}Enabled(marker);
+        @cb
+
+        @Override
+        public void apply(Marker marker, String msg) @ob
+                logger.@{level.name}(marker, msg);
+        @cb
+
+        @Override
+        public void apply(Marker marker, String format, Object arg) @ob
+                logger.@{level.name}(marker, format, arg);
+        @cb
+
+        @Override
+        public void apply(Marker marker, String format, Object arg1, Object arg2) @ob
+                logger.@{level.name}(marker, format, arg1, arg2);
+        @cb
+
+        @Override
+        public void apply(Marker marker, String format, Object... argArray) @ob
+                logger.@{level.name}(marker, format, argArray);
+        @cb
+
+        @Override
+        public void apply(Marker marker, String msg, Throwable t) @ob
+                logger.@{level.name}(marker, msg, t);
+        @cb
+
+    @cb
+    }
+}

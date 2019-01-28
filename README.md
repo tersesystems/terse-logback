@@ -254,45 +254,49 @@ Tracer Bullet logging is one situation where you want to log information you wou
 
 The historical reason for not logging is that there is a construction cost involved in creating parameters.  This is still true in a way today -- CPU and memory are not typically constraints for logging statements, but there are storage costs involved in producing logs.  Accumulated logs must be parsed and searched, making queries slower.
 
-There is a `com.tersesystems.logback.LogControl` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
+There is a `com.tersesystems.logback.ConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
 
 ```java
 package example;
 
-import com.tersesystems.logback.LogControl;
-import com.tersesystems.logback.ProxyLogControl;
+import com.tersesystems.logback.ConditionalLogger;
+import com.tersesystems.logback.ProxyConditionalLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class ClassWithLogControl {
+public class ClassWithConditionalLogger {
 
-    private ClassWithLogControl() {
+    private ClassWithConditionalLogger() {
     }
 
     private final Logger logger = getLogger(getClass());
 
     private void doStuff() {
-        // Set up log control to filter all log statements
-        final LogControl logControl = new ProxyLogControl(logger, this::isMyMachine);
+        // Set up conditional logger to only log if this is my machine:
+        final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isMyMachine);
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
 
-        // Log only if the level is info and the given condition has been met:
-        logControl.ifInfo(logger -> logger.info(context, "log if INFO && user.name == wsargent"));
+        // ProxyConditionalLogger will only log if this is my machine, and will not execute otherwise.
+        Logger conditionalLoggerAsNormalLogger = (Logger) conditionalLogger;
+        conditionalLoggerAsNormalLogger.info("This will still only log if it's my machine");
+
+        // Can use an ifInfo statement and a Consumer if that's easier...
+        conditionalLogger.ifInfo(stmt -> stmt.apply(context, "log if INFO && user.name == wsargent"));
 
         // Log only if the level is info and the above conditions are met AND it's tuesday
-        logControl.ifInfo(this::objectIsTooLargeToLog, logger -> {
+        conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {
             // Log very large thing in here...
-            logger.info(context, "log if INFO && user.name == wsargent && objectIsTooLargeToLog()");
+            stmt.apply(context, "log if INFO && user.name == wsargent && objectIsNotTooLargeToLog()");
         });
     }
 
-    private Boolean objectIsTooLargeToLog() {
-        return true;
+    private Boolean objectIsNotTooLargeToLog() {
+        return true; // object is not too big
     }
 
     private Boolean isMyMachine() {
@@ -300,8 +304,8 @@ public class ClassWithLogControl {
     }
 
     public static void main(String[] args) {
-        ClassWithLogControl classWithLogControl = new ClassWithLogControl();
-        classWithLogControl.doStuff();
+        ClassWithConditionalLogger classWithConditionalLogger = new ClassWithConditionalLogger();
+        classWithConditionalLogger.doStuff();
     }
 }
 ```

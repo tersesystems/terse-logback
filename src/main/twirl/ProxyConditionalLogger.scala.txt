@@ -1,0 +1,138 @@
+package com.tersesystems.logback;
+
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+@* "sbt generateSources" autogenerates in target/sources/txt.Results *@
+public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger @ob
+
+    private final Supplier<Boolean> condition;
+
+    public ProxyConditionalLogger(Logger logger) {
+        super(logger);
+        if (logger instanceof ConditionalLogger) {
+          this.condition = ((ConditionalLogger) logger).getCondition();
+        } else {
+          this.condition = () -> true;
+        }
+    }
+
+    public ProxyConditionalLogger(Logger logger, Supplier<Boolean> condition) {
+        super(logger);
+        if (logger instanceof ConditionalLogger) {
+          this.condition = () -> ((ConditionalLogger) logger).getCondition().get() && condition.get();
+        } else {
+          this.condition = condition;
+        }
+    }
+
+    public Supplier<Boolean> getCondition() {
+        return condition;
+    }
+
+    @for(level <- Seq(
+      Level("trace", "Trace"),
+      Level("debug", "Debug"),
+      Level("info", "Info"),
+      Level("warn", "Warn"),
+      Level("error", "Error"),
+    )) {
+
+    @Override
+    public void if@{level.capitalizedName}(Consumer<LoggerStatement> lc) @ob
+        if (is@{level.capitalizedName}Enabled() && condition.get()) @ob
+            lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
+        @cb
+    @cb
+
+    @Override
+    public void if@{level.capitalizedName}(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) @ob
+        if (is@{level.capitalizedName}Enabled() && condition.get()) @ob
+            lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
+        @cb
+    @cb
+
+
+    @Override
+    public boolean is@{level.capitalizedName}Enabled() {
+        return super.is@{level.capitalizedName}Enabled() && condition.get();
+    }
+
+    @Override
+    public void @{level.name}(String msg) {
+        if (condition.get()) {
+          super.@{level.name}(msg);
+        }
+    }
+
+    @Override
+    public void @{level.name}(String format, Object arg) {
+        if (condition.get()) {
+          super.@{level.name}(format, arg);
+        }
+    }
+
+    @Override
+    public void @{level.name}(String format, Object arg1, Object arg2) {
+        if (condition.get()) {
+          super.@{level.name}(format, arg1, arg2);
+        }
+    }
+
+    @Override
+    public void @{level.name}(String format, Object... arguments) {
+        if (condition.get()) {
+          super.@{level.name}(format, arguments);
+        }
+    }
+
+    @Override
+    public void @{level.name}(String msg, Throwable t) {
+        if (condition.get()) {
+            super.@{level.name}(msg, t);
+        }
+    }
+
+    @Override
+    public boolean is@{level.capitalizedName}Enabled(Marker marker) {
+        return super.is@{level.capitalizedName}Enabled(marker) && (condition.get()) ;
+    }
+
+    @Override
+    public void @{level.name}(Marker marker, String msg) {
+        if (condition.get()) {
+            super.@{level.name}(marker, msg);
+        }
+    }
+
+    @Override
+    public void @{level.name}(Marker marker, String format, Object arg) {
+        if (condition.get()) {
+            super.@{level.name}(marker, format, arg);
+        }
+    }
+
+    @Override
+    public void @{level.name}(Marker marker, String format, Object arg1, Object arg2) {
+        if (condition.get()) {
+            super.@{level.name}(marker, format, arg1, arg2);
+        }
+    }
+
+    @Override
+    public void @{level.name}(Marker marker, String format, Object... argArray) {
+        if (condition.get()) {
+            super.@{level.name}(marker, format, argArray);
+        }
+    }
+
+    @Override
+    public void @{level.name}(Marker marker, String msg, Throwable t) {
+        if (condition.get()) {
+            super.@{level.name}(marker, msg, t);
+        }
+    }
+    }
+@cb

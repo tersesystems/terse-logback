@@ -20,7 +20,7 @@ public class RegexCensor implements Censor {
                     int flags = (rex.contains("\n")) ? Pattern.MULTILINE : 0;
                     return Pattern.compile(rex, flags);
                 })
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
     }
 
     @Override
