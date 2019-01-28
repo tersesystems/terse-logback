@@ -1,4 +1,4 @@
-package com.tersesystems.logback;
+package com.tersesystems.logback.proxy;
 
 import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.ILoggerFactory;

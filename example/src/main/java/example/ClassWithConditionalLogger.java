@@ -1,7 +1,7 @@
 package example;
 
-import com.tersesystems.logback.ConditionalLogger;
-import com.tersesystems.logback.ProxyConditionalLogger;
+import com.tersesystems.logback.proxy.ConditionalLogger;
+import com.tersesystems.logback.proxy.ProxyConditionalLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;

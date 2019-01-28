@@ -106,10 +106,12 @@ and in JSON:
 
 If you want to add more context and don't want it to show up in the message, you can use [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java) instead.
 
-If you don't want to pass through anything at all, and instead use a proxy logger, you can use `com.tersesystems.logback.ProxyContextLogger`, which applies it under the hood.  Adding state to the logger is one of those useful tricks that can make life easier, as long as you implement `org.slf4j.Logger` and don't expose your logger to the world.
+If you don't want to pass through anything at all, and instead use a proxy logger, you can use `com.tersesystems.logback.proxy.ProxyContextLogger`, which applies it under the hood.  Adding state to the logger is one of those useful tricks that can make life easier, as long as you implement `org.slf4j.Logger` and don't expose your logger to the world.
 
 ```java
-import com.tersesystems.logback.ProxyContextLogger;
+package example;
+
+import com.tersesystems.logback.proxy.ProxyContextLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
@@ -119,22 +121,23 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ClassWithMarkers {
     private final Logger logger = getLogger(getClass());
 
-    public void doThings(String correlationId) {
+    public void doThingsWithMarker(String correlationId) {
         LogstashMarker context = Markers.append("correlationId", correlationId);
         logger.info(context, "log with marker explicitly");
     }
 
-    public void doThingsWithContext(String correlationId) {
+    public void doThingsWithContextLogger(String correlationId) {
         LogstashMarker context = Markers.append("correlationId", correlationId);
         Logger contextLogger = new ProxyContextLogger(context, logger);
 
-        contextLogger.info("log with marker provided by the underlying proxy"); // no context param
+        contextLogger.info("log with marker provided by the underlying proxy");
     }
 
     public static void main(String[] args) {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         ClassWithMarkers classWithMarkers = new ClassWithMarkers();
-        classWithMarkers.doThings(correlationId);
+        classWithMarkers.doThingsWithMarker(correlationId);
+        classWithMarkers.doThingsWithContextLogger(correlationId);
     }
 }
 ```
@@ -167,18 +170,18 @@ Defining the following turbo filter in `logback.xml`:
 </turboFilter>
 ```
 
-and adding it to an existing marker and wrapping it in a `ProxyContextLogger`, you can get:
+and adding it to an existing marker and wrapping it in a ` com.tersesystems.logback.proxy.ProxyContextLogger`, you can get:
 
 ```java
 package example;
 
-import com.tersesystems.logback.ProxyContextLogger;
+import com.tersesystems.logback.proxy.ProxyContextLogger;
 import com.tersesystems.logback.TracerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 
-import static net.logstash.logback.marker.Markers.*;
-import static org.slf4j.LoggerFactory.*;
+import static net.logstash.logback.marker.Markers.append;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class ClassWithTracer {
 
@@ -247,7 +250,6 @@ which gives the following output:
 {"@timestamp":"2019-01-26T18:40:39.088+00:00","@version":"1","message":"This log message is only shown if the request has trace in the query string!","logger_name":"example.ClassWithTracer","thread_name":"main","level":"TRACE","level_value":5000,"tags":["TRACER"],"correlationId":"FX1UlmU3VfqlX0qxArsAAA"}
 ```
 
-
 ## Controlling Logging
 
 Tracer Bullet logging is one situation where you want to log information you wouldn't normally log.  The opposite is also true: there are reasons why you would not want to log information you may normally log.
@@ -259,8 +261,8 @@ There is a `com.tersesystems.logback.ConditionalLogger` class that will apply pr
 ```java
 package example;
 
-import com.tersesystems.logback.ConditionalLogger;
-import com.tersesystems.logback.ProxyConditionalLogger;
+import com.tersesystems.logback.proxy.ConditionalLogger;
+import com.tersesystems.logback.proxy.ProxyConditionalLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
@@ -281,7 +283,7 @@ public class ClassWithConditionalLogger {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
 
-        // ProxyConditionalLogger will only log if this is my machine, and will not execute otherwise.
+        // ProxyConditionalLogger will only log if this is my machine
         Logger conditionalLoggerAsNormalLogger = (Logger) conditionalLogger;
         conditionalLoggerAsNormalLogger.info("This will still only log if it's my machine");
 
@@ -325,7 +327,7 @@ When you create an instance, you can pass in a single `org.slf4j.ILoggerFactory`
 ```java
 package example;
 
-import com.tersesystems.logback.ProxyContextLoggerFactory;
+import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.ILoggerFactory;

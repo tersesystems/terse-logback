@@ -1,6 +1,6 @@
-package com.tersesystems.logback;
+package com.tersesystems.logback.proxy;
 
-import org.slf4j.Logger;
+import com.tersesystems.logback.proxy.LoggerStatement;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

@@ -6,7 +6,7 @@ import com.google.inject.Injector;
 import com.google.inject.spi.InjectionPoint;
 import com.tavianator.sangria.contextual.ContextSensitiveBinder;
 import com.tavianator.sangria.contextual.ContextSensitiveProvider;
-import com.tersesystems.logback.ProxyContextLoggerFactory;
+import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.ILoggerFactory;

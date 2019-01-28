@@ -1,6 +1,6 @@
 package example;
 
-import com.tersesystems.logback.ProxyContextLogger;
+import com.tersesystems.logback.proxy.ProxyContextLogger;
 import com.tersesystems.logback.TracerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
