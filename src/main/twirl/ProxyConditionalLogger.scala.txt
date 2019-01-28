@@ -1,35 +1,37 @@
-package com.tersesystems.logback;
+package com.tersesystems.logback.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.event.Level;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.Predicate;
 
 @* "sbt generateSources" autogenerates in target/sources/txt.Results *@
 public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger @ob
 
-    private final Supplier<Boolean> condition;
+    private final Predicate<Level> predicate;
 
     public ProxyConditionalLogger(Logger logger) {
         super(logger);
         if (logger instanceof ConditionalLogger) {
-          this.condition = ((ConditionalLogger) logger).getCondition();
+          this.predicate = ((ConditionalLogger) logger).getPredicate();
         } else {
-          this.condition = () -> true;
+          this.predicate = level -> true;
         }
     }
 
-    public ProxyConditionalLogger(Logger logger, Supplier<Boolean> condition) {
+    public ProxyConditionalLogger(Logger logger, Predicate<Level> predicate) {
         super(logger);
         if (logger instanceof ConditionalLogger) {
-          this.condition = () -> ((ConditionalLogger) logger).getCondition().get() && condition.get();
+          this.predicate = level -> ((ConditionalLogger) logger).getPredicate().test(level) && predicate.test(level);
         } else {
-          this.condition = condition;
+          this.predicate = predicate;
         }
     }
 
-    public Supplier<Boolean> getCondition() {
-        return condition;
+    public Predicate<Level> getPredicate() {
+        return predicate;
     }
 
     @for(level <- Seq(
@@ -42,14 +44,14 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
     @Override
     public void if@{level.capitalizedName}(Consumer<LoggerStatement> lc) @ob
-        if (is@{level.capitalizedName}Enabled() && condition.get()) @ob
+        if (is@{level.capitalizedName}Enabled() && predicate.test(Level.@{level.name.toUpperCase})) @ob
             lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
         @cb
     @cb
 
     @Override
-    public void if@{level.capitalizedName}(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) @ob
-        if (is@{level.capitalizedName}Enabled() && condition.get()) @ob
+    public void if@{level.capitalizedName}(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) @ob
+        if (is@{level.capitalizedName}Enabled() && supplier.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
             lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
         @cb
     @cb
@@ -57,80 +59,80 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
     @Override
     public boolean is@{level.capitalizedName}Enabled() {
-        return super.is@{level.capitalizedName}Enabled() && condition.get();
+        return super.is@{level.capitalizedName}Enabled() && predicate.test(Level.@{level.name.toUpperCase});
     }
 
     @Override
     public void @{level.name}(String msg) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
           super.@{level.name}(msg);
         }
     }
 
     @Override
     public void @{level.name}(String format, Object arg) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
           super.@{level.name}(format, arg);
         }
     }
 
     @Override
     public void @{level.name}(String format, Object arg1, Object arg2) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
           super.@{level.name}(format, arg1, arg2);
         }
     }
 
     @Override
     public void @{level.name}(String format, Object... arguments) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
           super.@{level.name}(format, arguments);
         }
     }
 
     @Override
     public void @{level.name}(String msg, Throwable t) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
             super.@{level.name}(msg, t);
         }
     }
 
     @Override
     public boolean is@{level.capitalizedName}Enabled(Marker marker) {
-        return super.is@{level.capitalizedName}Enabled(marker) && (condition.get()) ;
+        return super.is@{level.capitalizedName}Enabled(marker) && predicate.test(Level.@{level.name.toUpperCase});
     }
 
     @Override
     public void @{level.name}(Marker marker, String msg) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
             super.@{level.name}(marker, msg);
         }
     }
 
     @Override
     public void @{level.name}(Marker marker, String format, Object arg) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
             super.@{level.name}(marker, format, arg);
         }
     }
 
     @Override
     public void @{level.name}(Marker marker, String format, Object arg1, Object arg2) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
             super.@{level.name}(marker, format, arg1, arg2);
         }
     }
 
     @Override
     public void @{level.name}(Marker marker, String format, Object... argArray) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
             super.@{level.name}(marker, format, argArray);
         }
     }
 
     @Override
     public void @{level.name}(Marker marker, String msg, Throwable t) {
-        if (condition.get()) {
+        if (predicate.test(Level.@{level.name.toUpperCase})) {
             super.@{level.name}(marker, msg, t);
         }
     }

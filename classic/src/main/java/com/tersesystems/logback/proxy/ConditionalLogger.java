@@ -1,13 +1,14 @@
 package com.tersesystems.logback.proxy;
 
-import com.tersesystems.logback.proxy.LoggerStatement;
+import org.slf4j.event.Level;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface ConditionalLogger {
 
-    Supplier<Boolean> getCondition();
+    Predicate<Level> getPredicate();
 
     void ifTrace(Consumer<LoggerStatement> lc);
     void ifTrace(Supplier<Boolean> condition, Consumer<LoggerStatement> lc);

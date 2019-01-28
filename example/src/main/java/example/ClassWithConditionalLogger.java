@@ -5,6 +5,7 @@ import com.tersesystems.logback.proxy.ProxyConditionalLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -17,7 +18,7 @@ public class ClassWithConditionalLogger {
 
     private void doStuff() {
         // Set up conditional logger to only log if this is my machine:
-        final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isMyMachine);
+        final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
@@ -40,7 +41,7 @@ public class ClassWithConditionalLogger {
         return true; // object is not too big
     }
 
-    private Boolean isMyMachine() {
+    private Boolean isDevelopmentEnvironment(Level level) {
         return "wsargent".equals(System.getProperty("user.name"));
     }
 

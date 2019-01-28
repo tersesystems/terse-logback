@@ -25,7 +25,7 @@
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
             <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <if condition='p("jsonfile.prettyprint").contains("true")'>
+            <if predicate='p("jsonfile.prettyprint").contains("true")'>
                 <then>
                     <!-- Pretty print for better end user experience. -->
                     <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>
