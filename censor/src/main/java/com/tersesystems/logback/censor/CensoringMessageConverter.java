@@ -2,7 +2,6 @@ package com.tersesystems.logback.censor;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.tersesystems.logback.ConfigConstants;
 import com.typesafe.config.Config;
 
 /**
@@ -17,8 +16,8 @@ public class CensoringMessageConverter extends ClassicConverter {
 
     @Override
     public void start() {
-        Config config = (Config) getContext().getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-        this.censor = new RegexCensor(config, ConfigConstants.CENSOR_TEXT_REGEX, ConfigConstants.CENSOR_TEXT_REPLACEMENT);
+        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
+        this.censor = new RegexCensor(config, CensorConstants.CENSOR_TEXT_REGEX, CensorConstants.CENSOR_TEXT_REPLACEMENT);
         started = true;
     }
 

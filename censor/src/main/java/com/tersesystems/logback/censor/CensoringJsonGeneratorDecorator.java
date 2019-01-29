@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
-import com.tersesystems.logback.ConfigConstants;
 import com.typesafe.config.Config;
 import net.logstash.logback.decorate.JsonGeneratorDecorator;
 
@@ -29,8 +28,8 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
 
     @Override
     public void start() {
-        Config config = (Config) getContext().getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-        this.censor = new RegexCensor(config, ConfigConstants.CENSOR_JSON_REGEX, ConfigConstants.CENSOR_JSON_REPLACEMENT);
+        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
+        this.censor = new RegexCensor(config, CensorConstants.CENSOR_JSON_REGEX, CensorConstants.CENSOR_JSON_REPLACEMENT);
         started = true;
     }
 
@@ -60,8 +59,8 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private boolean shouldFilter(String name) {
-            Config config = (Config) getContext().getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-            List<String> keys = config.getStringList(ConfigConstants.CENSOR_JSON_KEYS);
+            Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
+            List<String> keys = config.getStringList(CensorConstants.CENSOR_JSON_KEYS);
             return keys.contains(name);
         }
 

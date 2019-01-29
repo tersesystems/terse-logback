@@ -2,6 +2,7 @@ package com.tersesystems.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -9,23 +10,34 @@ import org.slf4j.LoggerFactory;
  */
 public class ChangeLogLevel {
 
-    public static final void changeLogLevel(String loggerName, String levelName) {
-        changeLogLevel(LoggerFactory.getLogger(loggerName), levelName);
+    private final ILoggerFactory loggerFactory;
+
+    public ChangeLogLevel() {
+        this(LoggerFactory.getILoggerFactory());
     }
 
-    public static final void changeLogLevel(String loggerName, int levelNumber) {
-        changeLogLevel(LoggerFactory.getLogger(loggerName), levelNumber);
+    public ChangeLogLevel(ILoggerFactory loggerFactory) {
+        this.loggerFactory = loggerFactory;
     }
 
-    public static final void changeLogLevel(org.slf4j.Logger logger, String levelName) {
+    public void changeLogLevel(String loggerName, String levelName) {
+        changeLogLevel(loggerFactory.getLogger(loggerName), levelName);
+    }
+
+    public final void changeLogLevel(String loggerName, int levelNumber) {
+        changeLogLevel(loggerFactory.getLogger(loggerName), levelNumber);
+    }
+
+    public final void changeLogLevel(org.slf4j.Logger logger, String levelName) {
         Logger logbackLogger = (Logger) logger;
         Level level = Level.toLevel(levelName);
         logbackLogger.setLevel(level);
     }
 
-    public static final void changeLogLevel(org.slf4j.Logger logger, int levelNumber) {
+    public final void changeLogLevel(org.slf4j.Logger logger, int levelNumber) {
         Logger logbackLogger = (Logger) logger;
         Level level = Level.toLevel(levelNumber);
         logbackLogger.setLevel(level);
     }
+
 }

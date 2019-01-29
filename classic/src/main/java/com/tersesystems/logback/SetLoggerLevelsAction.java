@@ -39,7 +39,7 @@ public class SetLoggerLevelsAction extends Action {
             try {
                 String levelFromConfig = entry.getValue().unwrapped().toString();
                 Logger logger = context.getLogger(name);
-                logger.setLevel(Level.toLevel(levelFromConfig));
+                new ChangeLogLevel().changeLogLevel(logger, levelFromConfig);
                 addInfo("Setting level of " + name + " logger to " + levelFromConfig);
             } catch (ConfigException.Missing e) {
                 addInfo("No custom setting found for " + name + " in config, ignoring");
