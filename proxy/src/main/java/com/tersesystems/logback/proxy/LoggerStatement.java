@@ -32,7 +32,7 @@ public interface LoggerStatement {
     void apply(Marker marker, String msg, Throwable t);
 
 
-    public static class Trace implements LoggerStatement {
+    class Trace implements LoggerStatement {
         private final Logger logger;
 
         public Trace(Logger logger) {
@@ -101,7 +101,7 @@ public interface LoggerStatement {
 
     }
 
-    public static class Debug implements LoggerStatement {
+    class Debug implements LoggerStatement {
         private final Logger logger;
 
         public Debug(Logger logger) {
@@ -170,7 +170,7 @@ public interface LoggerStatement {
 
     }
 
-    public static class Info implements LoggerStatement {
+    class Info implements LoggerStatement {
         private final Logger logger;
 
         public Info(Logger logger) {
@@ -239,7 +239,7 @@ public interface LoggerStatement {
 
     }
 
-    public static class Warn implements LoggerStatement {
+    class Warn implements LoggerStatement {
         private final Logger logger;
 
         public Warn(Logger logger) {
@@ -308,7 +308,7 @@ public interface LoggerStatement {
 
     }
 
-    public static class Error implements LoggerStatement {
+    class Error implements LoggerStatement {
         private final Logger logger;
 
         public Error(Logger logger) {

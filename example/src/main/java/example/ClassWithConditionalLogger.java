@@ -18,7 +18,7 @@ public class ClassWithConditionalLogger {
 
     private void doStuff() {
         // Set up conditional logger to only log if this is my machine:
-        final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
+        final ProxyConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
@@ -27,8 +27,8 @@ public class ClassWithConditionalLogger {
         Logger conditionalLoggerAsNormalLogger = (Logger) conditionalLogger;
         conditionalLoggerAsNormalLogger.info("This will still only log if it's my machine");
 
-        // Can use an ifInfo statement and a Consumer if that's easier...
-        conditionalLogger.ifInfo(stmt -> stmt.apply(context, "log if INFO && user.name == wsargent"));
+        // Can use an lazy info statement and a Consumer if that's easier...
+        conditionalLogger.info(stmt -> stmt.apply(context, "log if INFO && user.name == wsargent"));
 
         // Log only if the level is info and the above conditions are met AND it's tuesday
         conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {

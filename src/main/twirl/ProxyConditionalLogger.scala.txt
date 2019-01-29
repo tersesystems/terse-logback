@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import java.util.function.Predicate;
 
 @* "sbt generateSources" autogenerates in target/sources/txt.Results *@
-public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger @ob
+public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger, LazyLogger @ob
 
     private final Predicate<Level> predicate;
 
@@ -43,19 +43,32 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
     )) {
 
     @Override
-    public void if@{level.capitalizedName}(Consumer<LoggerStatement> lc) @ob
+    public void @{level.name}(Consumer<LoggerStatement> lc) @ob
         if (is@{level.capitalizedName}Enabled() && predicate.test(Level.@{level.name.toUpperCase})) @ob
             lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
         @cb
     @cb
 
     @Override
-    public void if@{level.capitalizedName}(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) @ob
-        if (is@{level.capitalizedName}Enabled() && supplier.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
+    public void @{level.name}(Marker marker, Consumer<LoggerStatement> lc) @ob
+        if (is@{level.capitalizedName}Enabled(marker) && predicate.test(Level.@{level.name.toUpperCase})) @ob
             lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
         @cb
     @cb
 
+    @Override
+    public void if@{level.capitalizedName}(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) @ob
+        if (is@{level.capitalizedName}Enabled() && condition.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
+            lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
+        @cb
+    @cb
+
+    @Override
+    public void if@{level.capitalizedName}(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) @ob
+        if (is@{level.capitalizedName}Enabled(marker) && condition.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
+            lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
+        @cb
+    @cb
 
     @Override
     public boolean is@{level.capitalizedName}Enabled() {
