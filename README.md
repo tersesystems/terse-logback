@@ -353,7 +353,7 @@ public class ClassWithContext {
     public static void main(String[] args) {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
-        ILoggerFactory loggerFactory = ProxyContextLoggerFactory.createLoggerFactory(context);
+        ILoggerFactory loggerFactory = ProxyContextLoggerFactory.create(context);
 
         ObliviousToContext obliviousToContext = new ObliviousToContext(loggerFactory);
         obliviousToContext.doStuff();
@@ -432,7 +432,7 @@ public class GuiceAssistedLogging {
         public ILoggerFactory get() {
             // This would be hooked up to @RequestScoped in a real application
             LogstashMarker context = Markers.append("threadName", Thread.currentThread().getName());
-            return ProxyContextLoggerFactory.createLoggerFactory(context);
+            return ProxyContextLoggerFactory.create(context);
         }
     }
 

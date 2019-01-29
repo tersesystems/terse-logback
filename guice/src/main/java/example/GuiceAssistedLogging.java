@@ -56,7 +56,7 @@ public class GuiceAssistedLogging {
         public ILoggerFactory get() {
             // This would be hooked up to @RequestScoped in a real application
             LogstashMarker context = Markers.append("threadName", Thread.currentThread().getName());
-            return ProxyContextLoggerFactory.createLoggerFactory(context);
+            return ProxyContextLoggerFactory.create(context);
         }
     }
 

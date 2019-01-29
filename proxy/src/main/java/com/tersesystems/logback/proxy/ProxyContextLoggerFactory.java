@@ -15,12 +15,12 @@ public class ProxyContextLoggerFactory implements ILoggerFactory {
         this.loggerFactory = loggerFactory;
     }
 
-    public static ILoggerFactory createLoggerFactory(LogstashMarker context, ILoggerFactory loggerFactory) {
+    public static ILoggerFactory create(LogstashMarker context, ILoggerFactory loggerFactory) {
         return new ProxyContextLoggerFactory(context, loggerFactory);
     }
 
-    public static ILoggerFactory createLoggerFactory(LogstashMarker context) {
-        return createLoggerFactory(context, LoggerFactory.getILoggerFactory());
+    public static ILoggerFactory create(LogstashMarker context) {
+        return create(context, LoggerFactory.getILoggerFactory());
     }
 
     @Override

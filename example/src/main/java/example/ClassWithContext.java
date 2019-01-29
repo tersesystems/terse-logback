@@ -23,7 +23,7 @@ public class ClassWithContext {
     public static void main(String[] args) {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
-        ILoggerFactory loggerFactory = ProxyContextLoggerFactory.createLoggerFactory(context);
+        ILoggerFactory loggerFactory = ProxyContextLoggerFactory.create(context);
 
         ObliviousToContext obliviousToContext = new ObliviousToContext(loggerFactory);
         obliviousToContext.doStuff();
