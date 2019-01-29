@@ -3,19 +3,20 @@ package com.tersesystems.logback.proxy;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
+
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.Predicate;
 
 
-public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger {
+public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger, LazyLogger {
 
     private final Predicate<Level> predicate;
 
     public ProxyConditionalLogger(Logger logger) {
         super(logger);
-        if (logger instanceof ConditionalLogger) {
-            this.predicate = ((ConditionalLogger) logger).getPredicate();
+        if (logger instanceof ProxyConditionalLogger) {
+            this.predicate = ((ProxyConditionalLogger) logger).getPredicate();
         } else {
             this.predicate = level -> true;
         }
@@ -23,8 +24,8 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
     public ProxyConditionalLogger(Logger logger, Predicate<Level> predicate) {
         super(logger);
-        if (logger instanceof ConditionalLogger) {
-            this.predicate = level -> ((ConditionalLogger) logger).getPredicate().test(level) && predicate.test(level);
+        if (logger instanceof ProxyConditionalLogger) {
+            this.predicate = level -> ((ProxyConditionalLogger) logger).getPredicate().test(level) && predicate.test(level);
         } else {
             this.predicate = predicate;
         }
@@ -35,15 +36,29 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
     }
 
     @Override
-    public void ifTrace(Consumer<LoggerStatement> lc) {
+    public void trace(Consumer<LoggerStatement> lc) {
         if (isTraceEnabled() && predicate.test(Level.TRACE)) {
             lc.accept(new LoggerStatement.Trace(this));
         }
     }
 
     @Override
-    public void ifTrace(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) {
-        if (isTraceEnabled() && supplier.get() && predicate.test(Level.TRACE)) {
+    public void trace(Marker marker, Consumer<LoggerStatement> lc) {
+        if (isTraceEnabled(marker) && predicate.test(Level.TRACE)) {
+            lc.accept(new LoggerStatement.Trace(this));
+        }
+    }
+
+    @Override
+    public void ifTrace(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isTraceEnabled() && condition.get() && predicate.test(Level.TRACE)) {
+            lc.accept(new LoggerStatement.Trace(this));
+        }
+    }
+
+    @Override
+    public void ifTrace(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isTraceEnabled(marker) && condition.get() && predicate.test(Level.TRACE)) {
             lc.accept(new LoggerStatement.Trace(this));
         }
     }
@@ -130,19 +145,32 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
 
     @Override
-    public void ifDebug(Consumer<LoggerStatement> lc) {
+    public void debug(Consumer<LoggerStatement> lc) {
         if (isDebugEnabled() && predicate.test(Level.DEBUG)) {
             lc.accept(new LoggerStatement.Debug(this));
         }
     }
 
     @Override
-    public void ifDebug(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) {
-        if (isDebugEnabled() && supplier.get() && predicate.test(Level.DEBUG)) {
+    public void debug(Marker marker, Consumer<LoggerStatement> lc) {
+        if (isDebugEnabled(marker) && predicate.test(Level.DEBUG)) {
             lc.accept(new LoggerStatement.Debug(this));
         }
     }
 
+    @Override
+    public void ifDebug(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isDebugEnabled() && condition.get() && predicate.test(Level.DEBUG)) {
+            lc.accept(new LoggerStatement.Debug(this));
+        }
+    }
+
+    @Override
+    public void ifDebug(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isDebugEnabled(marker) && condition.get() && predicate.test(Level.DEBUG)) {
+            lc.accept(new LoggerStatement.Debug(this));
+        }
+    }
 
     @Override
     public boolean isDebugEnabled() {
@@ -226,19 +254,32 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
 
     @Override
-    public void ifInfo(Consumer<LoggerStatement> lc) {
+    public void info(Consumer<LoggerStatement> lc) {
         if (isInfoEnabled() && predicate.test(Level.INFO)) {
             lc.accept(new LoggerStatement.Info(this));
         }
     }
 
     @Override
-    public void ifInfo(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) {
-        if (isInfoEnabled() && supplier.get() && predicate.test(Level.INFO)) {
+    public void info(Marker marker, Consumer<LoggerStatement> lc) {
+        if (isInfoEnabled(marker) && predicate.test(Level.INFO)) {
             lc.accept(new LoggerStatement.Info(this));
         }
     }
 
+    @Override
+    public void ifInfo(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isInfoEnabled() && condition.get() && predicate.test(Level.INFO)) {
+            lc.accept(new LoggerStatement.Info(this));
+        }
+    }
+
+    @Override
+    public void ifInfo(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isInfoEnabled(marker) && condition.get() && predicate.test(Level.INFO)) {
+            lc.accept(new LoggerStatement.Info(this));
+        }
+    }
 
     @Override
     public boolean isInfoEnabled() {
@@ -322,19 +363,32 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
 
     @Override
-    public void ifWarn(Consumer<LoggerStatement> lc) {
+    public void warn(Consumer<LoggerStatement> lc) {
         if (isWarnEnabled() && predicate.test(Level.WARN)) {
             lc.accept(new LoggerStatement.Warn(this));
         }
     }
 
     @Override
-    public void ifWarn(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) {
-        if (isWarnEnabled() && supplier.get() && predicate.test(Level.WARN)) {
+    public void warn(Marker marker, Consumer<LoggerStatement> lc) {
+        if (isWarnEnabled(marker) && predicate.test(Level.WARN)) {
             lc.accept(new LoggerStatement.Warn(this));
         }
     }
 
+    @Override
+    public void ifWarn(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isWarnEnabled() && condition.get() && predicate.test(Level.WARN)) {
+            lc.accept(new LoggerStatement.Warn(this));
+        }
+    }
+
+    @Override
+    public void ifWarn(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isWarnEnabled(marker) && condition.get() && predicate.test(Level.WARN)) {
+            lc.accept(new LoggerStatement.Warn(this));
+        }
+    }
 
     @Override
     public boolean isWarnEnabled() {
@@ -418,19 +472,32 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
 
     @Override
-    public void ifError(Consumer<LoggerStatement> lc) {
+    public void error(Consumer<LoggerStatement> lc) {
         if (isErrorEnabled() && predicate.test(Level.ERROR)) {
             lc.accept(new LoggerStatement.Error(this));
         }
     }
 
     @Override
-    public void ifError(Supplier<Boolean> supplier, Consumer<LoggerStatement> lc) {
-        if (isErrorEnabled() && supplier.get() && predicate.test(Level.ERROR)) {
+    public void error(Marker marker, Consumer<LoggerStatement> lc) {
+        if (isErrorEnabled(marker) && predicate.test(Level.ERROR)) {
             lc.accept(new LoggerStatement.Error(this));
         }
     }
 
+    @Override
+    public void ifError(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isErrorEnabled() && condition.get() && predicate.test(Level.ERROR)) {
+            lc.accept(new LoggerStatement.Error(this));
+        }
+    }
+
+    @Override
+    public void ifError(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (isErrorEnabled(marker) && condition.get() && predicate.test(Level.ERROR)) {
+            lc.accept(new LoggerStatement.Error(this));
+        }
+    }
 
     @Override
     public boolean isErrorEnabled() {

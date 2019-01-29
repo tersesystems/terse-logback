@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import java.util.function.Predicate;
 
 
-public class ProxyLazyLogger {
+public class ProxyLazyLogger implements LazyLogger {
 
     private final Logger logger;
 
@@ -16,7 +16,6 @@ public class ProxyLazyLogger {
         this.logger = logger;
     }
 
-    
     public boolean isTraceEnabled() {
         return logger.isTraceEnabled();
     }
@@ -39,7 +38,6 @@ public class ProxyLazyLogger {
         }
     }
 
-    
     public boolean isDebugEnabled() {
         return logger.isDebugEnabled();
     }
@@ -62,7 +60,6 @@ public class ProxyLazyLogger {
         }
     }
 
-    
     public boolean isInfoEnabled() {
         return logger.isInfoEnabled();
     }
@@ -85,7 +82,6 @@ public class ProxyLazyLogger {
         }
     }
 
-    
     public boolean isWarnEnabled() {
         return logger.isWarnEnabled();
     }
@@ -108,7 +104,6 @@ public class ProxyLazyLogger {
         }
     }
 
-    
     public boolean isErrorEnabled() {
         return logger.isErrorEnabled();
     }
