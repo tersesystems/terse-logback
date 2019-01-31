@@ -25,14 +25,21 @@
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
             <!--
+            https://github.com/logstash/logstash-logback-encoder/blob/master/stack-hash.md#why-generating-stack-hashes
+            -->
+            <stackHash>
+                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+            </stackHash>
+
+            <!--
               https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
             -->
             <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
                 <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
                 <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
                 <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
-                <exclude>${jsonfile.shortenedThrowableConverter.exclude1}</exclude>
-                <exclude>${jsonfile.shortenedThrowableConverter.exclude2}</exclude>
+                <!-- coma separated exclusion patterns -->
+                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
                 <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
                 <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
             </throwableConverter>
