@@ -6,45 +6,6 @@ import Dependencies._
 //
 // "sbt run" to run the example.
 //
-lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
-.settings(
-    inThisBuild(List(
-      organization := "com.tersesystems",
-      crossPaths := false,
-      autoScalaLibrary := false,      
-      version      := "0.1.0-SNAPSHOT",
-      javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8"),
-      testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
-      libraryDependencies += junitInterface % Test,
-    )),
-    // "sbt generateSources" will create source code for implementing the SLF4J logger API.
-    TaskKey[Unit]("generateSources") := {
-      val outdir = target.value / "sources"
-      val classpath = (fullClasspath in Compile).value
-      val scalaRun = (runner in run).value
-      val log = streams.value.log
-      val baseDir = baseDirectory.value
-
-      // Clear the output directory first
-      IO.delete(outdir)
-
-      // Find the templates
-      val templates = (sources in (Compile, TwirlKeys.compileTemplates)).value pair Path.relativeTo((sourceDirectories in (Compile, TwirlKeys.compileTemplates)).value)
-
-      val templateClasses = templates.map {
-        case(_, name) =>
-          val splitted = name.split('/')
-          val fileName = splitted.last
-          val Array(clazz, _, t) = fileName.split('.')
-          (splitted.dropRight(1) ++ Seq(t, clazz)).mkString(".")
-      }
-
-      scalaRun.run("SourcesGenerator", Attributed.data(classpath), Seq(outdir.getAbsolutePath) ++ templateClasses, log).failed foreach (sys error _.getMessage)
-    },
-    name := "terse-logback-root",
-    publish / skip := true,
-    mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(censor, proxy, classic, example, guice).dependsOn(example) // dependsOn for the mainClass
 
 // Code to censor sensitive content.
 lazy val censor = (project in file("censor")).
@@ -96,3 +57,43 @@ lazy val guice = (project in file("guice")).
     libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1"
   ).dependsOn(classic, proxy).aggregate(classic, proxy)
 
+
+lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
+  .settings(
+    inThisBuild(List(
+      organization := "com.tersesystems",
+      crossPaths := false,
+      autoScalaLibrary := false,
+      version      := "0.1.0-SNAPSHOT",
+      javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8"),
+      testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
+      libraryDependencies += junitInterface % Test,
+    )),
+    // "sbt generateSources" will create source code for implementing the SLF4J logger API.
+    TaskKey[Unit]("generateSources") := {
+      val outdir = target.value / "sources"
+      val classpath = (fullClasspath in Compile).value
+      val scalaRun = (runner in run).value
+      val log = streams.value.log
+      val baseDir = baseDirectory.value
+
+      // Clear the output directory first
+      IO.delete(outdir)
+
+      // Find the templates
+      val templates = (sources in (Compile, TwirlKeys.compileTemplates)).value pair Path.relativeTo((sourceDirectories in (Compile, TwirlKeys.compileTemplates)).value)
+
+      val templateClasses = templates.map {
+        case(_, name) =>
+          val splitted = name.split('/')
+          val fileName = splitted.last
+          val Array(clazz, _, t) = fileName.split('.')
+          (splitted.dropRight(1) ++ Seq(t, clazz)).mkString(".")
+      }
+
+      scalaRun.run("SourcesGenerator", Attributed.data(classpath), Seq(outdir.getAbsolutePath) ++ templateClasses, log).failed foreach (sys error _.getMessage)
+    },
+    name := "terse-logback-root",
+    publish / skip := true,
+    mainClass in Compile := (mainClass in Compile in example).value
+  ).aggregate(censor, proxy, classic, example, guice).dependsOn(example) // dependsOn for the mainClass

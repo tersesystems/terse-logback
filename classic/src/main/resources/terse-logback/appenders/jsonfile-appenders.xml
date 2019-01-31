@@ -24,8 +24,21 @@
             <!-- UTC is the best server consistent timezone -->
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
+            <!--
+              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+            -->
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
+                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
+                <exclude>${jsonfile.shortenedThrowableConverter.exclude1}</exclude>
+                <exclude>${jsonfile.shortenedThrowableConverter.exclude2}</exclude>
+                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+            </throwableConverter>
+
             <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <if predicate='p("jsonfile.prettyprint").contains("true")'>
+            <if condition='p("jsonfile.prettyprint").contains("true")'>
                 <then>
                     <!-- Pretty print for better end user experience. -->
                     <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>

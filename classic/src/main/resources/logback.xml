@@ -24,6 +24,18 @@
 
     <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
 
+    <!--
+    https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
+
+    Options can be specified in the pattern in the following order:
+       - maxDepthPerThrowable = "full" or "short" or an integer value
+       - shortenedClassNameLength = "full" or "short" or an integer value
+       - maxLength = "full" or "short" or an integer value
+
+       %msg%n%stack{5,1024,10,rootFirst,regex1,regex2,evaluatorName}
+    -->
+    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
+
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
     </contextListener>
