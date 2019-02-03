@@ -12,13 +12,13 @@ import org.slf4j.Marker;
 public class ProxyContextLogger implements Logger {
 
     private final Logger logger;
-    private final LogstashMarker context;
+    private final MarkerContext markerContext;
 
-    public ProxyContextLogger(LogstashMarker context, Logger logger) {
+    public ProxyContextLogger(MarkerContext markerContext, Logger logger) {
         if (logger instanceof ProxyContextLogger) {
-            this.context = context.and(((ProxyContextLogger) logger).context);
+            this.markerContext = markerContext.and(((ProxyContextLogger) logger).markerContext);
         } else {
-            this.context = context;
+            this.markerContext = markerContext;
         }
         this.logger = logger;
     }
@@ -30,306 +30,306 @@ public class ProxyContextLogger implements Logger {
 
     @Override
     public boolean isTraceEnabled() {
-        return logger.isTraceEnabled(context);
+        return logger.isTraceEnabled(markerContext.asMarker());
     }
 
     @Override
     public void trace(String msg) {
-        logger.trace(context, msg);
+        logger.trace(markerContext.asMarker(), msg);
     }
 
     @Override
     public void trace(String format, Object arg) {
-        logger.trace(context, format, arg);
+        logger.trace(markerContext.asMarker(), format, arg);
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-        logger.trace(context, format, arg1, arg2);
+        logger.trace(markerContext.asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-        logger.trace(context, format, arguments);
+        logger.trace(markerContext.asMarker(), format, arguments);
     }
 
     @Override
     public void trace(String msg, Throwable t) {
-        logger.trace(context, msg, t);
+        logger.trace(markerContext.asMarker(), msg, t);
     }
 
     @Override
     public boolean isTraceEnabled(Marker marker) {
-        return logger.isTraceEnabled(context.and(marker));
+        return logger.isTraceEnabled(markerContext.withMarker(marker).asMarker());
     }
 
     @Override
     public void trace(Marker marker, String msg) {
-        logger.trace(context.and(marker), msg);
+        logger.trace(markerContext.withMarker(marker).asMarker(), msg);
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg) {
-        logger.trace(context.and(marker), format, arg);
+        logger.trace(markerContext.withMarker(marker).asMarker(), format, arg);
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
-        logger.trace(context.and(marker), format, arg1, arg2);
+        logger.trace(markerContext.withMarker(marker).asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void trace(Marker marker, String format, Object... argArray) {
-        logger.trace(context.and(marker), format, argArray);
+        logger.trace(markerContext.withMarker(marker).asMarker(), format, argArray);
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-        logger.trace(context.and(marker), msg, t);
+        logger.trace(markerContext.withMarker(marker).asMarker(), msg, t);
     }
 
 
     @Override
     public boolean isDebugEnabled() {
-        return logger.isDebugEnabled(context);
+        return logger.isDebugEnabled(markerContext.asMarker());
     }
 
     @Override
     public void debug(String msg) {
-        logger.debug(context, msg);
+        logger.debug(markerContext.asMarker(), msg);
     }
 
     @Override
     public void debug(String format, Object arg) {
-        logger.debug(context, format, arg);
+        logger.debug(markerContext.asMarker(), format, arg);
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-        logger.debug(context, format, arg1, arg2);
+        logger.debug(markerContext.asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void debug(String format, Object... arguments) {
-        logger.debug(context, format, arguments);
+        logger.debug(markerContext.asMarker(), format, arguments);
     }
 
     @Override
     public void debug(String msg, Throwable t) {
-        logger.debug(context, msg, t);
+        logger.debug(markerContext.asMarker(), msg, t);
     }
 
     @Override
     public boolean isDebugEnabled(Marker marker) {
-        return logger.isDebugEnabled(context.and(marker));
+        return logger.isDebugEnabled(markerContext.withMarker(marker).asMarker());
     }
 
     @Override
     public void debug(Marker marker, String msg) {
-        logger.debug(context.and(marker), msg);
+        logger.debug(markerContext.withMarker(marker).asMarker(), msg);
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg) {
-        logger.debug(context.and(marker), format, arg);
+        logger.debug(markerContext.withMarker(marker).asMarker(), format, arg);
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2) {
-        logger.debug(context.and(marker), format, arg1, arg2);
+        logger.debug(markerContext.withMarker(marker).asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void debug(Marker marker, String format, Object... argArray) {
-        logger.debug(context.and(marker), format, argArray);
+        logger.debug(markerContext.withMarker(marker).asMarker(), format, argArray);
     }
 
     @Override
     public void debug(Marker marker, String msg, Throwable t) {
-        logger.debug(context.and(marker), msg, t);
+        logger.debug(markerContext.withMarker(marker).asMarker(), msg, t);
     }
 
 
     @Override
     public boolean isInfoEnabled() {
-        return logger.isInfoEnabled(context);
+        return logger.isInfoEnabled(markerContext.asMarker());
     }
 
     @Override
     public void info(String msg) {
-        logger.info(context, msg);
+        logger.info(markerContext.asMarker(), msg);
     }
 
     @Override
     public void info(String format, Object arg) {
-        logger.info(context, format, arg);
+        logger.info(markerContext.asMarker(), format, arg);
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        logger.info(context, format, arg1, arg2);
+        logger.info(markerContext.asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void info(String format, Object... arguments) {
-        logger.info(context, format, arguments);
+        logger.info(markerContext.asMarker(), format, arguments);
     }
 
     @Override
     public void info(String msg, Throwable t) {
-        logger.info(context, msg, t);
+        logger.info(markerContext.asMarker(), msg, t);
     }
 
     @Override
     public boolean isInfoEnabled(Marker marker) {
-        return logger.isInfoEnabled(context.and(marker));
+        return logger.isInfoEnabled(markerContext.withMarker(marker).asMarker());
     }
 
     @Override
     public void info(Marker marker, String msg) {
-        logger.info(context.and(marker), msg);
+        logger.info(markerContext.withMarker(marker).asMarker(), msg);
     }
 
     @Override
     public void info(Marker marker, String format, Object arg) {
-        logger.info(context.and(marker), format, arg);
+        logger.info(markerContext.withMarker(marker).asMarker(), format, arg);
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2) {
-        logger.info(context.and(marker), format, arg1, arg2);
+        logger.info(markerContext.withMarker(marker).asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void info(Marker marker, String format, Object... argArray) {
-        logger.info(context.and(marker), format, argArray);
+        logger.info(markerContext.withMarker(marker).asMarker(), format, argArray);
     }
 
     @Override
     public void info(Marker marker, String msg, Throwable t) {
-        logger.info(context.and(marker), msg, t);
+        logger.info(markerContext.withMarker(marker).asMarker(), msg, t);
     }
 
 
     @Override
     public boolean isWarnEnabled() {
-        return logger.isWarnEnabled(context);
+        return logger.isWarnEnabled(markerContext.asMarker());
     }
 
     @Override
     public void warn(String msg) {
-        logger.warn(context, msg);
+        logger.warn(markerContext.asMarker(), msg);
     }
 
     @Override
     public void warn(String format, Object arg) {
-        logger.warn(context, format, arg);
+        logger.warn(markerContext.asMarker(), format, arg);
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-        logger.warn(context, format, arg1, arg2);
+        logger.warn(markerContext.asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void warn(String format, Object... arguments) {
-        logger.warn(context, format, arguments);
+        logger.warn(markerContext.asMarker(), format, arguments);
     }
 
     @Override
     public void warn(String msg, Throwable t) {
-        logger.warn(context, msg, t);
+        logger.warn(markerContext.asMarker(), msg, t);
     }
 
     @Override
     public boolean isWarnEnabled(Marker marker) {
-        return logger.isWarnEnabled(context.and(marker));
+        return logger.isWarnEnabled(markerContext.withMarker(marker).asMarker());
     }
 
     @Override
     public void warn(Marker marker, String msg) {
-        logger.warn(context.and(marker), msg);
+        logger.warn(markerContext.withMarker(marker).asMarker(), msg);
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg) {
-        logger.warn(context.and(marker), format, arg);
+        logger.warn(markerContext.withMarker(marker).asMarker(), format, arg);
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2) {
-        logger.warn(context.and(marker), format, arg1, arg2);
+        logger.warn(markerContext.withMarker(marker).asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void warn(Marker marker, String format, Object... argArray) {
-        logger.warn(context.and(marker), format, argArray);
+        logger.warn(markerContext.withMarker(marker).asMarker(), format, argArray);
     }
 
     @Override
     public void warn(Marker marker, String msg, Throwable t) {
-        logger.warn(context.and(marker), msg, t);
+        logger.warn(markerContext.withMarker(marker).asMarker(), msg, t);
     }
 
 
     @Override
     public boolean isErrorEnabled() {
-        return logger.isErrorEnabled(context);
+        return logger.isErrorEnabled(markerContext.asMarker());
     }
 
     @Override
     public void error(String msg) {
-        logger.error(context, msg);
+        logger.error(markerContext.asMarker(), msg);
     }
 
     @Override
     public void error(String format, Object arg) {
-        logger.error(context, format, arg);
+        logger.error(markerContext.asMarker(), format, arg);
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        logger.error(context, format, arg1, arg2);
+        logger.error(markerContext.asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void error(String format, Object... arguments) {
-        logger.error(context, format, arguments);
+        logger.error(markerContext.asMarker(), format, arguments);
     }
 
     @Override
     public void error(String msg, Throwable t) {
-        logger.error(context, msg, t);
+        logger.error(markerContext.asMarker(), msg, t);
     }
 
     @Override
     public boolean isErrorEnabled(Marker marker) {
-        return logger.isErrorEnabled(context.and(marker));
+        return logger.isErrorEnabled(markerContext.withMarker(marker).asMarker());
     }
 
     @Override
     public void error(Marker marker, String msg) {
-        logger.error(context.and(marker), msg);
+        logger.error(markerContext.withMarker(marker).asMarker(), msg);
     }
 
     @Override
     public void error(Marker marker, String format, Object arg) {
-        logger.error(context.and(marker), format, arg);
+        logger.error(markerContext.withMarker(marker).asMarker(), format, arg);
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2) {
-        logger.error(context.and(marker), format, arg1, arg2);
+        logger.error(markerContext.withMarker(marker).asMarker(), format, arg1, arg2);
     }
 
     @Override
     public void error(Marker marker, String format, Object... argArray) {
-        logger.error(context.and(marker), format, argArray);
+        logger.error(markerContext.withMarker(marker).asMarker(), format, argArray);
     }
 
     @Override
     public void error(Marker marker, String msg, Throwable t) {
-        logger.error(context.and(marker), msg, t);
+        logger.error(markerContext.withMarker(marker).asMarker(), msg, t);
     }
 
 

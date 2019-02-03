@@ -31,7 +31,7 @@ public class ClassWithConditionalLogger {
         conditionalLogger.info(stmt -> stmt.apply(context, "log if INFO && user.name == wsargent"));
 
         // Or you can get the logging statement as a logger...
-        Logger onlyInfoLogger = conditionalLogger.info().get().asLogger();
+        conditionalLogger.info().map(stmt -> { stmt.asLogger().info("hello world"); return stmt; });
 
         // Log only if the level is info and the above conditions are met AND it's tuesday
         conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {
