@@ -3,9 +3,8 @@ package com.tersesystems.logback.proxy;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.Optional;
 
 @* "sbt generateSources" autogenerates in target/sources/txt.Results *@
 public class ProxyLazyLogger @ob
@@ -38,6 +37,15 @@ public class ProxyLazyLogger @ob
         }
     }
 
+    public Optional<LoggerStatement> @{level.name}() {
+        if (is@{level.capitalizedName}Enabled()) {
+           LoggerStatement stmt = new LoggerStatement.@{level.capitalizedName}(logger);
+           return Optional.of(stmt);
+        } else {
+           return Optional.empty();
+        }
+    }
+
     public void @{level.name}(Marker marker, Consumer<LoggerStatement> lc) {
         if (is@{level.capitalizedName}Enabled(marker)) {
            LoggerStatement stmt = new LoggerStatement.@{level.capitalizedName}(logger);
@@ -45,5 +53,13 @@ public class ProxyLazyLogger @ob
         }
     }
 
+    public Optional<LoggerStatement> @{level.name}(Marker marker) {
+        if (is@{level.capitalizedName}Enabled(marker)) {
+            LoggerStatement stmt = new LoggerStatement.@{level.capitalizedName}(logger);
+            return Optional.of(stmt);
+        } else {
+            return Optional.empty();
+        }
+    }
     }
 @cb

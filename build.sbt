@@ -71,6 +71,9 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
     )),
     // "sbt generateSources" will create source code for implementing the SLF4J logger API.
     TaskKey[Unit]("generateSources") := {
+      // https://www.playframework.com/documentation/2.7.x/ScalaCustomTemplateFormat
+      TwirlKeys.templateFormats += ("java" -> "play.twirl.api.TxtFormat.instance")
+
       val outdir = target.value / "sources"
       val classpath = (fullClasspath in Compile).value
       val scalaRun = (runner in run).value

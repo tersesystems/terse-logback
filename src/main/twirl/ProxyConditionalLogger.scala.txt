@@ -6,6 +6,7 @@ import org.slf4j.event.Level;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.Predicate;
+import java.util.Optional;
 
 @* "sbt generateSources" autogenerates in target/sources/txt.Results *@
 public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLogger, Logger, LazyLogger @ob
@@ -14,8 +15,8 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
     public ProxyConditionalLogger(Logger logger) {
         super(logger);
-        if (logger instanceof ConditionalLogger) {
-          this.predicate = ((ConditionalLogger) logger).getPredicate();
+        if (logger instanceof ProxyConditionalLogger) {
+          this.predicate = ((ProxyConditionalLogger) logger).getPredicate();
         } else {
           this.predicate = level -> true;
         }
@@ -23,8 +24,8 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
 
     public ProxyConditionalLogger(Logger logger, Predicate<Level> predicate) {
         super(logger);
-        if (logger instanceof ConditionalLogger) {
-          this.predicate = level -> ((ConditionalLogger) logger).getPredicate().test(level) && predicate.test(level);
+        if (logger instanceof ProxyConditionalLogger) {
+          this.predicate = level -> ((ProxyConditionalLogger) logger).getPredicate().test(level) && predicate.test(level);
         } else {
           this.predicate = predicate;
         }
@@ -50,6 +51,20 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
     @cb
 
     @Override
+    public Optional<LoggerStatement> @{level.name}() {
+         return is@{level.capitalizedName}Enabled()
+           ? Optional.of(new LoggerStatement.@{level.capitalizedName}(this))
+           : Optional.empty();
+    }
+
+    @Override
+    public Optional<LoggerStatement> @{level.name}(Marker marker) {
+         return is@{level.capitalizedName}Enabled(marker)
+           ? Optional.of(new LoggerStatement.@{level.capitalizedName}(this))
+           : Optional.empty();
+    }
+
+    @Override
     public void @{level.name}(Marker marker, Consumer<LoggerStatement> lc) @ob
         if (is@{level.capitalizedName}Enabled(marker) && predicate.test(Level.@{level.name.toUpperCase})) @ob
             lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
@@ -68,6 +83,22 @@ public class ProxyConditionalLogger extends ProxyLogger implements ConditionalLo
         if (is@{level.capitalizedName}Enabled(marker) && condition.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
             lc.accept(new LoggerStatement.@{level.capitalizedName}(this));
         @cb
+    @cb
+
+    @Override
+    public Optional<LoggerStatement> if@{level.capitalizedName}(Supplier<Boolean> condition) @ob
+        if (is@{level.capitalizedName}Enabled() && condition.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
+            return Optional.of(new LoggerStatement.@{level.capitalizedName}(this));
+        @cb
+        return Optional.empty();
+    @cb
+
+    @Override
+    public Optional<LoggerStatement> if@{level.capitalizedName}(Marker marker, Supplier<Boolean> condition) @ob
+        if (is@{level.capitalizedName}Enabled(marker) && condition.get() && predicate.test(Level.@{level.name.toUpperCase})) @ob
+            return Optional.of(new LoggerStatement.@{level.capitalizedName}(this));
+        @cb
+        return Optional.empty();
     @cb
 
     @Override

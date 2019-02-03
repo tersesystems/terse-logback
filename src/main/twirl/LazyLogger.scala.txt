@@ -6,6 +6,7 @@ import org.slf4j.event.Level;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.Predicate;
+import java.util.Optional;
 
 @* "sbt generateSources" autogenerates in target/sources/txt.Results *@
 public interface LazyLogger @ob
@@ -18,8 +19,10 @@ public interface LazyLogger @ob
       Level("error", "Error"),
     )) {
 
-    public void @{level.name}(Consumer<LoggerStatement> lc);
+    void @{level.name}(Consumer<LoggerStatement> lc);
+    Optional<LoggerStatement> @{level.name}();
 
-    public void @{level.name}(Marker marker, Consumer<LoggerStatement> lc);
+    void @{level.name}(Marker marker, Consumer<LoggerStatement> lc);
+    Optional<LoggerStatement> @{level.name}(Marker marker);
     }
 @cb
