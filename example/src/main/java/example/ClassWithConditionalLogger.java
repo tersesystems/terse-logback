@@ -1,10 +1,10 @@
 package example;
 
-import com.tersesystems.logback.proxy.ConditionalLogger;
-import com.tersesystems.logback.proxy.ProxyConditionalLogger;
+import com.tersesystems.logback.proxy.*;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
 import org.slf4j.event.Level;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,6 +29,9 @@ public class ClassWithConditionalLogger {
 
         // Can use an lazy info statement and a Consumer if that's easier...
         conditionalLogger.info(stmt -> stmt.apply(context, "log if INFO && user.name == wsargent"));
+
+        // Or you can get the logging statement as a logger...
+        Logger onlyInfoLogger = conditionalLogger.info().get().asLogger();
 
         // Log only if the level is info and the above conditions are met AND it's tuesday
         conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {
