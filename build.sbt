@@ -15,15 +15,6 @@ lazy val censor = (project in file("censor")).
     libraryDependencies += "com.typesafe" % "config" % "1.3.3",
   )
 
-// Code to proxy and manage context and conditional logging.
-lazy val proxy = (project in file("proxy")).
-  settings(
-    // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
-    libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.2",
-    libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.25",
-    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
-  )
-
 // A "classic" project with the underlying appenders and infrastructure.
 // Create your own github repository for something like this, and publish it to your artifactory or locally.
 // THIS IS NOT INTENDED TO BE A DROP IN REPLACEMENT, but an example of structured logging with Logback.
@@ -35,7 +26,10 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "com.typesafe" % "config" % "1.3.3",
     libraryDependencies += "org.slf4j" % "jul-to-slf4j" % "1.7.25",
     libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
-  ).aggregate(censor).dependsOn(censor)
+  ).dependsOn(censor)
+
+// Code to proxy and manage context and conditional logging.
+lazy val proxy = (project in file("proxy")).dependsOn(classic)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val example = (project in file("example")).

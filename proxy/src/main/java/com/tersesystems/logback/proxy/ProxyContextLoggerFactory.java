@@ -3,44 +3,45 @@ package com.tersesystems.logback.proxy;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
+
+import java.util.Map;
 
 public class ProxyContextLoggerFactory implements ILoggerFactory {
 
-    private final MarkerContext markerContext;
+    private final Context context;
     private final ILoggerFactory loggerFactory;
 
-    public ProxyContextLoggerFactory(MarkerContext markerContext, ILoggerFactory loggerFactory) {
-        this.markerContext = markerContext;
+    public ProxyContextLoggerFactory(Context context, ILoggerFactory loggerFactory) {
+        this.context = context;
         this.loggerFactory = loggerFactory;
     }
 
-    public MarkerContext getMarkerContext() {
-        return markerContext;
+    public Context getContext() {
+        return context;
     }
 
     public ILoggerFactory getILoggerFactory() {
         return loggerFactory;
     }
 
-    public static ILoggerFactory create(Marker marker, ILoggerFactory loggerFactory) {
-        return new ProxyContextLoggerFactory(LogstashMarkerContext.create(marker), loggerFactory);
+    public static ILoggerFactory create(Map<?, ?> entries, ILoggerFactory loggerFactory) {
+        return new ProxyContextLoggerFactory(ContextImpl.create(entries), loggerFactory);
     }
 
-    public static ILoggerFactory create(MarkerContext markerContext, ILoggerFactory loggerFactory) {
-        return new ProxyContextLoggerFactory(markerContext, loggerFactory);
+    public static ILoggerFactory create(Context context, ILoggerFactory loggerFactory) {
+        return new ProxyContextLoggerFactory(context, loggerFactory);
     }
 
-    public static ILoggerFactory create(Marker marker) {
-        return create(marker, LoggerFactory.getILoggerFactory());
+    public static ILoggerFactory create() {
+        return create(ContextImpl.create(), LoggerFactory.getILoggerFactory());
     }
 
-    public static ILoggerFactory create(MarkerContext markerContext) {
-        return create(markerContext, LoggerFactory.getILoggerFactory());
+    public static ILoggerFactory create(Context context) {
+        return create(context, LoggerFactory.getILoggerFactory());
     }
 
     @Override
     public Logger getLogger(String name) {
-        return new ProxyContextLogger(markerContext, loggerFactory.getLogger(name));
+        return new ProxyContextLogger(context, loggerFactory.getLogger(name));
     }
 }

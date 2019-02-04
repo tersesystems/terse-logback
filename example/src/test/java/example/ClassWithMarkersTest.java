@@ -10,10 +10,4 @@ public class ClassWithMarkersTest {
         classWithMarkers.doThingsWithMarker("12345");
     }
 
-    @Test
-    public void doThingsWithContextLogger() {
-        ClassWithMarkers classWithMarkers = new ClassWithMarkers();
-        classWithMarkers.doThingsWithContextLogger("12345");
-    }
-
 }

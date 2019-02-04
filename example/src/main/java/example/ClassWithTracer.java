@@ -1,12 +1,10 @@
 package example;
 
-import com.tersesystems.logback.proxy.LogstashMarkerContext;
-import com.tersesystems.logback.proxy.MarkerContext;
-import com.tersesystems.logback.proxy.ProxyContextLogger;
+import com.tersesystems.logback.proxy.Context;
+import com.tersesystems.logback.proxy.ContextImpl;
 import com.tersesystems.logback.TracerFactory;
 import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
 import static net.logstash.logback.marker.Markers.append;
@@ -16,14 +14,13 @@ public class ClassWithTracer {
 
     // Add a TRACER marker to the request, and use a proxy context wrapper
     private Logger getContextLogger(Request request) {
-        final TracerFactory tracerFactory = TracerFactory.getInstance();
-        final Marker marker;
+        final Context context;
         if (request.queryStringContains("trace")) {
-            marker = tracerFactory.createTracer(request.context().asMarker());
+            context = request.context().withTracer();
         } else {
-            marker = request.context().asMarker();
+            context = request.context();
         }
-        return ProxyContextLoggerFactory.create(marker).getLogger(getClass().getName());
+        return ProxyContextLoggerFactory.create(context).getLogger(getClass().getName());
     }
 
     public void doThings(Request request) {
@@ -50,16 +47,16 @@ public class ClassWithTracer {
 }
 
 class Request {
-    private final MarkerContext context;
+    private final Context context;
     private final String queryString;
 
     Request(String queryString) {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        this.context = LogstashMarkerContext.create(append("correlationId", correlationId));
+        this.context = ContextImpl.create("correlationId", correlationId);
         this.queryString = queryString;
     }
 
-    public MarkerContext context() {
+    public Context context() {
         return context;
     }
 

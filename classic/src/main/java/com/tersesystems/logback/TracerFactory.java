@@ -6,7 +6,7 @@ import org.slf4j.MarkerFactory;
 
 public class TracerFactory {
 
-    private static final String TRACER_NAME = "TRACER";
+    public static final String TRACER_NAME = "TRACER";
 
     private static class InstanceHolder {
         static TracerFactory instance = new TracerFactory();

@@ -1,5 +1,7 @@
 package example;
 
+import com.tersesystems.logback.proxy.Context;
+import com.tersesystems.logback.proxy.ContextImpl;
 import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
@@ -22,7 +24,7 @@ public class ClassWithContext {
 
     public static void main(String[] args) {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        LogstashMarker context = Markers.append("correlationId", correlationId);
+        Context context = ContextImpl.create("correlationId", correlationId);
         ILoggerFactory loggerFactory = ProxyContextLoggerFactory.create(context);
 
         ObliviousToContext obliviousToContext = new ObliviousToContext(loggerFactory);
