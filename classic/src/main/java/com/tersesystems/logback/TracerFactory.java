@@ -16,8 +16,17 @@ public class TracerFactory {
         return InstanceHolder.instance;
     }
 
-    private final IMarkerFactory markerFactory = MarkerFactory.getIMarkerFactory();
-    private final Marker tracerMarker = markerFactory.getMarker(TRACER_NAME);
+    private final IMarkerFactory markerFactory;
+    private final Marker tracerMarker;
+
+    public TracerFactory(IMarkerFactory markerFactory) {
+        this.markerFactory = MarkerFactory.getIMarkerFactory();
+        this.tracerMarker = markerFactory.getMarker(TRACER_NAME);
+    }
+
+    public TracerFactory() {
+        this(MarkerFactory.getIMarkerFactory());
+    }
 
     public Marker createTracer() {
         // always create a new marker using "new BasicMarker(name)"

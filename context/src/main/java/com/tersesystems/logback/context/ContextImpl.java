@@ -27,7 +27,6 @@ public class ContextImpl implements Context {
     @Override
     public LogstashMarker asMarker() {
         if (isTracingEnabled()) {
-            // Dependency on "classic" here...
             return Markers.appendEntries(entries).and(TracerFactory.getInstance().createTracer());
         } else {
             return Markers.appendEntries(entries);
