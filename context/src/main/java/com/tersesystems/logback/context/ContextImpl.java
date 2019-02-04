@@ -1,4 +1,4 @@
-package com.tersesystems.logback.proxy;
+package com.tersesystems.logback.context;
 
 import com.tersesystems.logback.TracerFactory;
 import net.logstash.logback.marker.LogstashMarker;

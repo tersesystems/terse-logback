@@ -1,4 +1,4 @@
-package com.tersesystems.logback.proxy;
+package com.tersesystems.logback.context;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;

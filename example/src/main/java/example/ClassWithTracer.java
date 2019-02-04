@@ -1,13 +1,10 @@
 package example;
 
-import com.tersesystems.logback.proxy.Context;
-import com.tersesystems.logback.proxy.ContextImpl;
-import com.tersesystems.logback.TracerFactory;
-import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
+import com.tersesystems.logback.context.Context;
+import com.tersesystems.logback.context.ContextImpl;
+import com.tersesystems.logback.context.ProxyContextLoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.Marker;
 
-import static net.logstash.logback.marker.Markers.append;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ClassWithTracer {

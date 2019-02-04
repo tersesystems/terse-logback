@@ -1,10 +1,8 @@
 package example;
 
-import com.tersesystems.logback.proxy.Context;
-import com.tersesystems.logback.proxy.ContextImpl;
-import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
-import net.logstash.logback.marker.LogstashMarker;
-import net.logstash.logback.marker.Markers;
+import com.tersesystems.logback.context.Context;
+import com.tersesystems.logback.context.ContextImpl;
+import com.tersesystems.logback.context.ProxyContextLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 

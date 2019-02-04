@@ -28,8 +28,11 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
   ).dependsOn(censor)
 
-// Code to proxy and manage context and conditional logging.
+// Code to proxy and conditional logging.
 lazy val proxy = (project in file("proxy")).dependsOn(classic)
+
+// Code to manage context
+lazy val context = (project in file("context")).dependsOn(classic)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val example = (project in file("example")).
@@ -37,19 +40,18 @@ lazy val example = (project in file("example")).
     publish / skip := true,
     mainClass := Some("example.Main"),
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
-  ).dependsOn(classic, proxy).aggregate(classic, proxy)
+  ).dependsOn(classic, proxy, context).aggregate(classic, proxy, context)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val guice = (project in file("guice")).
   settings(
-    name := "terse-logback-guice",
     publish / skip := true,
     mainClass := Some("example.Main"),
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0",
     libraryDependencies += "com.google.inject" % "guice" % "4.2.2",
     // https://tavianator.com/cgit/sangria.git
     libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1"
-  ).dependsOn(classic, proxy).aggregate(classic, proxy)
+  ).dependsOn(classic, proxy, context).aggregate(classic, proxy, context)
 
 
 lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
