@@ -7,7 +7,7 @@ import java.util.function.*;
 import java.util.Optional;
 
 
-public class ProxyLazyLogger {
+public class ProxyLazyLogger implements LazyLogger {
 
     private final Logger logger;
 

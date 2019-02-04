@@ -4,7 +4,6 @@ import com.tersesystems.logback.proxy.*;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
-import org.slf4j.Marker;
 import org.slf4j.event.Level;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -18,7 +17,7 @@ public class ClassWithConditionalLogger {
 
     private void doStuff() {
         // Set up conditional logger to only log if this is my machine:
-        final ProxyConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
+        final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
@@ -26,12 +25,6 @@ public class ClassWithConditionalLogger {
         // ProxyConditionalLogger will only log if this is my machine
         Logger conditionalLoggerAsNormalLogger = (Logger) conditionalLogger;
         conditionalLoggerAsNormalLogger.info("This will still only log if it's my machine");
-
-        // Can use an lazy info statement and a Consumer if that's easier...
-        conditionalLogger.info(stmt -> stmt.apply(context, "log if INFO && user.name == wsargent"));
-
-        // Or you can get the logging statement as a logger...
-        conditionalLogger.info().map(stmt -> { stmt.asLogger().info("hello world"); return stmt; });
 
         // Log only if the level is info and the above conditions are met AND it's tuesday
         conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {
