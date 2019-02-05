@@ -12,7 +12,7 @@ lazy val censor = (project in file("censor")).
   settings(
     libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.2",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3",
-    libraryDependencies += "com.typesafe" % "config" % "1.3.3",
+    libraryDependencies += "com.typesafe" % "config" % "1.3.3"
   )
 
 // A "classic" project with the underlying appenders and infrastructure.
@@ -40,7 +40,7 @@ lazy val example = (project in file("example")).
     publish / skip := true,
     mainClass := Some("example.Main"),
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
-  ).dependsOn(classic, proxy, context).aggregate(classic, proxy, context)
+  ).dependsOn(classic, proxy, context)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val guice = (project in file("guice")).
@@ -51,7 +51,7 @@ lazy val guice = (project in file("guice")).
     libraryDependencies += "com.google.inject" % "guice" % "4.2.2",
     // https://tavianator.com/cgit/sangria.git
     libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1"
-  ).dependsOn(classic, proxy, context).aggregate(classic, proxy, context)
+  ).dependsOn(classic, proxy, context)
 
 
 lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
@@ -63,6 +63,7 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
       version      := "0.1.0-SNAPSHOT",
       javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8"),
       testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
+      libraryDependencies += "org.assertj" % "assertj-core" % "3.11.1" % Test,
       libraryDependencies += junitInterface % Test,
     )),
     // "sbt generateSources" will create source code for implementing the SLF4J logger API.
@@ -95,4 +96,4 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
     name := "terse-logback-root",
     publish / skip := true,
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(censor, proxy, classic, example, guice).dependsOn(example) // dependsOn for the mainClass
+  ).aggregate(censor, proxy, context, classic, example, guice).dependsOn(example) // dependsOn for the mainClass

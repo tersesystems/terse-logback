@@ -9,7 +9,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class ClassWithTracer {
 
-    // Add a TRACER marker to the request, and use a proxy context wrapper
+    // Add tracer to the context, and return a logger that covers over the context.
     private Logger getContextLogger(Request request) {
         final Context context;
         if (request.queryStringContains("trace")) {

@@ -10,8 +10,8 @@ public class ClassWithMarkers {
     private final Logger logger = getLogger(getClass());
 
     public void doThingsWithMarker(String correlationId) {
-        LogstashMarker context = Markers.append("correlationId", correlationId);
-        logger.info(context, "log with marker explicitly");
+        LogstashMarker logstashMarker = Markers.append("correlationId", correlationId);
+        logger.info(logstashMarker, "log with marker explicitly");
     }
 
     public static void main(String[] args) {
