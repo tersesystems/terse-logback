@@ -1,17 +1,18 @@
 package com.tersesystems.logback.context;
 
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
 /**
  * Proxy logger that takes a marker as argument.
  */
-public class ProxyContextLogger implements Logger {
+public class ProxyContextLogger<T extends LogstashMarker> implements Logger {
 
     private final Logger logger;
-    private final Context context;
+    private final Context<T> context;
 
-    public ProxyContextLogger(Context context, Logger logger) {
+    public ProxyContextLogger(Context<T> context, Logger logger) {
         if (logger instanceof ProxyContextLogger) {
             this.context = context.and(((ProxyContextLogger) logger).context);
         } else {

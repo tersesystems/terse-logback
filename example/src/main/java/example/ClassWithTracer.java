@@ -1,7 +1,8 @@
 package example;
 
+import com.tersesystems.logback.context.AbstractContext;
 import com.tersesystems.logback.context.Context;
-import com.tersesystems.logback.context.ContextImpl;
+import com.tersesystems.logback.context.LogstashContext;
 import com.tersesystems.logback.context.ProxyContextLoggerFactory;
 import org.slf4j.Logger;
 
@@ -49,7 +50,7 @@ class Request {
 
     Request(String queryString) {
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        this.context = ContextImpl.create("correlationId", correlationId);
+        this.context = LogstashContext.create("correlationId", correlationId);
         this.queryString = queryString;
     }
 

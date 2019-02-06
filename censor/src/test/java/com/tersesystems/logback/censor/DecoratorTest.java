@@ -9,17 +9,18 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.StringWriter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DecoratorTest {
+public class DecoratorTest extends ConfigTest {
 
     @Test
     public void basicCensor() throws Exception {
         CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
         Context context = new LoggerContext();
-        Config config = ConfigFactory.load();
+        Config config = loadConfig();
         context.putObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY, config);
         decorator.setContext(context);
         decorator.start();
@@ -40,7 +41,7 @@ public class DecoratorTest {
     public void prettyPrintCensor() throws Exception {
         CensoringJsonGeneratorDecorator decorator = new CensoringPrettyPrintingJsonGeneratorDecorator();
         Context context = new LoggerContext();
-        Config config = ConfigFactory.load();
+        Config config = loadConfig();
         context.putObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY, config);
         decorator.setContext(context);
         decorator.start();

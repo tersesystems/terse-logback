@@ -1,13 +1,17 @@
 package com.tersesystems.logback.context;
 
-import net.logstash.logback.marker.LogstashMarker;
+import org.slf4j.Marker;
 
-public interface Context {
-    Context and(Context context);
+import java.util.Map;
 
-    LogstashMarker asMarker();
+public interface Context<T extends Marker> {
+    Context<T> and(Context<Marker> context);
 
-    Context withTracer();
+    T asMarker();
+
+    Context<T> withTracer();
 
     boolean isTracingEnabled();
+
+    Map<?,?> entries();
 }
