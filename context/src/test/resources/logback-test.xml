@@ -1,0 +1,107 @@
+<!--
+  This is an example configuration of Logback using async appenders from logstash-logback-encoder and with
+  some custom configuration using Typesafe Config, so you only have to touch logback.conf in your project
+  and have sensible structured logging defaults.
+
+  THIS IS NOT INTENDED TO BE A DROP IN REPLACEMENT.  Please see the documentation at
+
+  https://github.com/logstash/logstash-logback-encoder/blob/master/README.md
+
+  and the links in the comments.
+-->
+<configuration>
+    <newRule pattern="*/typesafeConfig"
+             actionClass="com.tersesystems.logback.TypesafeConfigAction"/>
+
+    <newRule pattern="*/setLoggerLevels"
+             actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+
+    <typesafeConfig />
+
+    <jmxConfigurator />
+
+    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
+
+    <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
+
+    <!--
+    https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
+
+    Options can be specified in the pattern in the following order:
+       - maxDepthPerThrowable = "full" or "short" or an integer value
+       - shortenedClassNameLength = "full" or "short" or an integer value
+       - maxLength = "full" or "short" or an integer value
+
+       %msg%n%stack{5,1024,10,rootFirst,regex1,regex2,evaluatorName}
+    -->
+    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <!-- give the async appenders time to shutdown -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
+        <delay>${shutdownHook.delay}</delay>
+    </shutdownHook>
+
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Name>TRACER_FILTER</Name>
+        <Marker>TRACER</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
+    <appender name="JSONCONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--
+          Take out the \ because you cannot have - and - next to each other:
+          https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
+        -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- don't include the properties from typesafe config -->
+            <includeContext>${jsonfile.encoder.includeContext}</includeContext>
+            <!-- UTC is the best server consistent timezone -->
+            <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+
+            <!--
+            https://github.com/logstash/logstash-logback-encoder/blob/master/stack-hash.md#why-generating-stack-hashes
+
+            This is only available if you use LoggingEventCompositeJsonEncoder it seems like...
+            -->
+            <!--<stackHash>-->
+            <!--<exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>-->
+            <!--</stackHash>-->
+
+            <!--
+              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+            -->
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
+                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
+                <!-- coma separated exclusion patterns -->
+                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+            </throwableConverter>
+
+            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+            <if condition='p("jsonfile.prettyprint").contains("true")'>
+                <then>
+                    <!-- Pretty print for better end user experience. -->
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>
+                </then>
+                <else>
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator"/>
+                </else>
+            </if>
+        </encoder>
+        <withJansi>${console.withJansi}</withJansi>
+    </appender>
+
+    <root>
+        <appender-ref ref="JSONCONSOLE"/>
+    </root>
+
+    <!-- Set the logger levels at the very end -->
+    <setLoggerLevels/>
+</configuration>

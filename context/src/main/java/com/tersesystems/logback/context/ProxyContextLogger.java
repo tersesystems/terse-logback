@@ -1,5 +1,6 @@
 package com.tersesystems.logback.context;
 
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
@@ -19,7 +20,6 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
         }
         this.logger = logger;
     }
-
     @Override
     public String getName() {
         return logger.getName();
@@ -29,6 +29,12 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
     public Context<T> getContext() {
         return this.context;
     }
+
+    @Override
+    public String toString() {
+        return String.format("ProxyContextLogger(context = %s,logger = %s)", this.context, this.logger);
+    }
+
 
     @Override
     public boolean isTraceEnabled() {
@@ -62,44 +68,32 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
 
     @Override
     public boolean isTraceEnabled(Marker marker) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        return logger.isTraceEnabled(contextMarker);
+        return logger.isTraceEnabled(merge(marker));
     }
 
     @Override
     public void trace(Marker marker, String msg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.trace(contextMarker, msg);
+        logger.trace(merge(marker), msg);
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.trace(contextMarker, format, arg);
+        logger.trace(merge(marker), format, arg);
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.trace(contextMarker, format, arg1, arg2);
+        logger.trace(merge(marker), format, arg1, arg2);
     }
 
     @Override
     public void trace(Marker marker, String format, Object... argArray) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.trace(contextMarker, format, argArray);
+        logger.trace(merge(marker), format, argArray);
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.trace(contextMarker, msg, t);
+        logger.trace(merge(marker), msg, t);
     }
 
     @Override
@@ -134,44 +128,32 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
 
     @Override
     public boolean isDebugEnabled(Marker marker) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        return logger.isDebugEnabled(contextMarker);
+        return logger.isDebugEnabled(merge(marker));
     }
 
     @Override
     public void debug(Marker marker, String msg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.debug(contextMarker, msg);
+        logger.debug(merge(marker), msg);
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.debug(contextMarker, format, arg);
+        logger.debug(merge(marker), format, arg);
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.debug(contextMarker, format, arg1, arg2);
+        logger.debug(merge(marker), format, arg1, arg2);
     }
 
     @Override
     public void debug(Marker marker, String format, Object... argArray) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.debug(contextMarker, format, argArray);
+        logger.debug(merge(marker), format, argArray);
     }
 
     @Override
     public void debug(Marker marker, String msg, Throwable t) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.debug(contextMarker, msg, t);
+        logger.debug(merge(marker), msg, t);
     }
 
     @Override
@@ -206,44 +188,32 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
 
     @Override
     public boolean isInfoEnabled(Marker marker) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        return logger.isInfoEnabled(contextMarker);
+        return logger.isInfoEnabled(merge(marker));
     }
 
     @Override
     public void info(Marker marker, String msg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.info(contextMarker, msg);
+        logger.info(merge(marker), msg);
     }
 
     @Override
     public void info(Marker marker, String format, Object arg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.info(contextMarker, format, arg);
+        logger.info(merge(marker), format, arg);
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.info(contextMarker, format, arg1, arg2);
+        logger.info(merge(marker), format, arg1, arg2);
     }
 
     @Override
     public void info(Marker marker, String format, Object... argArray) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.info(contextMarker, format, argArray);
+        logger.info(merge(marker), format, argArray);
     }
 
     @Override
     public void info(Marker marker, String msg, Throwable t) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.info(contextMarker, msg, t);
+        logger.info(merge(marker), msg, t);
     }
 
     @Override
@@ -278,44 +248,32 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
 
     @Override
     public boolean isWarnEnabled(Marker marker) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        return logger.isWarnEnabled(contextMarker);
+        return logger.isWarnEnabled(merge(marker));
     }
 
     @Override
     public void warn(Marker marker, String msg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.warn(contextMarker, msg);
+        logger.warn(merge(marker), msg);
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.warn(contextMarker, format, arg);
+        logger.warn(merge(marker), format, arg);
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.warn(contextMarker, format, arg1, arg2);
+        logger.warn(merge(marker), format, arg1, arg2);
     }
 
     @Override
     public void warn(Marker marker, String format, Object... argArray) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.warn(contextMarker, format, argArray);
+        logger.warn(merge(marker), format, argArray);
     }
 
     @Override
     public void warn(Marker marker, String msg, Throwable t) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.warn(contextMarker, msg, t);
+        logger.warn(merge(marker), msg, t);
     }
 
     @Override
@@ -350,44 +308,42 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
 
     @Override
     public boolean isErrorEnabled(Marker marker) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        return logger.isErrorEnabled(contextMarker);
+        return logger.isErrorEnabled(merge(marker));
     }
 
     @Override
     public void error(Marker marker, String msg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.error(contextMarker, msg);
+        logger.error(merge(marker), msg);
     }
 
     @Override
     public void error(Marker marker, String format, Object arg) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.error(contextMarker, format, arg);
+        logger.error(merge(marker), format, arg);
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.error(contextMarker, format, arg1, arg2);
+        logger.error(merge(marker), format, arg1, arg2);
     }
 
     @Override
     public void error(Marker marker, String format, Object... argArray) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.error(contextMarker, format, argArray);
+        logger.error(merge(marker), format, argArray);
     }
 
     @Override
     public void error(Marker marker, String msg, Throwable t) {
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.error(contextMarker, msg, t);
+        logger.error(merge(marker), msg, t);
     }
 
+
+    private Marker merge(Marker marker) {
+        Marker contextMarker = context.asMarker();
+        if (contextMarker instanceof LogstashContext) {
+            return ((LogstashMarker) contextMarker).and(marker);
+        } else {
+            contextMarker.add(marker);
+            return contextMarker;
+        }
+    }
 }

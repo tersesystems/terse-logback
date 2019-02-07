@@ -26,12 +26,6 @@ public abstract class AbstractContext<T extends Marker> implements Context<T> {
     }
 
     @Override
-    public Context<T> and(Context<Marker> context) {
-        boolean t = this.isTracingEnabled() || context.isTracingEnabled();
-        return create(context.entries(), t);
-    }
-
-    @Override
     public String toString() {
         String result = entries.entrySet().stream().map(entry ->
                         String.join("=",

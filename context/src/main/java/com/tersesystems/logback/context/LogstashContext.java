@@ -3,8 +3,10 @@ package com.tersesystems.logback.context;
 import com.tersesystems.logback.TracerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
+import org.slf4j.Marker;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LogstashContext extends AbstractContext<LogstashMarker> {
@@ -28,8 +30,11 @@ public class LogstashContext extends AbstractContext<LogstashMarker> {
     }
 
     @Override
-    public Context<LogstashMarker> create(Map<?, ?> entries, boolean tracing) {
-        return new LogstashContext(entries, tracing);
+    public Context<LogstashMarker> and(Context<Marker> context) {
+        boolean tracing = this.isTracingEnabled() || context.isTracingEnabled();
+        Map<Object, Object> mergedEntries = new HashMap<>(this.entries());
+        mergedEntries.putAll(context.entries());
+        return new LogstashContext(mergedEntries, tracing);
     }
 
     public static Context<LogstashMarker> create(Map<?, ?> entries) {

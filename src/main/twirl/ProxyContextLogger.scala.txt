@@ -1,5 +1,6 @@
 package com.tersesystems.logback.context;
 
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
@@ -27,6 +28,11 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
     @Override
     public Context<T> getContext() {
         return this.context;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ProxyContextLogger(context = %s,logger = %s)", this.context, this.logger);
     }
 
     @for(level <- Seq(
@@ -68,44 +74,42 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
 
     @Override
     public boolean is@{level.capitalizedName}Enabled(Marker marker) @ob
-         Marker contextMarker = context.asMarker();
-         contextMarker.add(marker);
-         return logger.is@{level.capitalizedName}Enabled(contextMarker);
+         return logger.is@{level.capitalizedName}Enabled(merge(marker));
     @cb
 
     @Override
     public void @{level.name}(Marker marker, String msg) @ob
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.@{level.name}(contextMarker, msg);
+        logger.@{level.name}(merge(marker), msg);
     @cb
 
     @Override
     public void @{level.name}(Marker marker, String format, Object arg) @ob
-       Marker contextMarker = context.asMarker();
-       contextMarker.add(marker);
-       logger.@{level.name}(contextMarker, format, arg);
+       logger.@{level.name}(merge(marker), format, arg);
     @cb
 
     @Override
     public void @{level.name}(Marker marker, String format, Object arg1, Object arg2) @ob
-        Marker contextMarker = context.asMarker();
-        contextMarker.add(marker);
-        logger.@{level.name}(contextMarker, format, arg1, arg2);
+        logger.@{level.name}(merge(marker), format, arg1, arg2);
     @cb
 
     @Override
     public void @{level.name}(Marker marker, String format, Object... argArray) @ob
-       Marker contextMarker = context.asMarker();
-       contextMarker.add(marker);
-       logger.@{level.name}(contextMarker, format, argArray);
+       logger.@{level.name}(merge(marker), format, argArray);
     @cb
 
     @Override
     public void @{level.name}(Marker marker, String msg, Throwable t) @ob
-       Marker contextMarker = context.asMarker();
-       contextMarker.add(marker);
-       logger.@{level.name}(contextMarker, msg, t);
+       logger.@{level.name}(merge(marker), msg, t);
     @cb
+    }
+
+    private Marker merge(Marker marker) {
+       Marker contextMarker = context.asMarker();
+       if (contextMarker instanceof LogstashContext) {
+           return ((LogstashMarker) contextMarker).and(marker);
+       } else {
+          contextMarker.add(marker);
+          return contextMarker;
+       }
     }
 @cb
