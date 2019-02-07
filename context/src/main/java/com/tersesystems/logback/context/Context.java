@@ -9,6 +9,8 @@ public interface Context<T extends Marker> {
 
     T asMarker();
 
+    Context<T> create(Map<?, ?> entries, boolean tracing);
+
     Context<T> withTracer();
 
     boolean isTracingEnabled();

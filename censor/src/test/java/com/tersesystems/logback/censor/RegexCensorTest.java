@@ -1,12 +1,11 @@
 package com.tersesystems.logback.censor;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CensorTest extends ConfigTest {
+public class RegexCensorTest extends AbstractConfigBase {
 
     @Test
     public void testCensor() throws Exception {

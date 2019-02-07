@@ -26,12 +26,18 @@ public abstract class AbstractContext<T extends Marker> implements Context<T> {
     }
 
     @Override
+    public Context<T> and(Context<Marker> context) {
+        boolean t = this.isTracingEnabled() || context.isTracingEnabled();
+        return create(context.entries(), t);
+    }
+
+    @Override
     public String toString() {
         String result = entries.entrySet().stream().map(entry ->
                         String.join("=",
                                 entry.getKey().toString(),
                                 entry.getValue().toString()))
                 .collect(Collectors.joining(","));
-        return "AbstractContext(" + result + ")";
+        return this.getClass().getSimpleName() + "(" + result + ")";
     }
 }

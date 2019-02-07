@@ -1,31 +1,32 @@
-package com.tersesystems.logback.proxy;
+package com.tersesystems.logback.context;
 
-import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-@* "sbt generateSources" autogenerates in target/sources/txt.Results *@
-public class ProxyContextLogger implements Logger  @ob
+/**
+ * Proxy logger that takes a marker as argument.
+ */
+public class ProxyContextLogger<T extends Marker> implements Logger, ContextAware<T> @ob
 
     private final Logger logger;
-    private final Context context;
+    private final Context<T> context;
 
-    public ProxyContextLogger(LogstashMarker logstashMarker, Logger logger) {
-        this(new LogstashMarkerContext(logstashMarker), logger);
-    }
-
-    public ProxyContextLogger(Context context, Logger logger) {
-        if (logger instanceof ProxyContextLogger) {
-            this.context = context.and(((ProxyContextLogger) logger).context);
+    public ProxyContextLogger(Context<T> context, Logger logger) {
+        if (logger instanceof ContextAware) {
+            this.context = context.and(((ContextAware) logger).getContext());
         } else {
             this.context = context;
         }
         this.logger = logger;
     }
-
     @Override
     public String getName() {
         return logger.getName();
+    }
+
+    @Override
+    public Context<T> getContext() {
+        return this.context;
     }
 
     @for(level <- Seq(
@@ -35,66 +36,76 @@ public class ProxyContextLogger implements Logger  @ob
       Level("warn", "Warn"),
       Level("error", "Error"),
     )) {
-
+    @Override
+    public boolean is@{level.capitalizedName}Enabled() @ob
+        return logger.is@{level.capitalizedName}Enabled(context.asMarker());
+    @cb
 
     @Override
-    public boolean is@{level.capitalizedName}Enabled() {
-        return logger.is@{level.capitalizedName}Enabled(context.asLogstashMarker());
-    }
+    public void @{level.name}(String msg) @ob
+        logger.@{level.name}(context.asMarker(), msg);
+    @cb
 
     @Override
-    public void @{level.name}(String msg) {
-        logger.@{level.name}(context.asLogstashMarker(), msg);
-    }
+    public void @{level.name}(String format, Object arg) @ob
+        logger.@{level.name}(context.asMarker(), format, arg);
+    @cb
 
     @Override
-    public void @{level.name}(String format, Object arg) {
-        logger.@{level.name}(context.asLogstashMarker(), msg);
-    }
+    public void @{level.name}(String format, Object arg1, Object arg2) @ob
+        logger.@{level.name}(context.asMarker(), format, arg1, arg2);
+    @cb
 
     @Override
-    public void @{level.name}(String format, Object arg1, Object arg2) {
-        logger.@{level.name}(context.asLogstashMarker(), format, arg1, arg2);
-    }
+    public void @{level.name}(String format, Object... arguments) @ob
+         logger.@{level.name}(context.asMarker(), format, arguments);
+    @cb
 
     @Override
-    public void @{level.name}(String format, Object... arguments) {
-         logger.@{level.name}(context.asLogstashMarker(), format, arguments);
-    }
+    public void @{level.name}(String msg, Throwable t) @ob
+         logger.@{level.name}(context.asMarker(), msg, t);
+    @cb
 
     @Override
-    public void @{level.name}(String msg, Throwable t) {
-         logger.@{level.name}(context.asLogstashMarker(), msg, t);
-    }
+    public boolean is@{level.capitalizedName}Enabled(Marker marker) @ob
+         Marker contextMarker = context.asMarker();
+         contextMarker.add(marker);
+         return logger.is@{level.capitalizedName}Enabled(contextMarker);
+    @cb
 
     @Override
-    public boolean is@{level.capitalizedName}Enabled(Marker marker) {
-       logger.is@{level.capitalizedName}Enabled(context.asLogstashMarker().and(marker));
-    }
+    public void @{level.name}(Marker marker, String msg) @ob
+        Marker contextMarker = context.asMarker();
+        contextMarker.add(marker);
+        logger.@{level.name}(contextMarker, msg);
+    @cb
 
     @Override
-    public void @{level.name}(Marker marker, String msg) {
-       logger.@{level.name}(context.asLogstashMarker().and(marker), msg);
-    }
+    public void @{level.name}(Marker marker, String format, Object arg) @ob
+       Marker contextMarker = context.asMarker();
+       contextMarker.add(marker);
+       logger.@{level.name}(contextMarker, format, arg);
+    @cb
 
     @Override
-    public void @{level.name}(Marker marker, String format, Object arg) {
-       logger.@{level.name}(context.asLogstashMarker().and(marker), format, arg);
-    }
+    public void @{level.name}(Marker marker, String format, Object arg1, Object arg2) @ob
+        Marker contextMarker = context.asMarker();
+        contextMarker.add(marker);
+        logger.@{level.name}(contextMarker, format, arg1, arg2);
+    @cb
 
     @Override
-    public void @{level.name}(Marker marker, String format, Object arg1, Object arg2) {
-        logger.@{level.name}(context.asLogstashMarker().and(marker), format, arg1, arg2);
-    }
+    public void @{level.name}(Marker marker, String format, Object... argArray) @ob
+       Marker contextMarker = context.asMarker();
+       contextMarker.add(marker);
+       logger.@{level.name}(contextMarker, format, argArray);
+    @cb
 
     @Override
-    public void @{level.name}(Marker marker, String format, Object... argArray) {
-       logger.@{level.name}(context.asLogstashMarker().and(marker), msg, format, argArray);
-    }
-
-    @Override
-    public void @{level.name}(Marker marker, String msg, Throwable t) {
-       logger.@{level.name}(context.asLogstashMarker().and(marker), msg, t);
-    }
+    public void @{level.name}(Marker marker, String msg, Throwable t) @ob
+       Marker contextMarker = context.asMarker();
+       contextMarker.add(marker);
+       logger.@{level.name}(contextMarker, msg, t);
+    @cb
     }
 @cb

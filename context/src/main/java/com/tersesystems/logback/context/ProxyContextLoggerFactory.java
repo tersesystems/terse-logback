@@ -1,11 +1,11 @@
 package com.tersesystems.logback.context;
 
-import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
-public class ProxyContextLoggerFactory<T extends LogstashMarker> implements ILoggerFactory {
+public class ProxyContextLoggerFactory<T extends Marker> implements ILoggerFactory {
 
     private final Context<T> context;
     private final ILoggerFactory loggerFactory;
@@ -23,11 +23,11 @@ public class ProxyContextLoggerFactory<T extends LogstashMarker> implements ILog
         return loggerFactory;
     }
 
-    public static <T extends LogstashMarker> ILoggerFactory create(Context<T> context, ILoggerFactory loggerFactory) {
+    public static <T extends Marker> ILoggerFactory create(Context<T> context, ILoggerFactory loggerFactory) {
         return new ProxyContextLoggerFactory<T>(context, loggerFactory);
     }
 
-    public static <T extends LogstashMarker> ILoggerFactory create(Context<T> context) {
+    public static <T extends Marker> ILoggerFactory create(Context<T> context) {
         return create(context, LoggerFactory.getILoggerFactory());
     }
 

@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory;
 
 import java.io.File;
 
-public abstract class ConfigTest {
+public abstract class AbstractConfigBase {
     private static final String LOGBACK = "logback";
 
     private static final String LOGBACK_TEST = "logback-test";

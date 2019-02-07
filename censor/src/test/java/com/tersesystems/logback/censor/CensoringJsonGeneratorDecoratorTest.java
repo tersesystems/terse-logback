@@ -6,15 +6,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.StringWriter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DecoratorTest extends ConfigTest {
+public class CensoringJsonGeneratorDecoratorTest extends AbstractConfigBase {
 
     @Test
     public void basicCensor() throws Exception {
@@ -31,6 +29,28 @@ public class DecoratorTest extends ConfigTest {
 
         generator.writeStartObject();
         generator.writeStringField("message", "My hunter2 message");
+        generator.writeEndObject();
+        generator.flush();
+
+        assertThat(writer.toString()).isEqualTo("{\"message\":\"My ******* message\"}");
+    }
+
+    @Test
+    public void filterKey() throws Exception {
+        CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
+        Context context = new LoggerContext();
+        Config config = loadConfig();
+        context.putObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY, config);
+        decorator.setContext(context);
+        decorator.start();
+
+        StringWriter writer = new StringWriter();
+        JsonFactory factory = new MappingJsonFactory();
+        JsonGenerator generator = decorator.decorate(factory.createGenerator(writer));
+
+        generator.writeStartObject();
+        generator.writeStringField("message", "My hunter2 message");
+        generator.writeStringField("password", "this entire field should be gone");
         generator.writeEndObject();
         generator.flush();
 
