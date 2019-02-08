@@ -13,13 +13,10 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
     private final Context<T> context;
 
     public ProxyContextLogger(Context<T> context, Logger logger) {
-        if (logger instanceof ContextAware) {
-            this.context = context.and(((ContextAware) logger).getContext());
-        } else {
-            this.context = context;
-        }
+        this.context = context;
         this.logger = logger;
     }
+
     @Override
     public String getName() {
         return logger.getName();
