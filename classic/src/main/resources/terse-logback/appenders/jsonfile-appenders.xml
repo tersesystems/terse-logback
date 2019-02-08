@@ -25,15 +25,6 @@
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
             <!--
-            https://github.com/logstash/logstash-logback-encoder/blob/master/stack-hash.md#why-generating-stack-hashes
-
-            This is only available if you use LoggingEventCompositeJsonEncoder it seems like...
-            -->
-            <!--<stackHash>-->
-                <!--<exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>-->
-            <!--</stackHash>-->
-
-            <!--
               https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
             -->
             <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">

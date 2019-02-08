@@ -28,6 +28,12 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
   ).dependsOn(censor)
 
+// Contains annotations for entry / exit with byte buddy instrumentation
+lazy val extended = (project in file("extended")).
+  settings(
+    libraryDependencies += "net.bytebuddy" % "byte-buddy" % "1.9.9"
+  ).dependsOn(classic)
+
 // Code to proxy and conditional logging.
 lazy val proxy = (project in file("proxy")).dependsOn(classic)
 
@@ -96,4 +102,5 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
     name := "terse-logback-root",
     publish / skip := true,
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(censor, proxy, context, classic, example, guice).dependsOn(example) // dependsOn for the mainClass
+  ).aggregate(censor, proxy, context, classic, example, guice, extended
+).dependsOn(example) // dependsOn for the mainClass

@@ -6,7 +6,7 @@ import org.slf4j.Marker;
 /**
  * Straight passthrough proxy logger.  This can be useful when you only want to pass through some methods.
  *
- * Done with https://github.com/jroper/play-source-generator automating most of it.
+ * Note that this does not extend org.slf4j.ext.LoggerWrapper.
  */
 public class ProxyLogger implements Logger {
 

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class LogstashContext extends AbstractContext<LogstashMarker> {
 
-    public LogstashContext(Map<?, ?> entries, boolean t) {
+    private LogstashContext(Map<?, ?> entries, boolean t) {
         super(entries, t);
     }
 
@@ -42,7 +42,7 @@ public class LogstashContext extends AbstractContext<LogstashMarker> {
     }
 
     public static Context<LogstashMarker> create(Object key, Object value) {
-        return new LogstashContext(Collections.singletonMap(key, value), false);
+        return create(Collections.singletonMap(key, value));
     }
 
     public static Context<LogstashMarker> create() {

@@ -62,27 +62,33 @@
             <!-- UTC is the best server consistent timezone -->
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
 
-            <!--
+            <providers>
+                <!--
+                  https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+                -->
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
+                        <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                        <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
+                        <!-- coma separated exclusion patterns -->
+                        <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                        <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                        <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+                    </throwableConverter>
+                </stackTrace>
+
+                <!--
             https://github.com/logstash/logstash-logback-encoder/blob/master/stack-hash.md#why-generating-stack-hashes
 
             This is only available if you use LoggingEventCompositeJsonEncoder it seems like...
             -->
-            <!--<stackHash>-->
-            <!--<exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>-->
-            <!--</stackHash>-->
+                <stackHash>
+                    <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                </stackHash>
+            </providers>
 
-            <!--
-              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
-            -->
-            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
-                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
-                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
-                <!-- coma separated exclusion patterns -->
-                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
-                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
-                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
-            </throwableConverter>
+
 
             <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
             <if condition='p("jsonfile.prettyprint").contains("true")'>
@@ -95,7 +101,6 @@
                 </else>
             </if>
         </encoder>
-        <withJansi>${console.withJansi}</withJansi>
     </appender>
 
     <root>
