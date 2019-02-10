@@ -2,6 +2,7 @@ package example;
 
 import com.tersesystems.logback.bytebuddy.ClassAdviceRewriter;
 import com.tersesystems.logback.bytebuddy.InfoLoggingInterceptor;
+import com.tersesystems.logback.bytebuddy.ThreadLocalLogger;
 import net.bytebuddy.ByteBuddy;
 import static net.bytebuddy.agent.builder.AgentBuilder.*;
 
@@ -13,6 +14,8 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.StringMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
@@ -99,6 +102,9 @@ public class ClassWithByteBuddy {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
         AgentBased.premain();
+
+        Logger logger = LoggerFactory.getLogger(ClassWithByteBuddy.class);
+        ThreadLocalLogger.setLogger(logger);
 
         new Interception().doStuff();
         new AgentBased().doStuff();

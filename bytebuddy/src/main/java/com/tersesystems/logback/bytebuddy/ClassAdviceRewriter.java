@@ -9,31 +9,31 @@ public class ClassAdviceRewriter {
     public static void enter(@Advice.Origin("#t|#m|#d|#s|#r") String origin,
                              @Advice.AllArguments Object[] allArguments)
             throws Exception {
-        String[] args = origin.split("\\|");
-        String declaringType = args[0];
-        String method = args[1];
-        String descriptor = args[2];
-        String signature = args[3];
-        String returnType = args[4];
-        Logger logger = LoggerFactory.getLogger(declaringType);
-        String methodArg = methodName(declaringType, method, allArguments);
-        if (logger.isInfoEnabled()) {
+        Logger logger = ThreadLocalLogger.getLogger();
+        if (logger != null && logger.isInfoEnabled()) {
+            String[] args = origin.split("\\|");
+            String declaringType = args[0];
+            String method = args[1];
+            String descriptor = args[2];
+            String signature = args[3];
+            String returnType = args[4];
+            String methodArg = methodName(declaringType, method, allArguments);
             logger.info("entering: {}", methodArg);
         }
     }
 
     @Advice.OnMethodExit
     public static void exit(@Advice.Origin("#t|#m|#d|#s|#r") String origin, @Advice.AllArguments Object[] allArguments) throws Exception {
-        String[] args = origin.split("\\|");
-        String declaringType = args[0];
-        String method = args[1];
-        String descriptor = args[2];
-        String signature = args[3];
-        String returnType = args[4];
 
-        Logger logger = LoggerFactory.getLogger(declaringType);
-        String methodArg = methodName(declaringType, method, allArguments);
-        if (logger.isInfoEnabled()) {
+        Logger logger = ThreadLocalLogger.getLogger();
+        if (logger != null && logger.isInfoEnabled()) {
+            String[] args = origin.split("\\|");
+            String declaringType = args[0];
+            String method = args[1];
+            String descriptor = args[2];
+            String signature = args[3];
+            String returnType = args[4];
+            String methodArg = methodName(declaringType, method, allArguments);
             logger.info("exiting: {}", methodArg);
         }
     }
