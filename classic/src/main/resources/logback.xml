@@ -56,7 +56,7 @@
     <include resource="terse-logback/appenders/textfile-appenders.xml"/>
 
     <root>
-        <appender-ref ref="ASYNCCONSOLE"/>
+        <appender-ref ref="CONSOLE"/> <!-- very confusing if you have printlns before logger output -->
         <appender-ref ref="ASYNCJSONFILE"/>
         <appender-ref ref="ASYNCTEXTFILE"/>
     </root>

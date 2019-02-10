@@ -31,7 +31,8 @@ lazy val classic = (project in file("classic")).
 // Contains annotations for entry / exit with byte buddy instrumentation
 lazy val extended = (project in file("extended")).
   settings(
-    libraryDependencies += "net.bytebuddy" % "byte-buddy" % "1.9.9"
+    libraryDependencies += "net.bytebuddy" % "byte-buddy" % "1.9.9",
+    libraryDependencies += "net.bytebuddy" % "byte-buddy-agent" % "1.9.9"
   ).dependsOn(classic)
 
 // Code to proxy and conditional logging.
@@ -46,7 +47,7 @@ lazy val example = (project in file("example")).
     publish / skip := true,
     mainClass := Some("example.Main"),
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
-  ).dependsOn(classic, proxy, context)
+  ).dependsOn(classic, proxy, context, extended)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val guice = (project in file("guice")).
