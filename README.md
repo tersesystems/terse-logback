@@ -500,7 +500,7 @@ I agree, I don't use logging either
 [INFO ] e.ClassWithByteBuddy - exiting: example.ClassWithByteBuddy$SomeOtherLibraryClass.doesNotUseLogging()
 ```
 
-### Dependency Injection with Guice
+## Dependency Injection with Guice
 
 Finally, if you're using a DI framework like Guice, you can leverage some of the contextual code in [Sangria](https://tavianator.com/announcing-sangria/) to do some of the gruntwork for you.  For example, here's how you configure a `Logger` instance in Guice:
 
