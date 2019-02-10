@@ -28,8 +28,7 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
   ).dependsOn(censor)
 
-// Contains annotations for entry / exit with byte buddy instrumentation
-lazy val extended = (project in file("extended")).
+lazy val bytebuddy = (project in file("bytebuddy")).
   settings(
     libraryDependencies += "net.bytebuddy" % "byte-buddy" % "1.9.9",
     libraryDependencies += "net.bytebuddy" % "byte-buddy-agent" % "1.9.9"
@@ -47,7 +46,7 @@ lazy val example = (project in file("example")).
     publish / skip := true,
     mainClass := Some("example.Main"),
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
-  ).dependsOn(classic, proxy, context, extended)
+  ).dependsOn(classic, proxy, context, bytebuddy)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val guice = (project in file("guice")).
@@ -103,5 +102,5 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
     name := "terse-logback-root",
     publish / skip := true,
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(censor, proxy, context, classic, example, guice, extended
+  ).aggregate(censor, proxy, context, classic, example, guice, bytebuddy
 ).dependsOn(example) // dependsOn for the mainClass
