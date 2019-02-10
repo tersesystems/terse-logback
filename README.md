@@ -361,7 +361,7 @@ public class ClassWithContext {
 
 This style of programming does assume that you can control the instantiation of your objects, and it doesn't go into some of the details such as accumulating extra context.  Keeping a context object around so you can accumulate more context may be a good idea in some circumstances.  
 
-### Instrumenting Logging Code with Byte Buddy
+## Instrumenting Logging Code with Byte Buddy
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements in relatively straightforward.
 
