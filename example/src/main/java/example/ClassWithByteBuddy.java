@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * One of the common pains you'll run into is having to add logging around a class
+ * Use ByteBuddy to add logging to classes that don't have it.
  */
 public class ClassWithByteBuddy {
 
