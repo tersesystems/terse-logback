@@ -764,7 +764,7 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
     <include resource="terse-logback/appenders/textfile-appenders.xml"/>
 
     <root>
-        <appender-ref ref="ASYNCCONSOLE"/>
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNCJSONFILE"/>
         <appender-ref ref="ASYNCTEXTFILE"/>
     </root>
@@ -790,13 +790,6 @@ The console appender uses the following XML configuration:
         <withJansi>${console.withJansi}</withJansi>
     </appender>
 
-    <!--
-      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
-    -->
-    <appender name="ASYNCCONSOLE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender-ref ref="CONSOLE" />
-    </appender>
-
 </included>
 ```
 
@@ -811,7 +804,9 @@ console {
 }
 ```
 
-The console appender uses colored logging for the log level, but you can override config to set the colors you want for which levels.  Jansi is included so that Windows can benefit from colored logging as well.  
+The console appender uses colored logging for the log level, but you can override config to set the colors you want for which levels.  Jansi is included so that Windows can benefit from colored logging as well.
+
+The console does not use async logging, because it has to co-exist with `System.out.println` and `System.err.println` messages, and so must appear time-ordered with them.
 
 #### Text
 
