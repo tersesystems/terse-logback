@@ -2,65 +2,76 @@ package com.tersesystems.logback.bytebuddy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.Logger;
 
-public class InfoLoggingInterceptor {
+import static net.logstash.logback.argument.StructuredArguments.*;
 
+public class InfoLoggingInterceptor {
 
     @RuntimeType
     public Object intercept(@SuperCall Callable<?> callable, @AllArguments Object[] allArguments, @Origin Method method, @Origin Class clazz) throws Exception {
         Object response = null;
 
         Logger logger = ThreadLocalLogger.getLogger();
-        String methodArg = methodName(clazz, method, allArguments);
         try {
             if (logger != null && logger.isInfoEnabled()) {
-                logger.info("entering: {}", methodArg);
+                StructuredArgument aClass = v("class", clazz.getName());
+                StructuredArgument aMethod = v("method", method.getName());
+                Map<String, Object> parameters = parameters(method, allArguments);
+                if (! parameters.isEmpty()) {
+                    logger.info("entering: {}.{}({})", aClass, aMethod, e(parameters));
+                } else {
+                    logger.info("entering: {}.{}()", aClass, aMethod);
+                }
             }
             response = callable.call();
         } catch (Exception e) {
             if (logger != null && logger.isInfoEnabled()) {
-                logger.info("exception: {}", methodArg);
+                StructuredArgument aClass = v("class", clazz.getName());
+                StructuredArgument aMethod = v("method", method.getName());
+                StructuredArgument aException = v("throwable", e);
+                Map<String, Object> parameters = parameters(method, allArguments);
+                if (! parameters.isEmpty()) {
+                    logger.info("exception: {}.{}({}) ! {}", aClass, aMethod, e(parameters), aException);
+                } else {
+                    logger.info("exception: {}.{}() ! {}", aClass, aMethod, aException);
+                }
             }
             throw e;
         } finally {
             if (logger != null && logger.isInfoEnabled()) {
-                logger.info("exit: {}, response = {}", methodArg, response);
+                StructuredArgument aClass = v("class", clazz.getName());
+                StructuredArgument aMethod = v("method", method.getName());
+                StructuredArgument aResponse = a("response", response);
+
+                Map<String, Object> parameters = parameters(method, allArguments);
+                if (! parameters.isEmpty()) {
+                    logger.info("exit: {}.{}({}) => {}", aClass, aMethod, e(parameters), aResponse);
+                } else {
+                    logger.info("exit: {}.{}() => {}", aClass, aMethod, aResponse);
+                }
             }
         }
         return response;
     }
 
-    private String methodName(Class clazz, Method method) {
-        return methodName(clazz, method, null);
-    }
-
-    private String methodName(Class clazz, Method method, Object[] allArguments) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(clazz.getName());
-        builder.append(".");
-        builder.append(method.getName());
-        builder.append("(");
+    private Map<String, Object> parameters(Method method, Object[] allArguments) {
+        Map<String, Object> parametersMap = new LinkedHashMap<>();
         Parameter[] parameters = method.getParameters();
         for (int i = 0; i < parameters.length; i++) {
-            builder.append(parameters[i].getName());
             if (allArguments != null) {
-                Object arg = allArguments[i];
-                builder.append("=");
-                builder.append(arg != null ? arg.toString() : "null");
-            }
-
-            if (i < parameters.length - 1) {
-                builder.append(", ");
+                parametersMap.put(parameters[i].getName(), allArguments[i]);
             }
         }
-        builder.append(")");
-        return builder.toString();
+        return parametersMap;
     }
 }
