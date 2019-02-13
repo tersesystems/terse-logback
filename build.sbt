@@ -25,8 +25,9 @@ lazy val classic = (project in file("classic")).
     libraryDependencies += "org.fusesource.jansi" % "jansi" % "1.17.1", // color on windows
     libraryDependencies += "com.typesafe" % "config" % "1.3.3",
     libraryDependencies += "org.slf4j" % "jul-to-slf4j" % "1.7.25",
-    libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11"
-  ).dependsOn(censor)
+    libraryDependencies += "org.codehaus.janino" % "janino" % "3.0.11",
+    libraryDependencies += "com.github.ben-manes.caffeine" % "caffeine" % "2.6.2"
+).dependsOn(censor)
 
 lazy val bytebuddy = (project in file("bytebuddy")).
   settings(

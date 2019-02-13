@@ -46,9 +46,16 @@
     </shutdownHook>
 
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <Name>TRACER_FILTER</Name>
-        <Marker>TRACER</Marker>
+        <Name>${tracerFilter.name}</Name>
+        <Marker>${tracerFilter.marker}</Marker>
         <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
+    <turboFilter class="com.tersesystems.logback.ExpiringDuplicateMessageFilter">
+        <allowedRepetitions>${expiringDuplicateMessages.allowedRepetitions}</allowedRepetitions>
+        <cacheSize>${expiringDuplicateMessages.cacheSize}</cacheSize>
+        <expireAfterWriteSeconds>${expiringDuplicateMessages.expireAfterWriteSeconds}</expireAfterWriteSeconds>
+        <excludeMarkers>${expiringDuplicateMessages.excludeMarkers}</excludeMarkers>
     </turboFilter>
 
     <include resource="terse-logback/appenders/console-appenders.xml"/>
