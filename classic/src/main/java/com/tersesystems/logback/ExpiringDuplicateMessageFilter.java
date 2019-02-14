@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -33,6 +34,7 @@ public class ExpiringDuplicateMessageFilter extends TurboFilter {
     private String       excludeMarkers          = "";
 
     private List<Marker> excludeMarkersList      = new ArrayList<>();
+    private Pattern      pattern;
 
     private Cache<String, Integer> msgCache;
 
@@ -40,6 +42,7 @@ public class ExpiringDuplicateMessageFilter extends TurboFilter {
     public void start() {
         msgCache = buildCache();
         excludeMarkersList = excludeMarkers(excludeMarkers);
+        this.pattern = Pattern.compile("");
 
         super.start();
     }
@@ -74,6 +77,10 @@ public class ExpiringDuplicateMessageFilter extends TurboFilter {
         }
 
         return (count <= allowedRepetitions) ? FilterReply.NEUTRAL : FilterReply.DENY;
+    }
+
+    public void setRegex(String regex) {
+        this.pattern = Pattern.compile(regex);
     }
 
     public int getAllowedRepetitions() {
@@ -116,11 +123,15 @@ public class ExpiringDuplicateMessageFilter extends TurboFilter {
     }
 
     private String paramsAsString(final Object[] params, final Logger logger) {
-        if (params != null && startsWith(logger.getName(), "com.example")) {
+        if (params != null && matches(logger.getName())) {
             return Arrays.stream(params).map(Object::toString).collect(joining("_"));
         }
 
         return "";
+    }
+
+    private boolean matches(String name) {
+        return pattern.matcher(name).matches();
     }
 
     private Cache<String, Integer> buildCache() {
@@ -130,4 +141,5 @@ public class ExpiringDuplicateMessageFilter extends TurboFilter {
                 .maximumSize(cacheSize)
                 .build();
     }
+
 }
