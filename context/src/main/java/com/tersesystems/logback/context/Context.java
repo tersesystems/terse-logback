@@ -4,12 +4,12 @@ import org.slf4j.Marker;
 
 import java.util.Map;
 
-public interface Context<T extends Marker> {
-    Context<T> and(Context<Marker> context);
+public interface Context<M extends Marker, THIS extends Context<M, THIS>> {
+    THIS and(Context<? extends Marker, ?> context);
 
-    T asMarker();
+    THIS withTracer();
 
-    Context<T> withTracer();
+    M asMarker();
 
     boolean isTracingEnabled();
 

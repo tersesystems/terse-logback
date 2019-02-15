@@ -1,5 +1,6 @@
 package com.tersesystems.logback.context;
 
+import com.tersesystems.logback.context.logstash.LogstashContext;
 import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -7,12 +8,12 @@ import org.slf4j.Marker;
 /**
  * Proxy logger that takes a marker as argument.
  */
-public class ProxyContextLogger<T extends Marker> implements Logger, ContextAware<T> {
+public abstract class AbstractContextLogger<M extends Marker, C extends Context<M, C>, THIS> implements LoggerWithContext<M, C, THIS> {
 
-    private final Logger logger;
-    private final Context<T> context;
+    protected final Logger logger;
+    protected final C context;
 
-    public ProxyContextLogger(Context<T> context, Logger logger) {
+    public AbstractContextLogger(C context, Logger logger) {
         this.context = context;
         this.logger = logger;
     }
@@ -23,13 +24,13 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
     }
 
     @Override
-    public Context<T> getContext() {
+    public C getContext() {
         return this.context;
     }
 
     @Override
     public String toString() {
-        return String.format("ProxyContextLogger(context = %s,logger = %s)", this.context, this.logger);
+        return String.format("AbstractContextLogger(context = %s,logger = %s)", this.context, this.logger);
     }
 
 
@@ -343,4 +344,5 @@ public class ProxyContextLogger<T extends Marker> implements Logger, ContextAwar
             return contextMarker;
         }
     }
+
 }

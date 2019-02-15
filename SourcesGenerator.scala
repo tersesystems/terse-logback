@@ -12,7 +12,7 @@ object SourcesGenerator extends App {
     "txt.NoopLogger",
     "txt.LoggerStatement",
     "txt.ProxyConditionalLogger",
-    "txt.ProxyContextLogger",
+    "txt.AbstractContextLogger",
     "txt.ProxyLazyLogger",
     "txt.LazyLogger")
 

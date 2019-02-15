@@ -1,24 +1,21 @@
 package example;
 
-import com.tersesystems.logback.context.AbstractContext;
-import com.tersesystems.logback.context.Context;
-import com.tersesystems.logback.context.LogstashContext;
-import com.tersesystems.logback.context.ProxyContextLoggerFactory;
+import com.tersesystems.logback.context.logstash.LogstashContext;
+import com.tersesystems.logback.context.logstash.LogstashLoggerFactory;
 import org.slf4j.Logger;
-
-import static org.slf4j.LoggerFactory.getLogger;
+import org.slf4j.LoggerFactory;
 
 public class ClassWithTracer {
 
     // Add tracer to the context, and return a logger that covers over the context.
     private Logger getContextLogger(Request request) {
-        final Context context;
+        final AppContext context;
         if (request.queryStringContains("trace")) {
             context = request.context().withTracer();
         } else {
             context = request.context();
         }
-        return ProxyContextLoggerFactory.create(context).getLogger(getClass().getName());
+        return AppLoggerFactory.create(context).getLogger(getClass());
     }
 
     public void doThings(Request request) {
@@ -44,21 +41,3 @@ public class ClassWithTracer {
     }
 }
 
-class Request {
-    private final Context context;
-    private final String queryString;
-
-    Request(String queryString) {
-        String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        this.context = LogstashContext.create("correlationId", correlationId);
-        this.queryString = queryString;
-    }
-
-    public Context context() {
-        return context;
-    }
-
-    public boolean queryStringContains(String key) {
-        return (queryString.contains(key));
-    }
-}

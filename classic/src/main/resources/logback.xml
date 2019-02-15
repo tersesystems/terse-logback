@@ -52,10 +52,10 @@
     </turboFilter>
 
     <turboFilter class="com.tersesystems.logback.ExpiringDuplicateMessageFilter">
-        <allowedRepetitions>${expiringDuplicateMessages.allowedRepetitions}</allowedRepetitions>
-        <cacheSize>${expiringDuplicateMessages.cacheSize}</cacheSize>
-        <expireAfterWriteSeconds>${expiringDuplicateMessages.expireAfterWriteSeconds}</expireAfterWriteSeconds>
-        <excludeMarkers>${expiringDuplicateMessages.excludeMarkers}</excludeMarkers>
+        <allowedRepetitions>${expiringDuplicateMessageFilter.allowedRepetitions}</allowedRepetitions>
+        <cacheSize>${expiringDuplicateMessageFilter.cacheSize}</cacheSize>
+        <expireAfterWriteSeconds>${expiringDuplicateMessageFilter.expireAfterWriteSeconds}</expireAfterWriteSeconds>
+        <excludeMarkers>${expiringDuplicateMessageFilter.excludeMarkers}</excludeMarkers>
     </turboFilter>
 
     <include resource="terse-logback/appenders/console-appenders.xml"/>

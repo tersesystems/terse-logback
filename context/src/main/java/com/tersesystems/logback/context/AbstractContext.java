@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 // Immutable class, create multiple contexts and use "and" to aggregate more context.
-public abstract class AbstractContext<T extends Marker> implements Context<T> {
+public abstract class AbstractContext<M extends Marker, THIS extends Context<M, THIS>> implements Context<M, THIS> {
 
     private final Map<?, ?> entries;
     private final boolean tracing;
@@ -16,6 +16,9 @@ public abstract class AbstractContext<T extends Marker> implements Context<T> {
         this.entries = entries; this.tracing = tracing;
     }
 
+    /**
+     * @return an unmodifiable map of entries.
+     */
     public Map<?, ?> entries() {
         return Collections.unmodifiableMap(entries);
     }
