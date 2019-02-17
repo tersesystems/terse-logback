@@ -38,8 +38,18 @@ lazy val bytebuddy = (project in file("bytebuddy")).
 // Code to proxy and conditional logging.
 lazy val proxy = (project in file("proxy")).dependsOn(classic)
 
-// Code to manage context
-lazy val context = (project in file("context")).dependsOn(classic)
+// Code to manage context, no logback dependencies
+lazy val `context` = (project in file("context")).
+  settings(
+    libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.25"
+  )
+
+// Logstash implementation of context.
+lazy val `logstash-context` = (project in file("logstash-context")).
+  settings(
+    libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.2",
+    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
+  ).dependsOn(context)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val example = (project in file("example")).
@@ -47,7 +57,7 @@ lazy val example = (project in file("example")).
     publish / skip := true,
     mainClass := Some("example.Main"),
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
-  ).dependsOn(classic, proxy, context, bytebuddy)
+  ).dependsOn(classic, proxy, `logstash-context`, bytebuddy)
 
 // Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
 lazy val guice = (project in file("guice")).
@@ -58,7 +68,7 @@ lazy val guice = (project in file("guice")).
     libraryDependencies += "com.google.inject" % "guice" % "4.2.2",
     // https://tavianator.com/cgit/sangria.git
     libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1"
-  ).dependsOn(classic, proxy, context)
+  ).dependsOn(classic, proxy, `logstash-context`)
 
 
 lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
@@ -103,5 +113,5 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
     name := "terse-logback-root",
     publish / skip := true,
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(censor, proxy, context, classic, example, guice, bytebuddy
+  ).aggregate(censor, proxy, context, `logstash-context`, classic, example, guice, bytebuddy
 ).dependsOn(example) // dependsOn for the mainClass

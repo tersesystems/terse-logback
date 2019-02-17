@@ -2,21 +2,22 @@ package com.tersesystems.logback.context.logstash;
 
 import com.tersesystems.logback.context.AbstractContextLogger;
 import com.tersesystems.logback.context.Context;
-import com.tersesystems.logback.context.LogbackLoggerAware;
 import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
 
 import java.util.Optional;
 
 /**
  * Ease of use abstract class for loggers which are known to use LogstashMarker explicitly.
  *
- * @param <C>
- * @param <THIS>
+ * @param <C> the context type. to be used by the logger.
+ * @param <PL> parent logger type.
+ * @param <THIS> The self type.
  */
-public abstract class AbstractLogstashLogger<C extends Context<LogstashMarker, C>, THIS> extends AbstractContextLogger<LogstashMarker, C, THIS> implements LogbackLoggerAware {
+public abstract class AbstractLogstashLogger<C extends Context<LogstashMarker, C>, PL extends Logger, THIS> extends AbstractContextLogger<LogstashMarker, C, PL, THIS> implements LogbackLoggerAware {
 
-    public AbstractLogstashLogger(C context, Logger logger) {
+    public AbstractLogstashLogger(C context, PL logger) {
         super(context, logger);
     }
 
@@ -26,10 +27,20 @@ public abstract class AbstractLogstashLogger<C extends Context<LogstashMarker, C
             return Optional.of(logbackLogger);
         }
 
-        if (logger instanceof LogbackLoggerAware){
+        if (logger instanceof LogbackLoggerAware) {
             return ((LogbackLoggerAware)logger).getLogbackLogger();
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    protected Marker merge(Marker marker) {
+        LogstashMarker contextMarker = context.asMarker();
+        if (contextMarker != null) {
+            return contextMarker.and(marker);
+        } else {
+            return marker;
+        }
     }
 }

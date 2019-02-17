@@ -1,19 +1,17 @@
 package com.tersesystems.logback.context;
 
-import com.tersesystems.logback.context.logstash.LogstashContext;
-import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
 /**
  * Proxy logger that takes a marker as argument.
  */
-public abstract class AbstractContextLogger<M extends Marker, C extends Context<M, C>, THIS> implements LoggerWithContext<M, C, THIS> {
+public abstract class AbstractContextLogger<M extends Marker, C extends Context<M, C>, L extends Logger, THIS> implements LoggerWithContext<M, C, THIS> {
 
-    protected final Logger logger;
+    protected final L logger;
     protected final C context;
 
-    public AbstractContextLogger(C context, Logger logger) {
+    public AbstractContextLogger(C context, L logger) {
         this.context = context;
         this.logger = logger;
     }
@@ -32,7 +30,6 @@ public abstract class AbstractContextLogger<M extends Marker, C extends Context<
     public String toString() {
         return String.format("AbstractContextLogger(context = %s,logger = %s)", this.context, this.logger);
     }
-
 
     @Override
     public boolean isTraceEnabled() {
@@ -334,15 +331,6 @@ public abstract class AbstractContextLogger<M extends Marker, C extends Context<
         logger.error(merge(marker), msg, t);
     }
 
-
-    private Marker merge(Marker marker) {
-        Marker contextMarker = context.asMarker();
-        if (contextMarker instanceof LogstashContext) {
-            return ((LogstashMarker) contextMarker).and(marker);
-        } else {
-            contextMarker.add(marker);
-            return contextMarker;
-        }
-    }
+    protected abstract Marker merge(Marker marker);
 
 }

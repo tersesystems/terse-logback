@@ -1,13 +1,10 @@
-package com.tersesystems.logback.context;
+package com.tersesystems.logback.context.logstash;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
-import com.tersesystems.logback.context.logstash.LogstashContext;
-import com.tersesystems.logback.context.logstash.LogstashLogger;
-import com.tersesystems.logback.context.logstash.LogstashLoggerFactory;
 import net.logstash.logback.composite.loggingevent.LogstashMarkersJsonProvider;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
@@ -20,7 +17,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ProxyContentLoggerTest {
+public class LogstashLoggerTest {
 
     static class Foo {
         private final org.slf4j.Logger logger;

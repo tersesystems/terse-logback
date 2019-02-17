@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 public class ClassWithTracer {
 
     // Add tracer to the context, and return a logger that covers over the context.
-    private Logger getContextLogger(Request request) {
+    private AppLogger getContextLogger(Request request) {
         final AppContext context;
         if (request.queryStringContains("trace")) {
             context = request.context().withTracer();
@@ -19,7 +19,7 @@ public class ClassWithTracer {
     }
 
     public void doThings(Request request) {
-        Logger logger = getContextLogger(request);
+        AppLogger logger = getContextLogger(request);
 
         // This class is not logged at a TRACE level, so this should not show under
         // normal circumstances...

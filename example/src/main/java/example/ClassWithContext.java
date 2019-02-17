@@ -29,6 +29,8 @@ public class ClassWithContext {
         obliviousToContext.doStuff();
 
         // Or you can create your own context and futzs with it.
+        // Here we create an AppContext / AppLogger / AppLoggerFactory that lets us
+        // set domain specific attributes on the context.
         AppContext appContext = AppContext.create().withCorrelationId(correlationId);
         AwareOfContext awareOfContext = new AwareOfContext(appContext);
         awareOfContext.doStuff();
@@ -36,11 +38,11 @@ public class ClassWithContext {
 
     private static class AwareOfContext {
         private final AppContext appContext;
-        private final Logger logger;
+        private final AppLogger logger;
 
         public AwareOfContext(AppContext appContext) {
             this.appContext = appContext;
-            this.logger = AppLoggerFactory.create().getLogger(getClass());
+            this.logger = AppLoggerFactory.create().getLogger(getClass()).withContext(appContext);
         }
 
         public void doStuff() {

@@ -7,7 +7,6 @@ import com.google.inject.spi.InjectionPoint;
 import com.tavianator.sangria.contextual.ContextSensitiveBinder;
 import com.tavianator.sangria.contextual.ContextSensitiveProvider;
 import com.tersesystems.logback.context.logstash.LogstashContext;
-import com.tersesystems.logback.context.AbstractContextLoggerFactory;
 import com.tersesystems.logback.context.logstash.LogstashLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -55,7 +54,8 @@ public class GuiceAssistedLogging {
         @Override
         public ILoggerFactory get() {
             // This would be hooked up to @RequestScoped in a real application
-            return LogstashLoggerFactory.create(LogstashContext.create("threadName", Thread.currentThread().getName()));
+            LogstashContext context = LogstashContext.create("threadName", Thread.currentThread().getName());
+            return LogstashLoggerFactory.create().withContext(context);
         }
     }
 

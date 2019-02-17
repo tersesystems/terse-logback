@@ -10,10 +10,9 @@ import java.util.stream.Collectors;
 public abstract class AbstractContext<M extends Marker, THIS extends Context<M, THIS>> implements Context<M, THIS> {
 
     private final Map<?, ?> entries;
-    private final boolean tracing;
 
-    protected AbstractContext(Map<?, ?> entries, boolean tracing) {
-        this.entries = entries; this.tracing = tracing;
+    protected AbstractContext(Map<?, ?> entries) {
+        this.entries = entries;
     }
 
     /**
@@ -21,11 +20,6 @@ public abstract class AbstractContext<M extends Marker, THIS extends Context<M, 
      */
     public Map<?, ?> entries() {
         return Collections.unmodifiableMap(entries);
-    }
-
-    @Override
-    public boolean isTracingEnabled() {
-        return tracing;
     }
 
     @Override

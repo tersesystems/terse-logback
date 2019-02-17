@@ -11,7 +11,5 @@ public interface Context<M extends Marker, THIS extends Context<M, THIS>> {
 
     M asMarker();
 
-    boolean isTracingEnabled();
-
     Map<?,?> entries();
 }

@@ -1,20 +1,19 @@
 package com.tersesystems.logback.context.logstash;
 
-import com.tersesystems.logback.TracerFactory;
-import com.tersesystems.logback.context.AbstractContext;
 import com.tersesystems.logback.context.Context;
-import net.logstash.logback.marker.LogstashMarker;
-import net.logstash.logback.marker.Markers;
 import org.slf4j.Marker;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *A context backed by logstash markers.
+ */
 public class LogstashContext extends AbstractLogstashContext<LogstashContext> {
 
-    protected LogstashContext(Map<?, ?> entries, boolean t) {
-        super(entries, t);
+    protected LogstashContext(Map<?, ?> entries) {
+        super(entries);
     }
 
     @Override
@@ -24,14 +23,13 @@ public class LogstashContext extends AbstractLogstashContext<LogstashContext> {
 
     @Override
     public LogstashContext and(Context<? extends Marker, ?> context) {
-        boolean tracing = this.isTracingEnabled() || context.isTracingEnabled();
         Map<Object, Object> mergedEntries = new HashMap<>(this.entries());
         mergedEntries.putAll(context.entries());
-        return new LogstashContext(mergedEntries, tracing);
+        return new LogstashContext(mergedEntries);
     }
 
     public static LogstashContext create(Map<?, ?> entries) {
-        return new LogstashContext(entries, false);
+        return new LogstashContext(entries);
     }
 
     public static LogstashContext create(Object key, Object value) {

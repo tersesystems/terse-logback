@@ -2,7 +2,10 @@ package com.tersesystems.logback.context.logstash;
 
 import org.slf4j.Logger;
 
-public class LogstashLogger extends AbstractLogstashLogger<LogstashContext, LogstashLogger> {
+/**
+ * This class is a context aware logger backed by a LogstashContext.
+ */
+public class LogstashLogger extends AbstractLogstashLogger<LogstashContext, Logger, LogstashLogger> {
 
     public LogstashLogger(LogstashContext context, Logger logger) {
         super(context, logger);
