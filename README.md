@@ -18,10 +18,10 @@ It's logging in JSON.  Technically, you could be logging in another structure li
 
 Semantically, a log entry typically has multiple pieces of information associated with it, described as "high cardinality" by observability geeks.  Structured logging means that the cardinality goes from "closed" -- you can only log things that you have defined fields for -- to "open", where you can add arbitrary fields and objects to your log entry as long as it's JSON.
 
-Structured logging means that you can add more logstashContext to logs and do more with them without having to do regexes.  As [Honeycomb](https://honeycomb.io) [describes it](
+Structured logging means that you can add more context to logs and do more with them without having to do regexes.  As [Honeycomb](https://honeycomb.io) [describes it](
 https://www.honeycomb.io/blog/you-could-have-invented-structured-logging/):
 
-> Structured logging is really all about giving yourself — and your team — a logging API to help you provide consistent logstashContext in events. An unstructured logger accepts strings. A structured logger accepts a map, hash, or dictionary that describes all the attributes you can think of for an event.
+> Structured logging is really all about giving yourself — and your team — a logging API to help you provide consistent context in events. An unstructured logger accepts strings. A structured logger accepts a map, hash, or dictionary that describes all the attributes you can think of for an event.
 
 Logs are [different from events](https://www.honeycomb.io/blog/how-are-structured-logs-different-from-events/).  All events can be represented as logs, but not all logs are events.  Many logs are only portions of events.  An event is a conceptual abstraction and a log is one possible representation of that abstraction.
 
@@ -31,9 +31,9 @@ Logs are also different from metrics.  A metric represents a single number.  You
 
 There is a question of what you want to add when you log.  This is a matter of taste, but in general you should log so that you [create a consistent narrative](https://www.honeycomb.io/blog/event-foo-constructing-a-coherent-narrative/).  As previously mentioned, a log may indicate a portion of an event, so you want to log where doing so would help tell a story of what happened afterwards.
 
-There are some things you should [always add to an event](https://www.honeycomb.io/blog/event-foo-what-should-i-add-to-an-event/), such as who is talking to your service, what they're asking, business relevant fields, additional logstashContext around your service / environment, response time and particulars. You should add units to your field names when you measure a quantity, i.e. `response_time_ms`, and add a "human readable" version of internal information if available.
+There are some things you should [always add to an event](https://www.honeycomb.io/blog/event-foo-what-should-i-add-to-an-event/), such as who is talking to your service, what they're asking, business relevant fields, additional context around your service / environment, response time and particulars. You should add units to your field names when you measure a quantity, i.e. `response_time_ms`, and add a "human readable" version of internal information if available.
 
-You should add [logstashContext to your logs](https://www.honeycomb.io/blog/event-foo-moar-logstashContext-better-events/) that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.
+You should add [context to your logs](https://www.honeycomb.io/blog/event-foo-moar-context-better-events/) that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.
 
 Adding a [correlation id](https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/) helps you [design for results](https://www.honeycomb.io/blog/event-foo-designing-for-results/) and tie your logs into a coherent event.  You don't need to use a UUID: a [flake id](https://github.com/boundary/flake) will probably be better for you.  I'm using [idem](https://github.com/mguenther/idem/) here, but most things will work.
 
@@ -106,14 +106,13 @@ and in JSON:
 
 ### Markers
 
-If you want to add more logstashContext and don't want it to show up in the message, you can use [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java) instead.
+If you want to add more context and don't want it to show up in the message, you can use [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java) instead.
 
 If you don't want to pass through anything at all, and instead use a proxy logger, you can use `com.tersesystems.logback.proxy.ProxyContextLogger`, which applies it under the hood.  Adding state to the logger is one of those useful tricks that can make life easier, as long as you implement `org.slf4j.Logger` and don't expose your logger to the world.  This is discussed in the "Logging with Injected Context" section.
 
 ```java
 package example;
 
-import com.tersesystems.logback.proxy.ProxyContextLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
@@ -124,8 +123,8 @@ public class ClassWithMarkers {
     private final Logger logger = getLogger(getClass());
 
     public void doThingsWithMarker(String correlationId) {
-        LogstashMarker logstashContext = Markers.append("correlationId", correlationId);
-        logger.info(logstashContext, "log with marker explicitly");
+        LogstashMarker logstashMarker = Markers.append("correlationId", correlationId);
+        logger.info(logstashMarker, "log with marker explicitly");
     }
 
     public static void main(String[] args) {
@@ -148,117 +147,18 @@ and the following JSON:
 {"@timestamp":"2019-01-20T23:26:50.351+00:00","@version":"1","message":"log with marker explicitly","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIy0T878gCNIdfWAAA"}
 ```
 
-## Tracer Bullet Logging
-
-Using a `ProxyContextLogger` also allows you the option to do "tracing bullet" logging, where some extra logstashContext, such as a query parameter in an HTTP request, could cause a logger to log at a lower level than it would normally do to a special marker.  You can use this for debugging on the fly without changing logger levels, or use it for random sampling of some number of operations.
-
-Defining the following turbo filter in `logback.xml`:
-
-```xml
-<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-  <Name>TRACER_FILTER</Name>
-  <Marker>TRACER</Marker>
-  <OnMatch>ACCEPT</OnMatch>
-</turboFilter>
-```
-
-and adding it to an existing marker and wrapping it in a ` com.tersesystems.logback.proxy.ProxyContextLogger`, you can get:
-
-```java
-package example;
-
-import com.tersesystems.logback.proxy.ContextImpl;
-import com.tersesystems.logback.proxy.Context;
-import com.tersesystems.logback.proxy.ProxyContextLogger;
-import TracerFactory;
-import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-
-import static net.logstash.logback.marker.Markers.append;
-import static org.slf4j.LoggerFactory.getLogger;
-
-public class ClassWithTracer {
-
-    // Add a TRACER marker to the request, and use a proxy context wrapper
-    private Logger getContextLogger(Request request) {
-        final TracerFactory tracerFactory = TracerFactory.getInstance();
-        final Marker marker;
-        if (request.queryStringContains("trace")) {
-            marker = tracerFactory.createTracer(request.context().asMarker());
-        } else {
-            marker = request.context().asMarker();
-        }
-        return ProxyContextLoggerFactory.create(marker).getLogger(getClass().getName());
-    }
-
-    public void doThings(Request request) {
-        Logger logger = getContextLogger(request);
-
-        // This class is not logged at a TRACE level, so this should not show under
-        // normal circumstances...
-        if (logger.isTraceEnabled()) {
-            logger.trace("This log message is only shown if the request has trace in the query string!");
-        }
-    }
-
-    public static void main(String[] args) {
-        ClassWithTracer classWithTracer = new ClassWithTracer();
-
-        // run it without the trace flag
-        Request request = new Request("foo=bar");
-        classWithTracer.doThings(request);
-
-        // run it WITH the trace flag
-        Request requestWithTrace = new Request("foo=bar&trace=on");
-        classWithTracer.doThings(requestWithTrace);
-    }
-}
-
-class Request {
-    private final MarkerContext context;
-    private final String queryString;
-
-    Request(String queryString) {
-        String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        this.context = LogstashMarkerContext.create(append("correlationId", correlationId));
-        this.queryString = queryString;
-    }
-
-    public MarkerContext context() {
-        return context;
-    }
-
-    public boolean queryStringContains(String key) {
-        return (queryString.contains(key));
-    }
-}
-```
-
-which gives the following output:
-
-```text
-2019-01-26T18:40:39.088+0000 [TRACE] example.ClassWithTracer in main - This log message is only shown if the request has trace in the query string!
-```
-
-```json
-{"@timestamp":"2019-01-26T18:40:39.088+00:00","@version":"1","message":"This log message is only shown if the request has trace in the query string!","logger_name":"example.ClassWithTracer","thread_name":"main","level":"TRACE","level_value":5000,"tags":["TRACER"],"correlationId":"FX1UlmU3VfqlX0qxArsAAA"}
-```
-
 ## Controlling Logging
 
-Tracer Bullet logging is one situation where you want to log information you wouldn't normally log.  The opposite is also true: there are reasons why you would not want to log information you may normally log.
+There are reasons why you would not want to log information you may normally log.
 
 The historical reason for not logging is that there is a construction cost involved in creating parameters.  This is still true in a way today -- CPU and memory are not typically constraints for logging statements, but there are storage costs involved in producing logs.  Accumulated logs must be parsed and searched, making queries slower.
 
-There is a `com.tersesystems.logback.ConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
+There is a `com.tersesystems.logback.proxy.ProxyConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
 
 ```java
 package example;
 
-import com.tersesystems.logback.proxy.ConditionalLogger;
-import com.tersesystems.logback.proxy.ProxyConditionalLogger;
+import com.tersesystems.logback.proxy.*;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
@@ -278,19 +178,16 @@ public class ClassWithConditionalLogger {
         final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        LogstashMarker logstashContext = Markers.append("correlationId", correlationId);
+        LogstashMarker context = Markers.append("correlationId", correlationId);
 
         // ProxyConditionalLogger will only log if this is my machine
         Logger conditionalLoggerAsNormalLogger = (Logger) conditionalLogger;
         conditionalLoggerAsNormalLogger.info("This will still only log if it's my machine");
 
-        // Can use an ifInfo statement and a Consumer if that's easier...
-        conditionalLogger.ifInfo(stmt -> stmt.apply(logstashContext, "log if INFO && user.name == wsargent"));
-
         // Log only if the level is info and the above conditions are met AND it's tuesday
         conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {
             // Log very large thing in here...
-            stmt.apply(logstashContext, "log if INFO && user.name == wsargent && objectIsNotTooLargeToLog()");
+            stmt.apply(context, "log if INFO && user.name == wsargent && objectIsNotTooLargeToLog()");
         });
     }
 
@@ -311,22 +208,21 @@ public class ClassWithConditionalLogger {
 
 ## Logging with Injected Context
 
-When you're using structured logging, you'll inevitably have to pass around the `LogstashMarker` or `StructuredArgument` with it so that you can add logstashContext to your logging.  In the past, the recommended way to do this was MDC.
+When you're using structured logging, you'll inevitably have to pass around the `LogstashMarker` or `StructuredArgument` with it so that you can add context to your logging.  In the past, the recommended way to do this was MDC.
 
-Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding logstashContext to logging, but there are several things that make it problematic.  
+Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.  
 
-MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic logstashContext of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
+MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
-There are numerous workarounds, but it's safer and easier to use an explicit logstashContext as a field or parameter.  If you don't want to manage this in your logger directly, then the safest way is to handle it through injection, also known as using constructor parameters.
+There are numerous workarounds, but it's safer and easier to use an explicit context as a field or parameter.  If you don't want to manage this in your logger directly, then the safest way is to handle it through injection, also known as using constructor parameters.
 
 When you create an instance, you can pass in a single `org.slf4j.ILoggerFactory` instance that will create your loggers for you.  
 
 ```java
 package example;
 
-import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
-import net.logstash.logback.marker.LogstashMarker;
-import net.logstash.logback.marker.Markers;
+import com.tersesystems.logback.context.logstash.LogstashContext;
+import com.tersesystems.logback.context.logstash.LogstashLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
@@ -345,21 +241,227 @@ public class ClassWithContext {
     }
 
     public static void main(String[] args) {
+        // You can create objects that are oblivious to context, and just use the base
+        // logstash markers...
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
-        LogstashMarker logstashContext = Markers.append("correlationId", correlationId);
-        ILoggerFactory loggerFactory = ProxyContextLoggerFactory.create(logstashContext);
-
+        LogstashContext context = LogstashContext.create("correlationId", correlationId);
+        LogstashLoggerFactory loggerFactory = LogstashLoggerFactory.create(context);
         ObliviousToContext obliviousToContext = new ObliviousToContext(loggerFactory);
         obliviousToContext.doStuff();
+
+        // Or you can create your own context and futzs with it.
+        // Here we create an AppContext / AppLogger / AppLoggerFactory that lets us
+        // set domain specific attributes on the context.
+        AppContext appContext = AppContext.create().withCorrelationId(correlationId);
+        AwareOfContext awareOfContext = new AwareOfContext(appContext);
+        awareOfContext.doStuff();
+    }
+
+    private static class AwareOfContext {
+        private final AppContext appContext;
+        private final AppLogger logger;
+
+        public AwareOfContext(AppContext appContext) {
+            this.appContext = appContext;
+            this.logger = AppLoggerFactory.create().getLogger(getClass()).withContext(appContext);
+        }
+
+        public void doStuff() {
+            logger.info("My correlation id is {}", appContext.getCorrelationId().orElse("null"));
+        }
     }
 }
 ```
 
-```json
-{"@timestamp":"2019-01-26T22:10:46.518+00:00","@version":"1","message":"hello world!","logger_name":"example.ClassWithContext$ObliviousToContext","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FX1XWgmWpfERZni5rwIAAA"}
+In the second example, an `AppContext` / `AppLogger` is used -- this is an example of domain specific methods and fields being added to the context.
+
+```java
+package example;
+
+import com.tersesystems.logback.context.TracerFactory;
+import com.tersesystems.logback.context.Context;
+import com.tersesystems.logback.context.logstash.AbstractLogstashContext;
+import com.tersesystems.logback.context.logstash.AbstractLogstashLoggerFactory;
+import com.tersesystems.logback.context.logstash.AbstractLogstashLogger;
+import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.Markers;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+
+class AppContext extends AbstractLogstashContext<AppContext> {
+
+    public static final String CORRELATION_ID = "correlationId";
+    private final boolean tracer;
+
+    protected AppContext(Map<?, ?> entries, boolean tracer) {
+        super(entries);
+        this.tracer = tracer;
+    }
+
+    public static AppContext create() {
+        return new AppContext(Collections.emptyMap(), false);
+    }
+
+    public static AppContext create(Object key, Object value) {
+        return new AppContext(Collections.singletonMap(key, value), false);
+    }
+
+    public Optional<String> getCorrelationId() {
+        return Stream.of(entries().get(CORRELATION_ID))
+                .map(cid -> (String) cid)
+                .findFirst();
+    }
+
+    public AppContext withCorrelationId(String correlationId) {
+        return and(AppContext.create(CORRELATION_ID, correlationId));
+    }
+
+    @Override
+    public AppContext withTracer() {
+        return create(entries(), true);
+    }
+
+    public boolean isTracingEnabled() {
+        return tracer;
+    }
+
+    @Override
+    public LogstashMarker asMarker() {
+        if (isTracingEnabled()) {
+            return Markers.appendEntries(entries()).and(TracerFactory.getInstance().createTracer());
+        } else {
+            return Markers.appendEntries(entries());
+        }
+    }
+
+    @Override
+    public AppContext and(Context<? extends Marker, ?> otherContext) {
+        boolean otherTracing = (otherContext instanceof AppContext) && ((AppContext) otherContext).isTracingEnabled();
+        // XXX Same as LogstashContext -- is there a way to access this directly?
+        Map<Object, Object> mergedEntries = new HashMap<>(this.entries());
+        mergedEntries.putAll(otherContext.entries());
+        return new AppContext(mergedEntries, this.isTracingEnabled() || otherTracing);
+    }
+
+}
+
+class AppLogger extends AbstractLogstashLogger<AppContext, Logger, AppLogger> {
+
+    public AppLogger(AppContext context, Logger logger) {
+        super(context, logger);
+    }
+
+    @Override
+    public AppLogger withContext(AppContext otherContext) {
+        return new AppLogger(this.context.and(otherContext), this.logger);
+    }
+}
+
+class AppLoggerFactory extends AbstractLogstashLoggerFactory<AppContext, AppLogger, ILoggerFactory, AppLoggerFactory> {
+
+    protected AppLoggerFactory(AppContext context, ILoggerFactory loggerFactory) {
+        super(context, loggerFactory);
+    }
+
+    @Override
+    public AppLoggerFactory withContext(AppContext context) {
+        return new AppLoggerFactory(getContext().and(context), getILoggerFactory());
+    }
+
+    @Override
+    public AppLogger getLogger(String name) {
+        return new AppLogger(AppContext.create(), getILoggerFactory().getLogger(name));
+    }
+
+    public static AppLoggerFactory create() {
+        return create(AppContext.create());
+    }
+
+    public static AppLoggerFactory create(AppContext context) {
+        return new AppLoggerFactory(context, LoggerFactory.getILoggerFactory());
+    }
+
+}
 ```
 
-This style of programming does assume that you can control the instantiation of your objects, and it doesn't go into some of the details such as accumulating extra context.  Keeping a context object around so you can accumulate more context may be a good idea in some circumstances.  
+This style of programming does assume that you can control the instantiation of your objects, and it doesn't go into some of the details such as accumulating extra context.  Keeping a context object around so you can accumulate more context may be a good idea in some circumstances.
+
+## Tracer Bullet Logging
+
+The `AppLogger` makes reference to a tracer, but doesn't go into detail.  
+
+Using a context also allows you the option to do "tracing bullet" logging, where some extra context, such as a query parameter in an HTTP request, could cause a logger to log at a lower level than it would normally do to a special marker.  You can use this for debugging on the fly without changing logger levels, or use it for random sampling of some number of operations.
+
+Defining the following turbo filter in `logback.xml`:
+
+```xml
+<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+  <Name>TRACER_FILTER</Name>
+  <Marker>TRACER</Marker>
+  <OnMatch>ACCEPT</OnMatch>
+</turboFilter>
+```
+
+and adding it to an existing marker and wrapping it in a context logger, you can get:
+
+```java
+package example;
+
+public class ClassWithTracer {
+
+    // Add tracer to the context, and return a logger that covers over the context.
+    private AppLogger getContextLogger(Request request) {
+        final AppContext context;
+        if (request.queryStringContains("trace")) {
+            context = request.context().withTracer();
+        } else {
+            context = request.context();
+        }
+        return AppLoggerFactory.create(context).getLogger(getClass());
+    }
+
+    public void doThings(Request request) {
+        AppLogger logger = getContextLogger(request);
+
+        // This class is not logged at a TRACE level, so this should not show under
+        // normal circumstances...
+        if (logger.isTraceEnabled()) {
+            logger.trace("This log message is only shown if the request has trace in the query string!");
+        }
+    }
+
+    public static void main(String[] args) {
+        ClassWithTracer classWithTracer = new ClassWithTracer();
+
+        // run it without the trace flag
+        Request request = new Request("foo=bar");
+        classWithTracer.doThings(request);
+
+        // run it WITH the trace flag
+        Request requestWithTrace = new Request("foo=bar&trace=on");
+        classWithTracer.doThings(requestWithTrace);
+    }
+}
+```
+
+which gives the following output:
+
+```text
+2019-01-26T18:40:39.088+0000 [TRACE] example.ClassWithTracer in main - This log message is only shown if the request has trace in the query string!
+```
+
+```json
+{"@timestamp":"2019-01-26T18:40:39.088+00:00","@version":"1","message":"This log message is only shown if the request has trace in the query string!","logger_name":"example.ClassWithTracer","thread_name":"main","level":"TRACE","level_value":5000,"tags":["TRACER"],"correlationId":"FX1UlmU3VfqlX0qxArsAAA"}
+```
 
 ## Instrumenting Logging Code with Byte Buddy
 
@@ -594,7 +696,7 @@ which yields:
 {"@timestamp":"2019-01-27T00:19:08.628+00:00","@version":"1","message":"hello world!","logger_name":"example.GuiceAssistedLogging$MyClass","thread_name":"main","level":"INFO","level_value":20000,"threadName":"main"}
 ```
 
-If you are using a Servlet based API, then you can piggyback of Guice's [servlet extensions](https://github.com/google/guice/wiki/Servlets) and then integrate the logging logstashContext as part of the [`CDI / JSR 299 / @RequestScoped`](https://docs.oracle.com/javaee/6/tutorial/doc/gjbbk.html).  I have not tried this myself.
+If you are using a Servlet based API, then you can piggyback of Guice's [servlet extensions](https://github.com/google/guice/wiki/Servlets) and then integrate the logging context as part of the [`CDI / JSR 299 / @RequestScoped`](https://docs.oracle.com/javaee/6/tutorial/doc/gjbbk.html).  I have not tried this myself.
 
 ## Logback Specific Things
 

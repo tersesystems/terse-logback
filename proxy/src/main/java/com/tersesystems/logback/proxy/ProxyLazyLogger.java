@@ -2,7 +2,6 @@ package com.tersesystems.logback.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
-import org.slf4j.event.Level;
 import java.util.function.*;
 import java.util.Optional;
 
