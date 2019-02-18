@@ -170,7 +170,7 @@ package example;
 import com.tersesystems.logback.proxy.ContextImpl;
 import com.tersesystems.logback.proxy.Context;
 import com.tersesystems.logback.proxy.ProxyContextLogger;
-import com.tersesystems.logback.TracerFactory;
+import TracerFactory;
 import com.tersesystems.logback.proxy.ProxyContextLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

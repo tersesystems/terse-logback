@@ -1,10 +1,5 @@
 package example;
 
-import com.tersesystems.logback.context.logstash.LogstashContext;
-import com.tersesystems.logback.context.logstash.LogstashLoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ClassWithTracer {
 
     // Add tracer to the context, and return a logger that covers over the context.

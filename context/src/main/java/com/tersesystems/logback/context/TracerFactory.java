@@ -1,4 +1,4 @@
-package com.tersesystems.logback;
+package com.tersesystems.logback.context;
 
 import org.slf4j.IMarkerFactory;
 import org.slf4j.Marker;

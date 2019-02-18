@@ -1,6 +1,6 @@
 package example;
 
-import com.tersesystems.logback.TracerFactory;
+import com.tersesystems.logback.context.TracerFactory;
 import com.tersesystems.logback.context.Context;
 import com.tersesystems.logback.context.logstash.AbstractLogstashContext;
 import com.tersesystems.logback.context.logstash.AbstractLogstashLoggerFactory;
@@ -68,10 +68,10 @@ class AppContext extends AbstractLogstashContext<AppContext> {
     @Override
     public AppContext and(Context<? extends Marker, ?> otherContext) {
         boolean otherTracing = (otherContext instanceof AppContext) && ((AppContext) otherContext).isTracingEnabled();
-        boolean tracing = this.isTracingEnabled() || otherTracing;
+        // XXX Same as LogstashContext -- is there a way to access this directly?
         Map<Object, Object> mergedEntries = new HashMap<>(this.entries());
         mergedEntries.putAll(otherContext.entries());
-        return new AppContext(mergedEntries, tracing);
+        return new AppContext(mergedEntries, this.isTracingEnabled() || otherTracing);
     }
 
 }
@@ -99,6 +99,11 @@ class AppLoggerFactory extends AbstractLogstashLoggerFactory<AppContext, AppLogg
         return new AppLoggerFactory(getContext().and(context), getILoggerFactory());
     }
 
+    @Override
+    public AppLogger getLogger(String name) {
+        return new AppLogger(AppContext.create(), getILoggerFactory().getLogger(name));
+    }
+
     public static AppLoggerFactory create() {
         return create(AppContext.create());
     }
@@ -107,8 +112,4 @@ class AppLoggerFactory extends AbstractLogstashLoggerFactory<AppContext, AppLogg
         return new AppLoggerFactory(context, LoggerFactory.getILoggerFactory());
     }
 
-    @Override
-    public AppLogger getLogger(String name) {
-        return new AppLogger(AppContext.create(), getILoggerFactory().getLogger(name));
-    }
 }
