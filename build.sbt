@@ -59,8 +59,8 @@ lazy val example = (project in file("example")).
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0"
   ).dependsOn(classic, proxy, `logstash-context`, bytebuddy)
 
-// Your end user project.  Add a "logback.conf" file and a library dependency on your base project, and you're done.
-lazy val guice = (project in file("guice")).
+// Show `guice` configuration with a provider.
+lazy val `guice-example` = (project in file("guice-example")).
   settings(
     publish / skip := true,
     mainClass := Some("example.Main"),
@@ -113,5 +113,5 @@ lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
     name := "terse-logback-root",
     publish / skip := true,
     mainClass in Compile := (mainClass in Compile in example).value
-  ).aggregate(censor, proxy, context, `logstash-context`, classic, example, guice, bytebuddy
+  ).aggregate(censor, bytebuddy, proxy, context, `logstash-context`, classic, example, `guice-example`
 ).dependsOn(example) // dependsOn for the mainClass

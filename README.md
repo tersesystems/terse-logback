@@ -4,11 +4,13 @@ This is a Java project that shows how to use [Logback](https://logback.qos.ch/ma
 
 ## Project Setup
 
-The project is configured into several modules: `censor`, `proxy`, `classic`, `example`, and `guice`.  The most relevant ones to start with are `classic` and `example`.
+The project is configured into several modules: `censor`, `proxy`, `classic`, `example`, and `guice-example`.  The most relevant ones to start with are `classic` and `example`.
 
 The `classic` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `classic`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
 
 Notably, the `example` project cannot touch the appenders directly, and has no control over the format of the JSON appender -- console and text patterns can be overridden for developer convenience.  By enforcing a [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) between **logger configuration** and **logging levels**, it is easy and simple to manage appenders in one place, e.g. going from file appenders to TCP appenders, adding filters for sensitive information, or collapsing repeated log information.
+
+The `guice-example` shows a logback factory that is exposed through a `Provider` in Guice.
 
 This is not intended to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
 
@@ -108,8 +110,6 @@ and in JSON:
 
 If you want to add more context and don't want it to show up in the message, you can use [`net.logstash.logback.marker.Markers`](https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java) instead.
 
-If you don't want to pass through anything at all, and instead use a proxy logger, you can use `com.tersesystems.logback.proxy.ProxyContextLogger`, which applies it under the hood.  Adding state to the logger is one of those useful tricks that can make life easier, as long as you implement `org.slf4j.Logger` and don't expose your logger to the world.  This is discussed in the "Logging with Injected Context" section.
-
 ```java
 package example;
 
@@ -146,6 +146,8 @@ and the following JSON:
 ```json
 {"@timestamp":"2019-01-20T23:26:50.351+00:00","@version":"1","message":"log with marker explicitly","logger_name":"example.ClassWithMarkers","thread_name":"main","level":"INFO","level_value":20000,"correlationId":"FXtylIy0T878gCNIdfWAAA"}
 ```
+
+If you don't want to pass through anything at all, and instead use a proxy logger, you can use `com.tersesystems.logback.context.logstash.LogstashLogger`, which applies it under the hood.  Adding state to the logger is one of those useful tricks that can make life easier, as long as you implement `org.slf4j.Logger` and don't expose your logger to the world.  This is discussed in the "Logging with Injected Context" section.
 
 ## Controlling Logging
 
@@ -613,9 +615,8 @@ import com.google.inject.Injector;
 import com.google.inject.spi.InjectionPoint;
 import com.tavianator.sangria.contextual.ContextSensitiveBinder;
 import com.tavianator.sangria.contextual.ContextSensitiveProvider;
-import com.tersesystems.logback.ProxyContextLoggerFactory;
-import net.logstash.logback.marker.LogstashMarker;
-import net.logstash.logback.marker.Markers;
+import com.tersesystems.logback.context.logstash.LogstashContext;
+import com.tersesystems.logback.context.logstash.LogstashLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
@@ -662,8 +663,8 @@ public class GuiceAssistedLogging {
         @Override
         public ILoggerFactory get() {
             // This would be hooked up to @RequestScoped in a real application
-            LogstashMarker logstashContext = Markers.append("threadName", Thread.currentThread().getName());
-            return ProxyContextLoggerFactory.create(logstashContext);
+            LogstashContext context = LogstashContext.create("threadName", Thread.currentThread().getName());
+            return LogstashLoggerFactory.create().withContext(context);
         }
     }
 
@@ -687,6 +688,7 @@ public class GuiceAssistedLogging {
         // Assume this is running in an HTTP request that is @RequestScoped
         instance.doStuff();
     }
+
 }
 ```
 

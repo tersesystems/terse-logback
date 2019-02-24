@@ -38,6 +38,7 @@
             </throwableConverter>
 
             <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+            <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
             <if condition='p("jsonfile.prettyprint").contains("true")'>
                 <then>
                     <!-- Pretty print for better end user experience. -->
