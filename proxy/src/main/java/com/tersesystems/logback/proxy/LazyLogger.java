@@ -1,12 +1,9 @@
 package com.tersesystems.logback.proxy;
 
-import org.slf4j.Logger;
 import org.slf4j.Marker;
-import org.slf4j.event.Level;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.Predicate;
+
 import java.util.Optional;
+import java.util.function.Consumer;
 
 
 public interface LazyLogger {
