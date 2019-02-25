@@ -5,5 +5,5 @@ package com.tersesystems.logback.censor;
  */
 @FunctionalInterface
 public interface Censor {
-    <T> T apply(T input);
+    CharSequence apply(CharSequence input);
 }

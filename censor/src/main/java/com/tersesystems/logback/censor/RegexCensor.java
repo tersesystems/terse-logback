@@ -24,15 +24,12 @@ public class RegexCensor implements Censor {
     }
 
     @Override
-    public <T> T apply(T original) {
-        if (original instanceof String) {
-            String acc = (String) original;
-            for (Pattern pattern : patterns) {
-                acc = pattern.matcher(acc).replaceAll(replacementText);
-            }
-            return (T) acc;
+    public CharSequence apply(CharSequence original) {
+        CharSequence acc = original;
+        for (Pattern pattern : patterns) {
+            acc = pattern.matcher(acc).replaceAll(replacementText);
         }
-        return original;
+        return acc;
     }
 
 }

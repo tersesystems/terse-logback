@@ -26,7 +26,7 @@ public class CensoringMessageConverter extends ClassicConverter {
     public String convert(ILoggingEvent event) {
         String formattedMessage = event.getFormattedMessage();
         if (censor != null) {
-            return censor.apply(formattedMessage);
+            return String.valueOf(censor.apply(formattedMessage));
         } else {
             return formattedMessage;
         }

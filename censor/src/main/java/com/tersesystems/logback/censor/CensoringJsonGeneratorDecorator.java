@@ -76,7 +76,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
 
         private String censorSensitiveMessage(String original) {
             if (censor != null) {
-                return censor.apply(original);
+                return String.valueOf(censor.apply(original));
             } else {
                 return original;
             }

@@ -67,18 +67,39 @@ lazy val `guice-example` = (project in file("guice-example")).
     libraryDependencies += "net.mguenther.idem" % "idem-core" % "0.1.0",
     libraryDependencies += "com.google.inject" % "guice" % "4.2.2",
     // https://tavianator.com/cgit/sangria.git
-    libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1"
+    libraryDependencies += "com.tavianator.sangria" % "sangria-slf4j" % "1.3.1",
+    dependencyOverrides ++= Seq(
+      "com.google.guava" % "guava" % "25.1-android",
+      "com.google.inject" % "guice" % "4.2.2",
+      "org.slf4j" % "slf4j-api" % "1.7.25"
+    )
   ).dependsOn(classic, proxy, `logstash-context`)
 
 
 lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
   .settings(
     inThisBuild(List(
-      organization := "com.tersesystems",
+      organization := "com.tersesystems.logback",
       crossPaths := false,
       autoScalaLibrary := false,
-      version      := "0.1.0-SNAPSHOT",
+      releaseEarlyEnableSyncToMaven := false,
+      // These are normal sbt settings to configure for release, skip if already defined
+      licenses := Seq("Apache 2" -> url("http://opensource.org/licenses/YOUR_LICENSE")),
+      homepage := Some(url("https://github.com/tersesystems/terse-logback")),
+      developers := List(Developer("wsargent", "Will Sargent", "will@tersesystems.com", url("https://tersesystems.com"))),
+      scmInfo := Some(ScmInfo(url("https://github.com/tersesystems/terse-logback"), "scm:git:git@github.com:tersesystems/terse-logback.git")),
+      releaseEarlyWith := BintrayPublisher,
+      releaseEarlyEnableLocalReleases := true,
+      useGpg := true,
+
       javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8"),
+      javacOptions in doc := Seq("-notimestamp", "-linksource"),
+      autoAPIMappings := true,
+      initialize := {
+        val _ = initialize.value
+        if (sys.props("java.specification.version") != "1.8")
+          sys.error("Java 8 is required for this project.")
+      },
       testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
       libraryDependencies += "org.assertj" % "assertj-core" % "3.11.1" % Test,
       libraryDependencies += junitInterface % Test,
