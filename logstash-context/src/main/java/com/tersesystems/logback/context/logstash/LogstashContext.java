@@ -17,11 +17,6 @@ public class LogstashContext extends AbstractLogstashContext<LogstashContext> {
     }
 
     @Override
-    public LogstashContext withTracer() {
-        return create(entries(), true);
-    }
-
-    @Override
     public LogstashContext and(Context<? extends Marker, ?> context) {
         Map<Object, Object> mergedEntries = new HashMap<>(this.entries());
         mergedEntries.putAll(context.entries());

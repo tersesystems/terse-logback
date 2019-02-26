@@ -38,7 +38,14 @@
 
         <dependency>
             <groupId>com.tersesystems.logback</groupId>
-            <artifactId>logstash-context</artifactId>
+            <artifactId>logback-classic</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tersesystems.logback</groupId>
+            <artifactId>logstash-logback-context</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
