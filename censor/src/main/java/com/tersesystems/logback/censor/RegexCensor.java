@@ -26,7 +26,8 @@ public class RegexCensor implements Censor {
     @Override
     public CharSequence apply(CharSequence original) {
         CharSequence acc = original;
-        for (Pattern pattern : patterns) {
+        for (int i = 0, patternsSize = patterns.size(); i < patternsSize; i++) {
+            Pattern pattern = patterns.get(i);
             acc = pattern.matcher(acc).replaceAll(replacementText);
         }
         return acc;

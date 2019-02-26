@@ -1072,3 +1072,20 @@ There are also additional encoders and console appenders in [concurrent-build-lo
 * [Level up logs and ELK - Logging best practices with Logback ](https://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html)
 * [Extending logstash-logback-encoder](https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/)
 * [There is more to logging than meets the eye](https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html)
+
+## Release
+
+I can never remember how to release Maven projects, but here's [the reference](https://veithen.io/2013/05/26/github-bintray-maven-release-plugin.html):
+
+To test and publish locally:
+
+```bash
+mvn -Prelease clean install
+```
+
+To release:
+
+```bash
+mvn release:prepare
+mvn release:publish
+```
