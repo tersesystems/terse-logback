@@ -47,34 +47,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- Only required to run tests in an IDE that bundles an older version -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>${junit.platform.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Only required to run tests in an IDE that bundles an older version -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Only required to run tests in an IDE that bundles an older version -->
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.vintage.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- To avoid compiler warnings about @API annotations in JUnit code -->
-        <dependency>
-            <groupId>org.apiguardian</groupId>
-            <artifactId>apiguardian-api</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <parent>
@@ -90,12 +62,16 @@
         <junit.jupiter.version>5.0.1</junit.jupiter.version>
         <junit.vintage.version>${junit.version}.1</junit.vintage.version>
         <junit.platform.version>1.0.1</junit.platform.version>
+        <autoVersionSubmodules>true</autoVersionSubmodules>
+        <bintray.subject>maven</bintray.subject>
+        <bintray.repo>tersesystems</bintray.repo>
+        <bintray.package>terse-logback</bintray.package>
     </properties>
 
     <licenses>
         <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://apache.org/licenses/LICENSE-2.0</url>
+            <name>CC0</name>
+            <url>https://creativecommons.org/publicdomain/zero/1.0/</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
