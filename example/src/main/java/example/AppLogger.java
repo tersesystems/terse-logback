@@ -47,7 +47,6 @@ class AppContext extends AbstractLogstashContext<AppContext> {
         return and(AppContext.create(CORRELATION_ID, correlationId));
     }
 
-    @Override
     public AppContext withTracer() {
         return create(entries(), true);
     }
