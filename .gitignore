@@ -6,6 +6,8 @@
 .idea
 
 log
+release.properties
+*.releaseBackup
 
 *.iml
 dist/*
