@@ -23,7 +23,7 @@
         <repository>
             <id>bintray-tersesystems-maven</id>
             <name>tersesystems-maven</name>
-            <url>https://api.bintray.com/maven/${bintray.subject}/${bintray.repo}/${bintray.package}/;publish=1</url>
+            <url>https://api.bintray.com/maven/tersesystems/maven/terse-logback/;publish=1</url>
         </repository>
     </distributionManagement>
 
