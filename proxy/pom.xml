@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>logback-proxy</artifactId>
     <packaging>jar</packaging>
-    <name>terse-logback-proxy</name>
+    <name>logback-proxy</name>
 
     <parent>
         <groupId>com.tersesystems.logback</groupId>

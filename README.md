@@ -1080,12 +1080,8 @@ I can never remember how to release Maven projects, but here's [the reference](h
 To test and publish locally:
 
 ```bash
-mvn -Prelease clean install
+mvn validate
+mvn deploy
 ```
 
-To release:
-
-```bash
-mvn release:prepare
-mvn release:publish
-```
+If it [all goes south](https://dzone.com/articles/why-i-never-use-maven-release) then it may be time to move to [something else](https://axelfontaine.com/blog/dead-burried.html) rather than `maven-release-plugin`.

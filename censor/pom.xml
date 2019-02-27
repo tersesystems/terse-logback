@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>logback-censor</artifactId>
     <packaging>jar</packaging>
-    <name>terse-logback-censor</name>
+    <name>logback-censor</name>
 
     <parent>
         <groupId>com.tersesystems.logback</groupId>
