@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tersesystems.logback</groupId>
-    <artifactId>logback-parent</artifactId>
+    <artifactId>terse-logback</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>terse-logback</name>
