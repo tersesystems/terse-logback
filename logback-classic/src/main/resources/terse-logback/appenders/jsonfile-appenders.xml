@@ -1,0 +1,72 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<included>
+
+    <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${jsonfile.location}</file>
+        <append>${jsonfile.append}</append>
+
+        <!--
+          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+         -->
+        <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
+            <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
+        </rollingPolicy>
+
+        <!--
+          Take out the \ because you cannot have - and - next to each other:
+          https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
+        -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- don't include the properties from typesafe config -->
+            <includeContext>${jsonfile.encoder.includeContext}</includeContext>
+            <!-- UTC is the best server consistent timezone -->
+            <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+
+            <!--
+              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+            -->
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
+                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
+                <!-- coma separated exclusion patterns -->
+                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+            </throwableConverter>
+
+            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+            <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
+            <if condition='p("jsonfile.prettyprint").contains("true")'>
+                <then>
+                    <!-- Pretty print for better end user experience. -->
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>
+                </then>
+                <else>
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator"/>
+                </else>
+            </if>
+        </encoder>
+    </appender>
+
+    <!--
+      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
+    -->
+    <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender-ref ref="JSONFILE" />
+    </appender>>
+</included>

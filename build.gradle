@@ -10,9 +10,9 @@ if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
 if (!project.hasProperty('bintrayApiKey'))   ext.bintrayApiKey = ''
 
 config {
-    release = (rootProject.findProperty('release') ?: false).toBoolean()  
+    release = (rootProject.findProperty('release') ?: false).toBoolean()
 
-    info {                                                                
+    info {
         name          = rootProject.name
         vendor        = 'tersesystems'
         description   = 'Terse Logback'
@@ -25,7 +25,6 @@ config {
             scm          = "https://github.com/tersesystem/${rootProject.name}.git"
         }
 
-
         people {
             person {
                 id    = 'wsargent'
@@ -35,7 +34,7 @@ config {
         }
     }
 
-    license {                                                             
+    license {
         licenses {
             license {
                 id = 'CC0-1.0'
@@ -43,7 +42,7 @@ config {
         }
     }
 
-    bintray {                                                             
+    bintray {
         credentials {
             // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
             username = project.bintrayUsername
@@ -63,15 +62,23 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java'
 
     config {
         info {
             description = project.project_description
         }
-
-        bintray { enabled = true }
     }
-    
-    task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
 
+    dependencies {
+        testCompile 'org.assertj:assertj-core:3.8.0'
+        testCompile "junit:junit:$junitVersion"
+        testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+        testCompile "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+        testCompile "org.junit.vintage:junit-vintage-engine:$junitVintageVersion"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }
