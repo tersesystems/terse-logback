@@ -61,6 +61,7 @@ allprojects {
     }
 }
 
+
 subprojects { subproj ->
     apply plugin: 'java'
 
