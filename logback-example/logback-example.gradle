@@ -1,0 +1,10 @@
+dependencies {
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile 'net.mguenther.idem:idem-core:0.1.0'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'net.logstash.logback:logstash-logback-encoder:5.2'
+    compile project(':logback-classic')
+    compile project(':logstash-logback-context')
+    compile project(':logback-bytebuddy')
+    compile project(':logback-proxy')
+}

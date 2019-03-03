@@ -1,4 +1,0 @@
-config {
-    bintray    { enabled = false }
-    publishing { enabled = false }
-}
