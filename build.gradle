@@ -66,9 +66,11 @@ subprojects { subproj ->
 
     if (!subproj.name.contains('example')) {
         config {
+            // Is there some way to disable this for Travis CI?
             bintray { enabled = true }
         }
 
+        // Allow signing with the Yubikey using gpg-agent
         signing {
             useGpgCmd()
             sign configurations.archives
