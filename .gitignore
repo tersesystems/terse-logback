@@ -9,3 +9,7 @@ target/
 log/
 
 logback-example/log/*
+
+*.iml
+*.ipr
+*.iws
