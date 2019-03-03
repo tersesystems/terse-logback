@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':logback-core')
+    compile project(':logback-censor')
+}

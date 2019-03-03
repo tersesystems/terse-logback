@@ -1,0 +1,84 @@
+plugins {
+    // http://andresalmiray.com/an-opinionated-way-to-build-gradle-projects/
+    // https://aalmiray.github.io/kordamp-gradle-plugins/#_project_structure
+    id 'org.kordamp.gradle.project' version '0.14.0'            
+    id 'org.kordamp.gradle.bintray' version '0.14.0'     
+    id 'com.gradle.build-scan'      version '2.2.1'       
+}
+
+if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
+if (!project.hasProperty('bintrayApiKey'))   ext.bintrayApiKey = ''
+
+config {
+    release = (rootProject.findProperty('release') ?: false).toBoolean()
+
+    info {
+        name          = rootProject.name
+        vendor        = 'tersesystems'
+        description   = 'Terse Logback'
+        inceptionYear = '2018'
+        tags          = ['logging', 'logback']
+
+        links {
+            website      = "https://github.com/tersesystem/${rootProject.name}"
+            issueTracker = "https://github.com/tersesystem/${rootProject.name}/issues"
+            scm          = "https://github.com/tersesystem/${rootProject.name}.git"
+        }
+
+        people {
+            person {
+                id    = 'wsargent'
+                name  = 'Will Sargent'
+                roles = ['developer']
+            }
+        }
+    }
+
+    license {
+        licenses {
+            license {
+                id = 'CC0-1.0'
+            }
+        }
+    }
+
+    bintray {
+        credentials {
+            // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
+            username = project.bintrayUsername
+            password = project.bintrayApiKey
+        }
+        userOrg    = 'tersesystems'
+        name       = rootProject.name
+    }
+}
+
+allprojects {
+     apply plugin: 'idea'
+
+    repositories {
+        jcenter()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    config {
+        info {
+            description = project.project_description
+        }
+    }
+
+    dependencies {
+        testCompile 'org.assertj:assertj-core:3.8.0'
+        testCompile "junit:junit:$junitVersion"
+        testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+        testCompile "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+        testCompile "org.junit.vintage:junit-vintage-engine:$junitVintageVersion"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}

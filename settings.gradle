@@ -1,0 +1,30 @@
+pluginManagement {
+    repositories {
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+}
+
+rootProject.name = 'terse-logback'
+
+def includeProject = { String projectName ->
+    File projectDir = new File(settingsDir, projectName)
+    String buildFileName = "${projectName}.gradle"
+
+    assert projectDir.isDirectory()
+    assert new File(projectDir, buildFileName).isFile()
+
+    include projectName
+    project(":${projectName}").projectDir    = projectDir
+    project(":${projectName}").buildFileName = buildFileName
+}
+
+includeProject 'logback-bytebuddy'
+includeProject 'logback-censor'
+includeProject 'logback-classic'
+includeProject 'logback-context'
+includeProject 'logback-core'
+includeProject 'logback-example'
+includeProject 'logback-guice-example'
+includeProject 'logstash-logback-context'
+includeProject 'logback-proxy'

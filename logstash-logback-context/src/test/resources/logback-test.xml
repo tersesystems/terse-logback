@@ -1,0 +1,29 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Name>TRACER_FILTER</Name>
+        <Marker>TRACER</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
+    <appender name="JSONCONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="JSONCONSOLE"/>
+    </root>
+</configuration>
