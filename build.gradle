@@ -61,8 +61,19 @@ allprojects {
     }
 }
 
-subprojects {
+subprojects { subproj ->
     apply plugin: 'java'
+
+    if (!subproj.name.contains('example')) {
+        config {
+            bintray { enabled = true }
+        }
+
+        signing {
+            useGpgCmd()
+            sign configurations.archives
+        }
+    }
 
     config {
         info {
