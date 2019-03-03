@@ -1,5 +1,0 @@
-#logback.classic pattern: %date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %message%n%stack{full,full,short,rootFirst}
-2019-03-02T17:26:00.201+0000 [INFO ] example.ClassWithStructuredArguments in Test worker - id is correlationId=[FYQUlpqB4GmzF2Ivl8SAAA]
-2019-03-02T17:26:00.222+0000 [INFO ] example.ClassWithStructuredArguments in Test worker - id is correlationId=FYQUlpqB6cuzF2Ivl8SAAA
-2019-03-02T17:26:00.224+0000 [INFO ] example.ClassWithStructuredArguments in Test worker - id is FYQUlpqB6dCzF2Ivl8SAAA
-2019-03-02T17:26:00.229+0000 [INFO ] example.ClassWithMarkers in Test worker - log with marker explicitly

@@ -7,3 +7,5 @@ target/
 
 .idea
 log/
+
+logback-example/log/*
