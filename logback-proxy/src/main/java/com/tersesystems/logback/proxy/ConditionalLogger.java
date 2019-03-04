@@ -15,6 +15,10 @@ import org.slf4j.Marker;
 import java.util.function.*;
 import java.util.Optional;
 
+
+/**
+ *
+ */
 public interface ConditionalLogger {
 
     void ifTrace(Supplier<Boolean> condition, Consumer<LoggerStatement> lc);

@@ -33,7 +33,7 @@ public class ClassWithLazyLogger {
     }
 
     private void doStuff() {
-        final LazyLogger lazyLogger = new ProxyLazyLogger(logger);
+        final LazyLogger lazyLogger = (ProxyLazyLogger) () -> logger;
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
