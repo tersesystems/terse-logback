@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.proxy;
+package com.tersesystems.logback.ext;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -17,29 +17,21 @@ import java.util.Optional;
 
 
 /**
- *
+ * A lazy logger with default interfaces.
  */
 public interface ProxyLazyLogger extends LazyLogger {
 
     Logger logger();
-    
-    default boolean isTraceEnabled() {
-        return logger().isTraceEnabled();
-    }
-
-    default boolean isTraceEnabled(Marker marker) {
-        return logger().isTraceEnabled(marker);
-    }
 
     default void trace(Consumer<LoggerStatement> lc) {
-        if (isTraceEnabled()) {
+        if (logger().isTraceEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Trace(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> trace() {
-        if (isTraceEnabled()) {
+        if (logger().isTraceEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Trace(logger());
             return Optional.of(stmt);
         } else {
@@ -48,14 +40,14 @@ public interface ProxyLazyLogger extends LazyLogger {
     }
 
     default void trace(Marker marker, Consumer<LoggerStatement> lc) {
-        if (isTraceEnabled(marker)) {
+        if (logger().isTraceEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Trace(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> trace(Marker marker) {
-        if (isTraceEnabled(marker)) {
+        if (logger().isTraceEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Trace(logger());
             return Optional.of(stmt);
         } else {
@@ -63,23 +55,15 @@ public interface ProxyLazyLogger extends LazyLogger {
         }
     }
 
-    default boolean isDebugEnabled() {
-        return logger().isDebugEnabled();
-    }
-
-    default boolean isDebugEnabled(Marker marker) {
-        return logger().isDebugEnabled(marker);
-    }
-
     default void debug(Consumer<LoggerStatement> lc) {
-        if (isDebugEnabled()) {
+        if (logger().isDebugEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Debug(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> debug() {
-        if (isDebugEnabled()) {
+        if (logger().isDebugEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Debug(logger());
             return Optional.of(stmt);
         } else {
@@ -88,14 +72,14 @@ public interface ProxyLazyLogger extends LazyLogger {
     }
 
     default void debug(Marker marker, Consumer<LoggerStatement> lc) {
-        if (isDebugEnabled(marker)) {
+        if (logger().isDebugEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Debug(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> debug(Marker marker) {
-        if (isDebugEnabled(marker)) {
+        if (logger().isDebugEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Debug(logger());
             return Optional.of(stmt);
         } else {
@@ -103,23 +87,15 @@ public interface ProxyLazyLogger extends LazyLogger {
         }
     }
 
-    default boolean isInfoEnabled() {
-        return logger().isInfoEnabled();
-    }
-
-    default boolean isInfoEnabled(Marker marker) {
-        return logger().isInfoEnabled(marker);
-    }
-
     default void info(Consumer<LoggerStatement> lc) {
-        if (isInfoEnabled()) {
+        if (logger().isInfoEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Info(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> info() {
-        if (isInfoEnabled()) {
+        if (logger().isInfoEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Info(logger());
             return Optional.of(stmt);
         } else {
@@ -128,14 +104,14 @@ public interface ProxyLazyLogger extends LazyLogger {
     }
 
     default void info(Marker marker, Consumer<LoggerStatement> lc) {
-        if (isInfoEnabled(marker)) {
+        if (logger().isInfoEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Info(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> info(Marker marker) {
-        if (isInfoEnabled(marker)) {
+        if (logger().isInfoEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Info(logger());
             return Optional.of(stmt);
         } else {
@@ -143,23 +119,15 @@ public interface ProxyLazyLogger extends LazyLogger {
         }
     }
 
-    default boolean isWarnEnabled() {
-        return logger().isWarnEnabled();
-    }
-
-    default boolean isWarnEnabled(Marker marker) {
-        return logger().isWarnEnabled(marker);
-    }
-
     default void warn(Consumer<LoggerStatement> lc) {
-        if (isWarnEnabled()) {
+        if (logger().isWarnEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Warn(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> warn() {
-        if (isWarnEnabled()) {
+        if (logger().isWarnEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Warn(logger());
             return Optional.of(stmt);
         } else {
@@ -168,14 +136,14 @@ public interface ProxyLazyLogger extends LazyLogger {
     }
 
     default void warn(Marker marker, Consumer<LoggerStatement> lc) {
-        if (isWarnEnabled(marker)) {
+        if (logger().isWarnEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Warn(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> warn(Marker marker) {
-        if (isWarnEnabled(marker)) {
+        if (logger().isWarnEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Warn(logger());
             return Optional.of(stmt);
         } else {
@@ -183,23 +151,15 @@ public interface ProxyLazyLogger extends LazyLogger {
         }
     }
 
-    default boolean isErrorEnabled() {
-        return logger().isErrorEnabled();
-    }
-
-    default boolean isErrorEnabled(Marker marker) {
-        return logger().isErrorEnabled(marker);
-    }
-
     default void error(Consumer<LoggerStatement> lc) {
-        if (isErrorEnabled()) {
+        if (logger().isErrorEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Error(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> error() {
-        if (isErrorEnabled()) {
+        if (logger().isErrorEnabled()) {
             LoggerStatement stmt = new LoggerStatement.Error(logger());
             return Optional.of(stmt);
         } else {
@@ -208,14 +168,14 @@ public interface ProxyLazyLogger extends LazyLogger {
     }
 
     default void error(Marker marker, Consumer<LoggerStatement> lc) {
-        if (isErrorEnabled(marker)) {
+        if (logger().isErrorEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Error(logger());
             lc.accept(stmt);
         }
     }
 
     default Optional<LoggerStatement> error(Marker marker) {
-        if (isErrorEnabled(marker)) {
+        if (logger().isErrorEnabled(marker)) {
             LoggerStatement stmt = new LoggerStatement.Error(logger());
             return Optional.of(stmt);
         } else {

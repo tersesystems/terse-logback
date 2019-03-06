@@ -4,7 +4,7 @@ This is a Java project that shows how to use [Logback](https://logback.qos.ch/ma
 
 ## Project Setup
 
-The project is configured into several modules: `censor`, `proxy`, `classic`, `example`, and `guice-example`.  The most relevant ones to start with are `classic` and `example`.
+The project is configured into several modules: `censor`, `ext`, `classic`, `example`, and `guice-example`.  The most relevant ones to start with are `classic` and `example`.
 
 The `classic` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `classic`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
 
@@ -155,12 +155,12 @@ There are reasons why you would not want to log information you may normally log
 
 The historical reason for not logging is that there is a construction cost involved in creating parameters.  This is still true in a way today -- CPU and memory are not typically constraints for logging statements, but there are storage costs involved in producing logs.  Accumulated logs must be parsed and searched, making queries slower.
 
-There is a `com.tersesystems.logback.proxy.ProxyConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
+There is a `com.tersesystems.logback.ext.ProxyConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
 
 ```java
 package example;
 
-import com.tersesystems.logback.proxy.*;
+import com.tersesystems.logback.ext.*;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
@@ -202,8 +202,8 @@ public class ClassWithConditionalLogger {
     }
 
     public static void main(String[] args) {
-        ClassWithConditionalLogger classWithConditionalLogger = new ClassWithConditionalLogger();
-        classWithConditionalLogger.doStuff();
+        ClassWithConditionalLogger classWithExtendedLoggers = new ClassWithConditionalLogger();
+        classWithExtendedLoggers.doStuff();
     }
 }
 ```
