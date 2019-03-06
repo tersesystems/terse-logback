@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.proxy;
+package com.tersesystems.logback.ext;
 
 import org.slf4j.Marker;
 
@@ -16,6 +16,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 
+/**
+ *
+ */
 public interface LazyLogger {
 
     void trace(Consumer<LoggerStatement> lc);

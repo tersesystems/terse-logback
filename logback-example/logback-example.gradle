@@ -6,5 +6,5 @@ dependencies {
     compile project(':logback-classic')
     compile project(':logstash-logback-context')
     compile project(':logback-bytebuddy')
-    compile project(':logback-proxy')
+    compile project(':logback-ext')
 }

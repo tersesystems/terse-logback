@@ -8,13 +8,17 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.proxy;
+package com.tersesystems.logback.ext;
 
 import org.slf4j.Marker;
 
 import java.util.function.*;
 import java.util.Optional;
 
+
+/**
+ *
+ */
 public interface ConditionalLogger {
 
     void ifTrace(Supplier<Boolean> condition, Consumer<LoggerStatement> lc);
