@@ -72,9 +72,11 @@ subprojects { subproj ->
         }
 
         // Allow signing with the Yubikey using gpg-agent
-        signing {
-            useGpgCmd()
-            sign configurations.archives
+        if (! travis) {
+            signing {
+                useGpgCmd()
+                sign configurations.archives
+            }
         }
     }
 
