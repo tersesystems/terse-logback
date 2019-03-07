@@ -52,6 +52,7 @@ config {
         userOrg    = 'tersesystems'
         name       = rootProject.name
     }
+
 }
 
 allprojects {
@@ -62,6 +63,20 @@ allprojects {
     }
 }
 
+def String artifactToJavadoc(String organization, String name, String apiVersion) {
+    String slashedOrg = organization.replace('.', '/')
+    "https://oss.sonatype.org/service/local/repositories/releases/archive/$slashedOrg/$name/$apiVersion/$name-$apiVersion-javadoc.jar/!/"
+}
+
+def String jvmToJavadoc() {
+    // No simple way to set up javadoc external links to JDK in Gradle
+    // Should select on version:
+
+    'https://docs.oracle.com/javase/8/docs/api/'
+    // https://docs.oracle.com/javase/9/docs/api/
+    // https://docs.oracle.com/javase/10/docs/api/
+    // https://docs.oracle.com/en/java/javase/11/docs/api/
+}
 
 subprojects { subproj ->
     apply plugin: 'java'
@@ -83,6 +98,20 @@ subprojects { subproj ->
     config {
         info {
             description = project.project_description
+        }
+
+        // Sets up javadoc for individual modules
+        javadoc {
+            options.charSet = 'UTF-8'
+            options.encoding = 'UTF-8'
+            options.docEncoding = 'UTF-8'
+            options.use = true          
+            options.links = [
+              jvmToJavadoc(),
+              // XXX How do I get my source library path to Javadoc?
+              artifactToJavadoc('org.slf4j', 'slf4j-api', '1.7.25'),
+              artifactToJavadoc('ch.qos.logback', 'logback-classic', '1.2.3')
+            ]
         }
     }
 
