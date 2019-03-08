@@ -9,6 +9,7 @@ plugins {
 if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
 if (!project.hasProperty('bintrayApiKey'))   ext.bintrayApiKey = ''
 ext.travis = (System.env['TRAVIS'] ?: false) as boolean
+ext.publishing = (System.env['PUBLISH'] ?: false) as boolean
 
 config {
     release = (rootProject.findProperty('release') ?: false).toBoolean()
@@ -55,7 +56,7 @@ config {
 }
 
 allprojects {
-     apply plugin: 'idea'
+    apply plugin: 'idea'
 
     repositories {
         jcenter()
@@ -67,12 +68,12 @@ subprojects { subproj ->
     apply plugin: 'java'
 
     if (!subproj.name.contains('example')) {
-        config {
-            bintray { enabled = ! travis }
-        }
-
         // Allow signing with the Yubikey using gpg-agent
-        if (! travis) {
+        if (publishing && ! travis) {
+            config {
+                bintray { enabled = true }
+            }
+
             signing {
                 useGpgCmd()
                 sign configurations.archives
