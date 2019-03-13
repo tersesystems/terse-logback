@@ -1,9 +1,14 @@
+Dependency Injection with Guice
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## Dependency Injection with Guice
+Finally, if you’re using a DI framework like Guice, you can leverage
+some of the contextual code in
+https://tavianator.com/announcing-sangria/[Sangria] to do some of the
+gruntwork for you. For example, here’s how you configure a `Logger`
+instance in Guice:
 
-Finally, if you're using a DI framework like Guice, you can leverage some of the contextual code in [Sangria](https://tavianator.com/announcing-sangria/) to do some of the gruntwork for you.  For example, here's how you configure a `Logger` instance in Guice:
-
-```java
+[source,java]
+----
 package example;
 
 import com.google.inject.AbstractModule;
@@ -87,12 +92,17 @@ public class GuiceAssistedLogging {
     }
 
 }
-```
+----
 
 which yields:
 
-```json
+[source,json]
+----
 {"@timestamp":"2019-01-27T00:19:08.628+00:00","@version":"1","message":"hello world!","logger_name":"example.GuiceAssistedLogging$MyClass","thread_name":"main","level":"INFO","level_value":20000,"threadName":"main"}
-```
+----
 
-If you are using a Servlet based API, then you can piggyback of Guice's [servlet extensions](https://github.com/google/guice/wiki/Servlets) and then integrate the logging context as part of the [`CDI / JSR 299 / @RequestScoped`](https://docs.oracle.com/javaee/6/tutorial/doc/gjbbk.html).  I have not tried this myself.
+If you are using a Servlet based API, then you can piggyback of Guice’s
+https://github.com/google/guice/wiki/Servlets[servlet extensions] and
+then integrate the logging context as part of the
+https://docs.oracle.com/javaee/6/tutorial/doc/gjbbk.html[`CDI / JSR 299 / @RequestScoped`].
+I have not tried this myself.

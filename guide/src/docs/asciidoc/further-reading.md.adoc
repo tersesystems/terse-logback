@@ -1,0 +1,49 @@
+Further Reading
+~~~~~~~~~~~~~~~
+
+APIs
+^^^^
+
+SLF4J is essentially the assembly language of Java logging at this
+point, so if you want to use something else it had better wrap or
+interoperate with SLF4J.
+
+There are various wrappers and APIs on top of SLF4J:
+
+* https://github.com/godaddy/godaddy-logger[Godaddy Logger]
+* https://github.com/UnquietCode/LogMachine[LogMachine]
+* https://github.com/jacek99/structlog4j[structlog4j]
+* https://github.com/ffissore/slf4j-fluent[slf4j-fluent]
+
+I have not used these personally. I usually roll my own code when I need
+something on top of SLF4J, because the wrappers tend to set their own
+encoders on top.
+
+Logback Encoders and Appenders
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There’s a useful blog post on
+https://logz.io/blog/lessons-learned-writing-new-logback-appender/[writing
+your own appender] for
+https://github.com/logzio/logzio-logback-appender[logzio].
+
+There are also additional encoders and console appenders in
+https://github.com/takari/concurrent-build-logger[concurrent-build-logger].
+
+Other Blog Posts
+^^^^^^^^^^^^^^^^
+
+* https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience[Logging
+Best Practices]
+* https://www.owasp.org/index.php/Logging_Cheat_Sheet[OWASP Logging
+Cheat Sheet]
+* https://orange-opensource.github.io/woofer/logging-code/[Woofer:
+logging in (best) practices]: Spring Boot
+* http://stevetarver.github.io/2016/04/20/whole-product-logging.html[A
+whole product concern logging implementation]
+* https://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html[Level
+up logs and ELK - Logging best practices with Logback]
+* https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/[Extending
+logstash-logback-encoder]
+* https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html[There
+is more to logging than meets the eye]

@@ -1,0 +1,81 @@
+What is Structured Logging?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It’s logging in JSON. Technically, you could be logging in another
+structure like XML or JSON, but almost everyone uses JSON. It’s been
+around for https://www.kartar.net/2015/12/structured-logging/[a while].
+Technically, since there are several JSON objects all in one file /
+stream, this is called ``newline delimited JSON'' or
+http://ndjson.org/[NDJSON] or http://jsonlines.org/[jsonlines]. In this
+project, both text and JSON formats are rendered independently, but if
+you only output JSON it’s not a huge deal, because you can read JSON
+logs as text with a special log viewer such as
+https://github.com/koenbollen/jl/blob/master/README.md[jl].
+
+Semantically, a log entry typically has multiple pieces of information
+associated with it, described as ``high cardinality'' by observability
+geeks. Structured logging means that the cardinality goes from
+``closed'' – you can only log things that you have defined fields for –
+to ``open'', where you can add arbitrary fields and objects to your log
+entry as long as it’s JSON.
+
+Structured logging means that you can add more context to logs and do
+more with them without having to do regexes. As
+https://honeycomb.io[Honeycomb]
+https://www.honeycomb.io/blog/you-could-have-invented-structured-logging/[describes
+it]:
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+Structured logging is really all about giving yourself — and your team —
+a logging API to help you provide consistent context in events. An
+unstructured logger accepts strings. A structured logger accepts a map,
+hash, or dictionary that describes all the attributes you can think of
+for an event.
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+Logs are
+https://www.honeycomb.io/blog/how-are-structured-logs-different-from-events/[different
+from events]. All events can be represented as logs, but not all logs
+are events. Many logs are only portions of events. An event is a
+conceptual abstraction and a log is one possible representation of that
+abstraction.
+
+Logs are also different from metrics. A metric represents a single
+number. You can extract metrics from logs, but it’s a very expensive way
+of going about it.
+
+Adding Context
+~~~~~~~~~~~~~~
+
+There is a question of what you want to add when you log. This is a
+matter of taste, but in general you should log so that you
+https://www.honeycomb.io/blog/event-foo-constructing-a-coherent-narrative/[create
+a consistent narrative]. As previously mentioned, a log may indicate a
+portion of an event, so you want to log where doing so would help tell a
+story of what happened afterwards.
+
+There are some things you should
+https://www.honeycomb.io/blog/event-foo-what-should-i-add-to-an-event/[always
+add to an event], such as who is talking to your service, what they’re
+asking, business relevant fields, additional context around your service
+/ environment, response time and particulars. You should add units to
+your field names when you measure a quantity, i.e. `response_time_ms`,
+and add a ``human readable'' version of internal information if
+available.
+
+You should add
+https://www.honeycomb.io/blog/event-foo-moar-context-better-events/[context
+to your logs] that helps differentiate it from its peers, so you never
+have to guess where the source of a log is coming from.
+
+Adding a
+https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/[correlation
+id] helps you
+https://www.honeycomb.io/blog/event-foo-designing-for-results/[design
+for results] and tie your logs into a coherent event. You don’t need to
+use a UUID: a https://github.com/boundary/flake[flake id] will probably
+be better for you. I’m using https://github.com/mguenther/idem/[idem]
+here, but most things will work.
+
+So, we know what structured logging is now. What does it look like in
+SLF4J?

@@ -1,9 +1,14 @@
+Logback Specific Things
+~~~~~~~~~~~~~~~~~~~~~~~
 
-## Logback Specific Things
+This section deals with the specific configuration in
+`terse-logback/classic`.
 
-This section deals with the specific configuration in `terse-logback/classic`.
-
-Logback doesn't come with a default `logback.xml` file, and the [configuration page](https://logback.qos.ch/manual/configuration.html#auto_configuration) is written at a very low level that is not very useful for people.  The example has been written so that it doesn't "overwhelm" with too much detail, but in rough order of initialization:
+Logback doesn’t come with a default `logback.xml` file, and the
+https://logback.qos.ch/manual/configuration.html#auto_configuration[configuration
+page] is written at a very low level that is not very useful for people.
+The example has been written so that it doesn’t ``overwhelm'' with too
+much detail, but in rough order of initialization:
 
 * Logback XML with Custom Actions
 * Loading Typesafe Config
@@ -11,52 +16,79 @@ Logback doesn't come with a default `logback.xml` file, and the [configuration p
 * High Performance Async Appenders
 * Sensible Joran (Logback XML) Configuration
 
-### Logback XML with Custom Actions
+Logback XML with Custom Actions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The entry point of the system is a `logback.xml` file which has custom actions added to it to do additional configuration, `TypesafeConfigAction` and `SetLoggerLevelsAction`.
+The entry point of the system is a `logback.xml` file which has custom
+actions added to it to do additional configuration,
+`TypesafeConfigAction` and `SetLoggerLevelsAction`.
 
-This approach is not as fancy as using a service loader pattern, but there are issues integrating into web frameworks, as those frameworks may look directly for XML files and skip service loader patterns.  Using a `logback.xml` file is the most well known pattern, and Joran makes adding custom actions fairly easy.
+This approach is not as fancy as using a service loader pattern, but
+there are issues integrating into web frameworks, as those frameworks
+may look directly for XML files and skip service loader patterns. Using
+a `logback.xml` file is the most well known pattern, and Joran makes
+adding custom actions fairly easy.
 
-### Loading Typesafe Config
+Loading Typesafe Config
+^^^^^^^^^^^^^^^^^^^^^^^
 
-The `TypesafeConfigAction` will search in a variety of places for configuration using [standard fallback behavior](https://github.com/lightbend/config#standard-behavior) for Typesafe Config, which gives a richer experience to end users.
+The `TypesafeConfigAction` will search in a variety of places for
+configuration using
+https://github.com/lightbend/config#standard-behavior[standard fallback
+behavior] for Typesafe Config, which gives a richer experience to end
+users.
 
-```java
+[source,java]
+----
 Config config = systemProperties        // Look for a property from system properties first...
         .withFallback(file)          // if we don't find it, then look in an explicitly defined file...
         .withFallback(testResources) // if not, then if logback-test.conf exists, look for it there...
         .withFallback(resources)     // then look in logback.conf...
         .withFallback(reference)     // and then finally in logback-reference.conf.
         .resolve();                  // Tell config that we want to use ${?ENV_VAR} type stuff.
-```
+----
 
-The configuration is then placed in the `LoggerContext` which is available to all of Logback.
+The configuration is then placed in the `LoggerContext` which is
+available to all of Logback.
 
-```java
+[source,java]
+----
 lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
-```
+----
 
 And then all properties are made available to Logback:
 
-```java
+[source,java]
+----
 for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
     String key = propertyEntry.getKey();
     String value = propertyEntry.getValue().unwrapped().toString();
     lc.putProperty(key, value);
 }
-```
+----
 
-Technically, I think that it's possible to use an [`ImplicitAction`](https://logback.qos.ch/manual/onJoran.html#implicit) to fallback to resolving to the `Config` if no property is found, but that would require instantiating a `Configurator` which again doesn't work so well with frameworks.
+Technically, I think that it’s possible to use an
+https://logback.qos.ch/manual/onJoran.html#implicit[`ImplicitAction`] to
+fallback to resolving to the `Config` if no property is found, but that
+would require instantiating a `Configurator` which again doesn’t work so
+well with frameworks.
 
-### Log Levels and Properties through Typesafe Config
+Log Levels and Properties through Typesafe Config
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Configuration of properties and setting log levels is done through [Typesafe Config](https://github.com/lightbend/config#overview).  
+Configuration of properties and setting log levels is done through
+https://github.com/lightbend/config#overview[Typesafe Config].
 
-Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
+Here’s the `logback.conf` from the example application. It’s in
+Human-Optimized Config Object Notation or
+https://github.com/lightbend/config/blob/master/HOCON.md[HOCON].
 
-You can also censor text at both the message and at the JSON level.  Censoring information from messages is part of a defense in depth strategy, and should not be relied on.
+You can also censor text at both the message and at the JSON level.
+Censoring information from messages is part of a defense in depth
+strategy, and should not be relied on.
 
-```hocon
+[source,hocon]
+----
 # Set logger levels here.
 levels = {
     # Override the default root log level with ROOT_LOG_LEVEL environment variable, if defined...
@@ -92,11 +124,13 @@ properties {
 
 # You can also include settings from other places
 include "myothersettings"
-```
+----
 
-For tests, there's a `logback-test.conf` that will override (rather than completely replace) any settings that you have in `logback.conf`:
+For tests, there’s a `logback-test.conf` that will override (rather than
+completely replace) any settings that you have in `logback.conf`:
 
-```hocon
+[source,hocon]
+----
 levels {
   example = TRACE
 }
@@ -112,30 +146,55 @@ properties {
     prettyprint = true
   }
 }
-```
+----
 
-There is also a `logback-reference.conf` file that handles the default configuration for the appenders, and those settings can be overridden.  They are written out individually in the encoder configuration so I won't go over it here.
+There is also a `logback-reference.conf` file that handles the default
+configuration for the appenders, and those settings can be overridden.
+They are written out individually in the encoder configuration so I
+won’t go over it here.
 
+Note that appender logic is not available here. If you need to update
+the appenders, you should release a new version of the classic library
+and get your projects updated.
 
-Note that appender logic is not available here.  If you need to update the appenders, you should release a new version of the classic library and get your projects updated.
+Using Typesafe Config is not a requirement – the point here is to show
+that there are more options to configuring Logback than using a straight
+XML file.
 
-Using Typesafe Config is not a requirement -- the point here is to show that there are more options to configuring Logback than using a straight XML file.
+High Performance Async Appenders
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-### High Performance Async Appenders
+The JSON and Text file appenders are wrapped in
+https://github.com/logstash/logstash-logback-encoder#async-appenders[LMAX
+Disruptor async appenders].
 
-The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders](https://github.com/logstash/logstash-logback-encoder#async-appenders).  
+This example comes preconfigured with a
+https://logback.qos.ch/manual/configuration.html#stopContext[shutdown
+hook] to ensure the async appenders empty their queues before the
+application shuts down.
 
-This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext) to ensure the async appenders empty their queues before the application shuts down.
+To my knowledge, the logstash async appenders have not been benchmarked
+against Log4J2, but async logging is ridiculously performant, and
+https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions[will
+never be the bottleneck in your application].
 
-To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but async logging is ridiculously performant, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
+In general, you should only be concerned about the latency or throughput
+of your logging framework when you have sat down and done the math on
+how much logging it would take to stress out the system, asked about
+your operational requirements, and determined the operational costs,
+including IO and
+https://segment.com/blog/bob-loblaws-log-blog/#the-case-of-the-missing-logs[rate
+limits], and a budget for logging. Logging doesn’t come for free.
 
-In general, you should only be concerned about the latency or throughput of your logging framework when you have sat down and done the math on how much logging it would take to stress out the system, asked about your operational requirements, and determined the operational costs, including IO and [rate limits](https://segment.com/blog/bob-loblaws-log-blog/#the-case-of-the-missing-logs), and a budget for logging.  Logging doesn't come for free.
+Sensible Joran (Logback XML) Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-### Sensible Joran (Logback XML) Configuration
+The https://logback.qos.ch/manual/configuration.html#syntax[XML
+configuration] for the main file is in `terse-logback.xml` and is as
+follows:
 
-The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax) for the main file is in `terse-logback.xml` and is as follows:
-
-```xml
+[source,xml]
+----
 <configuration>
     <newRule pattern="*/typesafeConfig"
              actionClass="com.tersesystems.logback.TypesafeConfigAction"/>
@@ -175,15 +234,20 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
     <!-- Set the logger levels at the very end -->
     <setLoggerLevels/>
 </configuration>
-```
+----
 
-All the encoders have been configured to use UTC as the timezone, and are packaged individually using [file inclusion](https://logback.qos.ch/manual/configuration.html#fileInclusion) for ease of use.
+All the encoders have been configured to use UTC as the timezone, and
+are packaged individually using
+https://logback.qos.ch/manual/configuration.html#fileInclusion[file
+inclusion] for ease of use.
 
-#### Console
+Console
++++++++
 
 The console appender uses the following XML configuration:
 
-```xml
+[source,xml]
+----
 <included>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -194,28 +258,35 @@ The console appender uses the following XML configuration:
     </appender>
 
 </included>
-```
+----
 
 with the HOCON settings as follows:
 
-```hocon
+[source,hocon]
+----
 console {
   withJansi = true # allow colored logging on windows
   encoder {
     pattern = "[%terseHighlight(%-5level)] %logger{15} - %censoredMessage%n%xException{10}"
   }
 }
-```
+----
 
-The console appender uses colored logging for the log level, but you can override config to set the colors you want for which levels.  Jansi is included so that Windows can benefit from colored logging as well.
+The console appender uses colored logging for the log level, but you can
+override config to set the colors you want for which levels. Jansi is
+included so that Windows can benefit from colored logging as well.
 
-The console does not use async logging, because it has to co-exist with `System.out.println` and `System.err.println` messages, and so must appear time-ordered with them.
+The console does not use async logging, because it has to co-exist with
+`System.out.println` and `System.err.println` messages, and so must
+appear time-ordered with them.
 
-#### Text
+Text
+++++
 
 The text encoder uses the following configuration:
 
-```xml
+[source,xml]
+----
 <included>
     <appender name="TEXTFILE" class="ch.qos.logback.core.FileAppender">
         <file>${textfile.location}</file>
@@ -239,11 +310,12 @@ The text encoder uses the following configuration:
         <appender-ref ref="TEXTFILE" />
     </appender>>
 </included>
-```
+----
 
 with the HOCON settings as:
 
-```hocon
+[source,hocon]
+----
 textfile {
   location = log/application.log
   append = true
@@ -259,17 +331,22 @@ textfile {
     pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %censoredMessage%n%xException"
   }
 }
-```
+----
 
-Colored logging is not used in the file-based appender, because some editors tend to show ANSI codes specifically.
+Colored logging is not used in the file-based appender, because some
+editors tend to show ANSI codes specifically.
 
-#### JSON
+JSON
+++++
 
-The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print options.  
+The JSON encoder uses
+https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts[`net.logstash.logback.encoder.LogstashEncoder`]
+with pretty print options.
 
 The XML is as follows:
 
-```xml
+[source,xml]
+----
 <included>
 
     <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -316,11 +393,12 @@ The XML is as follows:
         <appender-ref ref="JSONFILE" />
     </appender>>
 </included>
-```
+----
 
 with the following HOCON configuration:
 
-```hocon
+[source,hocon]
+----
 jsonfile {
   location = "log/application.json"
   append = true
@@ -337,6 +415,9 @@ jsonfile {
     timeZone = "UTC"
   }
 }
-```
+----
 
-If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
+If you want to modify the format of the JSON encoder, you should use
+https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout[`LoggingEventCompositeJsonEncoder`].
+The level of detail in `LoggingEventCompositeJsonEncoder` is truly
+astounding and it’s a powerful piece of work in its own right.

@@ -1,17 +1,34 @@
+Logging with Injected Context
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## Logging with Injected Context
+When you’re using structured logging, you’ll inevitably have to pass
+around the `LogstashMarker` or `StructuredArgument` with it so that you
+can add context to your logging. In the past, the recommended way to do
+this was MDC.
 
-When you're using structured logging, you'll inevitably have to pass around the `LogstashMarker` or `StructuredArgument` with it so that you can add context to your logging.  In the past, the recommended way to do this was MDC.
+Avoid https://logback.qos.ch/manual/mdc.html[Mapped Diagnostic Context].
+MDC is a well known way of adding context to logging, but there are
+several things that make it problematic.
 
-Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.  
+MDC does not deal well with multi-threaded applications which may pass
+execution between several threads. Code that uses `CompletableFuture`
+and `ExecutorService` may not work reliably with MDC. A child thread
+does not automatically inherit a copy of the mapped diagnostic context
+of its parent. MDC also breaks silently: when MDC assumptions are
+violated, there is no indication that the wrong contextual information
+is being displayed.
 
-MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
+There are numerous workarounds, but it’s safer and easier to use an
+explicit context as a field or parameter. If you don’t want to manage
+this in your logger directly, then the safest way is to handle it
+through injection, also known as using constructor parameters.
 
-There are numerous workarounds, but it's safer and easier to use an explicit context as a field or parameter.  If you don't want to manage this in your logger directly, then the safest way is to handle it through injection, also known as using constructor parameters.
+When you create an instance, you can pass in a single
+`org.slf4j.ILoggerFactory` instance that will create your loggers for
+you.
 
-When you create an instance, you can pass in a single `org.slf4j.ILoggerFactory` instance that will create your loggers for you.  
-
-```java
+[source,java]
+----
 package example;
 
 import com.tersesystems.logback.context.logstash.LogstashContext;
@@ -64,11 +81,14 @@ public class ClassWithContext {
         }
     }
 }
-```
+----
 
-In the second example, an `AppContext` / `AppLogger` is used -- this is an example of domain specific methods and fields being added to the context.
+In the second example, an `AppContext` / `AppLogger` is used – this is
+an example of domain specific methods and fields being added to the
+context.
 
-```java
+[source,java]
+----
 package example;
 
 import com.tersesystems.logback.context.TracerFactory;
@@ -184,6 +204,10 @@ class AppLoggerFactory extends AbstractLogstashLoggerFactory<AppContext, AppLogg
     }
 
 }
-```
+----
 
-This style of programming does assume that you can control the instantiation of your objects, and it doesn't go into some of the details such as accumulating extra context.  Keeping a context object around so you can accumulate more context may be a good idea in some circumstances.
+This style of programming does assume that you can control the
+instantiation of your objects, and it doesn’t go into some of the
+details such as accumulating extra context. Keeping a context object
+around so you can accumulate more context may be a good idea in some
+circumstances.

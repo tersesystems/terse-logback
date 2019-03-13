@@ -1,13 +1,21 @@
+Controlling Logging
+~~~~~~~~~~~~~~~~~~~
 
-## Controlling Logging
+There are reasons why you would not want to log information you may
+normally log.
 
-There are reasons why you would not want to log information you may normally log.
+The historical reason for not logging is that there is a construction
+cost involved in creating parameters. This is still true in a way today
+– CPU and memory are not typically constraints for logging statements,
+but there are storage costs involved in producing logs. Accumulated logs
+must be parsed and searched, making queries slower.
 
-The historical reason for not logging is that there is a construction cost involved in creating parameters.  This is still true in a way today -- CPU and memory are not typically constraints for logging statements, but there are storage costs involved in producing logs.  Accumulated logs must be parsed and searched, making queries slower.
+There is a `com.tersesystems.logback.ext.ProxyConditionalLogger` class
+that will apply preconditions to loggers, and so the logging will only
+happen when the preconditions are met:
 
-There is a `com.tersesystems.logback.ext.ProxyConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
-
-```java
+[source,java]
+----
 package example;
 
 import com.tersesystems.logback.ext.*;
@@ -56,4 +64,4 @@ public class ClassWithConditionalLogger {
         classWithExtendedLoggers.doStuff();
     }
 }
-```
+----
