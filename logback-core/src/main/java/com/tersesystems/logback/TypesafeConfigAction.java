@@ -67,16 +67,16 @@ public class TypesafeConfigAction extends Action {
             file = ConfigFactory.parseFile(new File(fileName));
         }
 
-        Config testResources = ConfigFactory.parseResourcesAnySyntax(classLoader, LOGBACK_TEST);
         Config resources = ConfigFactory.parseResourcesAnySyntax(classLoader, LOGBACK);
         Config reference = ConfigFactory.parseResources(classLoader, LOGBACK_REFERENCE_CONF);
-
+        Config testResources = ConfigFactory.parseResourcesAnySyntax(classLoader, LOGBACK_TEST);
+        
         Config config = systemProperties        // Look for a property from system properties first...
-                .withFallback(file)          // if we don't find it, then look in an explicitly defined file...
-                .withFallback(testResources) // if not, then if logback-test.conf exists, look for it there...
-                .withFallback(resources)     // then look in logback.conf...
-                .withFallback(reference)     // and then finally in logback-reference.conf.
-                .resolve();                  // Tell config that we want to use ${?ENV_VAR} type stuff.
+                .withFallback(file)             // if we don't find it, then look in an explicitly defined file...                
+                .withFallback(resources)        // then look in logback.conf...
+                .withFallback(reference)        // and then finally in logback-reference.conf.
+                .withFallback(testResources)    // Anything in logback-test.conf can override the above config.
+                .resolve();                     // Tell config that we want to use ${?ENV_VAR} type stuff.
 
         // Add a check to show the config value if nothing is working...
         if (Boolean.getBoolean(LOGBACK_DEBUG_PROPERTY)) {
