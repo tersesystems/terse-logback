@@ -13,6 +13,9 @@
 <included>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.tersesystems.logback.EnabledFilter">
+            <enabled>${console.enabled}</enabled>
+        </filter>
         <encoder>
             <pattern>${console.encoder.pattern}</pattern>
         </encoder>
