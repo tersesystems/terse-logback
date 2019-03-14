@@ -24,6 +24,11 @@ public class CensoringMessageConverter extends ClassicConverter {
 
     private Censor censor;
 
+    public boolean isEnabled() {
+        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
+        return config.getBoolean(CensorConstants.CENSOR_TEXT_ENABLED);
+    }
+
     @Override
     public void start() {
         Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
@@ -31,11 +36,10 @@ public class CensoringMessageConverter extends ClassicConverter {
         started = true;
     }
 
-
     @Override
     public String convert(ILoggingEvent event) {
         String formattedMessage = event.getFormattedMessage();
-        if (censor != null) {
+        if (isEnabled() && isStarted()) {
             return String.valueOf(censor.apply(formattedMessage));
         } else {
             return formattedMessage;
