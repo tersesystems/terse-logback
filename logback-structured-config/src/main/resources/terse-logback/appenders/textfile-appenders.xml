@@ -13,6 +13,9 @@
 <included>
 
     <appender name="TEXTFILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="com.tersesystems.logback.EnabledFilter">
+            <enabled>${textfile.enabled}</enabled>
+        </filter>
         <file>${textfile.location}</file>
         <append>${textfile.append}</append>
 
