@@ -1,13 +1,11 @@
-# https://medium.com/cirruslabs/mastering-gradle-caching-and-incremental-builds-37eb1af7fcde
+sudo: false
+language: java
+jdk:
+  - openjdk8
 
-container:
-  image: gradle:5.2.1-jdk8
-gradle_cache:
-    folder: ~/.gradle/caches
-check_script: gradle check
-
-cleanup_before_cache_script:
-  - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -rf ~/.gradle/caches/5.2.1/
   - find ~/.gradle/caches/ -name "*.lock" -type f -delete
 cache:
   directories:
