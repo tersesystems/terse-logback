@@ -53,6 +53,11 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         return started;
     }
 
+    private boolean isEnabled() {
+        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
+        return config.getBoolean(CensorConstants.CENSOR_JSON_ENABLED);
+    }
+
     // Removes entire value attached to the key.
     private class CensoringTokenFilter extends TokenFilter {
         @Override
@@ -69,6 +74,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private boolean shouldFilter(String name) {
+            if (! isEnabled()) return false;
             Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
             List<String> keys = config.getStringList(CensorConstants.CENSOR_JSON_KEYS);
             return keys.contains(name);
@@ -85,7 +91,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private String censorSensitiveMessage(String original) {
-            if (censor != null) {
+            if (CensoringJsonGeneratorDecorator.this.isEnabled() && censor != null) {
                 return String.valueOf(censor.apply(original));
             } else {
                 return original;
