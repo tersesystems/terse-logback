@@ -19,16 +19,21 @@ import org.slf4j.Logger;
 /**
  * Helper class that fixes the marker as LogstashMarker and adds a withContext method.
  *
- * @param <C> the context type.
- * @param <L> the logger type.
- * @param <PIF> the parent loggerfactory type.
- * @param <THIS> the self type for the logger factory.
+ * @param <ContextT> the context type.
+ * @param <LoggerT> the logger type.
+ * @param <LoggerFactoryT> the parent loggerfactory type.
+ * @param <SelfT> the self type for the logger factory.
  */
-public abstract class AbstractLogstashLoggerFactory<C extends Context<LogstashMarker, C>, L extends Logger, PIF extends ILoggerFactory, THIS> extends AbstractContextLoggerFactory<LogstashMarker, C, L, PIF> {
+public abstract class AbstractLogstashLoggerFactory<
+        ContextT extends Context<LogstashMarker, ContextT>,
+        LoggerT extends Logger,
+        LoggerFactoryT extends ILoggerFactory,
+        SelfT
+  > extends AbstractContextLoggerFactory<LogstashMarker, ContextT, LoggerT, LoggerFactoryT> {
 
-    protected AbstractLogstashLoggerFactory(C context, PIF loggerFactory) {
+    protected AbstractLogstashLoggerFactory(ContextT context, LoggerFactoryT loggerFactory) {
         super(context, loggerFactory);
     }
 
-    public abstract THIS withContext(C context);
+    public abstract SelfT withContext(ContextT context);
 }

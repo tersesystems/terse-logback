@@ -16,12 +16,17 @@ import org.slf4j.Marker;
 /**
  * Proxy logger that takes a marker as argument.
  */
-public abstract class AbstractContextLogger<M extends Marker, C extends Context<M, C>, L extends Logger, THIS> implements LoggerWithContext<M, C, THIS> {
+public abstract class AbstractContextLogger<
+        MarkerT extends Marker,
+        ContextT extends Context<MarkerT, ContextT>,
+        LoggerT extends Logger,
+        SelfT
+        > implements LoggerWithContext<MarkerT, ContextT, SelfT> {
 
-    protected final L logger;
-    protected final C context;
+    protected final LoggerT logger;
+    protected final ContextT context;
 
-    public AbstractContextLogger(C context, L logger) {
+    public AbstractContextLogger(ContextT context, LoggerT logger) {
         this.context = context;
         this.logger = logger;
     }
@@ -32,7 +37,7 @@ public abstract class AbstractContextLogger<M extends Marker, C extends Context<
     }
 
     @Override
-    public C getContext() {
+    public ContextT getContext() {
         return this.context;
     }
 

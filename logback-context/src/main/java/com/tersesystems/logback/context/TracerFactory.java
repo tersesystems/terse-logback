@@ -44,7 +44,7 @@ public class TracerFactory {
         return createTracer(marker);
     }
 
-    public <T extends Marker> T createTracer(T marker) {
+    public <MarkerT extends Marker> MarkerT createTracer(MarkerT marker) {
         marker.add(tracerMarker);
         return marker;
     }

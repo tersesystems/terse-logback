@@ -14,21 +14,26 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-public abstract class AbstractContextLoggerFactory<M extends Marker, C extends Context<M, C>, L extends Logger, IF extends ILoggerFactory> implements ISelfLoggerFactory<L> {
+public abstract class AbstractContextLoggerFactory<
+        MarkerT extends Marker,
+        ContextT extends Context<MarkerT, ContextT>,
+        LoggerT extends Logger,
+        LoggerFactoryT extends ILoggerFactory
+        > implements ISelfLoggerFactory<LoggerT> {
 
-    protected final C context;
-    protected final IF loggerFactory;
+    protected final ContextT context;
+    protected final LoggerFactoryT loggerFactory;
 
-    protected AbstractContextLoggerFactory(C context, IF loggerFactory) {
+    protected AbstractContextLoggerFactory(ContextT context, LoggerFactoryT loggerFactory) {
         this.context = context;
         this.loggerFactory = loggerFactory;
     }
 
-    public C getContext() {
+    public ContextT getContext() {
         return context;
     }
 
-    public IF getILoggerFactory() {
+    public LoggerFactoryT getILoggerFactory() {
         return loggerFactory;
     }
 }
