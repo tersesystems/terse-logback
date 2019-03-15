@@ -14,10 +14,13 @@ import org.slf4j.Marker;
 
 import java.util.Map;
 
-public interface Context<M extends Marker, THIS extends Context<M, THIS>> {
-    THIS and(Context<? extends Marker, ?> context);
+public interface Context<
+        MarkerT extends Marker,
+        ContextT extends Context<MarkerT, ContextT>
+        > {
+    ContextT and(Context<? extends Marker, ?> context);
 
-    M asMarker();
+    MarkerT asMarker();
 
     Map<?,?> entries();
 }

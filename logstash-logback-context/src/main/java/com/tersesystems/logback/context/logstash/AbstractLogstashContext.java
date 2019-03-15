@@ -20,9 +20,9 @@ import java.util.Map;
 /**
  * Helper class that fixes the marker as LogstashMarker and adds an `asMarker` method.
  *
- * @param <C> the type of context.
+ * @param <ContextT> the type of context.
  */
-public abstract class AbstractLogstashContext<C extends Context<LogstashMarker, C>> extends AbstractContext<LogstashMarker, C> {
+public abstract class AbstractLogstashContext<ContextT extends Context<LogstashMarker, ContextT>> extends AbstractContext<LogstashMarker, ContextT> {
 
     protected AbstractLogstashContext(Map<?, ?> entries) {
         super(entries);

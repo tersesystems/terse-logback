@@ -21,13 +21,13 @@ import java.util.Optional;
 /**
  * Ease of use abstract class for loggers which are known to use LogstashMarker explicitly.
  *
- * @param <C> the context type. to be used by the logger.
- * @param <PL> parent logger type.
- * @param <THIS> The self type.
+ * @param <ContextT> the context type. to be used by the logger.
+ * @param <LoggerT> parent logger type.
+ * @param <SelfT> The self type.
  */
-public abstract class AbstractLogstashLogger<C extends Context<LogstashMarker, C>, PL extends Logger, THIS> extends AbstractContextLogger<LogstashMarker, C, PL, THIS> implements LogbackLoggerAware {
+public abstract class AbstractLogstashLogger<ContextT extends Context<LogstashMarker, ContextT>, LoggerT extends Logger, SelfT> extends AbstractContextLogger<LogstashMarker, ContextT, LoggerT, SelfT> implements LogbackLoggerAware {
 
-    public AbstractLogstashLogger(C context, PL logger) {
+    public AbstractLogstashLogger(ContextT context, LoggerT logger) {
         super(context, logger);
     }
 
