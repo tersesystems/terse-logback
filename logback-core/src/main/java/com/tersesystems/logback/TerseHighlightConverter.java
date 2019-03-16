@@ -40,7 +40,7 @@ public class TerseHighlightConverter extends ForegroundCompositeConverterBase<IL
         CYAN(ANSIConstants.CYAN_FG),
         WHITE(ANSIConstants.WHITE_FG);
 
-        private final String code;
+        final String code;
         Color(String code) {
             this.code = code;
         }
