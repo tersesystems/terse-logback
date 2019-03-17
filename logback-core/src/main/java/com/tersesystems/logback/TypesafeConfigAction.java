@@ -14,6 +14,7 @@ import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
+import ch.qos.logback.core.util.OptionHelper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
@@ -24,6 +25,10 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Configures properties from a typesafe config object, and places them in local scope, or in the context
+ * if "scope"="context" attribute is set.
+ */
 public class TypesafeConfigAction extends Action {
     public static final String LOGBACK = "logback";
 
@@ -35,11 +40,21 @@ public class TypesafeConfigAction extends Action {
 
     public static final String CONFIG_FILE_PROPERTY = "terse.logback.configurationFile";
 
+    private static final String SCOPE_ATTRIBUTE = "scope";
+
+    private static final String CONTEXT_SCOPE = "context";
+
     @Override
     public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
         Config config = generateConfig(ic.getClass().getClassLoader());
         Context context = ic.getContext();
-        configureContextWithConfig(context, config);
+
+        Set<Map.Entry<String, ConfigValue>> properties = config.getConfig(ConfigConstants.PROPERTIES_KEY).entrySet();
+        if (isContextScope(attributes)) {
+            configureContextScope(context, properties);
+        } else {
+            configureLocalScope(ic, properties);
+        }
     }
 
     @Override
@@ -47,14 +62,25 @@ public class TypesafeConfigAction extends Action {
 
     }
 
-    public void configureContextWithConfig(Context lc, Config config) {
-        // For everything in the properties section, set it as a property.
-        lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
-        Set<Map.Entry<String, ConfigValue>> properties = config.getConfig(ConfigConstants.PROPERTIES_KEY).entrySet();
+    private boolean isContextScope(Attributes attributes) {
+       return attributes != null && CONTEXT_SCOPE.equalsIgnoreCase(attributes.getValue(SCOPE_ATTRIBUTE));
+    }
+
+    public void configureContextScope(Context lc, Set<Map.Entry<String, ConfigValue>> properties) {
+        addInfo("Configuring with context scope");
         for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
             String key = propertyEntry.getKey();
             String value = propertyEntry.getValue().unwrapped().toString();
             lc.putProperty(key, value);
+        }
+    }
+
+    public void configureLocalScope(InterpretationContext ic,  Set<Map.Entry<String, ConfigValue>> properties) {
+        addInfo("Configuring with context scope");
+        for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
+            String key = propertyEntry.getKey();
+            String value = propertyEntry.getValue().unwrapped().toString();
+            ic.addSubstitutionProperty(key, value);
         }
     }
 
