@@ -31,7 +31,7 @@ public class SetLoggerLevelsAction extends Action {
 
     @Override
     public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
-        doConfigure();
+        doConfigure(ic);
     }
 
     @Override
@@ -39,15 +39,30 @@ public class SetLoggerLevelsAction extends Action {
 
     }
 
-    public void doConfigure() {
+    Config getConfig(InterpretationContext ic) {
+        Map<String, Object> objectMap = ic.getObjectMap();
+        if (objectMap.containsKey(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY)) {
+            return (Config) objectMap.get(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
+        }
+
         LoggerContext context = (LoggerContext) getContext();
-        Config rootConfig = (Config) context.getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-        Config levelsConfig = rootConfig.getConfig(ConfigConstants.LEVELS_KEY);
+        return (Config) context.getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
+    }
+
+    public void doConfigure(InterpretationContext ic) {
+        Config config = getConfig(ic);
+        if (config == null) {
+            addError("Cannot set log levels: no typesafe config object found in local or context scope!");
+            return;
+        }
+
+        Config levelsConfig = config.getConfig(ConfigConstants.LEVELS_KEY);
         Set<Map.Entry<String, ConfigValue>> levelsEntrySet = levelsConfig.entrySet();
         for (Map.Entry<String, ConfigValue> entry : levelsEntrySet) {
             String name = entry.getKey();
             try {
                 String levelFromConfig = entry.getValue().unwrapped().toString();
+                LoggerContext context = (LoggerContext) getContext();
                 Logger logger = context.getLogger(name);
                 new ChangeLogLevel().changeLogLevel(logger, levelFromConfig);
                 addInfo("Setting level of " + name + " logger to " + levelFromConfig);

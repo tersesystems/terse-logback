@@ -14,6 +14,8 @@ import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.typesafe.config.Config;
 
+import java.util.List;
+
 /**
  * Censoring message converter for text.
  *
@@ -32,7 +34,9 @@ public class CensoringMessageConverter extends ClassicConverter {
     @Override
     public void start() {
         Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
-        this.censor = new RegexCensor(config, CensorConstants.CENSOR_TEXT_REGEX, CensorConstants.CENSOR_TEXT_REPLACEMENT);
+        String replacementText = config.getString(CensorConstants.CENSOR_TEXT_REPLACEMENT);
+        List<String> regexes = config.getStringList(CensorConstants.CENSOR_TEXT_REGEX);
+        this.censor = new RegexCensor(regexes, replacementText);
         started = true;
     }
 

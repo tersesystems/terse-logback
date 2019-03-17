@@ -51,9 +51,9 @@ public class TypesafeConfigAction extends Action {
 
         Set<Map.Entry<String, ConfigValue>> properties = config.getConfig(ConfigConstants.PROPERTIES_KEY).entrySet();
         if (isContextScope(attributes)) {
-            configureContextScope(context, properties);
+            configureContextScope(config, context, properties);
         } else {
-            configureLocalScope(ic, properties);
+            configureLocalScope(config, ic, properties);
         }
     }
 
@@ -66,8 +66,9 @@ public class TypesafeConfigAction extends Action {
        return attributes != null && CONTEXT_SCOPE.equalsIgnoreCase(attributes.getValue(SCOPE_ATTRIBUTE));
     }
 
-    public void configureContextScope(Context lc, Set<Map.Entry<String, ConfigValue>> properties) {
+    public void configureContextScope(Config config, Context lc, Set<Map.Entry<String, ConfigValue>> properties) {
         addInfo("Configuring with context scope");
+        lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
         for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
             String key = propertyEntry.getKey();
             String value = propertyEntry.getValue().unwrapped().toString();
@@ -75,8 +76,10 @@ public class TypesafeConfigAction extends Action {
         }
     }
 
-    public void configureLocalScope(InterpretationContext ic,  Set<Map.Entry<String, ConfigValue>> properties) {
-        addInfo("Configuring with context scope");
+    public void configureLocalScope(Config config, InterpretationContext ic,  Set<Map.Entry<String, ConfigValue>> properties) {
+        addInfo("Configuring with local scope");
+        ic.getObjectMap().put(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
+
         for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
             String key = propertyEntry.getKey();
             String value = propertyEntry.getValue().unwrapped().toString();
