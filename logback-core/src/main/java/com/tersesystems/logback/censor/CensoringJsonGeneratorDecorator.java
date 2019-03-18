@@ -34,16 +34,6 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
     private Censor censor;
     private boolean started;
 
-    private InterpretationContext interpretationContext;
-
-    public InterpretationContext getInterpretationContext() {
-        return interpretationContext;
-    }
-
-    public void setInterpretationContext(InterpretationContext interpretationContext) {
-        this.interpretationContext = interpretationContext;
-    }
-
     @Override
     public JsonGenerator decorate(JsonGenerator generator) {
         CensoringJsonGeneratorDelegate substitutionDelegate = new CensoringJsonGeneratorDelegate(generator);
@@ -52,10 +42,6 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
 
     @Override
     public void start() {
-        Config config = getConfig(getInterpretationContext());
-        String replacementText = config.getString(CensorConstants.CENSOR_TEXT_REPLACEMENT);
-        List<String> regexes = config.getStringList(CensorConstants.CENSOR_TEXT_REGEX);
-        this.censor = new RegexCensor(regexes, replacementText);
         started = true;
     }
 
@@ -81,11 +67,6 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         return started;
     }
 
-    private boolean isEnabled() {
-        return getConfig(getInterpretationContext()).getBoolean(CensorConstants.CENSOR_JSON_ENABLED);
-    }
-
-
     // Removes entire value attached to the key.
     private class CensoringTokenFilter extends TokenFilter {
         @Override
@@ -102,7 +83,6 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private boolean shouldFilter(String name) {
-            if (! isEnabled()) return false;
             Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
             List<String> keys = config.getStringList(CensorConstants.CENSOR_JSON_KEYS);
             return keys.contains(name);
@@ -119,8 +99,8 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private String censorSensitiveMessage(String original) {
-            if (CensoringJsonGeneratorDecorator.this.isEnabled() && censor != null) {
-                return String.valueOf(censor.apply(original));
+            if (censor != null) {
+                return String.valueOf(censor.censorText(original));
             } else {
                 return original;
             }

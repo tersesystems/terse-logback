@@ -10,10 +10,22 @@
  */
 package com.tersesystems.logback.censor;
 
-/**
- * This interface potentially censors the contents of T, either in whole or in part.
- */
-@FunctionalInterface
-public interface Censor {
-    CharSequence apply(CharSequence input);
+import ch.qos.logback.core.spi.ContextAware;
+import ch.qos.logback.core.spi.LifeCycle;
+
+public interface Censor extends ContextAware, LifeCycle {
+
+    /**
+     * Get the name of this appender. The name uniquely identifies the appender.
+     */
+    String getName();
+
+    CharSequence censorText(CharSequence input);
+
+    /**
+     * Set the name of this appender. The name is used by other components to
+     * identify this appender.
+     *
+     */
+    void setName(String name);
 }

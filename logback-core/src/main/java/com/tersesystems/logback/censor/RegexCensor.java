@@ -10,29 +10,69 @@
  */
 package com.tersesystems.logback.censor;
 
-import com.typesafe.config.Config;
+import ch.qos.logback.core.spi.ContextAwareBase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class RegexCensor implements Censor {
+public class RegexCensor extends ContextAwareBase implements Censor {
 
-    private List<Pattern> patterns;
+    protected volatile boolean started = false;
+
+    private List<Pattern> patterns = new ArrayList<>();
+    private final List<String> regexes = new ArrayList<>();
+
     private String replacementText;
 
-    RegexCensor(List<String> regexes, String replacementText) {
+    protected String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getReplacementText() {
+        return replacementText;
+    }
+
+    public void setReplacementText(String replacementText) {
         this.replacementText = replacementText;
+    }
+
+    public void addRegex(String regex) {
+        this.regexes.add(regex);
+    }
+
+    @Override
+    public boolean isStarted() {
+        return started;
+    }
+
+    @Override
+    public void start() {
         this.patterns = regexes.stream()
                 .map(rex -> {
                     int flags = (rex.contains("\n")) ? Pattern.MULTILINE : 0;
                     return Pattern.compile(rex, flags);
                 })
                 .collect(Collectors.toList());
+        this.started = true;
     }
 
     @Override
-    public CharSequence apply(CharSequence original) {
+    public void stop() {
+        this.patterns.clear();
+        this.regexes.clear();
+        this.started = false;
+    }
+
+    @Override
+    public CharSequence censorText(CharSequence original) {
         CharSequence acc = original;
         for (Pattern pattern : patterns) {
             acc = pattern.matcher(acc).replaceAll(replacementText);

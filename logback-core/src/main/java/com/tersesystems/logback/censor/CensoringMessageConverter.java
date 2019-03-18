@@ -12,6 +12,7 @@ package com.tersesystems.logback.censor;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Context;
 import com.typesafe.config.Config;
 
 import java.util.List;
@@ -26,27 +27,16 @@ public class CensoringMessageConverter extends ClassicConverter {
 
     private Censor censor;
 
-    public boolean isEnabled() {
-        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
-        return config.getBoolean(CensorConstants.CENSOR_TEXT_ENABLED);
-    }
-
     @Override
     public void start() {
-        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
-        String replacementText = config.getString(CensorConstants.CENSOR_TEXT_REPLACEMENT);
-        List<String> regexes = config.getStringList(CensorConstants.CENSOR_TEXT_REGEX);
-        this.censor = new RegexCensor(regexes, replacementText);
+        this.censor = (Censor) getContext().getObject("censor");
         started = true;
+        addInfo("started censoring message converter!");
     }
 
     @Override
     public String convert(ILoggingEvent event) {
         String formattedMessage = event.getFormattedMessage();
-        if (isEnabled() && isStarted()) {
-            return String.valueOf(censor.apply(formattedMessage));
-        } else {
-            return formattedMessage;
-        }
+        return String.valueOf(censor.censorText(formattedMessage));
     }
 }

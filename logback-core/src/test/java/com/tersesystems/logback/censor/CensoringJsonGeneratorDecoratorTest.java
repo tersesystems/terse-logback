@@ -15,6 +15,7 @@ import ch.qos.logback.core.Context;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.tersesystems.logback.AbstractConfigBase;
 import com.typesafe.config.Config;
 import org.junit.Test;
 

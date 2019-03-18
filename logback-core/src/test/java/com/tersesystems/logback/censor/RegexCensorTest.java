@@ -10,9 +10,10 @@
  */
 package com.tersesystems.logback.censor;
 
-import com.typesafe.config.Config;
+import com.tersesystems.logback.AbstractConfigBase;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,20 +22,26 @@ public class RegexCensorTest extends AbstractConfigBase {
 
     @Test
     public void testCensor() throws Exception {
-        Config config = loadConfig();
-        String replacementText = config.getString(CensorConstants.CENSOR_TEXT_REPLACEMENT);
-        List<String> regexes = config.getStringList(CensorConstants.CENSOR_TEXT_REGEX);
+        String replacementText = "*******";
 
-        RegexCensor censor = new RegexCensor(regexes, replacementText);
-        assertThat(censor.apply("hunter2")).isEqualTo("*******");
+        RegexCensor censor = new RegexCensor();
+        censor.setReplacementText(replacementText);
+        censor.addRegex("hunter2");
+        censor.start();
+
+        assertThat(censor.censorText("hunter2")).isEqualTo("*******");
     }
 
     @Test
     public void testCensorWithNoMatch() throws Exception {
-        Config config = loadConfig();
-        String replacementText = config.getString(CensorConstants.CENSOR_TEXT_REPLACEMENT);
-        List<String> regexes = config.getStringList(CensorConstants.CENSOR_TEXT_REGEX);
-        RegexCensor censor = new RegexCensor(regexes, replacementText);
-        assertThat(censor.apply("password1")).isEqualTo("password1");
+        String replacementText = "*******";
+
+        RegexCensor censor = new RegexCensor();
+        censor.setReplacementText(replacementText);
+        censor.addRegex("hunter2");
+        ;
+        censor.start();
+
+        assertThat(censor.censorText("password1")).isEqualTo("password1");
     }
 }
