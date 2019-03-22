@@ -10,15 +10,11 @@
  */
 package com.tersesystems.logback.censor;
 
-import com.tersesystems.logback.AbstractConfigBase;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RegexCensorTest extends AbstractConfigBase {
+public class RegexCensorTest {
 
     @Test
     public void testCensor() throws Exception {

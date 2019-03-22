@@ -22,7 +22,7 @@
 
     <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter"/>
 
-    <appender name="TEST" class="com.tersesystems.logback.TestAppender">
+    <appender name="TEST" class="com.tersesystems.logback.censor.TestAppender">
         <encoder>
             <pattern>%censor(%msg)%n</pattern>
         </encoder>
