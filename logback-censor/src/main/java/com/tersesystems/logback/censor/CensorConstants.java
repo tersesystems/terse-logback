@@ -14,7 +14,7 @@ public class CensorConstants {
 
     public static final String TYPESAFE_CONFIG_CTX_KEY = "typesafeConfig";
 
-    public static final String CENSOR_CTX_KEY = "censor";
+    public static final String CENSOR_CTX_KEY = "censorText";
 
     public static final String CENSOR_JSON_ENABLED = CENSOR_CTX_KEY + ".json.enabled";
     public static final String CENSOR_JSON_REGEX = CENSOR_CTX_KEY + ".json.regex";
@@ -24,4 +24,6 @@ public class CensorConstants {
     public static final String CENSOR_TEXT_ENABLED = CENSOR_CTX_KEY + ".text.enabled";
     public static final String CENSOR_TEXT_REGEX = CENSOR_CTX_KEY + ".text.regex";
     public static final String CENSOR_TEXT_REPLACEMENT = CENSOR_CTX_KEY + ".text.replacement";
+
+    public static final String CENSOR_BAG = "CENSOR_BAG";
 }

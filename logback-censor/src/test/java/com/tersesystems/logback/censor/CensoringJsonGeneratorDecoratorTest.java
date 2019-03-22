@@ -11,26 +11,29 @@
 package com.tersesystems.logback.censor;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.Context;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
-import com.typesafe.config.Config;
 import org.junit.Test;
 
 import java.io.StringWriter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CensoringJsonGeneratorDecoratorTest extends AbstractConfigBase {
+public class CensoringJsonGeneratorDecoratorTest {
 
     @Test
     public void basicCensor() throws Exception {
+        LoggerContext context = new LoggerContext();
+        RegexCensor censor = new RegexCensor();
+        censor.setContext(context);
+        censor.setReplacementText("*******");
+        censor.addRegex("hunter2");
+        censor.start();
+
         CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
-        Context context = new LoggerContext();
-        Config config = loadConfig();
-        context.putObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY, config);
         decorator.setContext(context);
+        decorator.setCensor(censor);
         decorator.start();
 
         StringWriter writer = new StringWriter();
@@ -48,10 +51,7 @@ public class CensoringJsonGeneratorDecoratorTest extends AbstractConfigBase {
     @Test
     public void filterKey() throws Exception {
         CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
-        Context context = new LoggerContext();
-        Config config = loadConfig();
-        context.putObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY, config);
-        decorator.setContext(context);
+        decorator.addFilterKey("password");
         decorator.start();
 
         StringWriter writer = new StringWriter();
@@ -68,11 +68,16 @@ public class CensoringJsonGeneratorDecoratorTest extends AbstractConfigBase {
 
     @Test
     public void prettyPrintCensor() throws Exception {
+        LoggerContext context = new LoggerContext();
+        RegexCensor censor = new RegexCensor();
+        censor.setContext(context);
+        censor.setReplacementText("*******");
+        censor.addRegex("hunter2");
+        censor.start();
+
         CensoringJsonGeneratorDecorator decorator = new CensoringPrettyPrintingJsonGeneratorDecorator();
-        Context context = new LoggerContext();
-        Config config = loadConfig();
-        context.putObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY, config);
         decorator.setContext(context);
+        decorator.setCensor(censor);
         decorator.start();
 
         StringWriter writer = new StringWriter();

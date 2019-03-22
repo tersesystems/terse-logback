@@ -17,11 +17,11 @@ import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
-import com.typesafe.config.Config;
 import net.logstash.logback.decorate.JsonGeneratorDecorator;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 // https://github.com/FasterXML/jackson-core/issues/185
@@ -36,16 +36,23 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         return new FilteringGeneratorDelegate(substitutionDelegate, new CensoringTokenFilter(), true, true);
     }
 
+    public Censor getCensor() {
+        return censor;
+    }
+
+    public void setCensor(Censor censor) {
+        this.censor = censor;
+    }
+
     @Override
     public void start() {
-        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
-        this.censor = new RegexCensor(config, CensorConstants.CENSOR_JSON_REGEX, CensorConstants.CENSOR_JSON_REPLACEMENT);
         started = true;
     }
 
     @Override
     public void stop() {
-        started = true;
+        filterKeys.clear();
+        started = false;
     }
 
     @Override
@@ -53,9 +60,11 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         return started;
     }
 
-    private boolean isEnabled() {
-        Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
-        return config.getBoolean(CensorConstants.CENSOR_JSON_ENABLED);
+    private List<String> filterKeys = new ArrayList<>();
+
+    // List<String> keys = config.getStringList(CensorConstants.CENSOR_JSON_KEYS);
+    public void addFilterKey(String filterKey) {
+        this.filterKeys.add(filterKey);
     }
 
     // Removes entire value attached to the key.
@@ -74,10 +83,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private boolean shouldFilter(String name) {
-            if (! isEnabled()) return false;
-            Config config = (Config) getContext().getObject(CensorConstants.TYPESAFE_CONFIG_CTX_KEY);
-            List<String> keys = config.getStringList(CensorConstants.CENSOR_JSON_KEYS);
-            return keys.contains(name);
+            return filterKeys != null && filterKeys.contains(name);
         }
 
         @Override
@@ -91,8 +97,8 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         }
 
         private String censorSensitiveMessage(String original) {
-            if (CensoringJsonGeneratorDecorator.this.isEnabled() && censor != null) {
-                return String.valueOf(censor.apply(original));
+            if (censor != null) {
+                return String.valueOf(censor.censorText(original));
             } else {
                 return original;
             }
