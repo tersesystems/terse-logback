@@ -1,16 +1,16 @@
 /*
  * SPDX-License-Identifier: CC0-1.0
  *
- * Copyright 2019 Will Sargent.
+ * Copyright 2018-2019 Will Sargent.
  *
  * Licensed under the CC0 Public Domain Dedication;
  * You may obtain a copy of the License at
  *
- * http://creativecommons.org/publicdomain/zero/1.0/
+ *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-
 package com.tersesystems.logback.censor;
 
+import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
@@ -49,8 +49,9 @@ public class CensorAction extends Action {
             addInfo("About to instantiate censor of type [" + className + "]");
             censor = (Censor) OptionHelper.instantiateByClassName(className, Censor.class, context);
 
-            censor.setContext(context);
-            context.putObject("context", censor);
+            Context icContext = ic.getContext();
+            censor.setContext(icContext);
+            getContext().putObject("censor", censor);
 
             String censorName = ic.subst(attributes.getValue(NAME_ATTRIBUTE));
 

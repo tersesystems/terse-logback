@@ -1,14 +1,13 @@
 /*
  * SPDX-License-Identifier: CC0-1.0
  *
- * Copyright 2019 Will Sargent.
+ * Copyright 2018-2019 Will Sargent.
  *
  * Licensed under the CC0 Public Domain Dedication;
  * You may obtain a copy of the License at
  *
- * http://creativecommons.org/publicdomain/zero/1.0/
+ *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-
 package com.tersesystems.logback.censor;
 
 import ch.qos.logback.classic.Level;
@@ -30,13 +29,15 @@ import org.slf4j.impl.StaticLoggerBinder;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CensorActionTest {
 
-    JoranConfigurator jc = new JoranConfigurator();
-    LoggerContext loggerContext = new LoggerContext();
+    private JoranConfigurator jc = new JoranConfigurator();
+    private LoggerContext loggerContext = new LoggerContext();
 
     @Before
     public void setUp() {
@@ -45,7 +46,7 @@ public class CensorActionTest {
 
     @Test
     public void testAction() throws JoranException {
-        jc.doConfigure(this.getClass().getClassLoader().getResource("logback-test.xml"));
+        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logback-test.xml")));
 
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         TestAppender test = (TestAppender) root.getAppender("TEST");
@@ -55,6 +56,6 @@ public class CensorActionTest {
     }
 
     private LoggingEvent createLoggingEvent(ch.qos.logback.classic.Logger logger) {
-        return new LoggingEvent(this.getClass().getName(), logger, Level.DEBUG, "test message", new Exception("test Ex"), null);
+        return new LoggingEvent(this.getClass().getName(), logger, Level.DEBUG, "hunter2", null, null);
     }
 }

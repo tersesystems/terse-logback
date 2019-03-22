@@ -55,17 +55,25 @@ public class RegexCensor extends ContextAwareBase implements Censor {
 
     @Override
     public void start() {
+        if (replacementText == null) {
+            addError("replacementText cannot be null!");
+            return;
+        }
+
+        if (regexes.isEmpty()) {
+            addError("No regular expressions found!");
+            return;
+        }
+
         this.patterns = regexes.stream()
-                .map(rex -> {
-                    int flags = (rex.contains("\n")) ? Pattern.MULTILINE : 0;
-                    return Pattern.compile(rex, flags);
-                })
+                .map(rex -> Pattern.compile(rex, (rex.contains("\n")) ? Pattern.MULTILINE : 0))
                 .collect(Collectors.toList());
         this.started = true;
     }
 
     @Override
     public void stop() {
+        replacementText = null;
         this.patterns.clear();
         this.regexes.clear();
         this.started = false;

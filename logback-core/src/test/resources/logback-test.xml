@@ -15,16 +15,16 @@
     <newRule pattern="*/censor"
              actionClass="com.tersesystems.logback.censor.CensorAction"/>
 
-    <!--<censor class="com.tersesystems.logback.censor.RegexCensor">-->
-        <!--<replacementText>[CENSORED]</replacementText>-->
-        <!--<regex>herpderp</regex>-->
-    <!--</censor>-->
+    <censor name="my-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <replacementText>[CENSORED]</replacementText>
+        <regex>hunter2</regex>
+    </censor>
 
-    <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter"/>
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter"/>
 
     <appender name="TEST" class="com.tersesystems.logback.TestAppender">
         <encoder>
-            <pattern>%censoredMessage</pattern>
+            <pattern>%censor(%msg)%n</pattern>
         </encoder>
     </appender>
 

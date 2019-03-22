@@ -34,7 +34,7 @@
 
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
-    <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
 
     <!--
     https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
