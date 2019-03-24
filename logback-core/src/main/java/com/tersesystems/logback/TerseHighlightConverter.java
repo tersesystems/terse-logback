@@ -11,13 +11,12 @@
 package com.tersesystems.logback;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ANSIConstants;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
 import com.typesafe.config.Config;
 
-import static ch.qos.logback.core.pattern.color.ANSIConstants.*;
+import java.util.Map;
 
 /**
  * Prints out a colored level using ANSI codes.  Jansi is included here for Windows.
@@ -28,7 +27,7 @@ import static ch.qos.logback.core.pattern.color.ANSIConstants.*;
  */
 public class TerseHighlightConverter extends ForegroundCompositeConverterBase<ILoggingEvent> {
 
-    public static final String PROPERTIES_HIGHLIGHT = "properties.highlight";
+    public static final String HIGHLIGHT_CTX_KEY = "highlight";
 
     enum Color {
         BLACK(ANSIConstants.BLACK_FG),
@@ -48,11 +47,14 @@ public class TerseHighlightConverter extends ForegroundCompositeConverterBase<IL
 
     @Override
     protected String getForegroundColorCode(ILoggingEvent event) {
-        Config config = (Config) getContext().getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-        Config highlightConfig = config.getConfig(PROPERTIES_HIGHLIGHT);
+        Map<String, String> config = (Map<String, String>) getContext().getObject(HIGHLIGHT_CTX_KEY);
+        if (config == null) {
+            addWarn("No map found in context with key " + HIGHLIGHT_CTX_KEY);
+            return Color.BLACK.code;
+        }
 
         Level level = event.getLevel();
-        String levelColor = highlightConfig.getString(level.levelStr.toLowerCase()).toUpperCase();
+        String levelColor = config.get(level.levelStr.toLowerCase()).toUpperCase();
         return Color.valueOf(levelColor).code;
     }
 }

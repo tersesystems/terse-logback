@@ -850,7 +850,7 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
 
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
-    <conversionRule conversionWord="censoredMessage" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
 
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Name>TRACER_FILTER</Name>
@@ -957,7 +957,7 @@ textfile {
 
   encoder {
     outputPatternAsHeader = true
-    pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %censoredMessage%n%xException"
+    pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %censor(%msg)%n%xException"
   }
 }
 ```
