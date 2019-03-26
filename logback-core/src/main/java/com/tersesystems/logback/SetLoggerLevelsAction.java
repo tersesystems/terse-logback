@@ -10,7 +10,6 @@
  */
 package com.tersesystems.logback;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.joran.action.Action;
@@ -25,9 +24,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Sets the logger levels using typesafe config.
+ * Sets the logger levels using a map with the levels key.
  */
 public class SetLoggerLevelsAction extends Action {
+
+    public static final String LEVELS_KEY = "levels";
+    public String levelsKey = LEVELS_KEY;
+
+    public String getLevelsKey() {
+        return levelsKey;
+    }
+
+    public void setLevelsKey(String levelsKey) {
+        this.levelsKey = levelsKey;
+    }
 
     @Override
     public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
@@ -39,35 +49,22 @@ public class SetLoggerLevelsAction extends Action {
 
     }
 
-    Config getConfig(InterpretationContext ic) {
-        Map<String, Object> objectMap = ic.getObjectMap();
-        if (objectMap.containsKey(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY)) {
-            return (Config) objectMap.get(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-        }
-
-        LoggerContext context = (LoggerContext) getContext();
-        return (Config) context.getObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY);
-    }
-
-    public void doConfigure(InterpretationContext ic) {
-        Config config = getConfig(ic);
-        if (config == null) {
-            addError("Cannot set log levels: no typesafe config object found in local or context scope!");
+    @SuppressWarnings("unchecked")
+    protected void doConfigure(InterpretationContext ic) {
+        LoggerContext ctx = (LoggerContext) ic.getContext();
+        Map<String, String> levelsMap = (Map<String, String>) ctx.getObject(levelsKey);
+        if (levelsMap == null) {
+            addWarn("No levels found in context, cannot set levels.");
             return;
         }
 
-        Config levelsConfig = config.getConfig(ConfigConstants.LEVELS_KEY);
-        Set<Map.Entry<String, ConfigValue>> levelsEntrySet = levelsConfig.entrySet();
-        for (Map.Entry<String, ConfigValue> entry : levelsEntrySet) {
+        for (Map.Entry<String, String> entry : levelsMap.entrySet()) {
             String name = entry.getKey();
             try {
-                String levelFromConfig = entry.getValue().unwrapped().toString();
-                LoggerContext context = (LoggerContext) getContext();
-                Logger logger = context.getLogger(name);
-                new ChangeLogLevel().changeLogLevel(logger, levelFromConfig);
-                addInfo("Setting level of " + name + " logger to " + levelFromConfig);
-            } catch (ConfigException.Missing e) {
-                addInfo("No custom setting found for " + name + " in config, ignoring");
+                Logger logger = ctx.getLogger(name);
+                String level = entry.getValue();
+                new ChangeLogLevel().changeLogLevel(logger, level);
+                addInfo("Setting level of " + name + " logger to " + level);
             } catch (Exception e) {
                 addError("Unexpected exception resolving " + name, e);
             }
