@@ -839,36 +839,52 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
 ```xml
 <configuration>
     <newRule pattern="*/typesafeConfig"
-             actionClass="com.tersesystems.logback.TypesafeConfigAction"/>
+             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
 
     <newRule pattern="*/setLoggerLevels"
              actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
 
-    <typesafeConfig />
+    <newRule pattern="*/censor"
+             actionClass="com.tersesystems.logback.censor.CensorAction"/>
 
     <jmxConfigurator />
 
+    <typesafeConfig>
+        <object name="highlight" path="properties.highlight" scope="context"/>
+    </typesafeConfig>
+
+    <censor name="my-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <replacementText>${censor.replacementText}</replacementText>
+        <regex>${censor.regex.0}</regex>
+    </censor>
+
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
-    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensoringMessageConverter" />
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
 
-    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <Name>TRACER_FILTER</Name>
-        <Marker>TRACER</Marker>
-        <OnMatch>ACCEPT</OnMatch>
-    </turboFilter>
+    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
 
     <!-- give the async appenders time to shutdown -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
         <delay>${shutdownHook.delay}</delay>
     </shutdownHook>
 
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Name>${tracerFilter.name}</Name>
+        <Marker>${tracerFilter.marker}</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
     <include resource="terse-logback/appenders/console-appenders.xml"/>
     <include resource="terse-logback/appenders/jsonfile-appenders.xml"/>
     <include resource="terse-logback/appenders/textfile-appenders.xml"/>
 
     <root>
-        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="CONSOLE"/> <!-- very confusing if you have printlns before logger output -->
         <appender-ref ref="ASYNCJSONFILE"/>
         <appender-ref ref="ASYNCTEXTFILE"/>
     </root>

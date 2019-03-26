@@ -33,7 +33,7 @@
 
     <jmxConfigurator />
 
-    <typesafeConfig debug="true">
+    <typesafeConfig>
         <object name="highlight" path="properties.highlight" scope="context"/>
     </typesafeConfig>
 

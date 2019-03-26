@@ -25,10 +25,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.tersesystems.logback.typesafeconfig.ConfigConstants.*;
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -71,7 +69,7 @@ import static java.util.stream.Collectors.toMap;
  *
  * which will do a {@code context.putObject("contextObjectFoo", pathValue); }
  */
-public class TypesafeConfigAction extends Action {
+public class TypesafeConfigAction extends Action implements ConfigConversion {
 
     protected String scope = LOCAL_SCOPE;
 
@@ -109,23 +107,6 @@ public class TypesafeConfigAction extends Action {
         }
     }
 
-    protected Map<String, String> levelsToMap(Config levelsConfig) {
-        Map<String, String> levelsMap = new HashMap<>();
-        Set<Map.Entry<String, ConfigValue>> levelsEntrySet = levelsConfig.entrySet();
-        for (Map.Entry<String, ConfigValue> entry : levelsEntrySet) {
-            String name = entry.getKey();
-            try {
-                String levelFromConfig = entry.getValue().unwrapped().toString();
-                levelsMap.put(name, levelFromConfig);
-            } catch (ConfigException.Missing e) {
-                addInfo("No custom setting found for " + name + " in config, ignoring");
-            } catch (Exception e) {
-                addError("Unexpected exception resolving " + name, e);
-            }
-        }
-        return levelsMap;
-    }
-
     protected void configureConfig(Config config) {
         try {
             context.putObject(TYPESAFE_CONFIG_CTX_KEY, config);
@@ -137,7 +118,7 @@ public class TypesafeConfigAction extends Action {
     protected void configureLevels(Config config) {
         // Try to set up the levels as they're important...
         try {
-            Map<String, String> levelsMap = levelsToMap(config.getConfig(LEVELS_KEY));
+            Map<String, String> levelsMap = configAsMap(config.getConfig(LEVELS_KEY));
             context.putObject(LEVELS_KEY, levelsMap);
         } catch (ConfigException e) {
             addWarn("Cannot set levels in context!", e);
@@ -208,7 +189,7 @@ public class TypesafeConfigAction extends Action {
      * Lets you put objects into the context's object map, as the correct type,
      * using typesafe config paths as the source.
      */
-    public static class ContextObjectAction extends Action {
+    public static class ContextObjectAction extends Action implements ConfigConversion {
         private String nameAttr;
         private String path;
         private ActionUtil.Scope scope;
@@ -264,7 +245,13 @@ public class TypesafeConfigAction extends Action {
                 try {
                     configValue = config.getValue(path);
                     if (configValue != null) {
-                        contextValue = configValue.unwrapped();
+                        if (configValue.valueType().equals(ConfigValueType.OBJECT)) {
+                            String msg = "The value found at path %s is an object, assuming you want a map...";
+                            addInfo(String.format(msg, path));
+                            contextValue = configAsMap(config.getConfig(path));
+                        } else {
+                            contextValue = configValue.unwrapped();
+                        }
                     }
 
                     switch (scope) {
