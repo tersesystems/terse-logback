@@ -4,9 +4,9 @@ This is a Java project that shows how to use [Logback](https://logback.qos.ch/ma
 
 ## Project Setup
 
-The project is configured into several modules: `censor`, `ext`, `classic`, `example`, and `guice-example`.  The most relevant ones to start with are `classic` and `example`.
+The project is configured into several modules: `censor`, `ext`, `structured-config`, `example`, and `guice-example`.  The most relevant ones to start with are `structured-config` and `example`.
 
-The `classic` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `classic`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
+The `structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `structured-config`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
 
 Notably, the `example` project cannot touch the appenders directly, and has no control over the format of the JSON appender -- console and text patterns can be overridden for developer convenience.  By enforcing a [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) between **logger configuration** and **logging levels**, it is easy and simple to manage appenders in one place, e.g. going from file appenders to TCP appenders, adding filters for sensitive information, or collapsing repeated log information.
 
@@ -702,7 +702,7 @@ If you are using a Servlet based API, then you can piggyback of Guice's [servlet
 
 ## Logback Specific Things
 
-This section deals with the specific configuration in `terse-logback/classic`.
+This section deals with the specific configuration in `terse-logback/logback-structured-config`.
 
 Logback doesn't come with a default `logback.xml` file, and the [configuration page](https://logback.qos.ch/manual/configuration.html#auto_configuration) is written at a very low level that is not very useful for people.  The example has been written so that it doesn't "overwhelm" with too much detail, but in rough order of initialization:
 
@@ -818,7 +818,7 @@ properties {
 There is also a `logback-reference.conf` file that handles the default configuration for the appenders, and those settings can be overridden.  They are written out individually in the encoder configuration so I won't go over it here.
 
 
-Note that appender logic is not available here.  If you need to update the appenders, you should release a new version of the classic library and get your projects updated.
+Note that appender logic is not available here.  If you need to update the appenders, you should release a new version of the `structured-config` library and get your projects updated.
 
 Using Typesafe Config is not a requirement -- the point here is to show that there are more options to configuring Logback than using a straight XML file.
 
