@@ -3,3 +3,7 @@ dependencies {
     compile project(':logback-censor')
     compile project(':logback-typesafe-config')
 }
+
+javadoc {
+    options.links += [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+}

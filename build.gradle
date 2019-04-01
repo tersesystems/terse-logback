@@ -64,21 +64,6 @@ allprojects {
     }
 }
 
-def String artifactToJavadoc(String organization, String name, String apiVersion) {
-    String slashedOrg = organization.replace('.', '/')
-    "https://oss.sonatype.org/service/local/repositories/releases/archive/$slashedOrg/$name/$apiVersion/$name-$apiVersion-javadoc.jar/!/"
-}
-
-def String jvmToJavadoc() {
-    // No simple way to set up javadoc external links to JDK in Gradle
-    // Should select on version:
-
-    'https://docs.oracle.com/javase/8/docs/api/'
-    // https://docs.oracle.com/javase/9/docs/api/
-    // https://docs.oracle.com/javase/10/docs/api/
-    // https://docs.oracle.com/en/java/javase/11/docs/api/
-}
-
 subprojects { subproj ->
     apply plugin: 'java'
 
@@ -96,26 +81,6 @@ subprojects { subproj ->
         }
     }
 
-    config {
-        info {
-            description = project.project_description
-        }
-
-        // Sets up javadoc for individual modules
-        javadoc {
-            options.charSet = 'UTF-8'
-            options.encoding = 'UTF-8'
-            options.docEncoding = 'UTF-8'
-            options.use = true          
-            options.links = [
-              jvmToJavadoc(),
-              // XXX How do I get my source library path to Javadoc?
-              artifactToJavadoc('org.slf4j', 'slf4j-api', '1.7.25'),
-              artifactToJavadoc('ch.qos.logback', 'logback-classic', '1.2.3')
-            ]
-        }
-    }
-
     dependencies {
         testCompile 'org.assertj:assertj-core:3.8.0'
         testCompile "junit:junit:$junitVersion"
@@ -124,7 +89,42 @@ subprojects { subproj ->
         testCompile "org.junit.vintage:junit-vintage-engine:$junitVintageVersion"
     }
 
+    config {
+        info {
+            description = project.project_description
+        }
+    }
+
     test {
         useJUnitPlatform()
     }
+}
+
+// Go through all the artifacts and find javadoc for it...
+static List<String> javadocFromDependencies(Configuration config) {
+    List<String> javadocs = []
+    config.dependencies.each { dep ->
+        javadocs.add(artifactToJavadoc(dep.group, dep.name, dep.version))
+    }
+    println "javadocs = " + javadocs
+    javadocs
+}
+
+static String jvmToJavadoc(JavaVersion jvmVersion) {
+    if (jvmVersion.java8) {
+        'https://docs.oracle.com/javase/8/docs/api/'
+    } else if (jvmVersion.java9) {
+        'https://docs.oracle.com/javase/9/docs/api/'
+    }else if (jvmVersion.java10) {
+        'https://docs.oracle.com/javase/10/docs/api/'
+    }else if (jvmVersion.java11) {
+        'https://docs.oracle.com/en/java/javase/11/docs/api/'
+    } else {
+        'https://docs.oracle.com/javase/8/docs/api/'
+    }
+}
+
+static String artifactToJavadoc(String organization, String name, String apiVersion) {
+    String slashedOrg = organization.replace('.', '/')
+    "https://oss.sonatype.org/service/local/repositories/releases/archive/$slashedOrg/$name/$apiVersion/$name-$apiVersion-javadoc.jar/!/"
 }

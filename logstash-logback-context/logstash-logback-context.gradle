@@ -4,3 +4,7 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compile project(':logback-context')
 }
+
+javadoc {
+    options.links += [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+}
