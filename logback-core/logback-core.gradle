@@ -9,6 +9,12 @@ dependencies {
     compile 'com.github.ben-manes.caffeine:caffeine:2.6.2'
 }
 
-javadoc {
-    options.links += [jvmToJavadoc(project.targetCompatibility)] + javadocFromDependencies(project.configurations.compile)
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
 }

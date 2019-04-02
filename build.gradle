@@ -106,7 +106,6 @@ static List<String> javadocFromDependencies(Configuration config) {
     config.dependencies.each { dep ->
         javadocs.add(artifactToJavadoc(dep.group, dep.name, dep.version))
     }
-    println "javadocs = " + javadocs
     javadocs
 }
 

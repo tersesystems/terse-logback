@@ -4,6 +4,12 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
 }
 
-javadoc {
-    options.links += [jvmToJavadoc(project.targetCompatibility)] + javadocFromDependencies(project.configurations.compile)
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
 }
