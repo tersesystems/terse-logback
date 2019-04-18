@@ -35,5 +35,5 @@
     -->
     <appender name="ASYNCTEXTFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
         <appender-ref ref="TEXTFILE" />
-    </appender>>
+    </appender>
 </included>

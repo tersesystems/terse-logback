@@ -28,7 +28,7 @@ public class CensoringJsonGeneratorDecoratorTest {
         RegexCensor censor = new RegexCensor();
         censor.setContext(context);
         censor.setReplacementText("*******");
-        censor.addRegex("hunter2");
+        censor.setRegex("hunter2");
         censor.start();
 
         CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
@@ -72,7 +72,7 @@ public class CensoringJsonGeneratorDecoratorTest {
         RegexCensor censor = new RegexCensor();
         censor.setContext(context);
         censor.setReplacementText("*******");
-        censor.addRegex("hunter2");
+        censor.setRegex("hunter2");
         censor.start();
 
         CensoringJsonGeneratorDecorator decorator = new CensoringPrettyPrintingJsonGeneratorDecorator();

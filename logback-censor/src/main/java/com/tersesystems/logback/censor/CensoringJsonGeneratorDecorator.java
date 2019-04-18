@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // https://github.com/FasterXML/jackson-core/issues/185
-public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements JsonGeneratorDecorator, LifeCycle {
+public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements CensorAttachable, JsonGeneratorDecorator, LifeCycle {
 
     private Censor censor;
     private boolean started;
@@ -40,6 +40,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
         return censor;
     }
 
+    @Override
     public void setCensor(Censor censor) {
         this.censor = censor;
     }

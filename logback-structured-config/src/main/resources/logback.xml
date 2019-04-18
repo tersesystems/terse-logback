@@ -31,20 +31,28 @@
     <newRule pattern="*/censor"
              actionClass="com.tersesystems.logback.censor.CensorAction"/>
 
+    <newRule pattern="*/censor-ref"
+             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
+
     <jmxConfigurator />
 
     <typesafeConfig>
         <object name="highlight" path="properties.highlight" scope="context"/>
     </typesafeConfig>
 
-    <censor name="my-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <replacementText>${censor.replacementText}</replacementText>
-        <regex>${censor.regex.0}</regex>
+    <censor name="text-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <regex>${censor.text.regex}</regex>
+        <replacementText>${censor.text.replacementText}</replacementText>
     </censor>
 
-    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
+    <censor name="json-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <regex>${censor.json.regex}</regex>
+        <replacementText>${censor.json.replacementText}</replacementText>
+    </censor>
 
     <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
+
+    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
     <!--
     https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58

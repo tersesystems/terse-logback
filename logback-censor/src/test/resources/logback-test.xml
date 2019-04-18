@@ -10,25 +10,40 @@
         http://creativecommons.org/publicdomain/zero/1.0/
 
 -->
-<configuration debug="true">
+<configuration>
 
     <newRule pattern="*/censor"
              actionClass="com.tersesystems.logback.censor.CensorAction"/>
 
-    <censor name="my-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <replacementText>[CENSORED]</replacementText>
+    <newRule pattern="*/censor-ref"
+             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
+
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
+
+    <censor name="censor-name1" class="com.tersesystems.logback.censor.RegexCensor">
+        <replacementText>[CENSORED BY CENSOR1]</replacementText>
+        <regex>hunter1</regex>
+    </censor>
+
+    <censor name="censor-name2" class="com.tersesystems.logback.censor.RegexCensor">
+        <replacementText>[CENSORED BY CENSOR2]</replacementText>
         <regex>hunter2</regex>
     </censor>
 
-    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter"/>
-
-    <appender name="TEST" class="com.tersesystems.logback.censor.TestAppender">
+    <appender name="TEST1" class="com.tersesystems.logback.censor.TestAppender">
         <encoder>
-            <pattern>%censor(%msg)%n</pattern>
+            <pattern>%censor(%msg){censor-name1}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="TEST2" class="com.tersesystems.logback.censor.TestAppender">
+        <encoder>
+            <pattern>%censor(%msg){censor-name2}%n</pattern>
         </encoder>
     </appender>
 
     <root>
-        <appender-ref ref="TEST"/>
+        <appender-ref ref="TEST1"/>
+        <appender-ref ref="TEST2"/>
     </root>
 </configuration>

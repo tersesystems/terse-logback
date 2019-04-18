@@ -22,7 +22,7 @@ public class RegexCensorTest {
 
         RegexCensor censor = new RegexCensor();
         censor.setReplacementText(replacementText);
-        censor.addRegex("hunter2");
+        censor.setRegex("hunter2");
         censor.start();
 
         assertThat(censor.censorText("hunter2")).isEqualTo("*******");
@@ -34,8 +34,7 @@ public class RegexCensorTest {
 
         RegexCensor censor = new RegexCensor();
         censor.setReplacementText(replacementText);
-        censor.addRegex("hunter2");
-        ;
+        censor.setRegex("hunter2");
         censor.start();
 
         assertThat(censor.censorText("password1")).isEqualTo("password1");

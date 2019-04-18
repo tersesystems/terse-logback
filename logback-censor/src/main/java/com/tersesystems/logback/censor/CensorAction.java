@@ -10,13 +10,18 @@
  */
 package com.tersesystems.logback.censor;
 
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.pattern.LocalSequenceNumberConverter;
 import ch.qos.logback.core.Context;
+import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
+import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.util.OptionHelper;
 import org.xml.sax.Attributes;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,9 +54,13 @@ public class CensorAction extends Action {
             addInfo("About to instantiate censor of type [" + className + "]");
             censor = (Censor) OptionHelper.instantiateByClassName(className, Censor.class, context);
 
+            // XXX we can get the censor here but it still doesn't have the parameters we need.
+            //OptionHelper.substVars()
+
             Context icContext = ic.getContext();
-            censor.setContext(icContext);
-            getContext().putObject("censor", censor);
+            if (censor != null) {
+                censor.setContext(icContext);
+            }
 
             String censorName = ic.subst(attributes.getValue(NAME_ATTRIBUTE));
 
@@ -65,6 +74,7 @@ public class CensorAction extends Action {
             // The execution context contains a bag which contains the censors
             // created thus far.
             HashMap<String, Censor> censorBag = (HashMap<String, Censor>) ic.getObjectMap().get(CENSOR_BAG);
+            getContext().putObject(CENSOR_BAG, censorBag);
 
             // add the censorText just created to the censorText bag.
             censorBag.put(censorName, censor);
@@ -75,6 +85,16 @@ public class CensorAction extends Action {
             addError("Could not create a Censor of type [" + className + "].", oops);
             throw new ActionException(oops);
         }
+    }
+
+    private void addConverter() {
+        // Add a conversion rule automatically
+        Map<String, String> ruleRegistry = (Map<String, String>) context.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
+        if (ruleRegistry == null) {
+            ruleRegistry = new HashMap<String, String>();
+            context.putObject(CoreConstants.PATTERN_RULE_REGISTRY, ruleRegistry);
+        }
+        ruleRegistry.putIfAbsent(CensorConstants.CENSOR_RULE_NAME, CensorConverter.class.getName());
     }
 
     /**

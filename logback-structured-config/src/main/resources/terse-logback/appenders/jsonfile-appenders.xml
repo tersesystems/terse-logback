@@ -43,9 +43,11 @@
               https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
             -->
             <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}</maxDepthPerThrowable>
+                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
+                </maxDepthPerThrowable>
                 <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
-                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}</shortenedClassNameLength>
+                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
+                </shortenedClassNameLength>
                 <!-- coma separated exclusion patterns -->
                 <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
                 <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
@@ -57,10 +59,15 @@
             <if condition='p("jsonfile.prettyprint").contains("true")'>
                 <then>
                     <!-- Pretty print for better end user experience. -->
-                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>
+                    <jsonGeneratorDecorator
+                            class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator">
+                        <censor-ref ref="json-censor"/>
+                    </jsonGeneratorDecorator>
                 </then>
                 <else>
-                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator"/>
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
+                        <censor-ref ref="json-censor"/>
+                    </jsonGeneratorDecorator>
                 </else>
             </if>
         </encoder>
@@ -70,6 +77,7 @@
       https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
     -->
     <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender-ref ref="JSONFILE" />
-    </appender>>
+        <appender-ref ref="JSONFILE"/>
+    </appender>
+
 </included>

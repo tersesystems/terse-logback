@@ -602,6 +602,79 @@ I agree, I don't use logging either
 [INFO ] e.ClassWithByteBuddy - exiting: example.ClassWithByteBuddy$SomeOtherLibraryClass.doesNotUseLogging()
 ```
 
+## Censoring Sensitive Information
+
+There may be sensitive information that you don't want to show up in the logs.  You can get around this by passing your information through a censor.  This is a custom bit of code written for Logback, but it's not too complex.
+
+There are two rules and a converter that are used in Logback to define and reference censors: `CensorAction`, `CensorRefAction` and the `censor` converter.
+
+```xml
+<configuration>
+    <newRule pattern="*/censor"
+             actionClass="com.tersesystems.logback.censor.CensorAction"/>
+
+    <newRule pattern="*/censor-ref"
+             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
+
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
+    
+    <!-- ... -->
+</configuration>
+```
+
+The `CensorAction` defines a censor that can be referred to by the `CensorRef` action and the `censor` conversionWord, using the censor name.  The default implementation is the regex censor, which will look for a regular expression and replace it with the replacement text defined:
+
+```xml
+<configuration>
+    <censor name="censor-name1" class="com.tersesystems.logback.censor.RegexCensor">
+        <replacementText>[CENSORED BY CENSOR1]</replacementText>
+        <regex>hunter1</regex>
+    </censor>
+
+    <censor name="censor-name2" class="com.tersesystems.logback.censor.RegexCensor">
+        <replacementText>[CENSORED BY CENSOR2]</replacementText>
+        <regex>hunter2</regex>
+    </censor>
+</configuration>
+```
+
+Once you have the censors defined, you can use the censor word by specifying the target as defined in the [pattern encoder format](https://logback.qos.ch/manual/layouts.html#conversionWord), and adding the name as the option list using curly braces, i.e. `%censor(%msg){censor-name1}`.  If you don't define the censor, then the first available censor will be picked. 
+
+```xml
+<configuration>
+    <appender name="TEST1" class="ch.qos.logback.core.FileAppender">
+        <file>file1.log</file>
+        <encoder>
+            <pattern>%censor(%msg){censor-name1}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="TEST2" class="ch.qos.logback.core.FileAppender">
+        <file>file2.log</file>    
+        <encoder>
+            <pattern>%censor(%msg){censor-name2}%n</pattern>
+        </encoder>
+    </appender>
+</configuration>
+```
+
+If you are working with a componentized framework, you'll want to use the `censor-ref` action instead.  Here's an example using logstash-logback-encoder.
+
+```xml
+<configuration>
+    <appender name="TEST3" class="ch.qos.logback.core.FileAppender">
+        <file>file3.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
+                <censor-ref ref="json-censor"/>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+</configuration>
+```
+
+In this case, `CensoringJsonGeneratorDecorator` implements the `CensorAttachable` interface and so will run message text through the censor if it exists.
+
 ## Dependency Injection with Guice
 
 Finally, if you're using a DI framework like Guice, you can leverage some of the contextual code in [Sangria](https://tavianator.com/announcing-sangria/) to do some of the gruntwork for you.  For example, here's how you configure a `Logger` instance in Guice:
@@ -755,8 +828,6 @@ Configuration of properties and setting log levels is done through [Typesafe Con
 
 Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
 
-You can also censor text at both the message and at the JSON level.  Censoring information from messages is part of a defense in depth strategy, and should not be relied on.
-
 ```hocon
 # Set logger levels here.
 levels = {
@@ -772,14 +843,15 @@ levels = {
     }
 }
 
-censor {
-    regex += """hunter2""" // http://bash.org/?244321
-    replacement = "*******"
-    json.keys += "password" // adding password key will remove the key/value pair entirely
-}
-
 # Overrides the properties from logback-reference.conf
 properties {
+
+    censor {
+        regex = """hunter2""" // http://bash.org/?244321
+        replacementText = "*******"
+        json.keys += "password" // adding password key will remove the key/value pair entirely
+    }
+
     # Overwrite text file on every run.
     textfile {
         append = false
@@ -847,20 +919,28 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
     <newRule pattern="*/censor"
              actionClass="com.tersesystems.logback.censor.CensorAction"/>
 
+    <newRule pattern="*/censor-ref"
+             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
+
     <jmxConfigurator />
 
     <typesafeConfig>
         <object name="highlight" path="properties.highlight" scope="context"/>
     </typesafeConfig>
 
-    <censor name="my-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <replacementText>${censor.replacementText}</replacementText>
-        <regex>${censor.regex.0}</regex>
+    <censor name="text-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <regex>${censor.text.regex}</regex>
+        <replacementText>${censor.text.replacementText}</replacementText>
     </censor>
 
-    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
+    <censor name="json-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <regex>${censor.json.regex}</regex>
+        <replacementText>${censor.json.replacementText}</replacementText>
+    </censor>
 
     <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
+
+    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
 
     <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
 
@@ -902,26 +982,28 @@ The console appender uses the following XML configuration:
 
 ```xml
 <included>
-
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.tersesystems.logback.EnabledFilter">
+            <enabled>${console.enabled}</enabled>
+        </filter>
         <encoder>
             <pattern>${console.encoder.pattern}</pattern>
         </encoder>
         <withJansi>${console.withJansi}</withJansi>
     </appender>
-
 </included>
 ```
 
 with the HOCON settings as follows:
 
 ```hocon
-console {
-  withJansi = true # allow colored logging on windows
-  encoder {
-    pattern = "[%terseHighlight(%-5level)] %logger{15} - %censoredMessage%n%xException{10}"
+  console {
+    enabled = true
+    withJansi = true # allow colored logging on windows
+    encoder {
+      pattern = "[%terseHighlight(%-5level)] %logger{15} -  %censor(%message){text-censor}%n%xException{10}"
+    }
   }
-}
 ```
 
 The console appender uses colored logging for the log level, but you can override config to set the colors you want for which levels.  Jansi is included so that Windows can benefit from colored logging as well.
@@ -935,6 +1017,9 @@ The text encoder uses the following configuration:
 ```xml
 <included>
     <appender name="TEXTFILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="com.tersesystems.logback.EnabledFilter">
+            <enabled>${textfile.enabled}</enabled>
+        </filter>
         <file>${textfile.location}</file>
         <append>${textfile.append}</append>
 
@@ -954,28 +1039,39 @@ The text encoder uses the following configuration:
     -->
     <appender name="ASYNCTEXTFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
         <appender-ref ref="TEXTFILE" />
-    </appender>>
+    </appender>
 </included>
 ```
 
 with the HOCON settings as:
 
 ```hocon
-textfile {
-  location = log/application.log
-  append = true
-  immediateFlush = true
+  // used in textfile-appenders.xml
+  textfile {
+    enabled = true
+    location = ${properties.log.dir}/application.log
+    append = true
+    immediateFlush = true
 
-  rollingPolicy {
-    fileNamePattern = "log/application.log.%d{yyyy-MM-dd}"
-    maxHistory = 30
-  }
+    rollingPolicy {
+      fileNamePattern = ${properties.log.dir}"/application.log.%d{yyyy-MM-dd}"
+      maxHistory = 30
+    }
 
-  encoder {
-    outputPatternAsHeader = true
-    pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %censor(%msg)%n%xException"
+    encoder {
+      outputPatternAsHeader = true
+
+      // https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
+      // Options can be specified in the pattern in the following order:
+      //   - maxDepthPerThrowable = "full" or "short" or an integer value
+      //   - shortenedClassNameLength = "full" or "short" or an integer value
+      //   - maxLength = "full" or "short" or an integer value
+      //
+      //%msg%n%stack{5,1024,10,rootFirst,regex1,regex2,evaluatorName}
+
+      pattern = "%date{yyyy-MM-dd'T'HH:mm:ss.SSSZZ,UTC} [%-5level] %logger in %thread - %censor(%message){text-censor}%n%stack{full,full,short,rootFirst}"
+    }
   }
-}
 ```
 
 Colored logging is not used in the file-based appender, because some editors tend to show ANSI codes specifically.
@@ -990,6 +1086,9 @@ The XML is as follows:
 <included>
 
     <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="com.tersesystems.logback.EnabledFilter">
+            <enabled>${jsonfile.enabled}</enabled>
+        </filter>
         <file>${jsonfile.location}</file>
         <append>${jsonfile.append}</append>
 
@@ -1012,15 +1111,36 @@ The XML is as follows:
             <includeContext>${jsonfile.encoder.includeContext}</includeContext>
             <!-- UTC is the best server consistent timezone -->
             <timeZone>${jsonfile.encoder.timeZone}</timeZone>
-            
+
+            <!--
+              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+            -->
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
+                </maxDepthPerThrowable>
+                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
+                </shortenedClassNameLength>
+                <!-- coma separated exclusion patterns -->
+                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+            </throwableConverter>
+
             <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <if predicate='p("jsonfile.prettyprint").contains("true")'>
+            <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
+            <if condition='p("jsonfile.prettyprint").contains("true")'>
                 <then>
                     <!-- Pretty print for better end user experience. -->
-                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator"/>
+                    <jsonGeneratorDecorator
+                            class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator">
+                        <censor-ref ref="json-censor"/>
+                    </jsonGeneratorDecorator>
                 </then>
                 <else>
-                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator"/>
+                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
+                        <censor-ref ref="json-censor"/>
+                    </jsonGeneratorDecorator>
                 </else>
             </if>
         </encoder>
@@ -1030,30 +1150,44 @@ The XML is as follows:
       https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
     -->
     <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender-ref ref="JSONFILE" />
-    </appender>>
+        <appender-ref ref="JSONFILE"/>
+    </appender>
 </included>
 ```
 
 with the following HOCON configuration:
 
 ```hocon
-jsonfile {
-  location = "log/application.json"
-  append = true
-  immediateFlush = true
-  prettyprint = false
+  // Used in jsonfile-appenders.xml
+  jsonfile {
+    enabled = true
+    location = ${properties.log.dir}"/application.json"
+    append = true
+    immediateFlush = true
+    prettyprint = false
 
-  rollingPolicy {
-    fileNamePattern = "log/application.json.%d{yyyy-MM-dd}"
-    maxHistory = 30
-  }
+    rollingPolicy {
+      fileNamePattern = ${properties.log.dir}"/application.json.%d{yyyy-MM-dd}"
+      maxHistory = 30
+    }
 
-  encoder {
-    includeContext = false
-    timeZone = "UTC"
+    encoder {
+      includeContext = false
+      timeZone = "UTC"
+    }
+
+    # https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+    shortenedThrowableConverter {
+      maxDepthPerThrowable = 100
+      maxLength = 100
+      shortenedClassNameLength = 50
+
+      exclusions = """\$\$FastClassByCGLIB\$\$,\$\$EnhancerBySpringCGLIB\$\$,^sun\.reflect\..*\.invoke,^com\.sun\.,^sun\.net\.,^net\.sf\.cglib\.proxy\.MethodProxy\.invoke,^org\.springframework\.cglib\.,^org\.springframework\.transaction\.,^org\.springframework\.validation\.,^org\.springframework\.app\.,^org\.springframework\.aop\.,^java\.lang\.reflect\.Method\.invoke,^org\.springframework\.ws\..*\.invoke,^org\.springframework\.ws\.transport\.,^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.,^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.,^org\.springframework\.web\.filter\.,^org\.apache\.tomcat\.,^org\.apache\.catalina\.,^org\.apache\.coyote\.,^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker,^java\.lang\.Thread\.run$"""
+
+      rootCauseFirst = true
+      inlineHash = true
+    }
   }
-}
 ```
 
 If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
