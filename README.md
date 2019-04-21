@@ -1,10 +1,13 @@
+[<img src="https://img.shields.io/travis/tersesystems/terse-logback.svg"/>](https://travis-ci.org/tersesystems/terse-logback) 
+[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.1.6) ](https://bintray.com/tersesystems/maven/terse-logback/0.1.6/link)
+
 # Structured Logging Example with Logback
 
 This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.  It should show how you configure Logback, and how you can reduce the amount of complexity in your end projects by packaging your logging appenders and configurators in a distinct project.
 
 ## Project Setup
 
-The project is configured into several modules: `censor`, `ext`, `structured-config`, `example`, and `guice-example`.  The most relevant ones to start with are `structured-config` and `example`.
+The project is configured into several modules.  The most relevant ones to start with are `structured-config` and `example`.
 
 The `structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `structured-config`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
 
@@ -1243,6 +1246,18 @@ I can never remember how to release projects, so I'm using [Kordamp Gradle Plugi
 
 ```bash
 ./gradlew publishToMavenLocal
+```
+
+To make sure everything works:
+
+```bash
+./gradlew check
+```
+
+License formatting:
+
+```bash
+./gradlew LicenseFormat
 ```
 
 To stage on Bintray:
