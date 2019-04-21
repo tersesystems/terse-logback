@@ -11,18 +11,19 @@
 package com.tersesystems.logback.censor;
 
 import ch.qos.logback.core.spi.ContextAwareBase;
+import ch.qos.logback.core.spi.LifeCycle;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class RegexCensor extends ContextAwareBase implements Censor {
+public class RegexCensor extends ContextAwareBase implements Censor, LifeCycle {
 
     protected volatile boolean started = false;
 
-    private List<Pattern> patterns = new ArrayList<>();
-    private final List<String> regexes = new ArrayList<>();
+    private Pattern pattern = null;
+    private String regex = null;
 
     private String replacementText;
 
@@ -44,8 +45,8 @@ public class RegexCensor extends ContextAwareBase implements Censor {
         this.replacementText = replacementText;
     }
 
-    public void addRegex(String regex) {
-        this.regexes.add(regex);
+    public void setRegex(String regex) {
+        this.regex = regex;
     }
 
     @Override
@@ -60,32 +61,26 @@ public class RegexCensor extends ContextAwareBase implements Censor {
             return;
         }
 
-        if (regexes.isEmpty()) {
+        if (regex == null) {
             addError("No regular expressions found!");
             return;
         }
 
-        this.patterns = regexes.stream()
-                .map(rex -> Pattern.compile(rex, (rex.contains("\n")) ? Pattern.MULTILINE : 0))
-                .collect(Collectors.toList());
+        this.pattern = Pattern.compile(regex, (regex.contains("\n")) ? Pattern.MULTILINE : 0);
         this.started = true;
     }
 
     @Override
     public void stop() {
-        replacementText = null;
-        this.patterns.clear();
-        this.regexes.clear();
+        this.replacementText = null;
+        this.pattern = null;
+        this.regex = null;
         this.started = false;
     }
 
     @Override
     public CharSequence censorText(CharSequence original) {
-        CharSequence acc = original;
-        for (Pattern pattern : patterns) {
-            acc = pattern.matcher(acc).replaceAll(replacementText);
-        }
-        return acc;
+        return pattern.matcher(original).replaceAll(replacementText);
     }
 
 }

@@ -34,17 +34,28 @@ public class CensorActionTest {
     }
 
     @Test
-    public void testAction() throws JoranException {
+    public void testFirstTest1() throws JoranException {
         jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logback-test.xml")));
 
         ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-        TestAppender test = (TestAppender) root.getAppender("TEST");
-        byte[] bytes = test.getEncoder().encode(createLoggingEvent(root));
-        assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("[CENSORED]");
-
+        TestAppender test = (TestAppender) root.getAppender("TEST1");
+        assertThat(test).isNotNull();
+        byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter1"));
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("[CENSORED BY CENSOR1]");
     }
 
-    private LoggingEvent createLoggingEvent(ch.qos.logback.classic.Logger logger) {
-        return new LoggingEvent(this.getClass().getName(), logger, Level.DEBUG, "hunter2", null, null);
+    @Test
+    public void testSecondTest1() throws JoranException {
+        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logback-test.xml")));
+
+        ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        TestAppender test = (TestAppender) root.getAppender("TEST2");
+        assertThat(test).isNotNull();
+        byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter2"));
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("[CENSORED BY CENSOR2]");
+    }
+
+    private LoggingEvent createLoggingEvent(ch.qos.logback.classic.Logger logger, String message) {
+        return new LoggingEvent(this.getClass().getName(), logger, Level.DEBUG, message, null, null);
     }
 }
