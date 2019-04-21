@@ -10,14 +10,19 @@
  */
 package com.tersesystems.logback.censor;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.joran.spi.JoranException;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
 import org.junit.Test;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CensoringJsonGeneratorDecoratorTest {
@@ -91,5 +96,4 @@ public class CensoringJsonGeneratorDecoratorTest {
 
         assertThat(writer.toString()).isEqualTo("{\n  \"message\" : \"My ******* message\"\n}");
     }
-
 }

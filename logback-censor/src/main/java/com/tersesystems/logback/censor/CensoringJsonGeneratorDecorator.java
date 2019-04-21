@@ -63,7 +63,6 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase implements
 
     private List<String> filterKeys = new ArrayList<>();
 
-    // List<String> keys = config.getStringList(CensorConstants.CENSOR_JSON_KEYS);
     public void addFilterKey(String filterKey) {
         this.filterKeys.add(filterKey);
     }

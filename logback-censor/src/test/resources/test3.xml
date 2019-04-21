@@ -1,0 +1,39 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <newRule pattern="*/censor"
+             actionClass="com.tersesystems.logback.censor.CensorAction"/>
+
+    <newRule pattern="*/censor-ref"
+             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
+
+    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
+
+    <censor name="json-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <regex>hunter3</regex>
+        <replacementText>[CENSOR3]</replacementText>
+    </censor>
+
+    <appender name="TEST3" class="com.tersesystems.logback.censor.TestAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
+                <censor-ref ref="json-censor"/>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="TEST3"/>
+    </root>
+</configuration>

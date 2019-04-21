@@ -35,7 +35,7 @@ public class CensorActionTest {
 
     @Test
     public void testFirstTest1() throws JoranException {
-        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logback-test.xml")));
+        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("test1.xml")));
 
         ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         TestAppender test = (TestAppender) root.getAppender("TEST1");
@@ -46,13 +46,35 @@ public class CensorActionTest {
 
     @Test
     public void testSecondTest1() throws JoranException {
-        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logback-test.xml")));
+        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("test2.xml")));
 
         ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         TestAppender test = (TestAppender) root.getAppender("TEST2");
         assertThat(test).isNotNull();
         byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter2"));
         assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("[CENSORED BY CENSOR2]");
+    }
+
+    @Test
+    public void testJsonTest3() throws JoranException {
+        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("test3.xml")));
+
+        ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        TestAppender test = (TestAppender) root.getAppender("TEST3");
+        assertThat(test).isNotNull();
+        byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter3"));
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("\"message\":\"[CENSOR3]\"");
+    }
+
+    @Test
+    public void testJsonTest4() throws JoranException {
+        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("test4.xml")));
+
+        ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        TestAppender test = (TestAppender) root.getAppender("TEST4");
+        assertThat(test).isNotNull();
+        byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter4"));
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("\"message\":\"[CENSOR4]\"");
     }
 
     private LoggingEvent createLoggingEvent(ch.qos.logback.classic.Logger logger, String message) {

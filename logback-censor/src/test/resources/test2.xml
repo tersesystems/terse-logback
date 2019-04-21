@@ -30,12 +30,6 @@
         <regex>hunter2</regex>
     </censor>
 
-    <appender name="TEST1" class="com.tersesystems.logback.censor.TestAppender">
-        <encoder>
-            <pattern>%censor(%msg){censor-name1}%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="TEST2" class="com.tersesystems.logback.censor.TestAppender">
         <encoder>
             <pattern>%censor(%msg){censor-name2}%n</pattern>
@@ -43,7 +37,6 @@
     </appender>
 
     <root>
-        <appender-ref ref="TEST1"/>
         <appender-ref ref="TEST2"/>
     </root>
 </configuration>
