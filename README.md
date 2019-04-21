@@ -1,10 +1,13 @@
+[<img src="https://img.shields.io/travis/tersesystems/terse-logback.svg"/>](https://travis-ci.org/tersesystems/terse-logback) 
+[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.1.6) ](https://bintray.com/tersesystems/maven/terse-logback/0.1.6/link)
+
 # Structured Logging Example with Logback
 
 This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.  It should show how you configure Logback, and how you can reduce the amount of complexity in your end projects by packaging your logging appenders and configurators in a distinct project.
 
 ## Project Setup
 
-The project is configured into several modules: `censor`, `ext`, `structured-config`, `example`, and `guice-example`.  The most relevant ones to start with are `structured-config` and `example`.
+The project is configured into several modules.  The most relevant ones to start with are `structured-config` and `example`.
 
 The `structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  The `example` project depends on `structured-config`, and contains the "end user" experience where log levels are adjusted and JSON can be pretty printed or not.
 
@@ -1204,33 +1207,57 @@ There are various wrappers and APIs on top of SLF4J:
 * [LogMachine](https://github.com/UnquietCode/LogMachine)
 * [structlog4j](https://github.com/jacek99/structlog4j)
 * [slf4j-fluent](https://github.com/ffissore/slf4j-fluent)
+* [slf4j-json-logger](https://github.com/savoirtech/slf4j-json-logger)
+* [json-log-domain](https://github.com/skjolber/json-log-domain)
+* [logbook](https://github.com/zalando/logbook)
+* [logstage](https://izumi.7mind.io/latest/release/doc/logstage/)
+* [descriptive-logger](https://github.com/thombergs/descriptive-logger)
 
-I have not used these personally.  I usually roll my own code when I need something on top of SLF4J, because the wrappers tend to set their own encoders on top.
+I have not used these personally.  I usually roll my own code when I need something on top of SLF4J, because a) I can and b) the wrappers tend to conflate concepts they're not interested in, so a hardcoded appender is assumed, or the encoder and layout is merged together etc.
 
 ### Logback Encoders and Appenders
 
-There's a useful blog post on [writing your own appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/) for [logzio](https://github.com/logzio/logzio-logback-appender).
-
-There are also additional encoders and console appenders in [concurrent-build-logger](https://github.com/takari/concurrent-build-logger).
+* [concurrent-build-logger](https://github.com/takari/concurrent-build-logger) (encoders and appenders both)
+* [logzio-logback-appender](https://github.com/logzio/logzio-logback-appender)
+* [logback-elasticsearch-appender](https://github.com/internetitem/logback-elasticsearch-appender)  
+* [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)  
   
 ### Other Blog Posts
 
+#### Logback Specific
+
+* [Lessons Learned Writing New Logback Appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/) 
+* [Extending logstash-logback-encoder](https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/)
+
+#### Best Practices
+
+Many of these are logback specific, but still good overall.
+
+* [Stackoverflow: Logging best practices in multi-node environment](https://stackoverflow.com/questions/43496695/java-logging-best-practices-in-multi-node-environment)
 * [Logging Best Practices](https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience)
-* [OWASP Logging Cheat Sheet](https://www.owasp.org/index.php/Logging_Cheat_Sheet)
 * [Woofer: logging in (best) practices](https://orange-opensource.github.io/woofer/logging-code/): Spring Boot 
 * [A whole product concern logging implementation](http://stevetarver.github.io/2016/04/20/whole-product-logging.html)
-* [Level up logs and ELK - Logging best practices with Logback ](https://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html)
-* [Extending logstash-logback-encoder](https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/)
+* [Level up logs and ELK - Logging best practices with Logback](https://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html)
 * [There is more to logging than meets the eye](https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html)
 
 ## Release
 
 I can never remember how to release projects, so I'm using [Kordamp Gradle Plugins](https://aalmiray.github.io/kordamp-gradle-plugins/) to do most of the work.  I've added some properties to deal with signing artifacts with gpg2 and a Yubikey 4 and staging on Bintray.
 
-To publish to Maven Local repository, use the [builtin](https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:install):
-
 ```bash
 ./gradlew publishToMavenLocal
+```
+
+To make sure everything works:
+
+```bash
+./gradlew check
+```
+
+License formatting:
+
+```bash
+./gradlew LicenseFormat
 ```
 
 To stage on Bintray:
@@ -1239,4 +1266,13 @@ To stage on Bintray:
 HISTCONTROL=ignoreboth ./gradlew clean bintrayUpload -Pversion=x.x.x -Psigning.gnupg.passphrase=123456 --info
 ```
 
-If it [all goes south](https://dzone.com/articles/why-i-never-use-maven-release) then it may be time to move to [something else](https://axelfontaine.com/blog/dead-burried.html) rather than `maven-release-plugin`.
+You will need to set up the bintray credentials before you can even compile anything (sorry about that):
+
+In `~/.gradle/gradle.properties`
+
+```
+bintrayUsername=tersesystems
+
+# https://bintray.com/profile/edit (API key is at the bottom)
+bintrayApiKey=[CENSORED]
+```
