@@ -45,6 +45,7 @@ config {
     }
 
     bintray {
+        enabled = false
         credentials {
             // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
             username = project.bintrayUsername
