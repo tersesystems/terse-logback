@@ -39,7 +39,7 @@ public class TracerFactory {
     }
 
     public Marker createTracer() {
-        // always create a new marker using "new BasicMarker(name)"
+        // always create a new marker using "new AbstractMarker(name)"
         Marker marker = markerFactory.getDetachedMarker("dynamic");
         return createTracer(marker);
     }
