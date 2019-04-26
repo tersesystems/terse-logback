@@ -2,6 +2,7 @@ dependencies {
     compile project(':logback-core')
     compile project(':logback-censor')
     compile project(':logback-typesafe-config')
+    compile group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
 }
 
 config {

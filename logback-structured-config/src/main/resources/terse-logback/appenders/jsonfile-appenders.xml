@@ -33,26 +33,43 @@
           Take out the \ because you cannot have - and - next to each other:
           https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
         -->
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <!-- don't include the properties from typesafe config -->
-            <includeContext>${jsonfile.encoder.includeContext}</includeContext>
-            <!-- UTC is the best server consistent timezone -->
-            <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
 
-            <!--
-              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
-            -->
-            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
-                </maxDepthPerThrowable>
-                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
-                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
-                </shortenedClassNameLength>
-                <!-- coma separated exclusion patterns -->
-                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
-                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
-                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
-            </throwableConverter>
+            <providers>
+                <uuid/>
+                <sequence/>
+                <timestamp>
+                    <!-- UTC is the best server consistent timezone -->
+                    <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+                </timestamp>
+                <version/>
+                <message/>
+                <loggerName/>
+                <threadName/>
+                <logLevel/>
+                <logLevelValue/>
+                <stackHash/>
+                <mdc/>
+                <logstashMarkers/>
+                <arguments/>
+                <stackTrace>
+                    <!--
+                      https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+                    -->
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
+                        </maxDepthPerThrowable>
+                        <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                        <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
+                        </shortenedClassNameLength>
+                        <!-- coma separated exclusion patterns -->
+                        <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                        <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                        <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+                    </throwableConverter>
+                </stackTrace>
+            </providers>
+
 
             <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
             <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
