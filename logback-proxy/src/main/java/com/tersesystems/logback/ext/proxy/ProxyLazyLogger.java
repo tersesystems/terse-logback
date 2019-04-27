@@ -8,8 +8,10 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.ext;
+package com.tersesystems.logback.ext.proxy;
 
+import com.tersesystems.logback.ext.LazyLogger;
+import com.tersesystems.logback.ext.LoggerStatement;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import java.util.function.*;

@@ -1,6 +1,7 @@
 dependencies {
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile project(':logback-ext')
 }
+
 
 config {
     javadoc {

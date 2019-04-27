@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.ext;
+package com.tersesystems.logback.ext.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;

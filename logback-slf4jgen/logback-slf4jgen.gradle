@@ -1,6 +1,9 @@
 dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
+    // https://mvnrepository.com/artifact/com.squareup/javapoet
+    compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
 }
+
 
 config {
     javadoc {

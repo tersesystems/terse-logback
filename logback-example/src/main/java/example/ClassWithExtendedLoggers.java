@@ -11,6 +11,10 @@
 package example;
 
 import com.tersesystems.logback.ext.*;
+import com.tersesystems.logback.ext.predicate.PredicateConditionalLogger;
+import com.tersesystems.logback.ext.proxy.ProxyConditionalLogger;
+import com.tersesystems.logback.ext.proxy.ProxyLazyLogger;
+import com.tersesystems.logback.ext.proxy.ProxyLogger;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
