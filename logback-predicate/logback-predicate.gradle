@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':logback-ext')
+    compile project(':slf4j-ext')
 }
 
 
