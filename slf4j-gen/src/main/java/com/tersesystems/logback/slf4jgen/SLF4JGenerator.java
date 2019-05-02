@@ -2,7 +2,6 @@ package com.tersesystems.logback.slf4jgen;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.slf4j.Marker;
 
@@ -14,13 +13,31 @@ import java.util.List;
 public class SLF4JGenerator {
 
     public static void main(String[] args) throws IOException {
+        SLF4JGenerator gen = new SLF4JGenerator();
+
+        JavaFile javaFile = JavaFile.builder("com.tersesystems.logback.ext.predicate", gen.generate())
+                .build();
+        javaFile.writeTo(System.out);
+    }
+
+    public TypeSpec generate() {
+
+        MethodSpec getNameMethod = MethodSpec.methodBuilder("getName")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(String.class)
+                .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
+                .build();
         Iterable<MethodSpec> traceMethods = methods("trace");
         Iterable<MethodSpec> debugMethods = methods("debug");
         Iterable<MethodSpec> infoMethods = methods("info");
         Iterable<MethodSpec> warnMethods = methods("warn");
         Iterable<MethodSpec> errorMethods = methods("error");
-        TypeSpec loggerType = TypeSpec.classBuilder("PredicateLogger")
+
+        TypeSpec loggerType = TypeSpec.classBuilder("ProxyLogger")
+                .addSuperinterface(org.slf4j.Logger.class)
                 .addModifiers(Modifier.PUBLIC)
+                .addMethod(getNameMethod)
                 .addMethods(traceMethods)
                 .addMethods(debugMethods)
                 .addMethods(infoMethods)
@@ -28,14 +45,13 @@ public class SLF4JGenerator {
                 .addMethods(errorMethods)
                 .build();
 
-        JavaFile javaFile = JavaFile.builder("com.tersesystems.logback.ext.predicate", loggerType)
-                .build();
-
-        javaFile.writeTo(System.out);
+        return loggerType;
     }
 
-    public static Iterable<MethodSpec> methods(String methodName) {
+    public Iterable<MethodSpec> methods(String methodName) {
+
         MethodSpec stringMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(String.class, "message")
@@ -43,6 +59,7 @@ public class SLF4JGenerator {
                 .build();
 
         MethodSpec stringArgMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(String.class, "format")
@@ -52,6 +69,7 @@ public class SLF4JGenerator {
 
         //     public void trace(String format, Object arg1, Object arg2);
         MethodSpec stringArg1Arg2Method = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(String.class, "format")
@@ -62,6 +80,7 @@ public class SLF4JGenerator {
 
         //     public void trace(String format, Object... arguments);
         MethodSpec stringArgArrayMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(String.class, "format")
@@ -72,6 +91,7 @@ public class SLF4JGenerator {
 
         //public void trace(String msg, Throwable t);
         MethodSpec stringThrowableMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Throwable.class, "t")
@@ -80,6 +100,7 @@ public class SLF4JGenerator {
 
         // public boolean isTraceEnabled(Marker marker);
         MethodSpec isEnabledMarkerMethod = MethodSpec.methodBuilder("is" + methodName + "Enabled")
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Marker.class, "marker")
@@ -88,15 +109,17 @@ public class SLF4JGenerator {
 
         // public void trace(Marker marker, String msg);
         MethodSpec markerStringMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Marker.class, "marker")
-                .addParameter(Object.class, "arg")
+                .addParameter(Object.class, "msg")
                 .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
                 .build();
 
         // public void trace(Marker marker, String format, Object arg);
         MethodSpec markerFormatArgMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Marker.class, "marker")
@@ -107,6 +130,7 @@ public class SLF4JGenerator {
 
         //     public void trace(Marker marker, String format, Object arg1, Object arg2);
         MethodSpec markerFormatArg1Arg2Method = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Marker.class, "marker")
@@ -118,6 +142,7 @@ public class SLF4JGenerator {
 
         //     public void trace(Marker marker, String format, Object... argArray);
         MethodSpec markerFormatArgArrayMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Marker.class, "marker")
@@ -129,6 +154,7 @@ public class SLF4JGenerator {
 
         // public void trace(Marker marker, String msg, Throwable t);
         MethodSpec markerMsgThrowableMethod = MethodSpec.methodBuilder(methodName)
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(Marker.class, "marker")
