@@ -6,5 +6,7 @@ dependencies {
     compile project(':logback-structured-config')
     compile project(':logstash-logback-context')
     compile project(':logback-bytebuddy')
-    compile project(':logback-ext')
+    compile project(':slf4j-ext')
+    compile project(':logback-proxy')
+    compile project(':logback-predicate')
 }

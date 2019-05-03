@@ -1,0 +1,14 @@
+dependencies {
+    compile project(':slf4j-ext')
+}
+
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}

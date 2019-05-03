@@ -1,0 +1,13 @@
+dependencies {
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}
