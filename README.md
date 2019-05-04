@@ -1256,7 +1256,8 @@ License formatting:
 To stage on Bintray:
 
 ```bash
-HISTCONTROL=ignoreboth ./gradlew clean bintrayUpload -Pversion=x.x.x -Psigning.gnupg.passphrase=123456 --info
+HISTCONTROL=ignoreboth ./gradlew clean bintrayUpload -Pversion=0.1.7 -Pbintray.enabled=true -Pbintray.dryRun=true --info
+HISTCONTROL=ignoreboth ./gradlew clean bintrayUpload -Pversion=x.x.x -Pbintray.enabled=true --info
 ```
 
 You will need to set up the bintray credentials before you can even compile anything (sorry about that):
