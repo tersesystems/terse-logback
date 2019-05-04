@@ -36,7 +36,7 @@ public class TypesafeConfigActionTest {
         Config config = (Config) loggerContext.getObject(TYPESAFE_CONFIG_CTX_KEY);
         assertThat(config).isNotNull();
 
-        String exportedToContext = loggerContext.getProperty("foo");
+        String exportedToContext = loggerContext.getProperty("localKey");
         assertThat(exportedToContext).isNull();
 
         String exportedFoo = loggerContext.getProperty("exportedFoo");
@@ -56,7 +56,7 @@ public class TypesafeConfigActionTest {
         Config config = (Config) loggerContext.getObject(TYPESAFE_CONFIG_CTX_KEY);
         assertThat(config).isNotNull();
 
-        String foo = loggerContext.getProperty("foo");
+        String foo = loggerContext.getProperty("contextKey");
         assertThat(foo).isEqualTo("bar");
 
         String exportedFoo = loggerContext.getProperty("exportedFoo");
@@ -76,7 +76,7 @@ public class TypesafeConfigActionTest {
         Config config = (Config) loggerContext.getObject(TYPESAFE_CONFIG_CTX_KEY);
         assertThat(config).isNotNull();
 
-        String foo = loggerContext.getProperty("foo");
+        String foo = loggerContext.getProperty("localKey");
         assertThat(foo).isNull();
 
         String exportedFoo = loggerContext.getProperty("exportedFoo");

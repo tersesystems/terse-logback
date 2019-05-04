@@ -19,7 +19,7 @@
         <object name="contextObjectFoo" path="some.random.path"/>
     </typesafeConfig>
 
-    <property scope="context" name="exportedFoo" value="${foo}" />
+    <property scope="context" name="exportedFoo" value="${localKey}" />
 
     <appender name="TEST" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
