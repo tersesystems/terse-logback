@@ -813,21 +813,13 @@ The configuration is then placed in the `LoggerContext` which is available to al
 lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
 ```
 
-And then all properties are made available to Logback:
+And then all properties are made available to Logback, either at the `local` scope or at the `context` scope.  
 
-```java
-for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
-    String key = propertyEntry.getKey();
-    String value = propertyEntry.getValue().unwrapped().toString();
-    lc.putProperty(key, value);
-}
-```
-
-Technically, I think that it's possible to use an [`ImplicitAction`](https://logback.qos.ch/manual/onJoran.html#implicit) to fallback to resolving to the `Config` if no property is found, but that would require instantiating a `Configurator` which again doesn't work so well with frameworks.
+Properties must be strings, but you can also provide Maps and Lists to the Logback Context, through `context.getObject`.
 
 ### Log Levels and Properties through Typesafe Config
 
-Configuration of properties and setting log levels is done through [Typesafe Config](https://github.com/lightbend/config#overview).  
+Configuration of properties and setting log levels is done through [Typesafe Config](https://github.com/lightbend/config#overview), using `TypesafeConfigAction`
 
 Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
 
@@ -847,7 +839,7 @@ levels = {
 }
 
 # Overrides the properties from logback-reference.conf
-properties {
+local {
 
     censor {
         regex = """hunter2""" // http://bash.org/?244321
@@ -873,11 +865,13 @@ include "myothersettings"
 For tests, there's a `logback-test.conf` that will override (rather than completely replace) any settings that you have in `logback.conf`:
 
 ```hocon
+include "logback-test-reference"
+
 levels {
   example = TRACE
 }
 
-properties {
+local {
   textfile {
     location = "log/test/application-test.log"
     append = false
@@ -892,8 +886,7 @@ properties {
 
 There is also a `logback-reference.conf` file that handles the default configuration for the appenders, and those settings can be overridden.  They are written out individually in the encoder configuration so I won't go over it here.
 
-
-Note that appender logic is not available here.  If you need to update the appenders, you should release a new version of the `structured-config` library and get your projects updated.
+Note that appender logic is not available here -- it's all defined through the `structured-config` in `logback.xml`.
 
 Using Typesafe Config is not a requirement -- the point here is to show that there are more options to configuring Logback than using a straight XML file.
 
