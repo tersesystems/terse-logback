@@ -17,6 +17,7 @@ import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
 import com.typesafe.config.Config;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Prints out a colored level using ANSI codes.  Jansi is included here for Windows.
@@ -47,9 +48,11 @@ public class TerseHighlightConverter extends ForegroundCompositeConverterBase<IL
 
     @Override
     protected String getForegroundColorCode(ILoggingEvent event) {
-        Map<String, String> config = (Map<String, String>) getContext().getObject(HIGHLIGHT_CTX_KEY);
+        String configKey = Optional.ofNullable(getFirstOption()).orElse(HIGHLIGHT_CTX_KEY);
+
+        Map<String, String> config = (Map<String, String>) getContext().getObject(configKey);
         if (config == null) {
-            addWarn("No map found in context with key " + HIGHLIGHT_CTX_KEY);
+            addWarn("No map found in context with key " + configKey);
             return Color.BLACK.code;
         }
 

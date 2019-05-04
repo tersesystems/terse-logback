@@ -87,10 +87,6 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
 
         ruleStore.addRule(new ElementSelector("configuration/" + name + "/object"), new ContextObjectAction());
 
-        String scope = attributes.getValue(SCOPE_ATTRIBUTE);
-        if (scope != null) {
-            setScope(scope);
-        }
         String debugAttr = attributes.getValue(DEBUG_ATTRIBUTE);
 
         Config config = generateConfig(ic.getClass().getClassLoader(), Boolean.valueOf(debugAttr));
@@ -99,11 +95,18 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
         configureConfig(config);
         configureLevels(config);
 
-        Set<Map.Entry<String, ConfigValue>> properties = config.getConfig(PROPERTIES_KEY).entrySet();
-        if (isContextScope()) {
-            configureContextScope(config, context, properties);
-        } else {
-            configureLocalScope(config, ic, properties);
+        try {
+            Set<Map.Entry<String, ConfigValue>> contextProperties = config.getConfig(CONTEXT_SCOPE).entrySet();
+            configureContextScope(config, context, contextProperties);
+        } catch (ConfigException.Missing e) {
+            // do nothing
+        }
+
+        try {
+            Set<Map.Entry<String, ConfigValue>> localProperties = config.getConfig(LOCAL_SCOPE).entrySet();
+            configureLocalScope(config, ic, localProperties);
+        } catch (ConfigException.Missing e) {
+            // do nothing
         }
     }
 
@@ -128,11 +131,6 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
     @Override
     public void end(InterpretationContext ic, String name) throws ActionException {
 
-    }
-
-    protected boolean isContextScope() {
-        // ActionUtil.Scope scope = ActionUtil.stringToScope(scopeStr);
-       return CONTEXT_SCOPE.equalsIgnoreCase(scope);
     }
 
     protected void configureContextScope(Config config, Context lc, Set<Map.Entry<String, ConfigValue>> properties) {
