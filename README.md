@@ -154,11 +154,154 @@ If you don't want to pass through anything at all, and instead use a proxy logge
 
 ## Controlling Logging
 
+The SLF4J API code is built around the `org.slf4j.Logger` interface.  This is extremely useful, because it means that you can put different implementations behind that interface, and the core codebase will work the same.  In particular, we've seen that we can extend code around that concept.  There is one impediment, which is that the `Logger` API has a bunch of boilerplate related to handling the same logic at different levels.
+
+Internally, the project uses [Javapoet](https://github.com/square/javapoet) to handle the boilerplate and generate code for all the levels so that writing implementation only has to be done once, as opposed to for `trace`, `debug`, `warn`, `info`, and `error` levels.  The code is available under the `slf4j-gen` project.
+
+### LazyLogger, ConditionalLogger
+
+There's two APIs that extend on top of `org.slf4j.Logger`, the `LazyLogger` and the `ConditionalLogger`.
+
+The LazyLogger API looks like this:
+
+```java
+public interface LazyLogger {
+        void debug(Consumer<LoggerStatement> lc);
+        
+        Optional<LoggerStatement> debug();
+    
+        void debug(Marker marker, Consumer<LoggerStatement> lc);
+        
+        Optional<LoggerStatement> debug(Marker marker);
+        
+        // ...
+}
+```
+
+The ConditionalLogger API looks like this, where a condition is provided as a function to the method:
+
+```java
+public interface ConditionalLogger {
+    
+    void ifTrace(Supplier<Boolean> condition, Consumer<LoggerStatement> lc);
+
+    void ifTrace(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc);
+
+    Optional<LoggerStatement> ifTrace(Supplier<Boolean> condition);
+
+    Optional<LoggerStatement> ifTrace(Marker marker, Supplier<Boolean> condition);
+    
+    // ...
+}
+```
+
+There are two implementations of these APIs, one based on a straight proxy, and another based on predicates.
+
+### Proxy Loggers
+
+The proxy implementation takes an underlying logger, and passes the behavior through.
+
+The lazy logger is implemented as follows:
+
+```java
+public interface ProxyLazyLogger extends LazyLogger {
+
+    Logger logger();
+
+    default void trace(Consumer<LoggerStatement> lc) {
+        if (logger().isTraceEnabled()) {
+            LoggerStatement stmt = new LoggerStatement.Trace(logger());
+            lc.accept(stmt);
+        }
+    }
+
+    default Optional<LoggerStatement> trace() {
+        if (logger().isTraceEnabled()) {
+            LoggerStatement stmt = new LoggerStatement.Trace(logger());
+            return Optional.of(stmt);
+        } else {
+            return Optional.empty();
+        }
+    }
+    
+    // ...
+}
+```
+
+and the conditional logger implementation is similar:
+
+```java
+public interface ProxyConditionalLogger extends ConditionalLogger {
+
+    Logger logger();
+
+    @Override
+    default void ifTrace(Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (logger().isTraceEnabled() && condition.get() ) {
+            lc.accept(new LoggerStatement.Trace(logger()));
+        }
+    }
+
+    @Override
+    default void ifTrace(Marker marker, Supplier<Boolean> condition, Consumer<LoggerStatement> lc) {
+        if (logger().isTraceEnabled(marker) && condition.get() ) {
+            lc.accept(new LoggerStatement.Trace(logger()));
+        }
+    }
+    
+    // ...
+}
+```
+
+Usually you will put all of them together:
+
+```java
+public class MyLogger implements ProxyLogger, ProxyLazyLogger, ProxyConditionalLogger {
+    private Logger logger;
+
+    public MyLogger(Logger logger) {
+        this.logger = logger;
+    }
+
+    @Override
+    public Logger logger() {
+        return this.logger;
+    }
+}
+```
+
+### Predicate Loggers
+
 There are reasons why you would not want to log information you may normally log.
 
 The historical reason for not logging is that there is a construction cost involved in creating parameters.  This is still true in a way today -- CPU and memory are not typically constraints for logging statements, but there are storage costs involved in producing logs.  Accumulated logs must be parsed and searched, making queries slower.
 
-There is a `com.tersesystems.logback.ext.ProxyConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
+In the same way that there's a `ProxyConditionalLogger`, there's a `PredicateConditionalLogger` class that will apply preconditions to loggers, and so the logging will only happen when the preconditions are met:
+
+```java
+public class MyPredicateLogger implements PredicateLogger, PredicateLazyLogger, PredicateConditionalLogger {
+
+    private Predicate<Level> predicate;
+    private Logger logger;
+
+    public MyPredicateLogger(Predicate<Level> predicate, Logger logger) {
+        this.predicate = predicate;
+        this.logger = logger;
+    }
+
+    @Override
+    public Predicate<Level> predicate() {
+        return this.predicate;
+    }
+
+    @Override
+    public Logger logger() {
+        return this.logger;
+    }
+}
+```
+
+This lets you apply predicates at the class level, and combine them with conditions at the method level:
 
 ```java
 package example;
@@ -180,7 +323,7 @@ public class ClassWithConditionalLogger {
 
     private void doStuff() {
         // Set up conditional logger to only log if this is my machine:
-        final ConditionalLogger conditionalLogger = new ProxyConditionalLogger(logger, this::isDevelopmentEnvironment);
+        final ConditionalLogger conditionalLogger = new MyPredicateLogger(this::isDevelopmentEnvironment, logger);
 
         String correlationId = IdGenerator.getInstance().generateCorrelationId();
         LogstashMarker context = Markers.append("correlationId", correlationId);
@@ -192,7 +335,7 @@ public class ClassWithConditionalLogger {
         // Log only if the level is info and the above conditions are met AND it's tuesday
         conditionalLogger.ifInfo(this::objectIsNotTooLargeToLog, stmt -> {
             // Log very large thing in here...
-            stmt.apply(context, "log if INFO && user.name == wsargent && objectIsNotTooLargeToLog()");
+            stmt.apply(context, "log if INFO && isDevelopmentEnvironment && objectIsNotTooLargeToLog()");
         });
     }
 
