@@ -71,16 +71,6 @@ import static java.util.stream.Collectors.toMap;
  */
 public class TypesafeConfigAction extends Action implements ConfigConversion {
 
-    protected String scope = LOCAL_SCOPE;
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
     @Override
     public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
         RuleStore ruleStore = ic.getJoranInterpreter().getRuleStore();
@@ -92,7 +82,7 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
         Config config = generateConfig(ic.getClass().getClassLoader(), Boolean.valueOf(debugAttr));
         Context context = ic.getContext();
 
-        configureConfig(config);
+        context.putObject(TYPESAFE_CONFIG_CTX_KEY, config);
         configureLevels(config);
 
         try {
@@ -107,14 +97,6 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
             configureLocalScope(config, ic, localProperties);
         } catch (ConfigException.Missing e) {
             // do nothing
-        }
-    }
-
-    protected void configureConfig(Config config) {
-        try {
-            context.putObject(TYPESAFE_CONFIG_CTX_KEY, config);
-        } catch (ConfigException e) {
-            addWarn("Cannot set config in context!", e);
         }
     }
 
@@ -134,8 +116,6 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
     }
 
     protected void configureContextScope(Config config, Context lc, Set<Map.Entry<String, ConfigValue>> properties) {
-        addInfo("Configuring with context scope");
-        lc.putObject(TYPESAFE_CONFIG_CTX_KEY, config);
         for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
             String key = propertyEntry.getKey();
             String value = propertyEntry.getValue().unwrapped().toString();
@@ -144,9 +124,6 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
     }
 
     protected void configureLocalScope(Config config, InterpretationContext ic,  Set<Map.Entry<String, ConfigValue>> properties) {
-        addInfo("Configuring with local scope");
-        ic.getObjectMap().put(TYPESAFE_CONFIG_CTX_KEY, config);
-
         for (Map.Entry<String, ConfigValue> propertyEntry : properties) {
             String key = propertyEntry.getKey();
             String value = propertyEntry.getValue().unwrapped().toString();

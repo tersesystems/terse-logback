@@ -11,6 +11,11 @@ log/
 out/
 logback-example/log/*
 
+.classpath
+.project
+.settings
+.vscode/
+bin/
 *.iml
 *.ipr
 *.iws
