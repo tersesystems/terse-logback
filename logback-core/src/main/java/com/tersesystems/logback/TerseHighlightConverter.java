@@ -14,7 +14,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ANSIConstants;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
-import com.typesafe.config.Config;
 
 import java.util.Map;
 import java.util.Optional;
@@ -24,7 +23,10 @@ import java.util.Optional;
  *
  * This is like %highlight but uses configured colors instead.
  *
- * https://logback.qos.ch/manual/layouts.html#customConversionSpecifier
+ * <pre>{@code
+ *  <conversionRule conversionWord="terseHighlight"
+ *    converterClass="com.tersesystems.logback.TerseHighlightConverter" />
+ * }</pre>
  */
 public class TerseHighlightConverter extends ForegroundCompositeConverterBase<ILoggingEvent> {
 
