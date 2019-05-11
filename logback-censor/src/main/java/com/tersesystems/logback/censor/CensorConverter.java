@@ -10,11 +10,9 @@
  */
 package com.tersesystems.logback.censor;
 
-import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +23,11 @@ import static com.tersesystems.logback.censor.CensorConstants.CENSOR_BAG;
  *
  * Note that this does not filter out marker text or additional information related to the event,
  * i.e. it does not filter out exception text.
+ *
+ * <pre>{@code
+ *  <conversionRule conversionWord="censor"
+ *    converterClass="com.tersesystems.logback.censor.CensorConverter" />
+ * }</pre>
  */
 public class CensorConverter extends CompositeConverter<ILoggingEvent> {
 
