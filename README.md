@@ -1335,7 +1335,7 @@ If you want to modify the format of the JSON encoder, you should use [`LoggingEv
 
 ### APIs
 
-SLF4J is essentially the assembly language of Java logging at this point, so if you want to use something else it had better wrap or interoperate with SLF4J.
+SLF4J is essentially the assembly language of Java logging at this point, so if you want to use something else it had better wrap or interoperate with SLF4J.  This is a huge advantage over the historical [logging mess](https://techblog.bozho.net/the-logging-mess/).
 
 There are various wrappers and APIs on top of SLF4J:
 
@@ -1348,15 +1348,19 @@ There are various wrappers and APIs on top of SLF4J:
 * [logbook](https://github.com/zalando/logbook)
 * [logstage](https://izumi.7mind.io/latest/release/doc/logstage/)
 * [descriptive-logger](https://github.com/thombergs/descriptive-logger)
+* [flogger](https://github.com/google/flogger) has an [SLF4J backend](https://github.com/google/flogger/blob/master/slf4j/src/main/java/com/google/common/flogger/backend/slf4j/Slf4jLoggerBackend.java)
 
-I have not used these personally.  I usually roll my own code when I need something on top of SLF4J, because a) I can and b) the wrappers tend to conflate concepts they're not interested in, so a hardcoded appender is assumed, or the encoder and layout is merged together etc.
+I have not used these personally.  I usually roll my own code when I need something on top of SLF4J, because a) I can and b) the wrappers generally aren't great.  By and large, they tend to conflate concepts they're not interested in, so a hardcoded appender is assumed, or the encoder and layout is merged together, or the like.  In some cases, the API will [explicitly disable SLF4J functionality](https://github.com/google/flogger/blob/master/slf4j/src/main/java/com/google/common/flogger/backend/slf4j/Slf4jLoggerBackend.java#L100) like the OFF level.
+
+See the `slf4j-gen` module for how to generate your own logging APIs, and `slf4j-ext` for some examples of extensions.
 
 ### Logback Encoders and Appenders
 
 * [concurrent-build-logger](https://github.com/takari/concurrent-build-logger) (encoders and appenders both)
 * [logzio-logback-appender](https://github.com/logzio/logzio-logback-appender)
 * [logback-elasticsearch-appender](https://github.com/internetitem/logback-elasticsearch-appender)  
-* [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)  
+* [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)
+* [logback-steno](https://github.com/ArpNetworking/logback-steno)
   
 ### Other Blog Posts
 
@@ -1369,12 +1373,59 @@ I have not used these personally.  I usually roll my own code when I need someth
 
 Many of these are logback specific, but still good overall.
 
-* [Stackoverflow: Logging best practices in multi-node environment](https://stackoverflow.com/questions/43496695/java-logging-best-practices-in-multi-node-environment)
-* [Logging Best Practices](https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience)
+* [9 Logging Best Practices Based on Hands-on Experience](https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience)
 * [Woofer: logging in (best) practices](https://orange-opensource.github.io/woofer/logging-code/): Spring Boot 
 * [A whole product concern logging implementation](http://stevetarver.github.io/2016/04/20/whole-product-logging.html)
-* [Level up logs and ELK - Logging best practices with Logback](https://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html)
 * [There is more to logging than meets the eye](https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html)
+
+Stack Overflow has a couple of good tips on SLF4J and Logging:
+
+* [When to use the different log levels](https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels)
+* [Why does the TRACE level exist, and when should I use it rather than DEBUG?](https://softwareengineering.stackexchange.com/questions/279690/why-does-the-trace-level-exist-and-when-should-i-use-it-rather-than-debug)
+* [Best practices for using Markers in SLF4J/Logback](https://stackoverflow.com/questions/4165558/best-practices-for-using-markers-in-slf4j-logback)
+* [Stackoverflow: Logging best practices in multi-node environment](https://stackoverflow.com/questions/43496695/java-logging-best-practices-in-multi-node-environment)
+
+#### Level Up Logs
+
+[Alberto Navarro](https://looking4q.blogspot.com/) has a great series
+
+<ol>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-introduction.html">Introduction</a> (Everyone)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-your-logs-and-elk-json-logs.html">JSON as logs format</a> (Everyone)</li>
+<li><b><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html">Logging best practices with Logback</a> (Targetting Java DEVs)</b></li>
+<li><a href="https://looking4q.blogspot.com/2018/11/logging-cutting-edge-practices.html">Logging cutting-edge practices</a> (Targetting Java DEVs)&nbsp;</li>
+<li><a href="https://looking4q.blogspot.com/2019/01/level-up-logs-and-elk-contract-first.html">Contract first log generator</a> (Targetting Java DEVs) </li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-elasticsearch.html">ElasticSearch VRR Estimation Strategy</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-java-logback.html">VRR Java + Logback configuration</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-filebeat.html">VRR FileBeat configuration</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-logstash.html">VRR Logstash configuration and Index templates</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-curator.html">VRR Curator configuration</a> (Targetting OPS)</li>
+<li><a href="https://looking4q.blogspot.com/2018/10/level-up-logs-and-elk-logstash-grok.html">Logstash Grok, JSON Filter and JSON Input performance comparison</a> (Targetting OPS) </li>
+</ol>
+
+#### Logging Anti Patterns
+
+Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
+
+* [Logging Anti-Patterns](http://rolf-engelhard.de/2013/03/logging-anti-patterns-part-i/)
+* [Logging Anti-Patterns, Part II](http://rolf-engelhard.de/2013/04/logging-anti-patterns-part-ii/)
+* [Logging Anti-Patterns, Part III](https://rolf-engelhard.de/2013/10/logging-anti-patterns-part-iii/)
+
+#### Clean Code, clean logs
+
+[Tomasz Nurkiewicz](https://www.nurkiewicz.com/) has a great series on logging: 
+
+* [Clean code, clean logs: use appropriate tools (1/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-use-appropriate.html)
+* [Clean code, clean logs: logging levels are there for you (2/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-tune-your-pattern.html)
+* [Clean code, clean logs: do you know what you are logging? (3/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-do-you-know-what.html)
+* [Clean code, clean logs: avoid side effects (4/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-avoid-side.html)
+* [Clean code, clean logs: concise and descriptive (5/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-concise-and.html)
+* [Clean code, clean logs: tune your pattern (6/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-tune-your-pattern.html)
+* [Clean code, clean logs: log method arguments and return values (7/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-log-method.html)
+* [Clean code, clean logs: watch out for external systems (8/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-watch-out-for.html)
+* [Clean code, clean logs: log exceptions properly (9/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-log-exceptions.html)
+* [Clean code, clean logs: easy to read, easy to parse (10/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-easy-to-read-easy.html)
+* [Condensed 10 Tips on javacodegeeks](https://www.javacodegeeks.com/2011/01/10-tips-proper-application-logging.html)
 
 ## Release
 
