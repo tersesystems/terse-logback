@@ -25,6 +25,17 @@ public class PlayerAction extends Action {
 
     @Override
     public void begin(InterpretationContext ic, String localName, Attributes attributes) throws ActionException {
+        Object o = ic.peekObject();
+
+        if (!(o instanceof PlayerAttachable)) {
+            String errMsg = "Could not find an CensorAttachable at the top of execution stack. Near [" + localName + "] line " + getLineNumber(ic);
+            inError = true;
+            addInfo(errMsg); // This can trigger in an "if" block from janino, so it may not be serious...
+            return;
+        }
+
+        PlayerAttachable playerAttachable = (PlayerAttachable) o;
+
         String className = attributes.getValue(CLASS_ATTRIBUTE);
         if (OptionHelper.isEmpty(className)) {
             addError("Missing class name for player. Near [" + localName + "] line " + getLineNumber(ic));
@@ -47,6 +58,7 @@ public class PlayerAction extends Action {
             addError("Could not create player.", oops);
             throw new ActionException(oops);
         }
+        playerAttachable.addPlayer(player);
     }
 
     @Override

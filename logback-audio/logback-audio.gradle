@@ -1,7 +1,6 @@
 dependencies {
     compile project(':logback-core')
     compile group: 'com.googlecode.soundlibs', name: 'mp3spi', version: '1.9.5.4'
-    // https://github.com/Trilarion/java-vorbis-support
     compile group: 'com.github.trilarion', name: 'vorbis-support', version: '1.1.0'
 }
 

@@ -8,29 +8,29 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.audio.markers;
+package com.tersesystems.logback.audio;
 
 import com.tersesystems.logback.TerseBasicMarker;
-import com.tersesystems.logback.audio.Player;
-import com.tersesystems.logback.audio.SimplePlayer;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.file.Path;
 
 public class AudioMarker extends TerseBasicMarker implements Player {
 
+    private static final String MARKER_NAME = "TS_AUDIO_MARKER";
+
     private final Player player;
 
-    public AudioMarker(URL url, String name) {
-        super(name);
+    public AudioMarker(URL url) {
+        super(MARKER_NAME);
         player = SimplePlayer.fromURL(url);
     }
 
-    public AudioMarker(File file, String name) {
-        super(name);
-        player = SimplePlayer.fromFile(file);
+    public AudioMarker(Path path) {
+        super(MARKER_NAME);
+        player = SimplePlayer.fromPath(path);
     }
 
     public AudioMarker(InputStream inputStream, String name) {

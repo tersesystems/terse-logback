@@ -8,11 +8,9 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.audio.appenders;
+package com.tersesystems.logback.audio;
 
 import ch.qos.logback.core.spi.ContextAwareBase;
-import com.tersesystems.logback.audio.Player;
-import com.tersesystems.logback.audio.SimplePlayer;
 
 import java.net.URL;
 
