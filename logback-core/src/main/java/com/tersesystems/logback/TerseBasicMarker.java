@@ -1,3 +1,13 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
 package com.tersesystems.logback;
 
 import org.slf4j.Marker;
@@ -12,12 +22,12 @@ import java.util.Vector;
  *
  * Following on from logstash-logback-marker
  */
-public class BasicMarker implements Marker {
+public class TerseBasicMarker implements Marker {
 
     private final String name;
     private List<Marker> referenceList;
 
-    public BasicMarker(String name) {
+    public TerseBasicMarker(String name) {
         if (name == null) {
             throw new IllegalArgumentException("A marker name cannot be null");
         }

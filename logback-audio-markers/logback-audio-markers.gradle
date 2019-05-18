@@ -1,0 +1,16 @@
+dependencies {
+    compile project(':logback-core')
+    compile group: 'com.googlecode.soundlibs', name: 'mp3spi', version: '1.9.5.4'
+    // https://github.com/Trilarion/java-vorbis-support
+    compile group: 'com.github.trilarion', name: 'vorbis-support', version: '1.1.0'
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}
