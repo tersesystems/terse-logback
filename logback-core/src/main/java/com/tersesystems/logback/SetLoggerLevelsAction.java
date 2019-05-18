@@ -15,13 +15,9 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigValue;
 import org.xml.sax.Attributes;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Sets the logger levels using a map with the levels key.
