@@ -17,7 +17,7 @@
 
   THIS IS NOT INTENDED TO BE A DROP IN REPLACEMENT.  Please see the documentation at
 
-  https://github.com/logstash/logstash-logback-encoder/blob/master/README.md
+  https://github.com/tersesystems/terse-logback/
 
   and the links in the comments.
 -->
@@ -33,6 +33,10 @@
 
     <newRule pattern="*/censor-ref"
              actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
 
     <jmxConfigurator />
 
