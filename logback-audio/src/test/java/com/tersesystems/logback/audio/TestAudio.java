@@ -21,14 +21,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class TestAudio {
 
-    @Test
-    public void testAudio() {
-        URL bellOgg = getClass().getResource("/bark.ogg");
-        SimplePlayer.fromURL(bellOgg).play();
-        SimplePlayer.fromURL(bellOgg).play();
-    }
+public class TestAudio {
 
     @Test
     public void testMarkerWithURL() throws JoranException, InterruptedException {
@@ -47,7 +41,8 @@ public class TestAudio {
         Thread.sleep(1000);
     }
 
-    @Test
+    // Can't keep a path steady with different starting directories..
+    //@Test
     public void testMarkerWithPath() throws JoranException, InterruptedException {
         LoggerContext context = new LoggerContext();
 
