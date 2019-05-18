@@ -1,6 +1,6 @@
 dependencies {
-    compile 'net.logstash.logback:logstash-logback-encoder:5.2'
-    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
 config {
