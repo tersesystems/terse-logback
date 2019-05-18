@@ -1,0 +1,92 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <newRule pattern="*/player"
+             actionClass="com.tersesystems.logback.audio.PlayerAction"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="AUDIO-TRACE" class="com.tersesystems.logback.audio.AudioLevelAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.ResourcePlayer">
+            <resource>/bark.ogg</resource>
+        </player>
+    </appender>
+
+    <appender name="AUDIO-DEBUG" class="com.tersesystems.logback.audio.AudioLevelAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.ResourcePlayer">
+            <resource>/message.ogg</resource>
+        </player>
+    </appender>
+
+    <appender name="AUDIO-INFO" class="com.tersesystems.logback.audio.AudioLevelAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.ResourcePlayer">
+            <resource>/drip.ogg</resource>
+        </player>
+    </appender>
+
+    <appender name="AUDIO-WARN" class="com.tersesystems.logback.audio.AudioLevelAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.ResourcePlayer">
+            <resource>/glass.ogg</resource>
+        </player>
+    </appender>
+
+    <appender name="AUDIO-ERROR" class="com.tersesystems.logback.audio.AudioLevelAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.ResourcePlayer">
+            <resource>/sample.ogg</resource>
+        </player>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="AUDIO-TRACE"/>
+        <appender-ref ref="AUDIO-DEBUG"/>
+        <appender-ref ref="AUDIO-INFO"/>
+        <appender-ref ref="AUDIO-WARN"/>
+        <appender-ref ref="AUDIO-ERROR"/>
+    </root>
+</configuration>
