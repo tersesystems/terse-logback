@@ -33,14 +33,13 @@ public class AudioMarker extends TerseBasicMarker implements Player {
         player = SimplePlayer.fromPath(path);
     }
 
-    public AudioMarker(InputStream inputStream, String name) {
-        super(name);
+    public AudioMarker(InputStream inputStream) {
+        super(MARKER_NAME);
         player = SimplePlayer.fromInputStream(inputStream);
     }
 
-
-    public AudioMarker(Player player, String name) {
-        super(name);
+    public AudioMarker(Player player) {
+        super(MARKER_NAME);
         this.player = player;
     }
 

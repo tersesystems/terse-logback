@@ -12,10 +12,9 @@ package com.tersesystems.logback;
 
 import org.slf4j.Marker;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A marker that can be extended with custom behavior.
@@ -28,9 +27,7 @@ public class TerseBasicMarker implements Marker {
     private List<Marker> referenceList;
 
     public TerseBasicMarker(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("A marker name cannot be null");
-        }
+        requireNonNull(name, "A marker name cannot be null");
         this.name = name;
     }
 
@@ -39,25 +36,18 @@ public class TerseBasicMarker implements Marker {
     }
 
     public synchronized void add(Marker reference) {
-        if (reference == null) {
-            throw new IllegalArgumentException(
-                "A null value cannot be added to a Marker as reference.");
-        }
+        requireNonNull(reference, "A null value cannot be added to a Marker as reference.");
 
-        // no point in adding the reference multiple times
-        // avoid recursion
-        // a potential reference should not its future "parent" as a reference
         if (!(this.contains(reference) || reference.contains(this))) {
-            // let's add the reference
             if (referenceList == null) {
-                referenceList = new Vector<Marker>();
+                referenceList = new Vector<>();
             }
             referenceList.add(reference);
         }
     }
 
     public synchronized boolean hasReferences() {
-        return ((referenceList != null) && (referenceList.size() > 0));
+        return referenceList != null && referenceList.size() > 0;
     }
 
     public boolean hasChildren() {
@@ -65,61 +55,39 @@ public class TerseBasicMarker implements Marker {
     }
 
     public synchronized Iterator<Marker> iterator() {
-        return referenceList != null ? referenceList.iterator() : Collections.emptyIterator();
+        return hasReferences() ? referenceList.iterator() : Collections.emptyIterator();
     }
 
     public synchronized boolean remove(Marker referenceToRemove) {
-        if (referenceList != null) {
-            for (int i = 0; i < referenceList.size(); i++) {
-                Marker m = referenceList.get(i);
-                if (referenceToRemove.equals(m)) {
-                    referenceList.remove(i);
-                    return true;
-                }
-            }
+        if (hasReferences()) {
+            return referenceList.remove(referenceToRemove);
+        } else {
+            return false;
         }
-        return false;
     }
 
     public boolean contains(Marker other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Other cannot be null");
-        }
+        requireNonNull(other, "other cannot be null");
 
         if (this.equals(other)) {
             return true;
+        } else if (hasReferences()) {
+            return referenceList.stream().anyMatch(ref -> ref.contains(other));
+        } else {
+            return false;
         }
-
-        if (hasReferences()) {
-            for (Marker ref : referenceList) {
-                if (ref.contains(other)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
-    /**
-     * This method is mainly used with Expression Evaluators.
-     */
     public boolean contains(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Other cannot be null");
-        }
+        requireNonNull(name, "name cannot be null");
 
         if (this.name.equals(name)) {
             return true;
+        } else if (hasReferences()) {
+            return referenceList.stream().anyMatch(ref -> ref.contains(name));
+        } else {
+            return false;
         }
-
-        if (hasReferences()) {
-            for (Marker ref : referenceList) {
-                if (ref.contains(name)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private static final String OPEN = "[ ";
