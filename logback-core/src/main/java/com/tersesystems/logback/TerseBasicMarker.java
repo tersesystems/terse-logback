@@ -50,6 +50,10 @@ public class TerseBasicMarker implements Marker {
         return referenceList != null && referenceList.size() > 0;
     }
 
+    /**
+     * @deprecated Replaced by {@link #hasReferences()}.
+     */
+    @Deprecated
     public boolean hasChildren() {
         return hasReferences();
     }

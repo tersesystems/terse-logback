@@ -21,7 +21,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 public class TestAudio {
 
     @Test
@@ -29,6 +28,24 @@ public class TestAudio {
         LoggerContext context = new LoggerContext();
 
         URL resource = getClass().getResource("/logback-with-marker-appender.xml");
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(context);
+        configurator.doConfigure(resource);
+
+        Logger logger = context.getLogger("some.random.Logger");
+
+        URL audioURL = getClass().getResource("/bark.ogg");
+        Marker marker = new AudioMarker(audioURL);
+        logger.info(marker, "Bark!");
+        Thread.sleep(1000);
+    }
+
+    // Can't keep a path steady with different starting directories..
+    @Test
+    public void testMarkerWithURLWithConverter() throws JoranException, InterruptedException {
+        LoggerContext context = new LoggerContext();
+
+        URL resource = getClass().getResource("/logback-with-converter.xml");
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(context);
         configurator.doConfigure(resource);
