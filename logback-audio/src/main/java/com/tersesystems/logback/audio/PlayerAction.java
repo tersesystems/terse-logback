@@ -28,7 +28,7 @@ public class PlayerAction extends Action {
         Object o = ic.peekObject();
 
         if (!(o instanceof PlayerAttachable)) {
-            String errMsg = "Could not find an CensorAttachable at the top of execution stack. Near [" + localName + "] line " + getLineNumber(ic);
+            String errMsg = "Could not find a PlayerAttachable at the top of execution stack. Near [" + localName + "] line " + getLineNumber(ic);
             inError = true;
             addInfo(errMsg); // This can trigger in an "if" block from janino, so it may not be serious...
             return;

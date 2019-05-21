@@ -13,7 +13,7 @@ package com.tersesystems.logback.audio;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 
-public class AudioLevelAppender extends AppenderBase<ILoggingEvent> implements PlayerAttachable {
+public class AudioAppender extends AppenderBase<ILoggingEvent> implements PlayerAttachable {
 
     private Player player;
 
@@ -24,7 +24,6 @@ public class AudioLevelAppender extends AppenderBase<ILoggingEvent> implements P
 
     @Override
     public void addPlayer(Player player) {
-        addInfo("player = " + player);
         this.player = player;
     }
 

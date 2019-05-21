@@ -1,0 +1,137 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <newRule pattern="*/player"
+             actionClass="com.tersesystems.logback.audio.PlayerAction"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="TRACE" class="com.tersesystems.logback.AppenderChain">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <appender class="ch.qos.logback.core.FileAppender">
+            <file>${log.dir:-}/trace.log</file>
+            <encoder>
+                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender class="com.tersesystems.logback.audio.AudioAppender">
+            <player class="com.tersesystems.logback.audio.ResourcePlayer">
+                <resource>/bark.ogg</resource>
+            </player>
+        </appender>
+    </appender>
+
+    <appender name="DEBUG" class="com.tersesystems.logback.AppenderChain">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <appender class="ch.qos.logback.core.FileAppender">
+            <file>${log.dir:-}/debug.log</file>
+            <encoder>
+                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender class="com.tersesystems.logback.audio.AudioAppender">
+            <player class="com.tersesystems.logback.audio.ResourcePlayer">
+                <resource>/drip.ogg</resource>
+            </player>
+        </appender>
+    </appender>
+
+    <appender name="INFO" class="com.tersesystems.logback.AppenderChain">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <appender class="ch.qos.logback.core.FileAppender">
+            <file>${log.dir:-}/info.log</file>
+            <encoder>
+                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender class="com.tersesystems.logback.audio.AudioAppender">
+            <player class="com.tersesystems.logback.audio.ResourcePlayer">
+                <resource>/glass.ogg</resource>
+            </player>
+        </appender>
+    </appender>
+
+    <appender name="WARN" class="com.tersesystems.logback.AppenderChain">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <appender class="ch.qos.logback.core.FileAppender">
+            <file>${log.dir:-}/warn.log</file>
+            <encoder>
+                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender class="com.tersesystems.logback.audio.AudioAppender">
+            <player class="com.tersesystems.logback.audio.ResourcePlayer">
+                <resource>/message.ogg</resource>
+            </player>
+        </appender>
+    </appender>
+
+    <appender name="ERROR" class="com.tersesystems.logback.AppenderChain">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <appender class="ch.qos.logback.core.FileAppender">
+            <file>${log.dir:-}/error.log</file>
+            <encoder>
+                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender class="com.tersesystems.logback.audio.AudioAppender">
+            <player class="com.tersesystems.logback.audio.ResourcePlayer">
+                <resource>/sample.ogg</resource>
+            </player>
+        </appender>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="ALL-APPENDER"/>
+        <appender-ref ref="TRACE-APPENDER"/>
+        <appender-ref ref="DEBUG-APPENDER"/>
+        <appender-ref ref="INFO-APPENDER"/>
+        <appender-ref ref="WARN-APPENDER"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </root>
+</configuration>

@@ -70,10 +70,6 @@
     -->
     <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
 
-    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-        <resetJUL>true</resetJUL>
-    </contextListener>
-
     <!-- give the async appenders time to shutdown -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
         <delay>${shutdownHook.delay}</delay>
