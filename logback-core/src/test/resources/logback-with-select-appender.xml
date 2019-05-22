@@ -1,0 +1,46 @@
+<configuration debug="true">
+
+    <appender name="SELECT" class="com.tersesystems.logback.SelectAppender">
+        <appenderKey>${APPENDER_KEY}</appenderKey>
+
+        <appender class="com.tersesystems.logback.CompositeAppender">
+            <name>test</name>
+            <appender class="ch.qos.logback.core.read.ListAppender">
+                <name>test-list</name>
+            </appender>
+        </appender>
+
+        <appender class="com.tersesystems.logback.CompositeAppender">
+            <name>development</name>
+            <appender class="ch.qos.logback.core.ConsoleAppender">
+                <name>development-console</name>
+                <encoder>
+                    <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </appender>
+
+        <appender class="com.tersesystems.logback.CompositeAppender">
+            <name>staging</name>
+            <appender class="ch.qos.logback.core.ConsoleAppender">
+                <name>staging-console</name>
+                <encoder>
+                    <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <appender class="ch.qos.logback.core.FileAppender">
+                <name>staging-file</name>
+                <file>file.log</file>
+                <encoder>
+                    <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </appender>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="SELECT"/>
+    </root>
+
+</configuration>

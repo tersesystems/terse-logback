@@ -17,7 +17,7 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 
 import java.util.Iterator;
 
-public class AppenderChain<E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<E> {
+public class CompositeAppender<E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<E> {
 
     protected AppenderAttachableImpl<E> aai = new AppenderAttachableImpl<E>();
 
@@ -27,7 +27,7 @@ public class AppenderChain<E> extends UnsynchronizedAppenderBase<E> implements A
     }
 
     public void addAppender(Appender<E> newAppender) {
-        addInfo("Attaching appender named [" + newAppender.getName() + "] to AppenderChain.");
+        addInfo("Attaching appender named [" + newAppender.getName() + "] to " + this.toString());
         aai.addAppender(newAppender);
     }
 
