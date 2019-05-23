@@ -1,0 +1,17 @@
+<configuration>
+
+    <conversionRule conversionWord="correlationId" converterClass="com.tersesystems.logback.CorrelationIdConverter" />
+
+    <!-- everything in the correlation event appender gets an ICorrelationLoggingEvent -->
+    <appender name="CORRELATION" class="com.tersesystems.logback.CorrelationEventAppender">
+        <appender class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%-5relative %-5level %correlationId %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="CORRELATION"/>
+    </root>
+</configuration>
