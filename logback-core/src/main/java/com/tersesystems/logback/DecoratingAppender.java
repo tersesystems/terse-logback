@@ -18,36 +18,37 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import java.util.Iterator;
 
 /**
- * This appender creates a composite of the underlying appenders but does not add or change any functionality
- * of those appenders.
+ * Decorates an event with additional class, using {@code decorateEvent}, and makes it available to the
+ * appenders underneath it.
  *
- * It is very useful for referring to a list of appenders by a single name.
- *
- * @param <E> the event type, usually ILoggingEvent.
+ * @param <E> the input type, usually ILoggingEvent
+ * @param <EE> the decorating type, must extend ILoggingEvent
  */
-public class CompositeAppender<E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<E> {
+public abstract class DecoratingAppender<E, EE extends E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<EE> {
 
-    protected AppenderAttachableImpl<E> aai = new AppenderAttachableImpl<E>();
+    protected AppenderAttachableImpl<EE> aai = new AppenderAttachableImpl<EE>();
+
+    protected abstract EE decorateEvent(E eventObject);
 
     @Override
     protected void append(E eventObject) {
-        aai.appendLoopOnAppenders(eventObject);
+        aai.appendLoopOnAppenders(decorateEvent(eventObject));
     }
 
-    public void addAppender(Appender<E> newAppender) {
+    public void addAppender(Appender<EE> newAppender) {
         addInfo("Attaching appender named [" + newAppender.getName() + "] to " + this.toString());
         aai.addAppender(newAppender);
     }
 
-    public Iterator<Appender<E>> iteratorForAppenders() {
+    public Iterator<Appender<EE>> iteratorForAppenders() {
         return aai.iteratorForAppenders();
     }
 
-    public Appender<E> getAppender(String name) {
+    public Appender<EE> getAppender(String name) {
         return aai.getAppender(name);
     }
 
-    public boolean isAttached(Appender<E> eAppender) {
+    public boolean isAttached(Appender<EE> eAppender) {
         return aai.isAttached(eAppender);
     }
 
@@ -55,12 +56,11 @@ public class CompositeAppender<E> extends UnsynchronizedAppenderBase<E> implemen
         aai.detachAndStopAllAppenders();
     }
 
-    public boolean detachAppender(Appender<E> eAppender) {
+    public boolean detachAppender(Appender<EE> eAppender) {
         return aai.detachAppender(eAppender);
     }
 
     public boolean detachAppender(String name) {
         return aai.detachAppender(name);
     }
-
 }
