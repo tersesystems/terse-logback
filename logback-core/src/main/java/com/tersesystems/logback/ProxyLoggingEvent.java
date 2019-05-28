@@ -18,6 +18,11 @@ import org.slf4j.Marker;
 
 import java.util.Map;
 
+/**
+ * Create a LoggingEvent that takes a proxy.
+ *
+ * This looks a bit like LoggingEventVO, but does not implement serializable behavior or additional logic.
+ */
 public class ProxyLoggingEvent implements ILoggingEvent {
     private final ILoggingEvent delegate;
 

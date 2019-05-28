@@ -10,17 +10,16 @@
  */
 package com.tersesystems.logback;
 
-import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
 import java.util.UUID;
 
-public class CorrelationEventAppender extends EnrichingAppender<ILoggingEvent, CorrelationEventAppender.ICorrelationLoggingEvent> {
+public class CorrelationEventAppender extends DecoratingAppender<ILoggingEvent, CorrelationEventAppender.ICorrelationLoggingEvent> {
 
     private final IdGenerator idGenerator = IdGenerator.getInstance();
 
     @Override
-    protected ICorrelationLoggingEvent enrichEvent(ILoggingEvent eventObject) {
+    protected ICorrelationLoggingEvent decorateEvent(ILoggingEvent eventObject) {
         return new CorrelationLoggingEvent(eventObject, idGenerator.generateCorrelationId());
     }
 

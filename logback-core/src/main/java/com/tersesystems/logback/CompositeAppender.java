@@ -17,6 +17,14 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 
 import java.util.Iterator;
 
+/**
+ * This appender creates a composite of the underlying appenders but does not add or change any functionality
+ * of those appenders.
+ *
+ * It is very useful for referring to a list of appenders by a single name.
+ *
+ * @param <E> the event type, usually ILoggingEvent.
+ */
 public class CompositeAppender<E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<E> {
 
     protected AppenderAttachableImpl<E> aai = new AppenderAttachableImpl<E>();

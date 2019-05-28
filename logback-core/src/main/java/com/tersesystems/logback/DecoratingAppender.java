@@ -17,15 +17,22 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 
 import java.util.Iterator;
 
-public abstract class EnrichingAppender<E, EE extends E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<EE> {
+/**
+ * Decorates an event with additional class, using {@code decorateEvent}, and makes it available to the
+ * appenders underneath it.
+ *
+ * @param <E> the input type, usually ILoggingEvent
+ * @param <EE> the decorating type, must extend ILoggingEvent
+ */
+public abstract class DecoratingAppender<E, EE extends E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<EE> {
 
     protected AppenderAttachableImpl<EE> aai = new AppenderAttachableImpl<EE>();
 
-    protected abstract EE enrichEvent(E eventObject);
+    protected abstract EE decorateEvent(E eventObject);
 
     @Override
     protected void append(E eventObject) {
-        aai.appendLoopOnAppenders(enrichEvent(eventObject));
+        aai.appendLoopOnAppenders(decorateEvent(eventObject));
     }
 
     public void addAppender(Appender<EE> newAppender) {
