@@ -14,32 +14,25 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 
 import java.util.UUID;
 
-public class CorrelationEventAppender extends DecoratingAppender<ILoggingEvent, CorrelationEventAppender.ICorrelationLoggingEvent> {
-
+public class UniqueIdEventAppender extends DecoratingAppender<ILoggingEvent, IUniqueIdLoggingEvent> {
     private final IdGenerator idGenerator = IdGenerator.getInstance();
 
     @Override
-    protected ICorrelationLoggingEvent decorateEvent(ILoggingEvent eventObject) {
-        return new CorrelationLoggingEvent(eventObject, idGenerator.generateCorrelationId());
+    protected IUniqueIdLoggingEvent decorateEvent(ILoggingEvent eventObject) {
+        return new UniqueIdLoggingEvent(eventObject, idGenerator.generateId());
     }
 
-    public static class CorrelationLoggingEvent extends ProxyLoggingEvent implements ICorrelationLoggingEvent {
-
-        private final String correlationId;
-
-        public CorrelationLoggingEvent(ILoggingEvent delegate, String correlationId) {
+    public static class UniqueIdLoggingEvent extends ProxyLoggingEvent implements IUniqueIdLoggingEvent {
+        private final String uniqueId;
+        UniqueIdLoggingEvent(ILoggingEvent delegate, String uniqueId) {
             super(delegate);
-            this.correlationId = correlationId;
+            this.uniqueId = uniqueId;
         }
 
         @Override
-        public String correlationId() {
-            return this.correlationId;
+        public String uniqueId() {
+            return this.uniqueId;
         }
-    }
-
-    public static interface ICorrelationLoggingEvent extends ILoggingEvent {
-        String correlationId();
     }
 
     static class IdGenerator {
@@ -54,7 +47,7 @@ public class CorrelationEventAppender extends DecoratingAppender<ILoggingEvent, 
             return SingletonHolder.instance;
         }
 
-        public String generateCorrelationId() {
+        public String generateId() {
             return UUID.randomUUID().toString();
         }
     }

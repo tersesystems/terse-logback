@@ -15,12 +15,11 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.spi.AppenderAttachable;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
-import ch.qos.logback.core.spi.LifeCycle;
 
 import java.util.Iterator;
 
 /**
- * Composite Appender
+ * This class selects an appender by the appender key.
  */
 public class SelectAppender extends AppenderBase<ILoggingEvent> implements AppenderAttachable<ILoggingEvent> {
 

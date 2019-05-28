@@ -10,7 +10,7 @@
         http://creativecommons.org/publicdomain/zero/1.0/
 
 -->
-<configuration debug="true">
+<configuration>
 
     <appender name="SELECT" class="com.tersesystems.logback.SelectAppender">
         <appenderKey>${APPENDER_KEY}</appenderKey>
