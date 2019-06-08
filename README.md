@@ -809,8 +809,6 @@ There are various wrappers and APIs on top of SLF4J:
 
 I have not used these personally.  I usually roll my own code when I need something on top of SLF4J, because a) I can and b) the wrappers generally aren't great.  By and large, they tend to conflate concepts they're not interested in, so a hardcoded appender is assumed, or the encoder and layout is merged together, or the like.  In some cases, the API will [explicitly disable SLF4J functionality](https://github.com/google/flogger/blob/master/slf4j/src/main/java/com/google/common/flogger/backend/slf4j/Slf4jLoggerBackend.java#L100) like the OFF level.
 
-See the `slf4j-gen` module for how to generate your own logging APIs, and `slf4j-ext` for some examples of extensions.
-
 ### Logback Encoders and Appenders
 
 * [concurrent-build-logger](https://github.com/takari/concurrent-build-logger) (encoders and appenders both)
@@ -818,6 +816,7 @@ See the `slf4j-gen` module for how to generate your own logging APIs, and `slf4j
 * [logback-elasticsearch-appender](https://github.com/internetitem/logback-elasticsearch-appender)  
 * [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)
 * [logback-steno](https://github.com/ArpNetworking/logback-steno)
+* [logslack](https://github.com/gmethvin/logslack)
   
 ### Other Blog Posts
 
