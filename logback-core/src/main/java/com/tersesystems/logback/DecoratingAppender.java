@@ -18,7 +18,7 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import java.util.Iterator;
 
 /**
- * Decorates an event with additional class, using {@code appendEvent}, and makes it available to the
+ * Decorates an event with additional class, using {@code decorateEvent}, and makes it available to the
  * appenders underneath it.
  *
  * @param <E> the input type, usually ILoggingEvent
