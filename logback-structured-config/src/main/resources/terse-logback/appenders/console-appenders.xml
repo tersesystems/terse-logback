@@ -13,7 +13,7 @@
 <included>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="com.tersesystems.logback.EnabledFilter">
+        <filter class="com.tersesystems.logback.core.EnabledFilter">
             <enabled>${console.enabled}</enabled>
         </filter>
         <encoder>

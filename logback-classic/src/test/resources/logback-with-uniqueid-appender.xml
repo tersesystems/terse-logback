@@ -1,0 +1,32 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <conversionRule conversionWord="uniqueId" converterClass="com.tersesystems.logback.classic.UniqueIdConverter" />
+
+    <appender name="DECORATE_WITH_UNIQUEID" class="com.tersesystems.logback.classic.UniqueIdEventAppender">
+        <appender class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%-5relative %-5level %uniqueId %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender class="ch.qos.logback.core.read.ListAppender">
+            <name>LIST</name>
+        </appender>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="DECORATE_WITH_UNIQUEID"/>
+    </root>
+</configuration>

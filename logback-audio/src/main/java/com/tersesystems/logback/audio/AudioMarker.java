@@ -10,9 +10,8 @@
  */
 package com.tersesystems.logback.audio;
 
-import com.tersesystems.logback.TerseBasicMarker;
+import com.tersesystems.logback.classic.TerseBasicMarker;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;

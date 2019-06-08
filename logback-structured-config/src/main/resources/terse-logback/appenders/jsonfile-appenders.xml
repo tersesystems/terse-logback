@@ -13,7 +13,7 @@
 <included>
 
     <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="com.tersesystems.logback.EnabledFilter">
+        <filter class="com.tersesystems.logback.core.EnabledFilter">
             <enabled>${jsonfile.enabled}</enabled>
         </filter>
         <file>${jsonfile.location}</file>
