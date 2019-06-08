@@ -1,8 +1,0 @@
-dependencies {
-    compile 'net.mguenther.idem:idem-core:0.1.0'
-    compile project(':logback-structured-config')
-    compile project(':logstash-logback-context')
-    compile project(':logback-bytebuddy')
-    compile project(':logback-proxy')
-    compile project(':logback-predicate')
-}

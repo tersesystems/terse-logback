@@ -18,37 +18,41 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import java.util.Iterator;
 
 /**
- * Decorates an event with additional class, using {@code appendEvent}, and makes it available to the
- * appenders underneath it.
+ * Provides abstract appender behavior with pre / post behavior.
  *
  * @param <E> the input type, usually ILoggingEvent
- * @param <EE> the decorating type, must extend ILoggingEvent
  */
-public abstract class DecoratingAppender<E, EE extends E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<EE> {
+public abstract class AbstractAppender<E> extends UnsynchronizedAppenderBase<E> implements AppenderAttachable<E> {
 
-    protected AppenderAttachableImpl<EE> aai = new AppenderAttachableImpl<EE>();
+    protected AppenderAttachableImpl<E> aai = new AppenderAttachableImpl<E>();
 
-    protected abstract EE decorateEvent(E eventObject);
+    protected abstract E appendEvent(E eventObject);
 
     @Override
     protected void append(E eventObject) {
-        aai.appendLoopOnAppenders(decorateEvent(eventObject));
+        preAppend();
+        aai.appendLoopOnAppenders(appendEvent(eventObject));
+        postAppend();
     }
 
-    public void addAppender(Appender<EE> newAppender) {
+    protected void postAppend() {}
+
+    protected void preAppend() {}
+
+    public void addAppender(Appender<E> newAppender) {
         addInfo("Attaching appender named [" + newAppender.getName() + "] to " + this.toString());
         aai.addAppender(newAppender);
     }
 
-    public Iterator<Appender<EE>> iteratorForAppenders() {
+    public Iterator<Appender<E>> iteratorForAppenders() {
         return aai.iteratorForAppenders();
     }
 
-    public Appender<EE> getAppender(String name) {
+    public Appender<E> getAppender(String name) {
         return aai.getAppender(name);
     }
 
-    public boolean isAttached(Appender<EE> eAppender) {
+    public boolean isAttached(Appender<E> eAppender) {
         return aai.isAttached(eAppender);
     }
 
@@ -56,7 +60,7 @@ public abstract class DecoratingAppender<E, EE extends E> extends Unsynchronized
         aai.detachAndStopAllAppenders();
     }
 
-    public boolean detachAppender(Appender<EE> eAppender) {
+    public boolean detachAppender(Appender<E> eAppender) {
         return aai.detachAppender(eAppender);
     }
 
