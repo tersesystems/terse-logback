@@ -21,7 +21,7 @@
         </encoder>
     </appender>
 
-    <appender name="TRACE" class="com.tersesystems.logback.CompositeAppender">
+    <appender name="TRACE" class="com.tersesystems.logback.core.CompositeAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>TRACE</level>
             <onMatch>ACCEPT</onMatch>
@@ -42,7 +42,7 @@
         </appender>
     </appender>
 
-    <appender name="DEBUG" class="com.tersesystems.logback.CompositeAppender">
+    <appender name="DEBUG" class="com.tersesystems.logback.core.CompositeAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>DEBUG</level>
             <onMatch>ACCEPT</onMatch>
@@ -63,7 +63,7 @@
         </appender>
     </appender>
 
-    <appender name="INFO" class="com.tersesystems.logback.CompositeAppender">
+    <appender name="INFO" class="com.tersesystems.logback.core.CompositeAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
             <onMatch>ACCEPT</onMatch>
@@ -84,7 +84,7 @@
         </appender>
     </appender>
 
-    <appender name="WARN" class="com.tersesystems.logback.CompositeAppender">
+    <appender name="WARN" class="com.tersesystems.logback.core.CompositeAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>WARN</level>
             <onMatch>ACCEPT</onMatch>
@@ -105,7 +105,7 @@
         </appender>
     </appender>
 
-    <appender name="ERROR" class="com.tersesystems.logback.CompositeAppender">
+    <appender name="ERROR" class="com.tersesystems.logback.core.CompositeAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>

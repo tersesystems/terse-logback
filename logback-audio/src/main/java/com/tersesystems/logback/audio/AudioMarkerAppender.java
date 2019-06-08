@@ -12,7 +12,6 @@ package com.tersesystems.logback.audio;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import com.tersesystems.logback.audio.Player;
 import org.slf4j.Marker;
 
 import java.util.Iterator;
