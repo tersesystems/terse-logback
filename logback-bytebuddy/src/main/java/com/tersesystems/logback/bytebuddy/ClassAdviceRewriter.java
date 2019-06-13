@@ -31,7 +31,7 @@ public class ClassAdviceRewriter {
             StructuredArgument aMethod = v("method", method);
             StructuredArgument aSignature = v("signature", signature);
             StructuredArgument arrayParameters = a("arguments", allArguments);
-            logger.info("entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
+            logger.trace("entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
         }
     }
 
@@ -55,10 +55,10 @@ public class ClassAdviceRewriter {
             if (thrown != null) {
                 StructuredArgument aThrown = kv("thrown", thrown);
                 StructuredArgument arrayParameters = array("arguments", allArguments);
-                logger.info("throwing: {}.{}{} with {} ! {}", aClass, aMethod, aSignature, arrayParameters, aThrown);
+                logger.trace("throwing: {}.{}{} with {} ! {}", aClass, aMethod, aSignature, arrayParameters, aThrown);
             } else {
                 StructuredArgument arrayParameters = array("arguments", allArguments);
-                logger.info("exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aDescriptor);
+                logger.trace("exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aDescriptor);
             }
         }
     }

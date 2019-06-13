@@ -38,9 +38,9 @@ public class InfoLoggingInterceptor {
                 StructuredArgument aMethod = v("method", method.getName());
                 Map<String, Object> parameters = parameters(method, allArguments);
                 if (! parameters.isEmpty()) {
-                    logger.info("entering: {}.{}({})", aClass, aMethod, e(parameters));
+                    logger.trace("entering: {}.{}({})", aClass, aMethod, e(parameters));
                 } else {
-                    logger.info("entering: {}.{}()", aClass, aMethod);
+                    logger.trace("entering: {}.{}()", aClass, aMethod);
                 }
             }
             response = callable.call();
@@ -51,9 +51,9 @@ public class InfoLoggingInterceptor {
                 StructuredArgument aException = v("throwable", e);
                 Map<String, Object> parameters = parameters(method, allArguments);
                 if (! parameters.isEmpty()) {
-                    logger.info("exception: {}.{}({}) ! {}", aClass, aMethod, e(parameters), aException);
+                    logger.trace("exception: {}.{}({}) ! {}", aClass, aMethod, e(parameters), aException);
                 } else {
-                    logger.info("exception: {}.{}() ! {}", aClass, aMethod, aException);
+                    logger.trace("exception: {}.{}() ! {}", aClass, aMethod, aException);
                 }
             }
             throw e;
@@ -65,9 +65,9 @@ public class InfoLoggingInterceptor {
 
                 Map<String, Object> parameters = parameters(method, allArguments);
                 if (! parameters.isEmpty()) {
-                    logger.info("exit: {}.{}({}) => {}", aClass, aMethod, e(parameters), aResponse);
+                    logger.trace("exit: {}.{}({}) => {}", aClass, aMethod, e(parameters), aResponse);
                 } else {
-                    logger.info("exit: {}.{}() => {}", aClass, aMethod, aResponse);
+                    logger.trace("exit: {}.{}() => {}", aClass, aMethod, aResponse);
                 }
             }
         }
