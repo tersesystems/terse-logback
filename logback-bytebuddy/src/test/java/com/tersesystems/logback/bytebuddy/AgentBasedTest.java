@@ -46,13 +46,9 @@ public class AgentBasedTest {
                         new StringMatcher(className, StringMatcher.Mode.CONTAINS),
                         Listener.StreamWriting.toSystemOut());
 
-                // This gives a bit of a speedup when going through classes...
-                RawMatcher ignoreMatcher = new RawMatcher.ForElementMatchers(ElementMatchers.nameStartsWith("net.bytebuddy.").or(isSynthetic()), any(), any());
-
                 // Create and install the byte buddy remapper
                 new AgentBuilder.Default()
-                        .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                        .ignore(ignoreMatcher)
+                        .disableClassFormatChanges()
                         .with(debuggingListener)
                         .type(ElementMatchers.nameContains(className))
                         .transform((builder, type, classLoader, module) ->
