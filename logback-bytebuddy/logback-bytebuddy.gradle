@@ -3,6 +3,8 @@ dependencies {
     compile "net.bytebuddy:byte-buddy:$bytebuddyVersion"
     compile "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"
     compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+
+    testCompile "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
 config {
