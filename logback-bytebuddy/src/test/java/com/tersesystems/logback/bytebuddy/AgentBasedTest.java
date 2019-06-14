@@ -49,7 +49,7 @@ public class AgentBasedTest {
                 // Create and install the byte buddy remapper
                 new AgentBuilder.Default()
                         .disableClassFormatChanges()
-                        .with(debuggingListener)
+                        //.with(debuggingListener)
                         .type(ElementMatchers.nameContains(className))
                         .transform((builder, type, classLoader, module) ->
                                 builder.visit(Advice.to(ClassAdviceRewriter.class).on(named(methodName)))

@@ -27,7 +27,7 @@ public class InterceptionTest {
             return new ByteBuddy()
                     .subclass(offendingClass)
                     .method(ElementMatchers.named(offendingMethodName))
-                    .intercept(MethodDelegation.to(new InfoLoggingInterceptor()))
+                    .intercept(MethodDelegation.to(new TraceLoggingInterceptor()))
                     .make()
                     .load(offendingClass.getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                     .getLoaded()
