@@ -368,6 +368,40 @@ If you are working with a componentized framework, you'll want to use the `censo
 
 In this case, `CensoringJsonGeneratorDecorator` implements the `CensorAttachable` interface and so will run message text through the censor if it exists.
 
+## Budget Aware Logging
+
+There are instances where loggers may be overly chatty, and will log more than necessary.  Rather than hunt down all the individual loggers and whitelist or blacklist the lot of them, you may want to assign a budget that will budget INFO messages to 5 statements a second.
+
+This is easy to do with the `logback-budget` module, which uses an internal [circuit breaker](https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/concurrent/CircuitBreaker.html) to regulate the flow of messages. 
+
+```xml
+<configuration>
+    <!-- <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
+
+    <newRule pattern="*/budget-rule"
+             actionClass="com.tersesystems.logback.budget.BudgetRuleAction"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="com.tersesystems.logback.budget.BudgetEvaluator">
+              <budget-rule name="INFO" threshold="5" interval="1" timeUnit="seconds"/>
+            </evaluator>
+            <OnMismatch>DENY</OnMismatch>
+            <OnMatch>NEUTRAL</OnMatch>
+        </filter>
+
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    
+</configuration>
+```
+
 ## Logback Specific Things
 
 This section deals with the specific configuration in `terse-logback/logback-structured-config`.
