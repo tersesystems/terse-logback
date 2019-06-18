@@ -21,7 +21,7 @@
 
   and the links in the comments.
 -->
-<configuration>
+<configuration debug="true">
 
     <include resource="terse-logback/initial.xml"/>
     <include resource="terse-logback/censor.xml"/>

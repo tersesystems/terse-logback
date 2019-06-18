@@ -60,11 +60,9 @@ public class BudgetEvaluator extends EventEvaluatorBase<LoggingEvent> implements
             return true; // does not apply to this level
         }
 
-        if (breaker.incrementAndCheckState(1)) {
-            addInfo("Breaker is closed, logging this event!");
-            return true;
+        if (breaker.checkState()) {
+            return breaker.incrementAndCheckState(1);
         } else {
-            addWarn("Breaker is open, not logging this event!");
             return false;
         }
     }
