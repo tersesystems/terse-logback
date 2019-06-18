@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.classic;
+package com.tersesystems.logback.uniqueid;
 
 import ch.qos.logback.core.pattern.DynamicConverter;
 

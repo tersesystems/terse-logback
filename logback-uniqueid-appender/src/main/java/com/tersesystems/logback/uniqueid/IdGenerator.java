@@ -8,10 +8,8 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.classic;
+package com.tersesystems.logback.uniqueid;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-
-public interface IUniqueIdLoggingEvent extends ILoggingEvent {
-    String uniqueId();
+interface IdGenerator {
+    String generateId();
 }

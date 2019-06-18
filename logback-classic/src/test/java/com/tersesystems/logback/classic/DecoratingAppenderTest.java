@@ -17,7 +17,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
 import com.tersesystems.logback.core.DecoratingAppender;
-import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
 import java.net.URL;

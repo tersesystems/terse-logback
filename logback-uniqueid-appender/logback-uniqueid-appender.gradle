@@ -1,0 +1,16 @@
+dependencies {
+    compile project(':logback-classic')
+
+    compile group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
+    compile 'net.mguenther.idem:idem-core:0.1.0'
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}

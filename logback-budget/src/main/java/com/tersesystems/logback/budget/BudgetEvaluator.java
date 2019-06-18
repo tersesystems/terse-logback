@@ -11,6 +11,7 @@
 package com.tersesystems.logback.budget;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.boolex.EventEvaluatorBase;
 import org.apache.commons.lang3.concurrent.CircuitBreaker;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Returns true if logging the event is within budget, false otherwise.
  */
-public class BudgetEvaluator extends EventEvaluatorBase<LoggingEvent> implements BudgetRuleAttachable {
+public class BudgetEvaluator extends EventEvaluatorBase<ILoggingEvent> implements BudgetRuleAttachable {
 
     private List<BudgetRule> budgetRules = new ArrayList<>();
     private Map<String, CircuitBreaker<Integer>> levelRules = new HashMap<>();
@@ -49,7 +50,7 @@ public class BudgetEvaluator extends EventEvaluatorBase<LoggingEvent> implements
     }
 
     @Override
-    public boolean evaluate(LoggingEvent event) {
+    public boolean evaluate(ILoggingEvent event) {
         if (levelRules.isEmpty()) {
             return true; // not applicable
         }
