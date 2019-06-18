@@ -1,0 +1,9 @@
+<included>
+
+    <newRule pattern="*/setLoggerLevels"
+             actionClass="com.tersesystems.logback.classic.SetLoggerLevelsAction"/>
+
+    <!-- Set the logger levels at the very end -->
+    <setLoggerLevels/>
+
+</included>

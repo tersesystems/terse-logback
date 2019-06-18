@@ -1,6 +1,9 @@
 dependencies {
-    compile project(':logback-core')
+    compile project(':logback-audio')
+    compile project(':logback-budget')
     compile project(':logback-censor')
+    compile project(':logback-classic')
+    compile project(':logback-compress-encoder')
     compile project(':logback-typesafe-config')
     compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
 

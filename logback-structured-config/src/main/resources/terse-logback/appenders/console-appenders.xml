@@ -16,6 +16,7 @@
         <filter class="com.tersesystems.logback.core.EnabledFilter">
             <enabled>${console.enabled}</enabled>
         </filter>
+
         <encoder>
             <pattern>${console.encoder.pattern}</pattern>
         </encoder>

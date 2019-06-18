@@ -1,0 +1,43 @@
+<included>
+    <newRule pattern="*/typesafeConfig"
+             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
+
+    <newRule pattern="*/budget-rule"
+             actionClass="com.tersesystems.logback.budget.BudgetRuleAction"/>
+
+    <typesafeConfig>
+        <object name="highlightMap" path="highlight" scope="context"/>
+    </typesafeConfig>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <jmxConfigurator />
+
+    <!-- give the async appenders time to shutdown -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
+        <delay>${shutdownHook.delay}</delay>
+    </shutdownHook>
+
+    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.classic.TerseHighlightConverter" />
+
+    <!--
+    https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
+
+    Options can be specified in the pattern in the following order:
+       - maxDepthPerThrowable = "full" or "short" or an integer value
+       - shortenedClassNameLength = "full" or "short" or an integer value
+       - maxLength = "full" or "short" or an integer value
+
+       %msg%n%stack{5,1024,10,rootFirst,regex1,regex2,evaluatorName}
+    -->
+    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
+
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Name>${tracerFilter.name}</Name>
+        <Marker>${tracerFilter.marker}</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
+</included>

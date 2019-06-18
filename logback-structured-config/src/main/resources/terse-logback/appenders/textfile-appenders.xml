@@ -11,29 +11,24 @@
 
 -->
 <included>
-
-    <appender name="TEXTFILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="ASYNC_TEXTFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
         <filter class="com.tersesystems.logback.core.EnabledFilter">
             <enabled>${textfile.enabled}</enabled>
         </filter>
-        <file>${textfile.location}</file>
-        <append>${textfile.append}</append>
+        <appender class="ch.qos.logback.core.FileAppender">
 
-        <!--
-          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
-         -->
-        <immediateFlush>${textfile.immediateFlush}</immediateFlush>
+            <file>${textfile.location}</file>
+            <append>${textfile.append}</append>
 
-        <encoder>
-            <pattern>${textfile.encoder.pattern}</pattern>
-            <outputPatternAsHeader>${textfile.encoder.outputPatternAsHeader}</outputPatternAsHeader>
-        </encoder>
-    </appender>
+            <!--
+              This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+             -->
+            <immediateFlush>${textfile.immediateFlush}</immediateFlush>
 
-    <!--
-      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
-    -->
-    <appender name="ASYNCTEXTFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender-ref ref="TEXTFILE" />
+            <encoder>
+                <pattern>${textfile.encoder.pattern}</pattern>
+                <outputPatternAsHeader>${textfile.encoder.outputPatternAsHeader}</outputPatternAsHeader>
+            </encoder>
+        </appender>
     </appender>
 </included>
