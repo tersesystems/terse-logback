@@ -21,76 +21,37 @@
 
   and the links in the comments.
 -->
-<configuration>
-    <newRule pattern="*/typesafeConfig"
-             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
+<configuration debug="true">
 
-    <newRule pattern="*/setLoggerLevels"
-             actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+    <include resource="terse-logback/initial.xml"/>
+    <include resource="terse-logback/censor.xml"/>
 
-    <newRule pattern="*/censor"
-             actionClass="com.tersesystems.logback.censor.CensorAction"/>
-
-    <newRule pattern="*/censor-ref"
-             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
-
-    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-        <resetJUL>true</resetJUL>
-    </contextListener>
-
-    <jmxConfigurator />
-
-    <typesafeConfig>
-        <object name="highlightMap" path="highlight" scope="context"/>
-    </typesafeConfig>
-
-    <censor name="text-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <regex>${censor.text.regex}</regex>
-        <replacementText>${censor.text.replacementText}</replacementText>
-    </censor>
-
-    <censor name="json-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <regex>${censor.json.regex}</regex>
-        <replacementText>${censor.json.replacementText}</replacementText>
-    </censor>
-
-    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
-
-    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
-
-    <!--
-    https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
-
-    Options can be specified in the pattern in the following order:
-       - maxDepthPerThrowable = "full" or "short" or an integer value
-       - shortenedClassNameLength = "full" or "short" or an integer value
-       - maxLength = "full" or "short" or an integer value
-
-       %msg%n%stack{5,1024,10,rootFirst,regex1,regex2,evaluatorName}
-    -->
-    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
-
-    <!-- give the async appenders time to shutdown -->
-    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
-        <delay>${shutdownHook.delay}</delay>
-    </shutdownHook>
-
-    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <Name>${tracerFilter.name}</Name>
-        <Marker>${tracerFilter.marker}</Marker>
-        <OnMatch>ACCEPT</OnMatch>
-    </turboFilter>
-
+    <include resource="terse-logback/appenders/audio-appenders.xml"/>
     <include resource="terse-logback/appenders/console-appenders.xml"/>
     <include resource="terse-logback/appenders/jsonfile-appenders.xml"/>
     <include resource="terse-logback/appenders/textfile-appenders.xml"/>
 
+    <appender name="development" class="com.tersesystems.logback.core.CompositeAppender">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="AUDIO"/>
+        <appender-ref ref="ASYNC_TEXTFILE"/>
+    </appender>
+
+    <appender name="production" class="com.tersesystems.logback.core.CompositeAppender">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_JSONFILE"/>
+    </appender>
+
+    <appender name="selector" class="com.tersesystems.logback.core.SelectAppender">
+        <appenderKey>${logback.environment:-development}</appenderKey>
+
+        <appender-ref ref="development"/>
+        <appender-ref ref="production"/>
+    </appender>
+
     <root>
-        <appender-ref ref="CONSOLE"/> <!-- very confusing if you have printlns before logger output -->
-        <appender-ref ref="ASYNCJSONFILE"/>
-        <appender-ref ref="ASYNCTEXTFILE"/>
+        <appender-ref ref="selector"/>
     </root>
 
-    <!-- Set the logger levels at the very end -->
-    <setLoggerLevels/>
+    <include resource="terse-logback/ending.xml" />
 </configuration>

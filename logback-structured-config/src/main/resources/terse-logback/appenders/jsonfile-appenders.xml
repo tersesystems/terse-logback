@@ -12,89 +12,84 @@
 -->
 <included>
 
-    <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="ASYNC_JSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
         <filter class="com.tersesystems.logback.core.EnabledFilter">
             <enabled>${jsonfile.enabled}</enabled>
         </filter>
-        <file>${jsonfile.location}</file>
-        <append>${jsonfile.append}</append>
+        <appender class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${jsonfile.location}</file>
+            <append>${jsonfile.append}</append>
 
-        <!--
-          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
-         -->
-        <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
+            <!--
+              This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+             -->
+            <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
 
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
-            <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
-        </rollingPolicy>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
+                <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
+            </rollingPolicy>
 
-        <!--
-          Take out the \ because you cannot have - and - next to each other:
-          https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
-        -->
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <!--
+              Take out the \ because you cannot have - and - next to each other:
+              https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
+            -->
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
 
-            <providers>
-                <uuid/>
-                <sequence/>
-                <timestamp>
-                    <!-- UTC is the best server consistent timezone -->
-                    <timeZone>${jsonfile.encoder.timeZone}</timeZone>
-                </timestamp>
-                <version/>
-                <message/>
-                <loggerName/>
-                <threadName/>
-                <logLevel/>
-                <logLevelValue/>
-                <stackHash/>
-                <mdc/>
-                <logstashMarkers/>
-                <arguments/>
-                <stackTrace>
-                    <!--
-                      https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
-                    -->
-                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                        <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
-                        </maxDepthPerThrowable>
-                        <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
-                        <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
-                        </shortenedClassNameLength>
-                        <!-- coma separated exclusion patterns -->
-                        <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
-                        <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
-                        <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
-                    </throwableConverter>
-                </stackTrace>
-            </providers>
+                <providers>
+                    <uuid/>
+                    <sequence/>
+                    <timestamp>
+                        <!-- UTC is the best server consistent timezone -->
+                        <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+                    </timestamp>
+                    <version/>
+                    <message/>
+                    <loggerName/>
+                    <threadName/>
+                    <logLevel/>
+                    <logLevelValue/>
+                    <stackHash/>
+                    <mdc/>
+                    <logstashMarkers/>
+                    <arguments/>
+                    <stackTrace>
+                        <!--
+                          https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+                        -->
+                        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                            <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
+                            </maxDepthPerThrowable>
+                            <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
+                            <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
+                            </shortenedClassNameLength>
+                            <!-- coma separated exclusion patterns -->
+                            <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
+                            <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                            <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+                        </throwableConverter>
+                    </stackTrace>
+                </providers>
 
 
-            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
-            <if condition='p("jsonfile.prettyprint").contains("true")'>
-                <then>
-                    <!-- Pretty print for better end user experience. -->
-                    <jsonGeneratorDecorator
-                            class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator">
-                        <censor-ref ref="json-censor"/>
-                    </jsonGeneratorDecorator>
-                </then>
-                <else>
-                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
-                        <censor-ref ref="json-censor"/>
-                    </jsonGeneratorDecorator>
-                </else>
-            </if>
-        </encoder>
-    </appender>
-
-    <!--
-      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
-    -->
-    <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender-ref ref="JSONFILE"/>
+                <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+                <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
+                <if condition='p("jsonfile.prettyprint").contains("true")'>
+                    <then>
+                        <!-- Pretty print for better end user experience. -->
+                        <jsonGeneratorDecorator
+                                class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator">
+                            <censor-ref ref="json-censor"/>
+                        </jsonGeneratorDecorator>
+                    </then>
+                    <else>
+                        <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
+                            <censor-ref ref="json-censor"/>
+                        </jsonGeneratorDecorator>
+                    </else>
+                </if>
+            </encoder>
+        </appender>
     </appender>
 
 </included>
