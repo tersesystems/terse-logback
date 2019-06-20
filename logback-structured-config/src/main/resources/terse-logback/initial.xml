@@ -1,8 +1,9 @@
 <included>
+
     <newRule pattern="*/typesafeConfig"
              actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
 
-    <newRule pattern="*/budget-rule"
+    <newRule pattern="*/budgetRule"
              actionClass="com.tersesystems.logback.budget.BudgetRuleAction"/>
 
     <typesafeConfig>
@@ -20,7 +21,11 @@
         <delay>${shutdownHook.delay}</delay>
     </shutdownHook>
 
+    <!-- highlight based on context map -->
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.classic.TerseHighlightConverter" />
+
+    <!-- time since epoch -->
+    <conversionRule conversionWord="tse" converterClass="com.tersesystems.logback.classic.TimeSinceEpochConverter" />
 
     <!--
     https://github.com/logstash/logstash-logback-encoder/blob/master/src/main/java/net/logstash/logback/stacktrace/ShortenedThrowableConverter.java#L58
