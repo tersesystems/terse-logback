@@ -19,9 +19,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <player class="com.tersesystems.logback.audio.ResourcePlayer">
-            <resource>/terse-logback/audio/glass.ogg</resource>
-        </player>
+        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
     </appender>
 
     <appender name="AUDIO-ERROR" class="com.tersesystems.logback.audio.AudioAppender">
@@ -31,16 +29,14 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <player class="com.tersesystems.logback.audio.ResourcePlayer">
-            <resource>/terse-logback/audio/sample.ogg</resource>
-        </player>
+        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
     </appender>
 
     <appender name="AUDIO" class="com.tersesystems.logback.core.CompositeAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="com.tersesystems.logback.budget.BudgetEvaluator">
-                <budget-rule name="WARN" threshold="1" interval="5" timeUnit="seconds"/>
-                <budget-rule name="ERROR" threshold="1" interval="5" timeUnit="seconds"/>
+                <budgetRule name="WARN" threshold="1" interval="5" timeUnit="seconds"/>
+                <budgetRule name="ERROR" threshold="1" interval="5" timeUnit="seconds"/>
             </evaluator>
             <OnMismatch>DENY</OnMismatch>
             <OnMatch>NEUTRAL</OnMatch>

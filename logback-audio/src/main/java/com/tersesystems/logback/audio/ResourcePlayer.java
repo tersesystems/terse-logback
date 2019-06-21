@@ -30,8 +30,11 @@ public class ResourcePlayer extends ContextAwareBase implements Player, LifeCycl
 
     @Override
     public void play() {
-        System.out.println("play");
-        SimplePlayer.fromURL(resourceURL).play();
+        try {
+            SimplePlayer.fromURL(resourceURL).play();
+        } catch (Exception e) {
+            addError(String.format("Cannot play resource %s", resourceURL), e);
+        }
     }
 
     @Override
