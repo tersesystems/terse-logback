@@ -19,9 +19,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <player class="com.tersesystems.logback.audio.ResourcePlayer">
-            <resource>/terse-logback/audio/glass.ogg</resource>
-        </player>
+        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
     </appender>
 
     <appender name="AUDIO-ERROR" class="com.tersesystems.logback.audio.AudioAppender">
@@ -31,9 +29,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <player class="com.tersesystems.logback.audio.ResourcePlayer">
-            <resource>/terse-logback/audio/sample.ogg</resource>
-        </player>
+        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
     </appender>
 
     <appender name="AUDIO" class="com.tersesystems.logback.core.CompositeAppender">

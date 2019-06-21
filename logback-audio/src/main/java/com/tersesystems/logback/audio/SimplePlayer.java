@@ -34,9 +34,8 @@ public class SimplePlayer implements PlayMethods, Player {
             try {
                 return getAudioInputStream(url);
             } catch (UnsupportedAudioFileException | IOException e) {
-                e.printStackTrace();
+                throw new PlayerException(e);
             }
-            return null;
         });
     }
 
@@ -45,9 +44,8 @@ public class SimplePlayer implements PlayMethods, Player {
             try {
                 return getAudioInputStream(path.toFile());
             } catch (UnsupportedAudioFileException | IOException e) {
-                e.printStackTrace();
+                throw new PlayerException(e);
             }
-            return null;
         });
     }
 
@@ -56,9 +54,8 @@ public class SimplePlayer implements PlayMethods, Player {
             try {
                 return getAudioInputStream(inputStream);
             } catch (UnsupportedAudioFileException | IOException e) {
-                e.printStackTrace();
+                throw new PlayerException(e);
             }
-            return null;
         });
     }
 
