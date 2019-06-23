@@ -534,6 +534,8 @@ In general, you should only be concerned about the latency or throughput of your
 
 The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax) for the main file is in `terse-logback.xml` and is as follows:
 
+The `UniqueIdEventAppender` is an appender that decorates `ILoggingEvent` with a unique id that can be used to correlate the same log entry across different appenders.
+
 ```xml
 <configuration>
 
@@ -891,6 +893,7 @@ Many of these are logback specific, but still good overall.
 * [Woofer: logging in (best) practices](https://orange-opensource.github.io/woofer/logging-code/): Spring Boot 
 * [A whole product concern logging implementation](http://stevetarver.github.io/2016/04/20/whole-product-logging.html)
 * [There is more to logging than meets the eye](https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html)
+* [Monitoring demystified: A guide for logging, tracing, metrics](https://techbeacon.com/enterprise-it/monitoring-demystified-guide-logging-tracing-metrics)
 
 Stack Overflow has a couple of good tips on SLF4J and Logging:
 
