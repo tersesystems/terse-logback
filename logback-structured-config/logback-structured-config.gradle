@@ -4,13 +4,13 @@ dependencies {
     compile project(':logback-censor')
     compile project(':logback-classic')
     compile project(':logback-compress-encoder')
+    compile project(':logback-uniqueid-appender')
     compile project(':logback-typesafe-config')
-    compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
 
+    compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
     compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
     compile 'org.fusesource.jansi:jansi:1.17.1'
     compile 'org.codehaus.janino:janino:3.0.11'
-    compile group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
 }
 
 config {

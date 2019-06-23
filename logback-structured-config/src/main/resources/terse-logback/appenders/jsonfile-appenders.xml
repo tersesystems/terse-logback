@@ -30,14 +30,13 @@
                 <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
             </rollingPolicy>
 
-            <!--
-              Take out the \ because you cannot have - and - next to each other:
-              https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
-            -->
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-
                 <providers>
-                    <uuid/>
+                    <pattern>
+                        <pattern>
+                            { "id": "%uniqueId" }
+                        </pattern>
+                    </pattern>
                     <sequence/>
                     <timestamp>
                         <!-- UTC is the best server consistent timezone -->
@@ -48,7 +47,6 @@
                     <loggerName/>
                     <threadName/>
                     <logLevel/>
-                    <logLevelValue/>
                     <stackHash/>
                     <mdc/>
                     <logstashMarkers/>

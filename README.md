@@ -467,6 +467,8 @@ levels = {
 # Overrides the properties from logback-reference.conf
 local {
 
+    logback.environment=production
+  
     censor {
         regex = """hunter2""" // http://bash.org/?244321
         replacementText = "*******"
@@ -491,13 +493,15 @@ include "myothersettings"
 For tests, there's a `logback-test.conf` that will override (rather than completely replace) any settings that you have in `logback.conf`:
 
 ```hocon
-include "logback-test-reference"
+include "logback-reference"
 
 levels {
   example = TRACE
 }
 
 local {
+  logback.environment=test
+
   textfile {
     location = "log/test/application-test.log"
     append = false
@@ -532,67 +536,49 @@ The [XML configuration](https://logback.qos.ch/manual/configuration.html#syntax)
 
 ```xml
 <configuration>
-    <newRule pattern="*/typesafeConfig"
-             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
 
-    <newRule pattern="*/setLoggerLevels"
-             actionClass="com.tersesystems.logback.SetLoggerLevelsAction"/>
+    <include resource="terse-logback/initial.xml"/>
+    <include resource="terse-logback/censor.xml"/>
 
-    <newRule pattern="*/censor"
-             actionClass="com.tersesystems.logback.censor.CensorAction"/>
-
-    <newRule pattern="*/censor-ref"
-             actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
-
-    <jmxConfigurator />
-
-    <typesafeConfig>
-        <object name="highlight" path="properties.highlight" scope="context"/>
-    </typesafeConfig>
-
-    <censor name="text-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <regex>${censor.text.regex}</regex>
-        <replacementText>${censor.text.replacementText}</replacementText>
-    </censor>
-
-    <censor name="json-censor" class="com.tersesystems.logback.censor.RegexCensor">
-        <regex>${censor.json.regex}</regex>
-        <replacementText>${censor.json.replacementText}</replacementText>
-    </censor>
-
-    <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
-
-    <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.TerseHighlightConverter" />
-
-    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
-
-    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-        <resetJUL>true</resetJUL>
-    </contextListener>
-
-    <!-- give the async appenders time to shutdown -->
-    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
-        <delay>${shutdownHook.delay}</delay>
-    </shutdownHook>
-
-    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <Name>${tracerFilter.name}</Name>
-        <Marker>${tracerFilter.marker}</Marker>
-        <OnMatch>ACCEPT</OnMatch>
-    </turboFilter>
-
+    <include resource="terse-logback/appenders/audio-appenders.xml"/>
     <include resource="terse-logback/appenders/console-appenders.xml"/>
     <include resource="terse-logback/appenders/jsonfile-appenders.xml"/>
     <include resource="terse-logback/appenders/textfile-appenders.xml"/>
 
+    <appender name="development" class="com.tersesystems.logback.core.CompositeAppender">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="AUDIO"/>
+        <appender-ref ref="ASYNC_TEXTFILE"/>
+        <appender-ref ref="ASYNC_JSONFILE"/>
+    </appender>
+
+    <appender name="test" class="com.tersesystems.logback.core.CompositeAppender">
+        <appender-ref ref="ASYNC_TEXTFILE"/>
+    </appender>
+
+    <appender name="production" class="com.tersesystems.logback.core.CompositeAppender">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_JSONFILE"/>
+    </appender>
+
+    <appender name="selector" class="com.tersesystems.logback.core.SelectAppender">
+        <!-- Set logback.conf or logback-test.conf with "local.logback.environment=development" -->
+        <appenderKey>${logback.environment}</appenderKey>
+
+        <appender-ref ref="development"/>
+        <appender-ref ref="production"/>
+        <appender-ref ref="test"/>
+    </appender>
+
+    <appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+        <appender-ref ref="selector"/>
+    </appender>
+
     <root>
-        <appender-ref ref="CONSOLE"/> <!-- very confusing if you have printlns before logger output -->
-        <appender-ref ref="ASYNCJSONFILE"/>
-        <appender-ref ref="ASYNCTEXTFILE"/>
+        <appender-ref ref="selector-with-unique-id"/>
     </root>
 
-    <!-- Set the logger levels at the very end -->
-    <setLoggerLevels/>
+    <include resource="terse-logback/ending.xml" />
 </configuration>
 ```
 
@@ -813,6 +799,52 @@ with the following HOCON configuration:
 ```
 
 If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
+
+## Audio
+
+The audio appender uses a system beep configured through `SystemPlayer` to notify on warnings and errors, and limits excessive beeps with a budget evaluator.
+
+The XML is as follows:
+
+```xml
+<included>
+
+    <appender name="AUDIO-WARN" class="com.tersesystems.logback.audio.AudioAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>NEUTRAL</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
+    </appender>
+
+    <appender name="AUDIO-ERROR" class="com.tersesystems.logback.audio.AudioAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
+    </appender>
+
+    <appender name="AUDIO" class="com.tersesystems.logback.core.CompositeAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="com.tersesystems.logback.budget.BudgetEvaluator">
+                <budgetRule name="WARN" threshold="1" interval="5" timeUnit="seconds"/>
+                <budgetRule name="ERROR" threshold="1" interval="5" timeUnit="seconds"/>
+            </evaluator>
+            <OnMismatch>DENY</OnMismatch>
+            <OnMatch>NEUTRAL</OnMatch>
+        </filter>
+
+        <appender-ref ref="AUDIO-WARN"/>
+        <appender-ref ref="AUDIO-ERROR"/>
+    </appender>
+
+</included>
+```
 
 ## Further Reading
 

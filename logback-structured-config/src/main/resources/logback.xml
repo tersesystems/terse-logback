@@ -21,7 +21,7 @@
 
   and the links in the comments.
 -->
-<configuration debug="true">
+<configuration>
 
     <include resource="terse-logback/initial.xml"/>
     <include resource="terse-logback/censor.xml"/>
@@ -35,6 +35,11 @@
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="AUDIO"/>
         <appender-ref ref="ASYNC_TEXTFILE"/>
+        <appender-ref ref="ASYNC_JSONFILE"/>
+    </appender>
+
+    <appender name="test" class="com.tersesystems.logback.core.CompositeAppender">
+        <appender-ref ref="ASYNC_TEXTFILE"/>
     </appender>
 
     <appender name="production" class="com.tersesystems.logback.core.CompositeAppender">
@@ -43,14 +48,20 @@
     </appender>
 
     <appender name="selector" class="com.tersesystems.logback.core.SelectAppender">
-        <appenderKey>${logback.environment:-development}</appenderKey>
+        <!-- Set logback.conf or logback-test.conf with "local.logback.environment=development" -->
+        <appenderKey>${logback.environment}</appenderKey>
 
         <appender-ref ref="development"/>
         <appender-ref ref="production"/>
+        <appender-ref ref="test"/>
+    </appender>
+
+    <appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+        <appender-ref ref="selector"/>
     </appender>
 
     <root>
-        <appender-ref ref="selector"/>
+        <appender-ref ref="selector-with-unique-id"/>
     </root>
 
     <include resource="terse-logback/ending.xml" />
