@@ -13,13 +13,16 @@ This is a Java project that shows how to use [Logback](https://logback.qos.ch/ma
 * [Application Logging in Java: Markers](https://tersesystems.com/blog/2019/05/18/application-logging-in-java-part-4/)
 * [Application Logging in Java: Appenders](https://tersesystems.com/blog/2019/05/27/application-logging-in-java-part-5/)
 * [Application Logging in Java: Logging Costs](https://tersesystems.com/blog/2019/06/03/application-logging-in-java-part-6/)
+* [Application Logging in Java: Encoders](https://tersesystems.com/blog/2019/06/09/application-logging-in-java-part-7/)
+* [Application Logging in Java: Tracing 3rd Party Code](https://tersesystems.com/blog/2019/06/11/application-logging-in-java-part-8/)
+* [Application Logging in Java: Filters](https://tersesystems.com/blog/2019/06/15/application-logging-in-java-part-9/)
+* [Application Logging in Java: Putting it all together](https://tersesystems.com/blog/2019/06/23/application-logging-in-java-part-10/)
 
 ## Project Setup
 
 The project is configured into several modules.  The most relevant ones to start with is `structured-config` and `example`.
 
 The `structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  
-
 
 Notably, the `example` project cannot touch the appenders directly, and has no control over the format of the JSON appender -- console and text patterns can be overridden for developer convenience.  By enforcing a [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) between **logger configuration** and **logging levels**, it is easy and simple to manage appenders in one place, e.g. going from file appenders to TCP appenders, adding filters for sensitive information, or collapsing repeated log information.
 
