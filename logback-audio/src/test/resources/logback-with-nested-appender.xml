@@ -28,13 +28,6 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <appender class="ch.qos.logback.core.FileAppender">
-            <file>${log.dir:-}/trace.log</file>
-            <encoder>
-                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
-            </encoder>
-        </appender>
-
         <appender class="com.tersesystems.logback.audio.AudioAppender">
             <player class="com.tersesystems.logback.audio.ResourcePlayer">
                 <resource>/bark.ogg</resource>
@@ -48,13 +41,6 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-
-        <appender class="ch.qos.logback.core.FileAppender">
-            <file>${log.dir:-}/debug.log</file>
-            <encoder>
-                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
-            </encoder>
-        </appender>
 
         <appender class="com.tersesystems.logback.audio.AudioAppender">
             <player class="com.tersesystems.logback.audio.ResourcePlayer">
@@ -70,13 +56,6 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <appender class="ch.qos.logback.core.FileAppender">
-            <file>${log.dir:-}/info.log</file>
-            <encoder>
-                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
-            </encoder>
-        </appender>
-
         <appender class="com.tersesystems.logback.audio.AudioAppender">
             <player class="com.tersesystems.logback.audio.ResourcePlayer">
                 <resource>/glass.ogg</resource>
@@ -91,13 +70,6 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <appender class="ch.qos.logback.core.FileAppender">
-            <file>${log.dir:-}/warn.log</file>
-            <encoder>
-                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
-            </encoder>
-        </appender>
-
         <appender class="com.tersesystems.logback.audio.AudioAppender">
             <player class="com.tersesystems.logback.audio.ResourcePlayer">
                 <resource>/message.ogg</resource>
@@ -111,13 +83,6 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-
-        <appender class="ch.qos.logback.core.FileAppender">
-            <file>${log.dir:-}/error.log</file>
-            <encoder>
-                <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
-            </encoder>
-        </appender>
 
         <appender class="com.tersesystems.logback.audio.AudioAppender">
             <player class="com.tersesystems.logback.audio.ResourcePlayer">
