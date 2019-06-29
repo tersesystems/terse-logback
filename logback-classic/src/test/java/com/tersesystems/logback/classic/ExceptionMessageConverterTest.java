@@ -43,7 +43,6 @@ public class ExceptionMessageConverterTest {
     @Test
     public void testNestedMessages() {
         ExceptionMessageConverter converter = new ExceptionMessageConverter();
-        converter.setOptionList(Collections.singletonList("4"));
         LoggerContext context = new LoggerContext();
         converter.setContext(context);
         converter.start();
@@ -62,7 +61,7 @@ public class ExceptionMessageConverterTest {
     @Test
     public void testNestedMessagesWithCutOff() {
         ExceptionMessageConverter converter = new ExceptionMessageConverter();
-        converter.setOptionList(Collections.singletonList("2"));
+        converter.setOptionList(Arrays.asList("1", "2"));
         LoggerContext context = new LoggerContext();
         converter.setContext(context);
         converter.start();
@@ -81,7 +80,7 @@ public class ExceptionMessageConverterTest {
     @Test
     public void testNestedMessagesSeperator() {
         ExceptionMessageConverter converter = new ExceptionMessageConverter();
-        converter.setOptionList(Arrays.asList("4", " [", " ! "));
+        converter.setOptionList(Arrays.asList("1", "4", "[", " ! "));
         LoggerContext context = new LoggerContext();
         converter.setContext(context);
         converter.start();
@@ -100,7 +99,7 @@ public class ExceptionMessageConverterTest {
     @Test
     public void testCustomPrefixSuffix() {
         ExceptionMessageConverter converter = new ExceptionMessageConverter();
-        converter.setOptionList(Arrays.asList("4", "<", "|", ">"));
+        converter.setOptionList(Arrays.asList("0", "4", "<", "|", ">"));
         LoggerContext context = new LoggerContext();
         converter.setContext(context);
         converter.start();

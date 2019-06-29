@@ -14,6 +14,7 @@ package example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -36,6 +37,26 @@ public class Main {
         public void doWarn() {
             logger.warn("I am a warning");
         }
+
+        public void doError() {
+            Exception ex = generateException();
+            logger.error("I am an error", ex);
+        }
+
+        private Exception generateException() {
+            Random rnd = new java.util.Random();
+            int i = rnd.nextInt(10) + 1;
+
+            return nestException(null, i);
+        }
+
+        private Exception nestException(Exception ex, int i) {
+            if (i > 0) {
+                Exception nested = new RuntimeException("Level " + i, ex);
+                return nestException(nested, i - 1);
+            }
+            return ex;
+        }
     }
 
     public static void main(String[] args) {
@@ -46,8 +67,10 @@ public class Main {
 
         final ScheduledFuture<?> infoHandle = scheduler.scheduleAtFixedRate(runner::doInfo, 1, 2, SECONDS);
         final ScheduledFuture<?> warnHandle = scheduler.scheduleAtFixedRate(runner::doWarn, 1, 1, SECONDS);
+        final ScheduledFuture<?> errorHandle = scheduler.scheduleAtFixedRate(runner::doError, 1, 5, SECONDS);
         scheduler.schedule(() -> { infoHandle.cancel(true); }, 60 * 60, SECONDS);
         scheduler.schedule(() -> { warnHandle.cancel(true); }, 60 * 60, SECONDS);
+        scheduler.schedule(() -> { errorHandle.cancel(true); }, 60 * 60, SECONDS);
     }
 
 }

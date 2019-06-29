@@ -39,6 +39,10 @@
     <!-- time since epoch -->
     <conversionRule conversionWord="tse" converterClass="com.tersesystems.logback.classic.TimeSinceEpochConverter" />
 
+    <!-- nested exception messages -->
+    <conversionRule conversionWord="exmessage" converterClass="com.tersesystems.logback.classic.ExceptionMessageConverter" />
+
+    <!-- unique id extractor -->
     <conversionRule conversionWord="uniqueId" converterClass="com.tersesystems.logback.uniqueid.UniqueIdConverter" />
 
     <!--

@@ -1,17 +1,39 @@
 package com.tersesystems.logback.classic;
 
-import ch.qos.logback.classic.pattern.ClassicConverter;
+import ch.qos.logback.classic.pattern.ThrowableHandlingConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class ExceptionMessageConverter extends ClassicConverter {
+/**
+ * Exception message converter that only prints out the messages of the nested exception.
+ *
+ * The first argument is the amount of leading whitespace to add before the exception.
+ *
+ * The second argument is the maximum depth of the nested exceptions.
+ *
+ * The third, fourth, and fifth arguments are the prefix, separator, and suffix, respectively.
+ *
+ * Use in a pattern encoder, i.e. "%exmessage{1, 10, cause=[}"
+ */
+public class ExceptionMessageConverter extends ThrowableHandlingConverter {
 
     @Override
     public String convert(ILoggingEvent event) {
+        Integer whitespace = getLeadingWhitespace();
+        if (whitespace < 0) {
+            addWarn("Cannot render whitespace less than 0!");
+            whitespace = 0;
+        }
+
         Integer depth = getDepth();
+        if (depth < 1) {
+            addWarn("Cannot render depth less than 1!");
+            depth = 1;
+        }
         String prefix = getPrefix();
         String sep = getSeparator();
         String suffix = getSuffix();
@@ -19,23 +41,27 @@ public class ExceptionMessageConverter extends ClassicConverter {
         if (ex == null) {
             return "";
         }
-        return processException(ex, (depth), prefix, sep, suffix);
+        return processException(ex, whitespace, depth, prefix, sep, suffix);
     }
 
-    protected Integer getDepth() {
+    private Integer getLeadingWhitespace() {
         return Integer.parseInt(getOption(0).orElse("1"));
     }
 
+    protected Integer getDepth() {
+        return Integer.parseInt(getOption(1).orElse("10"));
+    }
+
     protected String getPrefix() {
-        return getOption(1).orElse(" [");
+        return getOption(2).orElse("[");
     }
 
     protected String getSeparator() {
-        return getOption(2).orElse(" > ");
+        return getOption(3).orElse(" > ");
     }
 
     protected String getSuffix() {
-        return getOption(3).orElse("]");
+        return getOption(4).orElse("]");
     }
 
     protected Optional<String> getOption(int index) {
@@ -46,9 +72,12 @@ public class ExceptionMessageConverter extends ClassicConverter {
         return Optional.empty();
     }
 
-    protected String processException(IThrowableProxy throwableProxy, Integer depth,
+    protected String processException(IThrowableProxy throwableProxy,
+                                      Integer whitespace,
+                                      Integer depth,
                                       String prefix, String sep, String suffix) {
-        StringBuilder b = new StringBuilder(prefix);
+        String ws = String.join("", Collections.nCopies(whitespace, " "));
+        StringBuilder b = new StringBuilder(ws + prefix);
         IThrowableProxy ex = throwableProxy;
         for (int i = 0; i < depth; i++) {
             b.append(ex.getMessage());
