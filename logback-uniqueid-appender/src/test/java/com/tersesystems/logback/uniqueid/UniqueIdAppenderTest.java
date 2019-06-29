@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.classic;
+package com.tersesystems.logback.uniqueid;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -21,7 +21,9 @@ import org.junit.Test;
 
 import java.net.URL;
 
-public class DecoratingAppenderTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class UniqueIdAppenderTest {
 
     @Test
     public void testUniqueIdEventAppender() throws JoranException {

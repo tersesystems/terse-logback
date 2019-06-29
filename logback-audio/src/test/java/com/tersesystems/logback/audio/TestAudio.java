@@ -77,40 +77,4 @@ public class TestAudio {
         Thread.sleep(1000);
     }
 
-    @Test
-    public void testLogger() throws JoranException, InterruptedException {
-        LoggerContext context = new LoggerContext();
-
-        URL resource = getClass().getResource("/logback-with-level-appender.xml");
-        JoranConfigurator configurator = new JoranConfigurator();
-        configurator.setContext(context);
-        configurator.doConfigure(resource);
-
-        Logger logger = context.getLogger("some.random.Logger");
-
-        for (int i = 0; i < 10; i++) {
-            logger.trace("TRACE");
-        }
-        Thread.sleep(1000);
-
-        for (int i = 0; i < 2; i++) {
-            logger.debug("DEBUG");
-        }
-        Thread.sleep(1000);
-
-        for (int i = 0; i < 2; i++) {
-            logger.info("INFO");
-        }
-        Thread.sleep(1000);
-
-        for (int i = 0; i < 2; i++) {
-            logger.warn("WARN");
-        }
-        Thread.sleep(1000);
-
-        logger.error("ERROR");
-        Thread.sleep(10000);
-    }
-
-
 }
