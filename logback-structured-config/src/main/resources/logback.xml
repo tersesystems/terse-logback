@@ -25,6 +25,7 @@
 
     <include resource="terse-logback/initial.xml"/>
     <include resource="terse-logback/censor.xml"/>
+    <include resource="terse-logback/exceptions.xml"/>
 
     <include resource="terse-logback/appenders/audio-appenders.xml"/>
     <include resource="terse-logback/appenders/console-appenders.xml"/>

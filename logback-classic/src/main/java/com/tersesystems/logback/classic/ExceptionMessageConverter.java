@@ -90,13 +90,18 @@ public class ExceptionMessageConverter extends ThrowableHandlingConverter {
         StringBuilder b = new StringBuilder(ws + prefix);
         IThrowableProxy ex = throwableProxy;
         for (int i = 0; i < depth; i++) {
-            b.append(ex.getMessage());
+            String message = constructMessage(ex);
+            b.append(message);
             ex = ex.getCause();
             if (ex == null || i + 1 == depth) break;
             b.append(sep);
         }
         b.append(suffix);
         return b.toString();
+    }
+
+    protected String constructMessage(IThrowableProxy ex) {
+        return (ex.getMessage() == null) ? ex.getClassName() : ex.getMessage();
     }
 
 }

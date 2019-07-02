@@ -6,6 +6,7 @@ dependencies {
     compile project(':logback-compress-encoder')
     compile project(':logback-uniqueid-appender')
     compile project(':logback-typesafe-config')
+    compile project(':logback-exception-mapping')
 
     compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
     compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
