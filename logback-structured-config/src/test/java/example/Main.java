@@ -46,7 +46,6 @@ public class Main {
         private Exception generateException() {
             Random rnd = new java.util.Random();
             int i = rnd.nextInt(10) + 1;
-
             return nestException(null, i);
         }
 
@@ -68,9 +67,15 @@ public class Main {
         final ScheduledFuture<?> infoHandle = scheduler.scheduleAtFixedRate(runner::doInfo, 1, 2, SECONDS);
         final ScheduledFuture<?> warnHandle = scheduler.scheduleAtFixedRate(runner::doWarn, 1, 1, SECONDS);
         final ScheduledFuture<?> errorHandle = scheduler.scheduleAtFixedRate(runner::doError, 1, 5, SECONDS);
-        scheduler.schedule(() -> { infoHandle.cancel(true); }, 60 * 60, SECONDS);
-        scheduler.schedule(() -> { warnHandle.cancel(true); }, 60 * 60, SECONDS);
-        scheduler.schedule(() -> { errorHandle.cancel(true); }, 60 * 60, SECONDS);
+        scheduler.schedule(() -> {
+            infoHandle.cancel(true);
+        }, 60 * 60, SECONDS);
+        scheduler.schedule(() -> {
+            warnHandle.cancel(true);
+        }, 60 * 60, SECONDS);
+        scheduler.schedule(() -> {
+            errorHandle.cancel(true);
+        }, 60 * 60, SECONDS);
     }
 
 }

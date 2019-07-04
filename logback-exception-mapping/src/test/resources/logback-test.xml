@@ -1,0 +1,37 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+  <newRule pattern="*/exceptionMappings"
+           actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingRegistryAction"/>
+
+  <newRule pattern="*/exceptionMappings/mapping"
+           actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingAction"/>
+
+  <conversionRule conversionWord="richex" converterClass="com.tersesystems.logback.exceptionmapping.ExceptionMessageWithMappingsConverter" />
+
+  <exceptionMappings>
+    <mapping name="com.tersesystems.logback.exceptionmapping.MyCustomException" properties="one,two,three"/>
+  </exceptionMappings>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-5relative %-5level %logger{35} - %msg%richex{1, 10, exception=[}%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="TRACE">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+</configuration>

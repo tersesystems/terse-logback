@@ -1,0 +1,15 @@
+<included>
+
+  <newRule pattern="*/exceptionMappings"
+           actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingRegistryAction"/>
+
+  <newRule pattern="*/exceptionMappings/mapping"
+           actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingAction"/>
+
+  <exceptionMappings>
+    <mapping name="com.tersesystems.logback.exceptionmapping.MyCustomException" properties="one,two,three"/>
+  </exceptionMappings>
+
+  <conversionRule conversionWord="richex" converterClass="com.tersesystems.logback.exceptionmapping.ExceptionMessageWithMappingsConverter" />
+
+</included>

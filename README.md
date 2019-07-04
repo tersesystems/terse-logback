@@ -165,7 +165,7 @@ and the following JSON:
 
 When you're using structured logging, you'll inevitably have to pass around the `LogstashMarker` or `StructuredArgument` with it so that you can add context to your logging.  In the past, the recommended way to do this was MDC.
 
-Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.  
+Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC is a well known way of adding context to logging, but there are several things that make it problematic.
 
 MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
@@ -173,7 +173,7 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
 
-There's two different ways to do it.  You can use interception, which gives you a straightforward method delegation model, or you can use `Advice`, which rewrites the bytecode inline before the JVM gets to it.  Either way, you can write to a logger without touching the class itself, and you can modify which classes and methods you touch.  
+There's two different ways to do it.  You can use interception, which gives you a straightforward method delegation model, or you can use `Advice`, which rewrites the bytecode inline before the JVM gets to it.  Either way, you can write to a logger without touching the class itself, and you can modify which classes and methods you touch.
 
 I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives the same performance as inline code.  I use a `ThreadLocal` logger here, as it gives me more control over logging capabilities than using MDC would, but there are many options available.
 
@@ -181,7 +181,7 @@ With Interception:
 
 ```java
 public class InterceptionTest {
-       
+
    // This is a class we're going to wrap entry and exit methods around.
    public static class SomeLibraryClass {
        public void doesNotUseLogging() {
@@ -313,7 +313,7 @@ There are two rules and a converter that are used in Logback to define and refer
              actionClass="com.tersesystems.logback.censor.CensorRefAction"/>
 
     <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
-    
+
     <!-- ... -->
 </configuration>
 ```
@@ -334,7 +334,7 @@ The `CensorAction` defines a censor that can be referred to by the `CensorRef` a
 </configuration>
 ```
 
-Once you have the censors defined, you can use the censor word by specifying the target as defined in the [pattern encoder format](https://logback.qos.ch/manual/layouts.html#conversionWord), and adding the name as the option list using curly braces, i.e. `%censor(%msg){censor-name1}`.  If you don't define the censor, then the first available censor will be picked. 
+Once you have the censors defined, you can use the censor word by specifying the target as defined in the [pattern encoder format](https://logback.qos.ch/manual/layouts.html#conversionWord), and adding the name as the option list using curly braces, i.e. `%censor(%msg){censor-name1}`.  If you don't define the censor, then the first available censor will be picked.
 
 ```xml
 <configuration>
@@ -346,7 +346,7 @@ Once you have the censors defined, you can use the censor word by specifying the
     </appender>
 
     <appender name="TEST2" class="ch.qos.logback.core.FileAppender">
-        <file>file2.log</file>    
+        <file>file2.log</file>
         <encoder>
             <pattern>%censor(%msg){censor-name2}%n</pattern>
         </encoder>
@@ -371,11 +371,82 @@ If you are working with a componentized framework, you'll want to use the `censo
 
 In this case, `CensoringJsonGeneratorDecorator` implements the `CensorAttachable` interface and so will run message text through the censor if it exists.
 
+## Exception Mapping
+
+Exception Mapping is done to show the important details of an exception, including the root cause in a summary format.  This is especially useful in line oriented formats, because rendering a stacktrace can take up screen real estate without providing much value.
+
+An example will help.  Given the following program:
+
+```java
+public class Thrower {
+    private static final Logger logger = LoggerFactory.getLogger(Thrower.class);
+
+    public static void main(String[] progArgs) {
+        try {
+            doSomethingExceptional();
+        } catch (RuntimeException e) {
+            logger.error("domain specific message", e);
+        }
+    }
+
+    static void doSomethingExceptional() {
+        Throwable cause = new BatchUpdateException();
+        throw new MyCustomException("This is my message", "one is one", "two is more than one", "three is more than two and one", cause);
+    }
+}
+
+class MyCustomException extends RuntimeException {
+    public MyCustomException(String message, String one, String two, String three, Throwable cause) {
+       // ...
+    }
+    public String getOne() { return one; }
+    public String getTwo() { return two; }
+    public String getThree() { return three; }
+}
+
+```
+
+and the Logback file:
+
+```xml
+<configuration>
+
+  <newRule pattern="*/exceptionMappings"
+           actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingRegistryAction"/>
+
+  <newRule pattern="*/exceptionMappings/mapping"
+           actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingAction"/>
+
+  <conversionRule conversionWord="richex" converterClass="com.tersesystems.logback.exceptionmapping.ExceptionMessageWithMappingsConverter" />
+
+  <exceptionMappings>
+    <!-- comes with default mappings for JDK exceptions, but you can add your own -->
+    <mapping name="com.tersesystems.logback.exceptionmapping.MyCustomException" properties="one,two,three"/>
+  </exceptionMappings>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-5relative %-5level %logger{35} - %msg%richex{1, 10, exception=[}%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="TRACE">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+</configuration>
+```
+
+Then this renders the following:
+
+184   ERROR c.t.l.exceptionmapping.Thrower - domain specific message exception=[com.tersesystems.logback.exceptionmapping.MyCustomException(one="one is one" two="two is more than one" three="three is more than two and one" message="This is my message") > java.sql.BatchUpdateException(updateCounts="null" errorCode="0" SQLState="null" message="null")]
+
+
 ## Budget Aware Logging
 
 There are instances where loggers may be overly chatty, and will log more than necessary.  Rather than hunt down all the individual loggers and whitelist or blacklist the lot of them, you may want to assign a budget that will budget INFO messages to 5 statements a second.
 
-This is easy to do with the `logback-budget` module, which uses an internal [circuit breaker](https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/concurrent/CircuitBreaker.html) to regulate the flow of messages. 
+This is easy to do with the `logback-budget` module, which uses an internal [circuit breaker](https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/concurrent/CircuitBreaker.html) to regulate the flow of messages.
 
 ```xml
 <configuration>
@@ -401,7 +472,7 @@ This is easy to do with the `logback-budget` module, which uses an internal [cir
     <root level="TRACE">
         <appender-ref ref="STDOUT"/>
     </root>
-    
+
 </configuration>
 ```
 
@@ -442,7 +513,7 @@ The configuration is then placed in the `LoggerContext` which is available to al
 lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
 ```
 
-And then all properties are made available to Logback, either at the `local` scope or at the `context` scope.  
+And then all properties are made available to Logback, either at the `local` scope or at the `context` scope.
 
 Properties must be strings, but you can also provide Maps and Lists to the Logback Context, through `context.getObject`.
 
@@ -471,7 +542,7 @@ levels = {
 local {
 
     logback.environment=production
-  
+
     censor {
         regex = """hunter2""" // http://bash.org/?244321
         replacementText = "*******"
@@ -525,11 +596,11 @@ Using Typesafe Config is not a requirement -- the point here is to show that the
 
 ### High Performance Async Appenders
 
-The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders](https://github.com/logstash/logstash-logback-encoder#async-appenders).  
+The JSON and Text file appenders are wrapped in [LMAX Disruptor async appenders](https://github.com/logstash/logstash-logback-encoder#async-appenders).
 
 This example comes preconfigured with a [shutdown hook](https://logback.qos.ch/manual/configuration.html#stopContext) to ensure the async appenders empty their queues before the application shuts down.
 
-To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but async logging is ridiculously performant, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).  
+To my knowledge, the logstash async appenders have not been benchmarked against Log4J2, but async logging is ridiculously performant, and [will never be the bottleneck in your application](https://www.sitepoint.com/which-java-logging-framework-has-the-best-performance/#conclusions).
 
 In general, you should only be concerned about the latency or throughput of your logging framework when you have sat down and done the math on how much logging it would take to stress out the system, asked about your operational requirements, and determined the operational costs, including IO and [rate limits](https://segment.com/blog/bob-loblaws-log-blog/#the-case-of-the-missing-logs), and a budget for logging.  Logging doesn't come for free.
 
@@ -691,7 +762,7 @@ Colored logging is not used in the file-based appender, because some editors ten
 
 #### JSON
 
-The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print options.  
+The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print options.
 
 The XML is as follows:
 
@@ -876,16 +947,16 @@ I have not used these personally.  I usually roll my own code when I need someth
 
 * [concurrent-build-logger](https://github.com/takari/concurrent-build-logger) (encoders and appenders both)
 * [logzio-logback-appender](https://github.com/logzio/logzio-logback-appender)
-* [logback-elasticsearch-appender](https://github.com/internetitem/logback-elasticsearch-appender)  
+* [logback-elasticsearch-appender](https://github.com/internetitem/logback-elasticsearch-appender)
 * [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)
 * [logback-steno](https://github.com/ArpNetworking/logback-steno)
 * [logslack](https://github.com/gmethvin/logslack)
-  
+
 ### Other Blog Posts
 
 #### Logback Specific
 
-* [Lessons Learned Writing New Logback Appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/) 
+* [Lessons Learned Writing New Logback Appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/)
 * [Extending logstash-logback-encoder](https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/)
 
 #### Best Practices
@@ -893,7 +964,7 @@ I have not used these personally.  I usually roll my own code when I need someth
 Many of these are logback specific, but still good overall.
 
 * [9 Logging Best Practices Based on Hands-on Experience](https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience)
-* [Woofer: logging in (best) practices](https://orange-opensource.github.io/woofer/logging-code/): Spring Boot 
+* [Woofer: logging in (best) practices](https://orange-opensource.github.io/woofer/logging-code/): Spring Boot
 * [A whole product concern logging implementation](http://stevetarver.github.io/2016/04/20/whole-product-logging.html)
 * [There is more to logging than meets the eye](https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html)
 * [Monitoring demystified: A guide for logging, tracing, metrics](https://techbeacon.com/enterprise-it/monitoring-demystified-guide-logging-tracing-metrics)
@@ -933,7 +1004,7 @@ Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
 
 #### Clean Code, clean logs
 
-[Tomasz Nurkiewicz](https://www.nurkiewicz.com/) has a great series on logging: 
+[Tomasz Nurkiewicz](https://www.nurkiewicz.com/) has a great series on logging:
 
 * [Clean code, clean logs: use appropriate tools (1/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-use-appropriate.html)
 * [Clean code, clean logs: logging levels are there for you (2/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-tune-your-pattern.html)
