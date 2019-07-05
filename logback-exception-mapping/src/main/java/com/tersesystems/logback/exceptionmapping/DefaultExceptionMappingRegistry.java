@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
@@ -95,7 +94,7 @@ public class DefaultExceptionMappingRegistry implements ExceptionMappingRegistry
 
     @Override
     public List<ExceptionProperty> apply(Throwable e) {
-        Stream<Class<?>> classStream = new ClassHierarchyIterator(e.getClass()).stream();
+        Stream<Class<?>> classStream = new ExceptionHierarchyIterator(e.getClass()).stream();
         List<ExceptionMapping> exceptionMappings = classStream.map(Class::getName)
                 .filter(className -> classNameToMappings.containsKey(className))
                 .map(className -> classNameToMappings.get(className))
@@ -131,34 +130,6 @@ public class DefaultExceptionMappingRegistry implements ExceptionMappingRegistry
     @Override
     public boolean remove(String name) {
         return classNameToMappings.remove(name) != null;
-    }
-
-    private static class ClassHierarchyIterator implements Iterator {
-        private Class<?> clazz;
-
-        ClassHierarchyIterator(Class clazz) {
-            this.clazz = clazz;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return clazz != null;
-        }
-
-        @Override
-        public Object next() {
-            Class oldClass = clazz;
-            if (clazz != null) {
-                clazz = clazz.getSuperclass();
-            }
-            return oldClass;
-        }
-
-        @SuppressWarnings("unchecked")
-        Stream<Class<?>> stream() {
-            Spliterator spliterator = Spliterators.spliteratorUnknownSize(this, 0);
-            return (Stream<Class<?>>) StreamSupport.stream(spliterator, false);
-        }
     }
 
 }

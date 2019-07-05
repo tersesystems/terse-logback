@@ -51,18 +51,17 @@
                     <mdc/>
                     <logstashMarkers/>
                     <arguments/>
+
+                    <provider class="com.tersesystems.logback.structuredconfig.ExceptionArgumentsProvider">
+                        <fieldName>exception</fieldName>
+                        <!-- Any properties exposed by your provider can be set here -->
+                    </provider>
+
                     <stackTrace>
                         <!--
                           https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
                         -->
                         <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                            <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
-                            </maxDepthPerThrowable>
-                            <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
-                            <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
-                            </shortenedClassNameLength>
-                            <!-- coma separated exclusion patterns -->
-                            <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
                             <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
                             <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
                         </throwableConverter>
