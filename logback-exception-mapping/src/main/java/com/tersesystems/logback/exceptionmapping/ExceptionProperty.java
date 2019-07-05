@@ -14,8 +14,6 @@ import java.util.Arrays;
 
 public interface ExceptionProperty {
 
-    public void writeTo(ExceptionPropertyWriter writer);
-
     public static ExceptionProperty create(String name, String value) {
         return new KeyValueExceptionProperty(name, value);
     }

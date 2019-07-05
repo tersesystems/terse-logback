@@ -34,10 +34,14 @@ public class ExceptionMessageWithMappingsConverter extends ExceptionMessageConve
     }
 
     private String findArgumentMappings(IThrowableProxy ex) {
-        ExceptionMappingRegistry argMappings = getArgMappings();
+
         if (ex instanceof ThrowableProxy) {
+            ExceptionMappingRegistry registry = getRegistry();
+            if (registry == null) {
+                return "";
+            }
             Throwable throwable = ((ThrowableProxy) ex).getThrowable();
-            return format(argMappings.apply(throwable));
+            return format(registry.apply(throwable));
         } else {
             return "";
         }
@@ -46,14 +50,14 @@ public class ExceptionMessageWithMappingsConverter extends ExceptionMessageConve
     private String format(List<ExceptionProperty> args) {
         return args.stream().map(arg -> {
             StringBuilder sb = new StringBuilder();
-            ExceptionPropertyWriter exceptionPropertyWriter = new StringBufferExceptionPropertyWriter(sb);
+            StringBufferExceptionPropertyWriter exceptionPropertyWriter = new StringBufferExceptionPropertyWriter(sb);
             exceptionPropertyWriter.write(arg);
             return sb.toString();
         }).collect(Collectors.joining(" "));
     }
 
     @SuppressWarnings("unchecked")
-    private ExceptionMappingRegistry getArgMappings() {
+    private ExceptionMappingRegistry getRegistry() {
         String key = getMappingsKey();
 
         Map<String, ExceptionMappingRegistry> mappingsBag =
@@ -70,14 +74,13 @@ public class ExceptionMessageWithMappingsConverter extends ExceptionMessageConve
         return exceptionMappingRegistry;
     }
 
-    class StringBufferExceptionPropertyWriter implements ExceptionPropertyWriter {
+    class StringBufferExceptionPropertyWriter {
         private final StringBuilder sb;
 
         StringBufferExceptionPropertyWriter(StringBuilder sb) {
             this.sb = sb;
         }
 
-        @Override
         public void write(ExceptionProperty exceptionProperty) {
             if (exceptionProperty instanceof KeyValueExceptionProperty) {
                 KeyValueExceptionProperty kv = (KeyValueExceptionProperty) exceptionProperty;
