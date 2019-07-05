@@ -52,9 +52,8 @@
                     <logstashMarkers/>
                     <arguments/>
 
-                    <provider class="com.tersesystems.logback.structuredconfig.ExceptionArgumentsProvider">
+                    <provider class="com.tersesystems.logback.exceptionmapping.json.ExceptionArgumentsProvider">
                         <fieldName>exception</fieldName>
-                        <!-- Any properties exposed by your provider can be set here -->
                     </provider>
 
                     <stackTrace>

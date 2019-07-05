@@ -18,8 +18,15 @@
   <newRule pattern="*/exceptionMappings/mapping"
            actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingAction"/>
 
+  <newRule pattern="*/exceptionMappings/configMappings"
+           actionClass="com.tersesystems.logback.exceptionmapping.config.TypesafeConfigMappingsAction"/>
+
   <exceptionMappings>
+    <!-- define one at a time in XML -->
     <mapping name="com.tersesystems.logback.exceptionmapping.MyCustomException" properties="one,two,three"/>
+
+    <!-- Or point to HOCON path -->
+    <configMappings path="exceptionmappings"/>
   </exceptionMappings>
 
   <conversionRule conversionWord="richex" converterClass="com.tersesystems.logback.exceptionmapping.ExceptionMessageWithMappingsConverter" />

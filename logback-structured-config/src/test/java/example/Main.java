@@ -14,6 +14,8 @@ package example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,7 +53,7 @@ public class Main {
 
         private Exception nestException(Exception ex, int i) {
             if (i > 0) {
-                Exception nested = new RuntimeException("Level " + i, ex);
+                Exception nested = new MySpecialException("Level " + i, Instant.now(), ex);
                 return nestException(nested, i - 1);
             }
             return ex;
@@ -79,3 +81,4 @@ public class Main {
     }
 
 }
+

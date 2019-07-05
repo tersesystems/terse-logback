@@ -34,7 +34,6 @@ public class ExceptionMessageWithMappingsConverter extends ExceptionMessageConve
     }
 
     private String findArgumentMappings(IThrowableProxy ex) {
-
         if (ex instanceof ThrowableProxy) {
             ExceptionMappingRegistry registry = getRegistry();
             if (registry == null) {
