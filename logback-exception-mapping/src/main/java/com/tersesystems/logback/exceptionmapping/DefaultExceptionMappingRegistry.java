@@ -120,7 +120,12 @@ public class DefaultExceptionMappingRegistry implements ExceptionMappingRegistry
 
     @Override
     public boolean contains(ExceptionMapping exceptionMapping) {
-        return classNameToMappings.containsKey(exceptionMapping.getName());
+        return contains(exceptionMapping.getName());
+    }
+
+    @Override
+    public boolean contains(String name) {
+        return classNameToMappings.containsKey(name);
     }
 
     @Override

@@ -10,6 +10,7 @@
  */
 package com.tersesystems.logback.exceptionmapping;
 
+import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
@@ -38,9 +39,11 @@ public class ExceptionMappingRegistryAction extends Action {
         mappingsRegistry = null;
         inError = false;
 
-        Map<String, Object> omap = ic.getObjectMap();
-        if (! omap.containsKey(REGISTRY_BAG)) {
-            omap.put(REGISTRY_BAG, new HashMap<String, ExceptionMappingRegistry>());
+        Context context = getContext();
+        HashMap<String, ExceptionMappingRegistry> mappingsBag = (HashMap<String, ExceptionMappingRegistry>) context.getObject(REGISTRY_BAG);
+        if (mappingsBag == null) {
+            mappingsBag = new HashMap<>();
+            context.putObject(REGISTRY_BAG, mappingsBag);
         }
 
         try {
@@ -54,9 +57,6 @@ public class ExceptionMappingRegistryAction extends Action {
             } else {
                 addInfo("Naming mappingsRegistry as [" + mappingsName + "]");
             }
-
-            HashMap<String, ExceptionMappingRegistry> mappingsBag = (HashMap<String, ExceptionMappingRegistry>) ic.getObjectMap().get(REGISTRY_BAG);
-            getContext().putObject(REGISTRY_BAG, mappingsBag);
 
             mappingsBag.put(mappingsName, mappingsRegistry);
 

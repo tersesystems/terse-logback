@@ -1,0 +1,41 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <newRule pattern="configuration/typesafeConfig"
+             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
+
+    <newRule pattern="*/exceptionMappings"
+             actionClass="com.tersesystems.logback.exceptionmapping.ExceptionMappingRegistryAction"/>
+
+    <newRule pattern="*/exceptionMappings/configMappings"
+             actionClass="com.tersesystems.logback.exceptionmapping.config.TypesafeConfigMappingsAction"/>
+
+    <typesafeConfig>
+
+    </typesafeConfig>
+
+    <exceptionMappings>
+        <configMappings path="exceptionmappings"/>
+    </exceptionMappings>
+
+    <appender name="TEST" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %logger{15} - %msg%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="TEST"/>
+    </root>
+</configuration>

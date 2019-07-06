@@ -12,7 +12,7 @@ package com.tersesystems.logback.exceptionmapping;
 
 public final class Constants {
 
-    public static final String REGISTRY_BAG = "mappingsBag";
+    public static final String REGISTRY_BAG = "EXCEPTION_REGISTRY_BAG";
 
     public static final String DEFAULT_MAPPINGS_KEY = "default";
 

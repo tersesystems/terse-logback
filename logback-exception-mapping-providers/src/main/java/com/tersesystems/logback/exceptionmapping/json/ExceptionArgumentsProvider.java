@@ -55,23 +55,25 @@ public class ExceptionArgumentsProvider extends AbstractFieldJsonProvider<ILoggi
     private void writeExceptionIfNecessary(JsonGenerator generator, IThrowableProxy throwableProxy) throws IOException {
         if (throwableProxy instanceof ThrowableProxy) {
             ExceptionMappingRegistry registry = getRegistry();
-            if (registry != null) {
-                ThrowableProxy proxy = (ThrowableProxy) throwableProxy;
-                Throwable throwable = proxy.getThrowable();
-                if (getFieldName() != null) {
-                    generator.writeArrayFieldStart(getFieldName());
-                }
+            if (registry == null) {
+                addError("No registry found!");
+                return;
+            }
+            ThrowableProxy proxy = (ThrowableProxy) throwableProxy;
+            Throwable throwable = proxy.getThrowable();
+            if (getFieldName() != null) {
+                generator.writeArrayFieldStart(getFieldName());
+            }
 
-                ExceptionCauseIterator.create(throwable).stream().forEach(t -> {
-                    try {
-                        renderException(generator, registry, t);
-                    } catch (IOException e) {
-                        addError("Cannot render exception", e);
-                    }
-                });
-                if (getFieldName() != null) {
-                    generator.writeEndArray();
+            ExceptionCauseIterator.create(throwable).stream().forEach(t -> {
+                try {
+                    renderException(generator, registry, t);
+                } catch (IOException e) {
+                    addError("Cannot render exception", e);
                 }
+            });
+            if (getFieldName() != null) {
+                generator.writeEndArray();
             }
         }
     }

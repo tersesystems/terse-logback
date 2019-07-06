@@ -39,6 +39,8 @@ public interface ExceptionMappingRegistry {
 
     boolean contains(ExceptionMapping exceptionMapping);
 
+    boolean contains(String name);
+
     boolean remove(ExceptionMapping exceptionMapping);
 
     boolean remove(String name);
