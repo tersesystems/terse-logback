@@ -15,17 +15,20 @@ import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
 import ch.qos.logback.core.util.OptionHelper;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.events.EventException;
 import org.xml.sax.Attributes;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamException;
+import java.io.InterruptedIOException;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.tersesystems.logback.exceptionmapping.Constants.*;
 import static java.lang.String.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 
 public class ExceptionMappingRegistryAction extends Action {
@@ -73,11 +76,12 @@ public class ExceptionMappingRegistryAction extends Action {
         for (ExceptionMapping exceptionMapping : exceptionMappings) {
             registry.register(exceptionMapping);
         }
+        complexMappings(registry);
     }
 
     protected List<ExceptionMapping> initialMappings() {
         return Arrays.asList(
-                new BeanExceptionMapping("java.lang.Exception", asList("message"), handler),
+                new BeanExceptionMapping("java.lang.Throwable", asList("message"), handler),
 
                 new BeanExceptionMapping("java.nio.file.FileSystemException", asList("file", "otherFile", "reason"), handler),
 
@@ -110,6 +114,27 @@ public class ExceptionMappingRegistryAction extends Action {
 
                 new BeanExceptionMapping("javax.naming.NamingException", asList("explanation", "remainingName", "resolvedName"), handler)
         );
+    }
+
+    protected void complexMappings(ExceptionMappingRegistry mappings) {
+        mappings.register(EventException.class, (e -> singletonList(ExceptionProperty.create("code", e.code))));
+        mappings.register(DOMException.class, (e -> singletonList(ExceptionProperty.create("code", e.code))));
+
+        mappings.register(XMLStreamException.class, e -> {
+            Location l = e.getLocation();
+            if (l == null) {
+                return Collections.emptyList();
+            }
+            return asList(
+                    ExceptionProperty.create("lineNumber", l.getLineNumber()),
+                    ExceptionProperty.create("columnNumber", l.getColumnNumber()),
+                    ExceptionProperty.create("systemId", l.getSystemId()),
+                    ExceptionProperty.create("publicId", l.getPublicId()),
+                    ExceptionProperty.create("characterOffset", l.getCharacterOffset())
+            );
+        });
+
+        mappings.register(InterruptedIOException.class, e -> singletonList(ExceptionProperty.create("bytesTransferred", e.bytesTransferred)));
     }
 
     /**

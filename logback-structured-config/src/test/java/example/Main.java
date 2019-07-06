@@ -47,7 +47,7 @@ public class Main {
 
         private Exception generateException() {
             Random rnd = new java.util.Random();
-            int i = rnd.nextInt(10) + 1;
+            int i = rnd.nextInt(3) + 1;
             return nestException(null, i);
         }
 

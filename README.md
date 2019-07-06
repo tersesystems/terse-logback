@@ -395,7 +395,7 @@ public class Thrower {
     }
 }
 
-class MyCustomException extends RuntimeException {
+public class MyCustomException extends RuntimeException {
     public MyCustomException(String message, String one, String two, String three, Throwable cause) {
        // ...
     }
@@ -403,7 +403,6 @@ class MyCustomException extends RuntimeException {
     public String getTwo() { return two; }
     public String getThree() { return three; }
 }
-
 ```
 
 and the Logback file:
