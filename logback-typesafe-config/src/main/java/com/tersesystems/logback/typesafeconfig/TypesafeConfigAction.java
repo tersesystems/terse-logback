@@ -83,6 +83,7 @@ public class TypesafeConfigAction extends Action implements ConfigConversion {
         Context context = ic.getContext();
 
         context.putObject(TYPESAFE_CONFIG_CTX_KEY, config);
+        ic.getObjectMap().put(TYPESAFE_CONFIG_CTX_KEY, config);
         configureLevels(config);
 
         try {

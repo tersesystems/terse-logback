@@ -102,7 +102,8 @@ public class DefaultExceptionMappingRegistry implements ExceptionMappingRegistry
 
         List<ExceptionProperty> exceptionProperties = new ArrayList<>();
         for (ExceptionMapping exceptionMapping : exceptionMappings) {
-            exceptionProperties.addAll(exceptionMapping.apply(e));
+            List<ExceptionProperty> propertyList = exceptionMapping.apply(e);
+            exceptionProperties.addAll(propertyList);
         }
         return exceptionProperties;
     }
