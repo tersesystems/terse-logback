@@ -13,6 +13,8 @@ package com.tersesystems.logback.classic;
 import org.slf4j.Marker;
 
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Objects.requireNonNull;
 
@@ -92,6 +94,12 @@ public class TerseBasicMarker implements Marker {
         } else {
             return false;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Stream<Marker> stream(Marker marker) {
+        Spliterator spliterator = Spliterators.spliteratorUnknownSize(marker.iterator(), 0);
+        return (Stream<Marker>) StreamSupport.stream(spliterator, false);
     }
 
     private static final String OPEN = "[ ";
