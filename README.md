@@ -160,13 +160,11 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 ## Selectively Logging with TurboMarkers
 
-Logback has the idea of [turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter), which are filters that determine whether a logging event should be created or not.  They are used to override logger levels and say "we want to always log this event, even if it's DEBUG."
+Logback has the idea of [turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter), which are filters that determine whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
 
-However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
+What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.  We can do this by extending `TurboMarker`, which is a marker which does the turbo filter check itself.
 
-What we'd really like to do is say "for this particular user, log everything he does at DEBUG level."  We can then connect a list of user ids that are of special interest and swap them around.
-
-To do this, we'll set up an application context:
+To do this, we'll set up an example application context:
 
 ```java
 public class ApplicationContext {
@@ -183,9 +181,11 @@ public class ApplicationContext {
 }
 ```
 
-and a factory:
+and a factory that implements the matcher (and is therefore long lived enough to carry some state):
 
 ```java
+import com.tersesystems.logback.turbomarker.*;
+
 public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationContext> {
 
     private final Set<String> userIdSet = new ConcurrentSkipListSet<>();
@@ -209,7 +209,7 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
 }
 ```
 
-and a `UserMarker`:
+and a `UserMarker`, which is only around for the logging evaluation:
 
 ```java
 public class UserMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
@@ -233,15 +233,17 @@ logger.info(userMarker, "Hello world, I am info and log for everyone");
 logger.debug(userMarker, "Hello world, I am debug and only log for user 28");
 ```
 
-This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation) -- it lets you be able to debug a particular user in production, using the [targeting users interface](https://docs.launchdarkly.com/docs/targeting-users).
+This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation) -- it lets you be able to debug a particular user in production, using the [targeting users interface](https://docs.launchdarkly.com/docs/targeting-users).   We can then connect a list of user ids that are of special interest and see exactly what the problem is.
 
 ```java
+import com.launchdarkly.client.*;
+
 public boolean alwaysLog(String loggerName) {
-  return ldClient.boolVariation(loggerName, ldUser, false);
+  return ldClient.boolVariation(loggerName, ldUser, false); // log everything for this logger given this user
 }
 ```
 
-This is also a reason why you should keep your debug statements in your code, and not delete them after you've fixed a bug.  Debuggers are emphemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.  
+This is also a reason why you should keep your [debug statements in your code](https://www.spinellis.gr/pubs/jrnl/2005-IEEESW-TotT/html/v23n3.html), and not delete them after you've fixed a bug.  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.  
 
 ## Instrumenting Logging Code with Byte Buddy
 
