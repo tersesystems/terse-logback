@@ -10,8 +10,8 @@
  */
 package com.tersesystems.logback.turbomarker;
 
-public class UserAwareMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
-    public UserAwareMarker(String name, ApplicationContext applicationContext, UserMarkerFactory factory) {
+public class UserMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
+    public UserMarker(String name, ApplicationContext applicationContext, UserMarkerFactory factory) {
         super(name, applicationContext, factory);
     }
 }

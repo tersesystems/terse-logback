@@ -198,8 +198,8 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
         userIdSet.clear();
     }
 
-    public UserAwareMarker create(ApplicationContext applicationContext) {
-        return new UserAwareMarker("userMarker", applicationContext, this);
+    public UserMarker create(ApplicationContext applicationContext) {
+        return new UserMarker("userMarker", applicationContext, this);
     }
 
     @Override
@@ -209,11 +209,11 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
 }
 ```
 
-and a `UserAwareMarker`:
+and a `UserMarker`:
 
 ```java
-public class UserAwareMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
-    public UserAwareMarker(String name, ApplicationContext applicationContext, UserMarkerFactory factory) {
+public class UserMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
+    public UserMarker(String name, ApplicationContext applicationContext, UserMarkerFactory factory) {
         super(name, applicationContext, factory);
     }
 }
@@ -227,13 +227,19 @@ ApplicationContext applicationContext = new ApplicationContext(userId);
 UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
 userMarkerFactory.addUserId(userId); // say we want logging events created for this user id
 
-UserMarkerAware userMarker = userMarkerFactory.create(applicationContext);
+UserMarker userMarker = userMarkerFactory.create(applicationContext);
 
-logger.info(userMarker, "Hello world, I am info");
-logger.debug(userMarker, "Hello world, I am debug");
+logger.info(userMarker, "Hello world, I am info and log for everyone");
+logger.debug(userMarker, "Hello world, I am debug and only log for user 28");
 ```
 
-This works especially well with a feature flag service like [Launch Darkly](https://launchdarkly.com/) -- it lets you be able to debug a particular user in production, without turning on debugging for all users.
+This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation) -- it lets you be able to debug a particular user in production, using the [targeting users interface](https://docs.launchdarkly.com/docs/targeting-users).
+
+```java
+public boolean alwaysLog(String loggerName) {
+  return ldClient.boolVariation(loggerName, ldUser, false);
+}
+```
 
 This is also a reason why you should keep your debug statements in your code, and not delete them after you've fixed a bug.  Debuggers are emphemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.  
 

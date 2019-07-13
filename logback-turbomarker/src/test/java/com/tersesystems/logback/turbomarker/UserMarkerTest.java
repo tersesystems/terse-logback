@@ -41,7 +41,7 @@ public class UserMarkerTest {
         UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
         userMarkerFactory.addUserId(userId); // say we want logging events created for this user id
 
-        UserAwareMarker userMarker = userMarkerFactory.create(applicationContext);
+        UserMarker userMarker = userMarkerFactory.create(applicationContext);
 
         logger.info(userMarker, "Hello world, I am info");
         logger.debug(userMarker, "Hello world, I am debug");
@@ -58,7 +58,7 @@ public class UserMarkerTest {
         String userId = "28";
         ApplicationContext applicationContext = new ApplicationContext(userId);
         UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
-        UserAwareMarker userMatchMarker = userMarkerFactory.create(applicationContext);
+        UserMarker userMatchMarker = userMarkerFactory.create(applicationContext);
 
         logger.info(userMatchMarker, "Hello world, I am info");
         logger.debug(userMatchMarker, "Hello world, I am debug");
