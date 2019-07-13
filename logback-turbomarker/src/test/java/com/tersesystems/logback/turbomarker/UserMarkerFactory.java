@@ -29,8 +29,8 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
         userIdSet.clear();
     }
 
-    public UserMarkerAware create(ApplicationContext applicationContext) {
-        return new UserMarkerAware("userMarker", applicationContext, this);
+    public UserAwareMarker create(ApplicationContext applicationContext) {
+        return new UserAwareMarker("userMarker", applicationContext, this);
     }
 
     @Override

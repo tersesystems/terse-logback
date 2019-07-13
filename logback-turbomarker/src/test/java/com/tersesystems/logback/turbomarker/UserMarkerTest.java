@@ -13,10 +13,8 @@ package com.tersesystems.logback.turbomarker;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +41,7 @@ public class UserMarkerTest {
         UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
         userMarkerFactory.addUserId(userId); // say we want logging events created for this user id
 
-        UserMarkerAware userMarker = userMarkerFactory.create(applicationContext);
+        UserAwareMarker userMarker = userMarkerFactory.create(applicationContext);
 
         logger.info(userMarker, "Hello world, I am info");
         logger.debug(userMarker, "Hello world, I am debug");
@@ -60,7 +58,7 @@ public class UserMarkerTest {
         String userId = "28";
         ApplicationContext applicationContext = new ApplicationContext(userId);
         UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
-        UserMarkerAware userMatchMarker = userMarkerFactory.create(applicationContext);
+        UserAwareMarker userMatchMarker = userMarkerFactory.create(applicationContext);
 
         logger.info(userMatchMarker, "Hello world, I am info");
         logger.debug(userMatchMarker, "Hello world, I am debug");

@@ -158,6 +158,85 @@ Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC 
 
 MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
+## Selectively Logging with TurboMarkers
+
+Logback has the idea of [turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter), which are filters that determine whether a logging event should be created or not.  They are used to override logger levels and say "we want to always log this event, even if it's DEBUG."
+
+However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
+
+What we'd really like to do is say "for this particular user, log everything he does at DEBUG level."  We can then connect a list of user ids that are of special interest and swap them around.
+
+To do this, we'll set up an application context:
+
+```java
+public class ApplicationContext {
+
+    private final String userId;
+
+    public ApplicationContext(String userId) {
+        this.userId = userId;
+    }
+
+    public String currentUserId() {
+        return userId;
+    }
+}
+```
+
+and a factory:
+
+```java
+public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationContext> {
+
+    private final Set<String> userIdSet = new ConcurrentSkipListSet<>();
+
+    public void addUserId(String userId) {
+        userIdSet.add(userId);
+    }
+
+    public void clear() {
+        userIdSet.clear();
+    }
+
+    public UserAwareMarker create(ApplicationContext applicationContext) {
+        return new UserAwareMarker("userMarker", applicationContext, this);
+    }
+
+    @Override
+    public boolean match(ContextAwareTurboMarker marker, ApplicationContext applicationContext, Marker rootMarker, Logger logger, Level level, Object[] params, Throwable t) {
+        return userIdSet.contains(applicationContext.currentUserId());
+    }
+}
+```
+
+and a `UserAwareMarker`:
+
+```java
+public class UserAwareMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
+    public UserAwareMarker(String name, ApplicationContext applicationContext, UserMarkerFactory factory) {
+        super(name, applicationContext, factory);
+    }
+}
+```
+
+and then we can set up logging that will only work for user "28":
+
+```java
+String userId = "28";
+ApplicationContext applicationContext = new ApplicationContext(userId);
+UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
+userMarkerFactory.addUserId(userId); // say we want logging events created for this user id
+
+UserMarkerAware userMarker = userMarkerFactory.create(applicationContext);
+
+logger.info(userMarker, "Hello world, I am info");
+logger.debug(userMarker, "Hello world, I am debug");
+```
+
+This works especially well with a feature flag service like [Launch Darkly](https://launchdarkly.com/) -- it lets you be able to debug a particular user in production, without turning on debugging for all users.
+
+This is also a reason why you should keep your debug statements in your code, and not delete them after you've fixed a bug.  Debuggers are emphemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.  
+
 ## Instrumenting Logging Code with Byte Buddy
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
