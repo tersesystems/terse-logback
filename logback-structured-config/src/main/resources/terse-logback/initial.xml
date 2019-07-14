@@ -57,10 +57,8 @@
     -->
     <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
 
-    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <Name>${tracerFilter.name}</Name>
-        <Marker>${tracerFilter.marker}</Marker>
-        <OnMatch>ACCEPT</OnMatch>
+    <turboFilter class="com.tersesystems.logback.turbomarker.TurboMarkerTurboFilter">
+
     </turboFilter>
 
 </included>

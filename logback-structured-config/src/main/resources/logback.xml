@@ -50,7 +50,7 @@
 
     <appender name="selector" class="com.tersesystems.logback.core.SelectAppender">
         <!-- Set logback.conf or logback-test.conf with "local.logback.environment=development" -->
-        <appenderKey>${logback.environment}</appenderKey>
+        <appenderKey>${logback.environment:-development}</appenderKey>
 
         <appender-ref ref="development"/>
         <appender-ref ref="production"/>
