@@ -162,9 +162,57 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 Logback has the idea of [turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter), which are filters that determine whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
 
-What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.  We can do this by extending `TurboMarker`, which is a marker which does the turbo filter check itself.
+What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.  We can do this by abstracting the filter bit to an interface, `TurboFilterDecider`, which can be implemented by a marker which does the turbo filter check itself.
 
-To do this, we'll set up an example application context:
+```java
+public interface TurboFilterDecider {
+    FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t);
+}
+```
+
+and then look for a marker that implements that interface:
+
+```java
+public class TurboMarkerTurboFilter extends TurboFilter implements TurboFilterDecider {
+
+    @Override
+    public FilterReply decide(Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        // ...
+    }
+
+    private FilterReply evaluateMarker(Marker marker, Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        if (marker instanceof TurboFilterDecider) {
+            TurboFilterDecider decider = (TurboFilterDecider) marker;
+            return decider.decide(rootMarker, logger, level, format, params, t);
+        }
+        return FilterReply.NEUTRAL;
+    }
+}
+```
+
+This gets us part of the way there.  We can then set up a context aware filter decider, which does the same thing but assumes that you have a class `C` that is your external context.
+
+```java
+public interface ContextAwareTurboFilterDecider<C> {
+    FilterReply decide(ContextAwareTurboMarker<C> marker, C context, Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t);
+}
+```
+
+and a marker class that incorporates that context in decision making:
+
+```java
+public class ContextAwareTurboMarker<C> extends TurboMarker implements TurboFilterDecider {
+    private final C context;
+    private final ContextAwareTurboFilterDecider<C> contextAwareDecider;
+    // ... initializers and such
+    @Override
+    public FilterReply decide(Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        return contextAwareDecider.decide(this, context, rootMarker, logger, level, format, params, t);
+    }
+}
+```
+
+This may look good in the abstract, but it make make more sense to see it in action.  To do this, we'll set up an example application context:
 
 ```java
 public class ApplicationContext {
@@ -181,14 +229,17 @@ public class ApplicationContext {
 }
 ```
 
-and a factory that implements the matcher (and is therefore long lived enough to carry some state):
+and a factory that contains the decider:
 
 ```java
 import com.tersesystems.logback.turbomarker.*;
 
-public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationContext> {
+public class UserMarkerFactory {
 
     private final Set<String> userIdSet = new ConcurrentSkipListSet<>();
+
+    private final ContextDecider<ApplicationContext> decider = context ->
+        userIdSet.contains(context.currentUserId()) ? FilterReply.ACCEPT : FilterReply.NEUTRAL;
 
     public void addUserId(String userId) {
         userIdSet.add(userId);
@@ -199,12 +250,7 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
     }
 
     public UserMarker create(ApplicationContext applicationContext) {
-        return new UserMarker("userMarker", applicationContext, this);
-    }
-
-    @Override
-    public boolean match(ContextAwareTurboMarker marker, ApplicationContext applicationContext, Marker rootMarker, Logger logger, Level level, Object[] params, Throwable t) {
-        return userIdSet.contains(applicationContext.currentUserId());
+        return new UserMarker("userMarker", applicationContext, decider);
     }
 }
 ```
@@ -212,9 +258,11 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
 and a `UserMarker`, which is only around for the logging evaluation:
 
 ```java
-public class UserMarker extends ContextAwareTurboMarker<ApplicationContext, UserMarkerFactory> {
-    public UserMarker(String name, ApplicationContext applicationContext, UserMarkerFactory factory) {
-        super(name, applicationContext, factory);
+public class UserMarker extends ContextAwareTurboMarker<ApplicationContext> {
+    public UserMarker(String name,
+                      ApplicationContext applicationContext,
+                      ContextAwareTurboFilterDecider<ApplicationContext> decider) {
+        super(name, applicationContext, decider);
     }
 }
 ```
@@ -233,17 +281,95 @@ logger.info(userMarker, "Hello world, I am info and log for everyone");
 logger.debug(userMarker, "Hello world, I am debug and only log for user 28");
 ```
 
-This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation) -- it lets you be able to debug a particular user in production, using the [targeting users interface](https://docs.launchdarkly.com/docs/targeting-users).   We can then connect a list of user ids that are of special interest and see exactly what the problem is.
+This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation), where you can [target particular users](https://docs.launchdarkly.com/docs/targeting-users#section-assigning-users-to-a-variation) and set up logging based on the user variation.
+
+For example, you can set up a factory like so:
 
 ```java
-import com.launchdarkly.client.*;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.core.spi.FilterReply;
+import com.launchdarkly.client.LDClientInterface;
+import com.launchdarkly.client.LDUser;
 
-public boolean alwaysLog(String loggerName) {
-  return ldClient.boolVariation(loggerName, ldUser, false); // log everything for this logger given this user
+public class LDMarkerFactory {
+    private final LaunchDarklyDecider decider;
+
+    public LDMarkerFactory(LDClientInterface client) {
+        this.decider = new LaunchDarklyDecider(requireNonNull(client));
+    }
+
+    public LDMarker create(String featureFlag, LDUser user) {
+        return new LDMarker(featureFlag, user, decider);
+    }
+
+    static class LaunchDarklyDecider implements MarkerContextDecider<LDUser> {
+        private final LDClientInterface ldClient;
+
+        LaunchDarklyDecider(LDClientInterface ldClient) {
+            this.ldClient = ldClient;
+        }
+
+        @Override
+        public FilterReply apply(ContextAwareTurboMarker<LDUser> marker, LDUser ldUser) {
+            return ldClient.boolVariation(marker.getName(), ldUser, false) ?
+                    FilterReply.ACCEPT :
+                    FilterReply.NEUTRAL;
+        }
+    }
+
+    public static class LDMarker extends ContextAwareTurboMarker<LDUser> {
+        LDMarker(String name, LDUser context, ContextAwareTurboFilterDecider<LDUser> decider) {
+            super(name, context, decider);
+        }
+    }
 }
 ```
 
-This is also a reason why you should keep your [debug statements in your code](https://www.spinellis.gr/pubs/jrnl/2005-IEEESW-TotT/html/v23n3.html), and not delete them after you've fixed a bug.  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.  
+and then use the feature flag as the marker name and turn on debugging on beta testers:
+
+```java
+public class LDMarkerTest {
+  private static LDClientInterface client;
+
+  @BeforeAll
+  public static void setUp() {
+      client = new LDClient("");
+  }
+
+  @AfterAll
+  public static void shutDown() {
+    try {
+      client.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void testMatchingMarker() throws JoranException {
+    LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+    ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+
+    LDMarkerFactory markerFactory = new LDMarkerFactory(client);
+    LDUser ldUser = new LDUser.Builder("UNIQUE IDENTIFIER")
+            .firstName("Bob")
+            .lastName("Loblaw")
+            .customString("groups", singletonList("beta_testers"))
+            .build();
+
+    LDMarkerFactory.LDMarker ldMarker = markerFactory.create("turbomarker", ldUser);
+
+    logger.info(ldMarker, "Hello world, I am info");
+    logger.debug(ldMarker, "Hello world, I am debug");
+
+    ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
+    assertThat(appender.list.size()).isEqualTo(2);
+
+    appender.list.clear();
+  }
+}
+```
+
+This is also a reason why you should keep your [logging debug statements as insurance](https://www.spinellis.gr/pubs/jrnl/2005-IEEESW-TotT/html/v23n3.html), and not delete them after you've fixed a bug.  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.
 
 ## Instrumenting Logging Code with Byte Buddy
 

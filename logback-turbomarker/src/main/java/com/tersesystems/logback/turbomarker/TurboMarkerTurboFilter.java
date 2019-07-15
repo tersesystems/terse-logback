@@ -21,11 +21,13 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * This class is a turbo filter that hands off the evaluation of whether a logging event should be created to the
  * marker, if it is a predicate marker.
  */
-public class TurboMarkerTurboFilter extends TurboFilter {
+public class TurboMarkerTurboFilter extends TurboFilter implements TurboFilterDecider {
 
     @Override
     public FilterReply decide(Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
@@ -33,27 +35,32 @@ public class TurboMarkerTurboFilter extends TurboFilter {
             return FilterReply.NEUTRAL;
         }
 
-        if (evaluateMarker(rootMarker, rootMarker, logger, level, params, t)) {
+        if (rootMarker == null) {
+            return FilterReply.NEUTRAL;
+        }
+
+        if (evaluateMarker(rootMarker, rootMarker, logger, level, format, params, t) == FilterReply.ACCEPT) {
             return FilterReply.ACCEPT;
         }
 
         return stream(rootMarker)
-                .filter(m -> evaluateMarker(m, rootMarker, logger, level, params, t))
+                .map(m -> evaluateMarker(m, rootMarker, logger, level, format, params, t))
+                .filter(reply -> reply != FilterReply.NEUTRAL)
                 .findFirst()
-                .map(m -> FilterReply.ACCEPT)
                 .orElse(FilterReply.NEUTRAL);
     }
 
-    private boolean evaluateMarker(Marker marker, Marker rootMarker, Logger logger, Level level, Object[] params, Throwable t) {
-        if (marker instanceof TurboMarker) {
-            TurboMarker turboMarker = (TurboMarker) marker;
-            return turboMarker.test(rootMarker, logger, level, params, t);
+    private FilterReply evaluateMarker(Marker marker, Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        if (marker instanceof TurboFilterDecider) {
+            TurboFilterDecider decider = (TurboFilterDecider) marker;
+            return decider.decide(rootMarker, logger, level, format, params, t);
         }
-        return false;
+        return FilterReply.NEUTRAL;
     }
 
     @SuppressWarnings("unchecked")
     private Stream<Marker> stream(Marker marker) {
+        requireNonNull(marker);
         Spliterator spliterator = Spliterators.spliteratorUnknownSize(marker.iterator(), 0);
         return (Stream<Marker>) StreamSupport.stream(spliterator, false);
     }

@@ -10,16 +10,17 @@
  */
 package com.tersesystems.logback.turbomarker;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import org.slf4j.Marker;
+import ch.qos.logback.core.spi.FilterReply;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationContext> {
+public class UserMarkerFactory {
 
     private final Set<String> userIdSet = new ConcurrentSkipListSet<>();
+
+    private final ContextDecider<ApplicationContext> decider = context ->
+        userIdSet.contains(context.currentUserId()) ? FilterReply.ACCEPT : FilterReply.NEUTRAL;
 
     public void addUserId(String userId) {
         userIdSet.add(userId);
@@ -30,11 +31,7 @@ public class UserMarkerFactory implements ContextAwareTurboMatcher<ApplicationCo
     }
 
     public UserMarker create(ApplicationContext applicationContext) {
-        return new UserMarker("userMarker", applicationContext, this);
+        return new UserMarker("userMarker", applicationContext, decider);
     }
 
-    @Override
-    public boolean match(ContextAwareTurboMarker marker, ApplicationContext applicationContext, Marker rootMarker, Logger logger, Level level, Object[] params, Throwable t) {
-        return userIdSet.contains(applicationContext.currentUserId());
-    }
 }

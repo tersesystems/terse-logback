@@ -1,7 +1,8 @@
 dependencies {
     compile project(':logback-classic')
-    compile "com.launchdarkly:launchdarkly-java-server-sdk:4.6.5"
     compile "ch.qos.logback:logback-classic:$logbackVersion"
+
+    testCompile "com.launchdarkly:launchdarkly-java-server-sdk:4.6.6"
 }
 
 config {

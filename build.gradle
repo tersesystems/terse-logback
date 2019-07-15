@@ -88,6 +88,7 @@ subprojects { subproj ->
         testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
         testCompile "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
         testCompile "org.junit.vintage:junit-vintage-engine:$junitVintageVersion"
+        //testCompile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.5.0'
     }
 
     config {

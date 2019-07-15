@@ -17,23 +17,17 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserMarkerTest {
 
-    private JoranConfigurator jc = new JoranConfigurator();
-    private LoggerContext loggerContext = new LoggerContext();
-
-    @Before
-    public void setUp() {
-        jc.setContext(loggerContext);
-    }
-
     @Test
     public void testMatchingUserMarker() throws JoranException {
-        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logger-with-turbofilter.xml")));
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
         String userId = "28";
@@ -52,7 +46,7 @@ public class UserMarkerTest {
 
     @Test
     public void testNonMatchingUserMarker() throws JoranException {
-        jc.doConfigure(requireNonNull(this.getClass().getClassLoader().getResource("logger-with-turbofilter.xml")));
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
         String userId = "28";
