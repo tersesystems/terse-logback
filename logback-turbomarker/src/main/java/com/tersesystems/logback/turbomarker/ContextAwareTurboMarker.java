@@ -12,6 +12,7 @@ package com.tersesystems.logback.turbomarker;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.core.spi.FilterReply;
 import org.slf4j.Marker;
 
 import static java.util.Objects.requireNonNull;
@@ -20,21 +21,20 @@ import static java.util.Objects.requireNonNull;
  * This class passes through a custom application context and a matcher, which makes the ultimate decision.
  *
  * @param <C> the context of the predicate marker.
- * @param <M> The matcher containing logic.
  */
-public abstract class ContextAwareTurboMarker<C, M extends ContextAwareTurboMatcher<C>> extends TurboMarker {
+public class ContextAwareTurboMarker<C> extends TurboMarker implements TurboFilterDecider {
 
     private final C context;
-    private final M matcher;
+    private final ContextAwareTurboFilterDecider<C> contextAwareDecider;
 
-    public ContextAwareTurboMarker(String name, C context, M matcher) {
+    public ContextAwareTurboMarker(String name, C context, ContextAwareTurboFilterDecider<C> decider) {
         super(name);
         this.context = requireNonNull(context);
-        this.matcher = matcher;
+        this.contextAwareDecider = requireNonNull(decider);
     }
 
-    M getMatcher() {
-        return matcher;
+    ContextAwareTurboFilterDecider<C> getContextAwareDecider() {
+        return contextAwareDecider;
     }
 
     C getContext() {
@@ -42,8 +42,7 @@ public abstract class ContextAwareTurboMarker<C, M extends ContextAwareTurboMatc
     }
 
     @Override
-    public boolean test(Marker rootMarker, Logger logger, Level level, Object[] params, Throwable t) {
-        return matcher.match(this, context, rootMarker, logger, level, params, t);
+    public FilterReply decide(Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        return contextAwareDecider.decide(this, context, rootMarker, logger, level, format, params, t);
     }
-
 }
