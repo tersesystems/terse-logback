@@ -160,11 +160,11 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 ## Targeted Logging with TurboMarkers
 
-Logback has the idea of [turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter), which are filters that determine whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
+[Turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter) are filters that decide whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
 
 What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.
 
-We start by pulling the `decide` method to an interface, `TurboFilterDecider`
+We start by pulling the `decide` method to an interface, [`TurboFilterDecider`](https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/TurboFilterDecider.java):
 
 ```java
 public interface TurboFilterDecider {
@@ -172,10 +172,10 @@ public interface TurboFilterDecider {
 }
 ```
 
-which can be implemented by a marker which does the turbo filter check itself:
+And have the turbo filter [delegate to markers that implement the TurboFilterDecider interface](https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/TurboMarkerTurboFilter.java):
 
 ```java
-public class TurboMarkerTurboFilter extends TurboFilter implements TurboFilterDecider {
+public class TurboMarkerTurboFilter extends TurboFilter {
 
     @Override
     public FilterReply decide(Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
@@ -192,7 +192,7 @@ public class TurboMarkerTurboFilter extends TurboFilter implements TurboFilterDe
 }
 ```
 
-This gets us part of the way there.  We can then set up a context aware filter decider, which does the same thing but assumes that you have a type `C` that is your external context.
+This gets us part of the way there.  We can then set up a [`ContextAwareTurboFilterDecider`](https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/ContextAwareTurboFilterDecider.java), which does the same thing but assumes that you have a type `C` that is your external context.
 
 ```java
 public interface ContextAwareTurboFilterDecider<C> {
@@ -200,7 +200,7 @@ public interface ContextAwareTurboFilterDecider<C> {
 }
 ```
 
-and a marker class that incorporates that context in decision making:
+Then we add a marker class that [incorporates that context in decision making](https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/ContextAwareTurboMarker.java):
 
 ```java
 public class ContextAwareTurboMarker<C> extends TurboMarker implements TurboFilterDecider {
@@ -214,7 +214,7 @@ public class ContextAwareTurboMarker<C> extends TurboMarker implements TurboFilt
 }
 ```
 
-This may look good in the abstract, but it makes more sense to see it in action.  To do this, we'll set up an example application context:
+This may look good in the abstract, but it may make more sense to see it in action.  To do this, we'll set up an example application context:
 
 ```java
 public class ApplicationContext {
@@ -283,9 +283,13 @@ logger.info(userMarker, "Hello world, I am info and log for everyone");
 logger.debug(userMarker, "Hello world, I am debug and only log for user 28");
 ```
 
-This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation), where you can [target particular users](https://docs.launchdarkly.com/docs/targeting-users#section-assigning-users-to-a-variation) and set up logging based on the user variation.
+This works especially well with a configuration management service like [Launch Darkly](https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation), where you can [target particular users](https://docs.launchdarkly.com/docs/targeting-users#section-assigning-users-to-a-variation) and set up logging based on the user variation.  
 
-For example, you can set up a factory like so:
+The LaunchDarkly blog has [best practices for operational flags](https://launchdarkly.com/blog/operational-flags-best-practices/):
+
+> Verbose logs are great for debugging and troubleshooting but always running an application in debug mode is not viable. The amount of log data generated would be overwhelming. Changing logging levels on the fly typically requires changing a configuration file and restarting the application. A multivariate operational flag enables you to change the logging level from WARNING to DEBUG in real-time.
+
+But we can give an example using the Java SDK.  You can set up a factory like so:
 
 ```java
 import ch.qos.logback.classic.Logger;
@@ -335,7 +339,7 @@ public class LDMarkerTest {
 
   @BeforeAll
   public static void setUp() {
-      client = new LDClient("");
+      client = new LDClient("sdk-key");
   }
 
   @AfterAll
