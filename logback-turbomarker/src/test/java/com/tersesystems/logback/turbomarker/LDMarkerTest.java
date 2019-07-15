@@ -22,33 +22,24 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 public class LDMarkerTest {
-    private static LDClientInterface client;
-
-    @BeforeAll
-    public static void setUp() {
-        client = new LDClient("sdk-1a720ce0-d231-4ff7-8aef-5c54ad44da37");
-    }
-
-    @AfterAll
-    public static void shutDown() {
-        try {
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     @DisplayName("Matching Marker")
     public void testMatchingMarker() throws JoranException {
+        LDClientInterface client = Mockito.mock(LDClientInterface.class);
+        when(client.boolVariation(anyString(), any(), anyBoolean())).thenReturn(true);
+
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
@@ -76,6 +67,9 @@ public class LDMarkerTest {
     @Test
     @DisplayName("Non Matching Marker")
     public void testNonMatchingUserMarker() throws JoranException {
+        LDClientInterface client = Mockito.mock(LDClientInterface.class);
+        when(client.boolVariation(anyString(), any(), anyBoolean())).thenReturn(false);
+
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 

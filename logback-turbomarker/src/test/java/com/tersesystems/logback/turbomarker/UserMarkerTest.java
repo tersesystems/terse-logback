@@ -11,16 +11,12 @@
 package com.tersesystems.logback.turbomarker;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
-import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserMarkerTest {
@@ -42,6 +38,8 @@ public class UserMarkerTest {
 
         ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
         assertThat(appender.list.size()).isEqualTo(2);
+
+        appender.list.clear();
     }
 
     @Test
@@ -59,5 +57,7 @@ public class UserMarkerTest {
 
         ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
         assertThat(appender.list.size()).isEqualTo(0);
+
+        appender.list.clear();
     }
 }

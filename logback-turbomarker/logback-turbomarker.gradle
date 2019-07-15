@@ -2,6 +2,8 @@ dependencies {
     compile project(':logback-classic')
     compile "ch.qos.logback:logback-classic:$logbackVersion"
 
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
     testCompile "com.launchdarkly:launchdarkly-java-server-sdk:4.6.6"
 }
 
