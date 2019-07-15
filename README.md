@@ -158,11 +158,13 @@ Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC 
 
 MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
-## Selectively Logging with TurboMarkers
+## Targeted Logging with TurboMarkers
 
 Logback has the idea of [turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter), which are filters that determine whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
 
-What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.  We can do this by abstracting the filter bit to an interface, `TurboFilterDecider`, which can be implemented by a marker which does the turbo filter check itself.
+What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.
+
+We start by pulling the `decide` method to an interface, `TurboFilterDecider`
 
 ```java
 public interface TurboFilterDecider {
@@ -170,7 +172,7 @@ public interface TurboFilterDecider {
 }
 ```
 
-and then look for a marker that implements that interface:
+which can be implemented by a marker which does the turbo filter check itself:
 
 ```java
 public class TurboMarkerTurboFilter extends TurboFilter implements TurboFilterDecider {
@@ -190,7 +192,7 @@ public class TurboMarkerTurboFilter extends TurboFilter implements TurboFilterDe
 }
 ```
 
-This gets us part of the way there.  We can then set up a context aware filter decider, which does the same thing but assumes that you have a class `C` that is your external context.
+This gets us part of the way there.  We can then set up a context aware filter decider, which does the same thing but assumes that you have a type `C` that is your external context.
 
 ```java
 public interface ContextAwareTurboFilterDecider<C> {
@@ -212,7 +214,7 @@ public class ContextAwareTurboMarker<C> extends TurboMarker implements TurboFilt
 }
 ```
 
-This may look good in the abstract, but it make make more sense to see it in action.  To do this, we'll set up an example application context:
+This may look good in the abstract, but it makes more sense to see it in action.  To do this, we'll set up an example application context:
 
 ```java
 public class ApplicationContext {
@@ -325,7 +327,7 @@ public class LDMarkerFactory {
 }
 ```
 
-and then use the feature flag as the marker name and turn on debugging on beta testers:
+and then use the feature flag as the marker name and target the beta testers group:
 
 ```java
 public class LDMarkerTest {
