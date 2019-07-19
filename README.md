@@ -158,7 +158,7 @@ Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC 
 
 MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
-## Targeted Logging with TurboMarkers
+## Selectively Logging with TurboMarkers
 
 [Turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter) are filters that decide whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
 
