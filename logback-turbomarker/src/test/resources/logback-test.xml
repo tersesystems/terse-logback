@@ -19,8 +19,14 @@
     <appender name="LIST" class="ch.qos.logback.core.read.ListAppender">
     </appender>
 
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        </encoder>
+    </appender>
+
     <root level="ERROR">
         <appender-ref ref="LIST" />
+        <appender-ref ref="CONSOLE" />
     </root>
 </configuration>
 

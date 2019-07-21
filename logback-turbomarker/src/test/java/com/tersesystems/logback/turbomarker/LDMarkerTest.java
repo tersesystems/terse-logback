@@ -12,20 +12,14 @@ package com.tersesystems.logback.turbomarker;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
-import com.launchdarkly.client.LDClient;
 import com.launchdarkly.client.LDClientInterface;
 import com.launchdarkly.client.LDUser;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +30,7 @@ public class LDMarkerTest {
 
     @Test
     @DisplayName("Matching Marker")
-    public void testMatchingMarker() throws JoranException {
+    public void testMatchingMarker() {
         LDClientInterface client = Mockito.mock(LDClientInterface.class);
         when(client.boolVariation(anyString(), any(), anyBoolean())).thenReturn(true);
 
@@ -66,7 +60,7 @@ public class LDMarkerTest {
 
     @Test
     @DisplayName("Non Matching Marker")
-    public void testNonMatchingUserMarker() throws JoranException {
+    public void testNonMatchingUserMarker() {
         LDClientInterface client = Mockito.mock(LDClientInterface.class);
         when(client.boolVariation(anyString(), any(), anyBoolean())).thenReturn(false);
 
