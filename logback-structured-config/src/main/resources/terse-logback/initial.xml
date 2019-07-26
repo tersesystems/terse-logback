@@ -58,7 +58,9 @@
     <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
 
     <turboFilter class="com.tersesystems.logback.turbomarker.TurboMarkerTurboFilter">
+    </turboFilter>
 
+    <turboFilter class="com.tersesystems.logback.ringbuffer.MarkerRingBufferTurboFilter">
     </turboFilter>
 
 </included>

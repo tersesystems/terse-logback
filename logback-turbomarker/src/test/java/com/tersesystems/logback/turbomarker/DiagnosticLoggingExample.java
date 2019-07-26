@@ -19,6 +19,7 @@ import com.typesafe.config.ConfigFactory;
 import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 import static java.util.Collections.singletonList;
 import static net.logstash.logback.argument.StructuredArguments.kv;
@@ -35,7 +36,8 @@ public class DiagnosticLoggingExample {
                 .lastName("Loblaw")
                 .customString("groups", singletonList("beta_testers"))
                 .build();
-        OrderDiagnosticLogging diagnostics = new OrderDiagnosticLogging(logger, markerFactory, ldUser);
+        Marker marker = markerFactory.create("diagnostics-order", ldUser);
+        OrderDiagnosticLogging diagnostics = new OrderDiagnosticLogging(logger, marker);
         Order order = new Order("id1337", diagnostics);
         order.addToCart(new LineItem());
         order.addPayment(new Payment());
@@ -92,11 +94,11 @@ public class DiagnosticLoggingExample {
 
     static class OrderDiagnosticLogging {
         private final Logger logger;
-        private final LDMarkerFactory.LDMarker ldMarker;
+        private final Marker marker;
 
-        OrderDiagnosticLogging(Logger logger, LDMarkerFactory markerFactory, LDUser ldUser) {
+        OrderDiagnosticLogging(Logger logger, Marker marker) {
             this.logger = logger;
-            this.ldMarker = markerFactory.create("diagnostics-order", ldUser);
+            this.marker = marker;
         }
 
         void reportAddToCart(Order order, LineItem lineItem) {
@@ -104,7 +106,7 @@ public class DiagnosticLoggingExample {
         }
 
         void reportAddPayment(Order order, Payment payment) {
-            reportArg("addPayment" ,order, kv("payment", payment));
+            reportArg("addPayment", order, kv("payment", payment));
         }
 
         void reportAddShipping(Order order, Shipping shipping) {
@@ -124,11 +126,15 @@ public class DiagnosticLoggingExample {
         }
 
         private void reportArg(String methodName, Order order, StructuredArgument arg) {
-            logger.debug(ldMarker, "{}: {}, {}", kv("method", methodName), kv("order", order), arg);
+            if (logger.isDebugEnabled(marker)) {
+                logger.debug(marker, "{}: {}, {}", kv("method", methodName), kv("order", order), arg);
+            }
         }
 
         private void report(String methodName, Order order) {
-            logger.debug(ldMarker, "{}: {}", kv("method", methodName), kv("order", order));
+            if (logger.isDebugEnabled(marker)) {
+                logger.debug(marker, "{}: {}", kv("method", methodName), kv("order", order));
+            }
         }
     }
 

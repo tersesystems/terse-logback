@@ -32,6 +32,7 @@ includeProject 'logback-uniqueid-appender'
 includeProject 'logback-exception-mapping'
 includeProject 'logback-exception-mapping-providers'
 includeProject 'logback-turbomarker'
+includeProject 'logback-ringbuffer'
 
 
 //includeProject 'guide'
