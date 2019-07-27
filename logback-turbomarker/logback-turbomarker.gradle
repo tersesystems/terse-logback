@@ -9,7 +9,7 @@ dependencies {
     testCompile "com.typesafe:config:$configVersion"
     //testCompile "com.fasterxml.jackson.module:jackson-datatype-jdk8"
     //testCompile "com.fasterxml.jackson.module:jackson-datatype-jsr310"
-    //testCompile 'org.apiguardian:apiguardian-api:1.1.0'
+    testCompile 'org.apiguardian:apiguardian-api:1.1.0'
     testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.9'
 
 }

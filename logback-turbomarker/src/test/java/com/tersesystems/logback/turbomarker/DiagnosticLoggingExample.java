@@ -19,6 +19,7 @@ import com.typesafe.config.ConfigFactory;
 import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 import static java.util.Collections.singletonList;
 import static net.logstash.logback.argument.StructuredArguments.kv;
