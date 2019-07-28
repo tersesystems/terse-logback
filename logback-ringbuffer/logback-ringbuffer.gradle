@@ -1,0 +1,19 @@
+dependencies {
+    compile project(':logback-classic')
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+
+    testCompile project(':logback-typesafe-config')
+    testCompile 'org.apiguardian:apiguardian-api:1.1.0'
+    testCompile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.9'
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}

@@ -375,7 +375,73 @@ public class LDMarkerTest {
 }
 ```
 
-This is also a reason why you should keep your [logging debug statements as insurance](https://www.spinellis.gr/pubs/jrnl/2005-IEEESW-TotT/html/v23n3.html), and not delete them after you've fixed a bug.  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.
+This is also a reason why [diagnostic logging is better than a debugger](https://lemire.me/blog/2016/06/21/i-do-not-use-a-debugger/).  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.
+
+## Triggering Diagnostic Logging on Exception
+
+There may be situations where there is no visible target for diagnostic logging, for example in the case where there is a race condition or a subtle data corruption that only shows up every so often.  In this case, the ideal workflow would be to keep the most recent diagnostic information available, but only see it when the appropriate condition is triggered.
+
+This is a pattern called ring buffer logging, described in [Using Ring Buffer Logging to Help Find Bugs](http://www.exampler.com/writing/ring-buffer.pdf) by [Brian Marick](https://twitter.com/marick).  In ring buffer logging, all debug events related to the logger are stored, but are stored in a [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) that is overwritten by the latest logs.  When triggered, the entire buffer is flushed to appenders.
+
+There are two implementations of ring buffer logging, in the `logback-ringbuffer` module: one that is threshold based, and another which is marker based.
+
+### Threshold Based Ring Buffer
+
+The threshold ring buffer is implemented as `com.tersesystems.logback.ringbuffer.ThresholdRingBufferTurboFilter`.  You can specify `logger` by name or by package, to indicate what loggers you want to record diagnostic events on.  You can specify the record level, which is usually `DEBUG` or `TRACE`, and logging statements that are equal to or below that record level will be added.  The trigger level, which is usually `WARN` or `ERROR`, indicates the threshold at which the ring buffered statements will be flushed to the appenders and the ring buffer cleared.
+
+```xml
+<configuration>
+
+    <turboFilter class="com.tersesystems.logback.ringbuffer.ThresholdRingBufferTurboFilter">
+        <logger>com.example.Test</logger>
+        <recordLevel>DEBUG</recordLevel>
+        <triggerLevel>ERROR</triggerLevel>
+    </turboFilter>
+
+</configuration>
+```
+
+Threshold based ring buffer is singular: there is only one for the entire logging context.  If you want to have different ring buffers or more complex logic, you may want to use a marker based ring buffer instead.
+
+### Marker Based Ring Buffer
+
+Marker based ring buffers use a turbo filter, but export the logic to a marker factory, `com.tersesystems.logback.ringbuffer.RingBufferMarkerFactory`.  The marker factory holds the ring buffer, and the turbo filter will add logging statements through the marker.
+
+This means that the turbofilter doesn't need any direct configuration:
+
+```xml
+<configuration>
+    <turboFilter class="com.tersesystems.logback.ringbuffer.MarkerRingBufferTurboFilter">
+    </turboFilter>
+</configuration>
+```
+
+Recording to the ring buffer and triggering the dump of the ring buffer are done through record markers and trigger markers, respectively:
+
+```java
+public class Test {
+    @Test
+    public void testWithInfoWithoutDump() throws JoranException {
+        LoggerContext loggerFactory = createLoggerFactory();
+
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory<>(10);
+        Marker recordMarker = markerFactory.createRecordMarker();
+        Marker triggerMarker = markerFactory.createTriggerMarker();
+
+        Logger logger = loggerFactory.getLogger("com.example.Test");
+        logger.info(recordMarker, "info stuff");
+        logger.debug(recordMarker, "debug stuff");
+        logger.error("Don't dump all the messages");
+
+        logger.error(triggerMarker,"Now dump them");
+
+        ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
+        assertThat(listAppender.list.size()).isEqualTo(4);
+    }
+}
+```
+
+This means that you can have several ring buffers in play, and don't have triggers tied to a specific logging level threshold.
 
 ## Instrumenting Logging Code with Byte Buddy
 
@@ -1086,73 +1152,80 @@ The XML is as follows:
 
 ```xml
 <included>
-
-    <appender name="JSONFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="com.tersesystems.logback.EnabledFilter">
+    <appender name="ASYNC_JSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <filter class="com.tersesystems.logback.core.EnabledFilter">
             <enabled>${jsonfile.enabled}</enabled>
         </filter>
-        <file>${jsonfile.location}</file>
-        <append>${jsonfile.append}</append>
-
-        <!--
-          This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
-         -->
-        <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
-            <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
-        </rollingPolicy>
-
-        <!--
-          Take out the \ because you cannot have - and - next to each other:
-          https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders-\-layouts
-        -->
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <!-- don't include the properties from typesafe config -->
-            <includeContext>${jsonfile.encoder.includeContext}</includeContext>
-            <!-- UTC is the best server consistent timezone -->
-            <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+        <appender class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${jsonfile.location}</file>
+            <append>${jsonfile.append}</append>
 
             <!--
-              https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
-            -->
-            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>${jsonfile.shortenedThrowableConverter.maxDepthPerThrowable}
-                </maxDepthPerThrowable>
-                <maxLength>${jsonfile.shortenedThrowableConverter.maxLength}</maxLength>
-                <shortenedClassNameLength>${jsonfile.shortenedThrowableConverter.shortenedClassNameLength}
-                </shortenedClassNameLength>
-                <!-- coma separated exclusion patterns -->
-                <exclusions>${jsonfile.shortenedThrowableConverter.exclusions}</exclusions>
-                <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
-                <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
-            </throwableConverter>
+              This quadruples logging throughput (in theory) https://logback.qos.ch/manual/appenders.html#FileAppender
+             -->
+            <immediateFlush>${jsonfile.immediateFlush}</immediateFlush>
 
-            <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
-            <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
-            <if condition='p("jsonfile.prettyprint").contains("true")'>
-                <then>
-                    <!-- Pretty print for better end user experience. -->
-                    <jsonGeneratorDecorator
-                            class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator">
-                        <censor-ref ref="json-censor"/>
-                    </jsonGeneratorDecorator>
-                </then>
-                <else>
-                    <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
-                        <censor-ref ref="json-censor"/>
-                    </jsonGeneratorDecorator>
-                </else>
-            </if>
-        </encoder>
-    </appender>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${jsonfile.rollingPolicy.fileNamePattern}</fileNamePattern>
+                <maxHistory>${jsonfile.rollingPolicy.maxHistory}</maxHistory>
+            </rollingPolicy>
 
-    <!--
-      https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#async-appenders
-    -->
-    <appender name="ASYNCJSONFILE" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender-ref ref="JSONFILE"/>
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <pattern>
+                        <pattern>
+                            { "id": "%uniqueId" }
+                        </pattern>
+                    </pattern>
+                    <sequence/>
+                    <timestamp>
+                        <!-- UTC is the best server consistent timezone -->
+                        <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+                        <timestampPattern>${jsonfile.encoder.timestampPattern}</timestampPattern>
+                    </timestamp>
+                    <version/>
+                    <message/>
+                    <loggerName/>
+                    <threadName/>
+                    <logLevel/>
+                    <stackHash/>
+                    <mdc/>
+                    <logstashMarkers/>
+                    <arguments/>
+
+                    <provider class="com.tersesystems.logback.exceptionmapping.json.ExceptionArgumentsProvider">
+                        <fieldName>exception</fieldName>
+                    </provider>
+
+                    <stackTrace>
+                        <!--
+                          https://github.com/logstash/logstash-logback-encoder#customizing-stack-traces
+                        -->
+                        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                            <rootCauseFirst>${jsonfile.shortenedThrowableConverter.rootCauseFirst}</rootCauseFirst>
+                            <inlineHash>${jsonfile.shortenedThrowableConverter.inlineHash}</inlineHash>
+                        </throwableConverter>
+                    </stackTrace>
+                </providers>
+
+                <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
+                <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
+                <if condition='p("jsonfile.prettyprint").contains("true")'>
+                    <then>
+                        <!-- Pretty print for better end user experience. -->
+                        <jsonGeneratorDecorator
+                                class="com.tersesystems.logback.censor.CensoringPrettyPrintingJsonGeneratorDecorator">
+                            <censor-ref ref="json-censor"/>
+                        </jsonGeneratorDecorator>
+                    </then>
+                    <else>
+                        <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
+                            <censor-ref ref="json-censor"/>
+                        </jsonGeneratorDecorator>
+                    </else>
+                </if>
+            </encoder>
+        </appender>
     </appender>
 </included>
 ```

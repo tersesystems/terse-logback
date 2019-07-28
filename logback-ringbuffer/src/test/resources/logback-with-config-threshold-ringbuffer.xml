@@ -1,0 +1,45 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <newRule pattern="configuration/typesafeConfig"
+             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
+
+    <typesafeConfig>
+        <object name="loggerList" path="ringbuffer.loggers" scope="context"/>
+    </typesafeConfig>
+
+    <turboFilter class="com.tersesystems.logback.ringbuffer.ThresholdRingBufferTurboFilter">
+        <loggersContextName>loggerList</loggersContextName>
+        <recordLevel>DEBUG</recordLevel>
+        <triggerLevel>ERROR</triggerLevel>
+    </turboFilter>
+
+    <appender name="LIST" class="ch.qos.logback.core.read.ListAppender">
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timestamp>
+                <timeZone>UTC</timeZone>
+                <timestampPattern>yyyyMMdd'T'hh:mm:ss.SSS'Z'</timestampPattern>
+            </timestamp>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="LIST" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
+

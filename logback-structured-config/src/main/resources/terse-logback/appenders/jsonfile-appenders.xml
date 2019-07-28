@@ -41,6 +41,7 @@
                     <timestamp>
                         <!-- UTC is the best server consistent timezone -->
                         <timeZone>${jsonfile.encoder.timeZone}</timeZone>
+                        <pattern>${jsonfile.encoder.timestampPattern}</pattern>
                     </timestamp>
                     <version/>
                     <message/>
@@ -66,7 +67,6 @@
                         </throwableConverter>
                     </stackTrace>
                 </providers>
-
 
                 <!-- https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#customizing-json-factory-and-generator -->
                 <!-- XXX it would be much nicer to use OGNL rather than Janino, but out of scope... -->
