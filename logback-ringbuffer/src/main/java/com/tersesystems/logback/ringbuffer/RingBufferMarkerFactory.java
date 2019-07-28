@@ -13,41 +13,41 @@ package com.tersesystems.logback.ringbuffer;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.slf4j.Marker;
 
+import java.util.function.Supplier;
+
 /**
  * A marker factory that contains a ringbuffer and two inner classes, RecordMarker and DumpMarker.
  *
  * A logging statement that has record marker added will be appended to the
- *
- * @param <LoggingEventT> the logging event type
  */
-public class RingBufferMarkerFactory<LoggingEventT extends ILoggingEvent> {
-    private final RingBuffer<LoggingEventT> ringBuffer;
+public class RingBufferMarkerFactory {
+    private final RingBuffer<ILoggingEvent> ringBuffer;
 
     public RingBufferMarkerFactory(int capacity) {
         this.ringBuffer = new RingBuffer<>(capacity);
     }
 
-    Marker createTriggerMarker() {
-        return new TriggerMarker();
+    public Marker createTriggerMarker() {
+        return new TriggerMarker(() -> ringBuffer);
     }
 
-    Marker createRecordMarker() {
-        return new RecordMarker();
+    public Marker createRecordMarker() {
+        return new RecordMarker(() -> ringBuffer);
     }
 
-    class RecordMarker extends AbstractRingBufferMarker<LoggingEventT> {
+    static class RecordMarker extends AbstractRingBufferMarker<ILoggingEvent> {
         static final String TS_RECORD_MARKER = "TS_RECORD_MARKER";
 
-        RecordMarker() {
-            super(TS_RECORD_MARKER, () -> ringBuffer);
+        RecordMarker(Supplier<RingBuffer<ILoggingEvent>> supplier) {
+            super(TS_RECORD_MARKER, supplier);
         }
     }
 
-    class TriggerMarker extends AbstractRingBufferMarker<LoggingEventT> {
+    static class TriggerMarker extends AbstractRingBufferMarker<ILoggingEvent> {
         static final String TS_RECORD_MARKER = "TS_DUMP_MARKER";
 
-        TriggerMarker() {
-            super(TS_RECORD_MARKER, () -> ringBuffer);
+        TriggerMarker(Supplier<RingBuffer<ILoggingEvent>> supplier) {
+            super(TS_RECORD_MARKER, supplier);
         }
     }
 

@@ -41,7 +41,7 @@
                     <timestamp>
                         <!-- UTC is the best server consistent timezone -->
                         <timeZone>${jsonfile.encoder.timeZone}</timeZone>
-                        <timestampPattern>${jsonfile.encoder.timestampPattern}</timestampPattern>
+                        <pattern>${jsonfile.encoder.timestampPattern}</pattern>
                     </timestamp>
                     <version/>
                     <message/>

@@ -31,7 +31,7 @@ public class MarkerRingBufferTurboFilterTest {
     public void testWithInfo() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
 
-        RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
         Marker recordMarker = markerFactory.createRecordMarker();
         Marker dumpMarker = markerFactory.createTriggerMarker();
 
@@ -49,7 +49,7 @@ public class MarkerRingBufferTurboFilterTest {
     public void testWithInfoWithoutDump() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
 
-        RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
         Marker recordMarker = markerFactory.createRecordMarker();
         Marker dumpMarker = markerFactory.createTriggerMarker();
 
@@ -68,7 +68,7 @@ public class MarkerRingBufferTurboFilterTest {
     public void testWithDump() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
 
-        RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
         Marker recordMarker = markerFactory.createRecordMarker();
         Marker dumpMarker = markerFactory.createTriggerMarker();
 
@@ -86,7 +86,7 @@ public class MarkerRingBufferTurboFilterTest {
     @Test
     public void testWithNoRecord() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
-        RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
         Marker dumpMarker = markerFactory.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
@@ -103,8 +103,8 @@ public class MarkerRingBufferTurboFilterTest {
     @Test
     public void testWithTwoFlows() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
-        RingBufferMarkerFactory<ILoggingEvent> factory1 = new RingBufferMarkerFactory<>(10);
-        RingBufferMarkerFactory<ILoggingEvent> factory2 = new RingBufferMarkerFactory<>(10);
+        RingBufferMarkerFactory factory1 = new RingBufferMarkerFactory(10);
+        RingBufferMarkerFactory factory2 = new RingBufferMarkerFactory(10);
         Marker record1 = factory1.createRecordMarker();
         Marker dump1 = factory1.createTriggerMarker();
 

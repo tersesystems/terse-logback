@@ -22,20 +22,18 @@ import org.slf4j.Marker;
 /**
  * A turbofilter that delegates recording and dumping of diagnostic logging information to external
  * markers.  This allows for multiple ringbuffers and more flexible logging handling.
- *
- * @param <LoggingEventT> the type of logging event.
  */
-public class MarkerRingBufferTurboFilter<LoggingEventT extends ILoggingEvent> extends TurboFilter {
-    private ILoggingEventFactory<LoggingEventT> loggingEventFactory;
+public class MarkerRingBufferTurboFilter extends TurboFilter {
+    private ILoggingEventFactory<ILoggingEvent> loggingEventFactory;
 
-    public void setLoggingEventFactory(ILoggingEventFactory<LoggingEventT> loggingEventFactory) {
+    public void setLoggingEventFactory(ILoggingEventFactory<ILoggingEvent> loggingEventFactory) {
         this.loggingEventFactory = loggingEventFactory;
     }
 
     @Override
     public void start() {
         if (this.loggingEventFactory == null) {
-            this.loggingEventFactory = (ILoggingEventFactory<LoggingEventT>) new LoggingEventFactory();
+            this.loggingEventFactory = new LoggingEventFactory();
         }
         super.start();
     }
@@ -56,7 +54,7 @@ public class MarkerRingBufferTurboFilter<LoggingEventT extends ILoggingEvent> ex
         if (level.isGreaterOrEqual(logger.getEffectiveLevel())) {
             return false;
         }
-        return marker instanceof RingBufferMarkerFactory<?>.RecordMarker;
+        return marker instanceof RingBufferMarkerFactory.RecordMarker;
     }
 
     private boolean isDumpTriggered(Marker marker) {
@@ -64,7 +62,7 @@ public class MarkerRingBufferTurboFilter<LoggingEventT extends ILoggingEvent> ex
     }
 
     protected void dump(Marker marker, Logger logger) {
-        RingBuffer<LoggingEventT> ringBuffer = getRingBuffer(marker);
+        RingBuffer<ILoggingEvent> ringBuffer = getRingBuffer(marker);
         for (ILoggingEvent iLoggingEvent : ringBuffer) {
             logger.callAppenders(iLoggingEvent);
         }
@@ -72,13 +70,13 @@ public class MarkerRingBufferTurboFilter<LoggingEventT extends ILoggingEvent> ex
     }
 
     protected void record(Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t) {
-        LoggingEventT le = loggingEventFactory.create(marker, logger, level, msg, params, t);
-        RingBuffer<LoggingEventT> ringBuffer = getRingBuffer(marker);
+        ILoggingEvent le = loggingEventFactory.create(marker, logger, level, msg, params, t);
+        RingBuffer<ILoggingEvent> ringBuffer = getRingBuffer(marker);
         ringBuffer.append(le);
     }
 
     @SuppressWarnings("unchecked")
-    protected RingBuffer<LoggingEventT> getRingBuffer(Marker marker) {
-        return ((RingBufferAware<LoggingEventT>) marker).getRingBuffer();
+    protected RingBuffer<ILoggingEvent> getRingBuffer(Marker marker) {
+        return ((RingBufferAware<ILoggingEvent>) marker).getRingBuffer();
     }
 }

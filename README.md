@@ -424,7 +424,7 @@ public class Test {
     public void testWithInfoWithoutDump() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
 
-        RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory<>(10);
         Marker recordMarker = markerFactory.createRecordMarker();
         Marker triggerMarker = markerFactory.createTriggerMarker();
 

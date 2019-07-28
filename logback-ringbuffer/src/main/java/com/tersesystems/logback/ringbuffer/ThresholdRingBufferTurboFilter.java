@@ -12,11 +12,8 @@ package com.tersesystems.logback.ringbuffer;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.turbo.TurboFilter;
-import ch.qos.logback.core.Context;
 import ch.qos.logback.core.spi.FilterReply;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
@@ -29,11 +26,11 @@ import java.util.List;
 /**
  * Dumps logging events if an event with a level meeting the threshold level is seen.
  */
-public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingBufferAware<LoggingEvent> {
+public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingBufferAware<ILoggingEvent> {
 
     private int capacity = 100;
-    private RingBuffer<LoggingEvent> ringBuffer;
-    private ILoggingEventFactory<LoggingEvent> loggingEventFactory;
+    private RingBuffer<ILoggingEvent> ringBuffer;
+    private ILoggingEventFactory<ILoggingEvent> loggingEventFactory;
     private List<String> loggerList = new ArrayList<>();
     private String loggerContextName = "loggerList";
 
@@ -89,7 +86,7 @@ public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingB
         return false;
     }
 
-    public void setLoggingEventFactory(ILoggingEventFactory<LoggingEvent> loggingEventFactory) {
+    public void setLoggingEventFactory(ILoggingEventFactory<ILoggingEvent> loggingEventFactory) {
         this.loggingEventFactory = loggingEventFactory;
     }
 
@@ -111,7 +108,7 @@ public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingB
     }
 
     protected void record(Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t) {
-        LoggingEvent le = loggingEventFactory.create(marker, logger, level, msg, params, t);
+        ILoggingEvent le = loggingEventFactory.create(marker, logger, level, msg, params, t);
         ringBuffer.append(le);
     }
 
@@ -122,7 +119,7 @@ public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingB
     }
 
     @Override
-    public RingBuffer<LoggingEvent> getRingBuffer() {
+    public RingBuffer<ILoggingEvent> getRingBuffer() {
         return ringBuffer;
     }
 }
