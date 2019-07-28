@@ -19,7 +19,6 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Marker;
 
 import java.net.URL;
 
@@ -105,6 +104,34 @@ public class ThresholdRingBufferTurboFilterTest {
 
         ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
         assertThat(listAppender.list.size()).isEqualTo(5);
+    }
+
+    @Test
+    public void testWithContextDrivenDump() throws JoranException {
+        LoggerContext loggerFactory = createContextLoggerContext();
+
+        // Context has this set to ["example1.Test", "example2.Test", "example3"]
+        Logger logger1 = loggerFactory.getLogger("example1.Test");
+        Logger logger2 = loggerFactory.getLogger("example2.Test");
+        Logger logger3 = loggerFactory.getLogger("example3.Test");
+        Logger logger4 = loggerFactory.getLogger("example4.Test");
+        logger1.debug( "debug one");
+        logger2.debug( "debug two");
+        logger3.debug( "debug three");
+        logger4.debug( "debug four"); // should not be put in ring buffer
+        logger1.error( "Dump all the messages");
+
+        ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
+        assertThat(listAppender.list.size()).isEqualTo(4);
+    }
+
+    LoggerContext createContextLoggerContext() throws JoranException {
+        LoggerContext context = new LoggerContext();
+        URL resource = getClass().getResource("/logback-with-config-threshold-ringbuffer.xml");
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(context);
+        configurator.doConfigure(resource);
+        return context;
     }
 
     LoggerContext createLoggerContext() throws JoranException {

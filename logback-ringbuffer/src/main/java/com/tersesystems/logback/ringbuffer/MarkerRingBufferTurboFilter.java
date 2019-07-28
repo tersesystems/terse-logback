@@ -60,7 +60,7 @@ public class MarkerRingBufferTurboFilter<LoggingEventT extends ILoggingEvent> ex
     }
 
     private boolean isDumpTriggered(Marker marker) {
-        return marker instanceof RingBufferMarkerFactory<?>.DumpMarker;
+        return marker instanceof RingBufferMarkerFactory.TriggerMarker;
     }
 
     protected void dump(Marker marker, Logger logger) {

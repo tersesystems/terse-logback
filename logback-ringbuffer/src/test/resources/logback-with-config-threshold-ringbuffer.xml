@@ -12,8 +12,15 @@
 -->
 <configuration>
 
+    <newRule pattern="configuration/typesafeConfig"
+             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
+
+    <typesafeConfig>
+        <object name="loggerList" path="ringbuffer.loggers" scope="context"/>
+    </typesafeConfig>
+
     <turboFilter class="com.tersesystems.logback.ringbuffer.ThresholdRingBufferTurboFilter">
-        <logger>com.example.Test</logger>
+        <loggersContextName>loggerList</loggersContextName>
         <recordLevel>DEBUG</recordLevel>
         <triggerLevel>ERROR</triggerLevel>
     </turboFilter>

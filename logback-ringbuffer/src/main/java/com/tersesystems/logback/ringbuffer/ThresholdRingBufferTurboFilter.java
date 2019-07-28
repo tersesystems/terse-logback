@@ -12,13 +12,19 @@ package com.tersesystems.logback.ringbuffer;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.turbo.TurboFilter;
+import ch.qos.logback.core.Context;
 import ch.qos.logback.core.spi.FilterReply;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
 import org.slf4j.Marker;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Dumps logging events if an event with a level meeting the threshold level is seen.
@@ -28,33 +34,44 @@ public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingB
     private int capacity = 100;
     private RingBuffer<LoggingEvent> ringBuffer;
     private ILoggingEventFactory<LoggingEvent> loggingEventFactory;
-    private String logger = Logger.ROOT_LOGGER_NAME;
+    private List<String> loggerList = new ArrayList<>();
+    private String loggerContextName = "loggerList";
 
-    private Level thresholdLevel = Level.ERROR;
+    private Level triggerLevel = Level.ERROR;
     private Level recordLevel = Level.DEBUG;
 
     public void setRecordLevel(String recordLevel) {
         this.recordLevel = Level.toLevel(recordLevel);
     }
 
-    public void setThresholdLevel(String thresholdLevel) {
-        this.thresholdLevel = Level.toLevel(thresholdLevel);
+    public void setTriggerLevel(String triggerLevel) {
+        this.triggerLevel = Level.toLevel(triggerLevel);
     }
 
-    public void setLogger(String logger) {
-        this.logger = logger;
+    public void addLogger(String logger) {
+        this.loggerList.add(logger);
+    }
+
+    public void setLoggerContextName(String loggerContextName) {
+        this.loggerContextName = loggerContextName;
     }
 
     @Override
     public void start() {
-        if (recordLevel.isGreaterOrEqual(thresholdLevel)) {
+        if (recordLevel.isGreaterOrEqual(triggerLevel)) {
             addError("Threshold is lower or equal to level!");
         }
         if (loggingEventFactory == null) {
             this.loggingEventFactory = new LoggingEventFactory();
         }
-        if (this.logger == null) {
-            addError("No logger name was specified");
+        if (this.loggerList.isEmpty()) {
+            // Can't seem to set a list of strings directly using setProperty, so let's pull it from context.
+            if (this.loggerContextName != null) {
+                Collection<String> loggers = (Collection<String>) getContext().getObject(this.loggerContextName);
+                this.loggerList.addAll(loggers);
+            } else {
+                addWarn("No logger name was specified");
+            }
         }
         ringBuffer = new RingBuffer<>(capacity);
 
@@ -62,13 +79,14 @@ public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingB
     }
 
     public boolean isDumpTriggered(Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t) {
-        return level.isGreaterOrEqual(thresholdLevel) ;
+        return level.isGreaterOrEqual(triggerLevel) ;
     }
 
     public boolean isRecordable(Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t) {
+        // Can't use isEnabledFor here because that itself goes through the turbofilters.
         if (level.isGreaterOrEqual(logger.getEffectiveLevel())) return false;
-        if (level.isGreaterOrEqual(recordLevel)) return true;
-        return isSelectedLogger(logger);
+        if (level.isGreaterOrEqual(recordLevel)) return isSelectedLogger(logger);
+        return false;
     }
 
     public void setLoggingEventFactory(ILoggingEventFactory<LoggingEvent> loggingEventFactory) {
@@ -98,7 +116,9 @@ public class ThresholdRingBufferTurboFilter extends TurboFilter implements RingB
     }
 
     protected boolean isSelectedLogger(Logger logger) {
-        return logger.getName().startsWith(this.logger);
+        String name = logger.getName();
+        boolean result = loggerList.stream().anyMatch(name::startsWith);
+        return result;
     }
 
     @Override

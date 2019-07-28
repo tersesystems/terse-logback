@@ -27,8 +27,8 @@ public class RingBufferMarkerFactory<LoggingEventT extends ILoggingEvent> {
         this.ringBuffer = new RingBuffer<>(capacity);
     }
 
-    Marker createDumpMarker() {
-        return new DumpMarker();
+    Marker createTriggerMarker() {
+        return new TriggerMarker();
     }
 
     Marker createRecordMarker() {
@@ -43,10 +43,10 @@ public class RingBufferMarkerFactory<LoggingEventT extends ILoggingEvent> {
         }
     }
 
-    class DumpMarker extends AbstractRingBufferMarker<LoggingEventT> {
+    class TriggerMarker extends AbstractRingBufferMarker<LoggingEventT> {
         static final String TS_RECORD_MARKER = "TS_DUMP_MARKER";
 
-        DumpMarker() {
+        TriggerMarker() {
             super(TS_RECORD_MARKER, () -> ringBuffer);
         }
     }

@@ -33,7 +33,7 @@ public class MarkerRingBufferTurboFilterTest {
 
         RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
         Marker recordMarker = markerFactory.createRecordMarker();
-        Marker dumpMarker = markerFactory.createDumpMarker();
+        Marker dumpMarker = markerFactory.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.info(recordMarker, "info stuff");
@@ -51,7 +51,7 @@ public class MarkerRingBufferTurboFilterTest {
 
         RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
         Marker recordMarker = markerFactory.createRecordMarker();
-        Marker dumpMarker = markerFactory.createDumpMarker();
+        Marker dumpMarker = markerFactory.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.info(recordMarker, "info stuff");
@@ -70,7 +70,7 @@ public class MarkerRingBufferTurboFilterTest {
 
         RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
         Marker recordMarker = markerFactory.createRecordMarker();
-        Marker dumpMarker = markerFactory.createDumpMarker();
+        Marker dumpMarker = markerFactory.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.debug(recordMarker, "debug one");
@@ -87,7 +87,7 @@ public class MarkerRingBufferTurboFilterTest {
     public void testWithNoRecord() throws JoranException {
         LoggerContext loggerFactory = createLoggerFactory();
         RingBufferMarkerFactory<ILoggingEvent> markerFactory = new RingBufferMarkerFactory<>(10);
-        Marker dumpMarker = markerFactory.createDumpMarker();
+        Marker dumpMarker = markerFactory.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.debug( "debug one");
@@ -106,10 +106,10 @@ public class MarkerRingBufferTurboFilterTest {
         RingBufferMarkerFactory<ILoggingEvent> factory1 = new RingBufferMarkerFactory<>(10);
         RingBufferMarkerFactory<ILoggingEvent> factory2 = new RingBufferMarkerFactory<>(10);
         Marker record1 = factory1.createRecordMarker();
-        Marker dump1 = factory1.createDumpMarker();
+        Marker dump1 = factory1.createTriggerMarker();
 
         Marker record2 = factory2.createRecordMarker();
-        Marker dump2 = factory2.createDumpMarker();
+        Marker dump2 = factory2.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.debug(record1, "debug one with 1st ringbuffer");
