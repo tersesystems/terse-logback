@@ -385,6 +385,8 @@ This is a pattern called ring buffer logging, described in [Using Ring Buffer Lo
 
 There are two implementations of ring buffer logging, in the `logback-ringbuffer` module: one that is threshold based, and another which is marker based.
 
+**NOTE**: When using ring buffers, you should be aware that **anything stored in the ring buffer will not be garbage collected** until the ring buffer is flushed or the reference is overwritten -- if you are passing in any large objects through argument parameters or through marker references, they may hang around much longer than you expect.  Please be judicious and use [weak references](https://docs.oracle.com/javase/8/docs/api/java/lang/ref/WeakReference.html) if necessary.
+
 ### Threshold Based Ring Buffer
 
 The threshold ring buffer is implemented as `com.tersesystems.logback.ringbuffer.ThresholdRingBufferTurboFilter`.  You can specify `logger` by name or by package, to indicate what loggers you want to record diagnostic events on.  You can specify the record level, which is usually `DEBUG` or `TRACE`, and logging statements that are equal to or below that record level will be added.  The trigger level, which is usually `WARN` or `ERROR`, indicates the threshold at which the ring buffered statements will be flushed to the appenders and the ring buffer cleared.
