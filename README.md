@@ -1416,7 +1416,7 @@ Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
 I can never remember how to release projects, so I'm using [Kordamp Gradle Plugins](https://aalmiray.github.io/kordamp-gradle-plugins/) to do most of the work.  I've added some properties to deal with signing artifacts with gpg2 and a Yubikey 4 and staging on Bintray.
 
 ```bash
-./gradlew publishToMavenLocal
+./gradlew publishToMavenLocal -Pversion=0.7.0-SNAPSHOT
 ```
 
 To make sure everything works:
@@ -1434,8 +1434,8 @@ License formatting:
 To stage on Bintray:
 
 ```bash
-HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=0.1.7 -Pbintray.enabled=true -Pbintray.dryRun=true --info
-HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=x.x.x -Pbintray.enabled=true --info
+HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=0.7.0 -Pbintray.enabled=true -Pbintray.dryRun=true --info
+HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=0.7.0 -Pbintray.enabled=true --info
 ```
 
 You will need to set up the bintray credentials before you can even compile anything (sorry about that):
