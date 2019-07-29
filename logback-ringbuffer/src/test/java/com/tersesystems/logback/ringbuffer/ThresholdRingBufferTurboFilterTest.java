@@ -74,7 +74,7 @@ public class ThresholdRingBufferTurboFilterTest {
         Logger logger = loggerContext.getLogger("com.example.Test");
         logger.debug( "debug stuff");
         logger.info( "info stuff");
-        logger.error( "info stuff");
+        logger.error( "error stuff");
 
         RingBuffer<LoggingEvent> ringBuffer = getRingBuffer(loggerContext);
         ListAppender<ILoggingEvent> listAppender = getListAppender(loggerContext);

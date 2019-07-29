@@ -51,14 +51,13 @@ public class MarkerRingBufferTurboFilterTest {
 
         RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
         Marker recordMarker = markerFactory.createRecordMarker();
-        Marker dumpMarker = markerFactory.createTriggerMarker();
+        Marker triggerMarker = markerFactory.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.info(recordMarker, "info stuff");
         logger.debug(recordMarker, "debug stuff"); // debug statement never gets appended here
         logger.error("Don't dump all the messages");
-
-        logger.error(dumpMarker,"Now dump them");
+        logger.error(triggerMarker,"Now dump them");
 
         ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
         assertThat(listAppender.list.size()).isEqualTo(4);
@@ -106,22 +105,22 @@ public class MarkerRingBufferTurboFilterTest {
         RingBufferMarkerFactory factory1 = new RingBufferMarkerFactory(10);
         RingBufferMarkerFactory factory2 = new RingBufferMarkerFactory(10);
         Marker record1 = factory1.createRecordMarker();
-        Marker dump1 = factory1.createTriggerMarker();
+        Marker trigger1 = factory1.createTriggerMarker();
 
         Marker record2 = factory2.createRecordMarker();
-        Marker dump2 = factory2.createTriggerMarker();
+        Marker trigger2 = factory2.createTriggerMarker();
 
         Logger logger = loggerFactory.getLogger("com.example.Test");
         logger.debug(record1, "debug one with 1st ringbuffer");
         logger.debug(record2, "debug two with 2nd ringbuffer");
         logger.debug(record2, "debug three with 2nd ringbuffer");
         logger.debug(record2, "debug four with 2nd ringbuffer");
-        logger.error(dump2, "Dump messages recorded with record2");
+        logger.error(trigger2, "Dump messages recorded with record2");
 
         ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
         assertThat(listAppender.list.size()).isEqualTo(4);
 
-        logger.error(dump1, "Dump messages recorded with record1");
+        logger.error(trigger1, "Dump messages recorded with record1");
         assertThat(listAppender.list.size()).isEqualTo(6);
     }
 

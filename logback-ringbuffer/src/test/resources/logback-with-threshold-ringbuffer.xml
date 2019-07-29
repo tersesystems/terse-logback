@@ -22,11 +22,8 @@
     </appender>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <timestamp>
-                <timeZone>UTC</timeZone>
-                <timestampPattern>yyyyMMdd'T'hh:mm:ss.SSS'Z'</timestampPattern>
-            </timestamp>
+        <encoder>
+            <pattern>[%-5level] %logger{15} - %msg%n%xException{10}</pattern>
         </encoder>
     </appender>
 
