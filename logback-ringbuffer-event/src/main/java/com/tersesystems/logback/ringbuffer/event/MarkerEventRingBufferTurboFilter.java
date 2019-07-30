@@ -75,6 +75,8 @@ public class MarkerEventRingBufferTurboFilter extends MarkerRingBufferTurboFilte
         }
         if (encoder == null) {
             this.encoder = new LogstashEncoder();
+            this.encoder.setContext(getContext());
+            this.encoder.start();
         }
         super.start();
     }
