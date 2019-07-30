@@ -35,7 +35,7 @@ public class RingBufferMarkerFactory {
         return new RecordMarker(() -> ringBuffer);
     }
 
-    static class RecordMarker extends AbstractRingBufferMarker<ILoggingEvent> {
+    public static class RecordMarker extends AbstractRingBufferMarker<ILoggingEvent> {
         static final String TS_RECORD_MARKER = "TS_RECORD_MARKER";
 
         RecordMarker(Supplier<RingBuffer<ILoggingEvent>> supplier) {
@@ -43,7 +43,7 @@ public class RingBufferMarkerFactory {
         }
     }
 
-    static class TriggerMarker extends AbstractRingBufferMarker<ILoggingEvent> {
+    public static class TriggerMarker extends AbstractRingBufferMarker<ILoggingEvent> {
         static final String TS_RECORD_MARKER = "TS_DUMP_MARKER";
 
         TriggerMarker(Supplier<RingBuffer<ILoggingEvent>> supplier) {

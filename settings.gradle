@@ -33,6 +33,7 @@ includeProject 'logback-exception-mapping'
 includeProject 'logback-exception-mapping-providers'
 includeProject 'logback-turbomarker'
 includeProject 'logback-ringbuffer'
+includeProject 'logback-ringbuffer-event'
 
 
 //includeProject 'guide'
