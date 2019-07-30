@@ -26,6 +26,10 @@ import org.slf4j.Marker;
 public class MarkerRingBufferTurboFilter extends TurboFilter {
     private ILoggingEventFactory<ILoggingEvent> loggingEventFactory;
 
+    public ILoggingEventFactory<ILoggingEvent> getLoggingEventFactory() {
+        return loggingEventFactory;
+    }
+
     public void setLoggingEventFactory(ILoggingEventFactory<ILoggingEvent> loggingEventFactory) {
         this.loggingEventFactory = loggingEventFactory;
     }
