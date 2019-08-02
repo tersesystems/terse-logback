@@ -5,6 +5,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
 import com.tersesystems.logback.ringbuffer.RingBuffer;
@@ -16,7 +17,6 @@ import org.slf4j.Marker;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,12 +40,15 @@ public class MarkerEventRingBufferTurboFilterTest {
 
         ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
         assertThat(listAppender.list.size()).isEqualTo(1);
-//        ILoggingEvent loggingEvent = listAppender.list.get(0);
-//        LogstashEncoder logstashEncoder = new LogstashEncoder();
-//        logstashEncoder.setContext(loggerFactory);
-//        logstashEncoder.start();
-//        String s = new String(logstashEncoder.encode(loggingEvent), StandardCharsets.UTF_8);
-//        System.out.println(s);
+
+        //System.out.println(dumpAsJson(listAppender.list.get(0), loggerFactory));
+    }
+
+    String dumpAsJson(ILoggingEvent loggingEvent, Context context) {
+        LogstashEncoder logstashEncoder = new LogstashEncoder();
+        logstashEncoder.setContext(context);
+        logstashEncoder.start();
+        return new String(logstashEncoder.encode(loggingEvent), StandardCharsets.UTF_8);
     }
 
     LoggerContext createLoggerFactory() throws JoranException {

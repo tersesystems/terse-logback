@@ -445,6 +445,113 @@ public class Test {
 
 This means that you can have several ring buffers in play, and don't have triggers tied to a specific logging level threshold.
 
+## Marker Based Ring Buffer
+
+If you want to have diagnostic events displayed as part of the log message, then you can use `MarkerEventRingBufferTurboFilter` from the `ringbuffer-event` module.  This code depends on `logstash-logback-encoder` to encode the logging events inside the error logging statement.
+
+To use, add the following turbomarker:
+
+```xml
+<configuration>
+    <turboFilter class="com.tersesystems.logback.ringbuffer.event.MarkerEventRingBufferTurboFilter">
+    </turboFilter>
+</configuration>
+```
+
+and then the given code:
+
+```java
+
+public class MarkerEventRingBufferTurboFilterTest {
+    @Test
+    public void testWithDump() throws JoranException {
+        LoggerContext loggerFactory = createLoggerFactory();
+
+        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
+        Marker recordMarker = markerFactory.createRecordMarker();
+        Marker dumpMarker = markerFactory.createTriggerMarker();
+
+        Logger logger = loggerFactory.getLogger("com.example.Test");
+        logger.debug(recordMarker, "debug one");
+        logger.debug(recordMarker, "debug two");
+        logger.debug(recordMarker, "debug three");
+        logger.debug(recordMarker, "debug four");
+        logger.error(dumpMarker, "Dump all the messages");
+
+        System.out.println(dumpAsJson(listAppender.list.get(0), loggerFactory));
+    }
+}
+```
+
+yields the following JSON:
+
+```json
+{
+  "@timestamp": "2019-08-02T07:33:47.097-07:00",
+  "@version": "1",
+  "message": "Dump all the messages",
+  "logger_name": "com.example.Test",
+  "thread_name": "main",
+  "level": "ERROR",
+  "level_value": 40000,
+  "tags": [
+    "TS_DUMP_MARKER"
+  ],
+  "diagnosticEvents": [
+    {
+      "@timestamp": "2019-08-02T07:33:47.094-07:00",
+      "@version": "1",
+      "message": "debug one",
+      "logger_name": "com.example.Test",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000,
+      "tags": [
+        "TS_RECORD_MARKER"
+      ]
+    },
+    {
+      "@timestamp": "2019-08-02T07:33:47.094-07:00",
+      "@version": "1",
+      "message": "debug two",
+      "logger_name": "com.example.Test",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000,
+      "tags": [
+        "TS_RECORD_MARKER"
+      ]
+    },
+    {
+      "@timestamp": "2019-08-02T07:33:47.094-07:00",
+      "@version": "1",
+      "message": "debug three",
+      "logger_name": "com.example.Test",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000,
+      "tags": [
+        "TS_RECORD_MARKER"
+      ]
+    },
+    {
+      "@timestamp": "2019-08-02T07:33:47.094-07:00",
+      "@version": "1",
+      "message": "debug four",
+      "logger_name": "com.example.Test",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000,
+      "tags": [
+        "TS_RECORD_MARKER"
+      ]
+    }
+  ]
+}
+```
+
+
+
 ## Instrumenting Logging Code with Byte Buddy
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
