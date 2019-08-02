@@ -1542,7 +1542,7 @@ To stage on Bintray:
 
 ```bash
 HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=0.7.0 -Pbintray.enabled=true -Pbintray.dryRun=true --info
-HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=0.7.0 -Pbintray.enabled=true --info
+HISTCONTROL=ignoreboth ./gradlew clean check bintrayUpload -Pversion=0.8.0 -Pbintray.enabled=true --info
 ```
 
 You will need to set up the bintray credentials before you can even compile anything (sorry about that):
