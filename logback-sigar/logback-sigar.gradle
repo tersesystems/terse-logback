@@ -1,0 +1,24 @@
+dependencies {
+    compile project(':logback-classic')
+
+    // Don't include log4j 1.2 in with the project
+    compile('org.fusesource:sigar:1.6.4') {
+        exclude group: 'log4j'
+    }
+
+    // ensure that we're using slf4j to ensure sigar logging works
+    compile group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.26'
+
+    // sigar-loader handles all the JVM stuff.
+    compile group: 'io.kamon', name: 'sigar-loader', version: '1.6.6'
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}
