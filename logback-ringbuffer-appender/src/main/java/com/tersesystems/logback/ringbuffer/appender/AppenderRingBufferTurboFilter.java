@@ -1,3 +1,13 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
 package com.tersesystems.logback.ringbuffer.appender;
 
 import ch.qos.logback.classic.Level;
@@ -10,9 +20,8 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import ch.qos.logback.core.spi.FilterReply;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
-import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import com.tersesystems.logback.core.Collections;
-import com.tersesystems.logback.ringbuffer.RingBuffer;
+import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import net.logstash.logback.encoder.CompositeJsonEncoder;
 import net.logstash.logback.encoder.LogstashEncoder;
 import net.logstash.logback.marker.LogstashMarker;
@@ -22,10 +31,12 @@ import org.slf4j.Marker;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This turbo filter will pull diagnostic events from a cyclic buffer and add them as a logstash marker.
+ */
 public class AppenderRingBufferTurboFilter extends TurboFilter implements DefaultAppenderAttachable<ILoggingEvent> {
 
     private Level triggerLevel = Level.ERROR;
