@@ -1,5 +1,5 @@
 [<img src="https://img.shields.io/travis/tersesystems/terse-logback.svg"/>](https://travis-ci.org/tersesystems/terse-logback) 
-[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.8.0) ](https://bintray.com/tersesystems/maven/terse-logback/0.8.0/link)
+[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.9.1) ](https://bintray.com/tersesystems/maven/terse-logback/0.9.1/link)
 
 # Structured Logging Example with Logback
 
@@ -1063,7 +1063,7 @@ This is a lot easier for structured logging parsers to grok than the associated 
 
 ## Exposing System Information with Sigar
 
-In [What is Happening: Attempting to Understand Our Systems](https://www.youtube.com/watch?v=xy3w2hGijhE), there's [a slide](https://speakerdeck.com/lyddonb/what-is-happening-attempting-to-understand-our-systems?slide=133) that suggests the following information added to the context:
+In [What is Happening: Attempting to Understand Our Systems](https://www.youtube.com/watch?v=xy3w2hGijhE), there's [a slide](https://speakerdeck.com/lyddonb/what-is-happening-attempting-to-understand-our-systems?slide=133) that suggests the following information should always be available as telemetry data:
 
 > The user (and/or company), time, machine stats (CPU, Memory, etc), software version, configuration data, the calling request, any dependent requests
 
