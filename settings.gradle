@@ -34,6 +34,7 @@ includeProject 'logback-exception-mapping-providers'
 includeProject 'logback-turbomarker'
 includeProject 'logback-ringbuffer'
 includeProject 'logback-ringbuffer-event'
+includeProject 'logback-ringbuffer-appender'
 includeProject 'logback-sigar'
 
 

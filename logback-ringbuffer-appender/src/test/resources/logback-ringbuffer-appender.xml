@@ -1,0 +1,53 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <newRule pattern="configuration/turboFilter/appender-ref"
+             actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
+
+    <!-- must be defined above appender-ref -->
+    <appender name="DEBUG-CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <turboFilter class="com.tersesystems.logback.ringbuffer.appender.AppenderRingBufferTurboFilter">
+        <appender-ref ref="DEBUG-CYCLIC"/>
+    </turboFilter>
+
+    <appender name="LIST" class="ch.qos.logback.core.read.ListAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        </encoder>
+    </appender>
+
+    <logger name="com.example.Debug" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="DEBUG-CYCLIC" />
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="LIST" />
+    </root>
+</configuration>
+

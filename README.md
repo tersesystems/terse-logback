@@ -550,6 +550,134 @@ yields the following JSON:
 }
 ```
 
+### Appender based Ring Buffer
+
+Finally, there's `AppenderRingBufferTurboFilter`, a turbo filter which uses the cyclic buffer defined as an appender: on an event that matches the trigger level, the events are pulled from the cyclic appender and inserted into the message, and the cyclic buffer is cleared.  This is in the `logback-ringbuffer-appender` module.
+
+This may be an easier fit for some applications vs `ThresholdRingBufferTurboFilter`, as you can leave the processing logic mostly the same, and specify filters on the appenders as normal.
+
+This does require a bit more configuration:
+
+```xml
+<configuration>
+    <!-- appender-ref is only on "root" so tweak it for turbofilter -->
+    <newRule pattern="configuration/turboFilter/appender-ref"
+             actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
+
+    <appender name="DEBUG-CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <turboFilter class="com.tersesystems.logback.ringbuffer.appender.AppenderRingBufferTurboFilter">
+        <appender-ref ref="DEBUG-CYCLIC"/>
+        <recordLevel>DEBUG</recordLevel>
+        <triggerLevel>ERROR</triggerLevel>
+    </turboFilter>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        </encoder>
+    </appender>
+
+    <!-- Turn on debugging and it will go into the cyclic buffer  -->
+    <logger name="com.example.Debug" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="DEBUG-CYCLIC" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
+```
+
+then given the following code:
+
+```java
+public class AppenderRingBufferTurboFilterTest {
+    @Test
+    public void testWithDump() throws JoranException {
+        LoggerContext loggerFactory = createLoggerFactory();
+
+        // These go into the cyclic buffer because com.example.Debug is on
+        Logger debugLogger = loggerFactory.getLogger("com.example.Debug");
+        debugLogger.debug("debug one");
+        debugLogger.debug("debug two");
+        debugLogger.debug("debug three");
+        debugLogger.debug("debug four");
+
+        // These don't go into the debug appender, because the logger is not set to DEBUG level
+        Logger debugOffLogger = loggerFactory.getLogger("com.example.NotDebug");
+        debugOffLogger.debug("this does not get added");
+
+        // An error statement dumps and flushes the cyclic barrier.
+        Logger logger = loggerFactory.getLogger("com.example.Test");
+        logger.error( "Dump all the messages");
+
+        ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
+        assertThat(listAppender.list.size()).isEqualTo(1);        
+    }
+}
+```
+
+yields the following:
+
+```json
+{
+  "@timestamp": "2019-08-04T19:34:18.653-07:00",
+  "@version": "1",
+  "message": "Dump all the messages",
+  "logger_name": "com.example.Test",
+  "thread_name": "main",
+  "level": "ERROR",
+  "level_value": 40000,
+  "diagnosticEvents": [
+    {
+      "@timestamp": "2019-08-04T19:34:18.650-07:00",
+      "@version": "1",
+      "message": "debug one",
+      "logger_name": "com.example.Debug",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2019-08-04T19:34:18.650-07:00",
+      "@version": "1",
+      "message": "debug two",
+      "logger_name": "com.example.Debug",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2019-08-04T19:34:18.650-07:00",
+      "@version": "1",
+      "message": "debug three",
+      "logger_name": "com.example.Debug",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2019-08-04T19:34:18.650-07:00",
+      "@version": "1",
+      "message": "debug four",
+      "logger_name": "com.example.Debug",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    }
+  ]
+}
+```
+
+
 ## Instrumenting Compiled Code with Logging using Byte Buddy
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
