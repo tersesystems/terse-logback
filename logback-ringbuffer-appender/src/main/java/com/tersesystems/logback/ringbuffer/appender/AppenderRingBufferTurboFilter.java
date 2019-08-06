@@ -123,9 +123,13 @@ public class AppenderRingBufferTurboFilter extends TurboFilter implements Defaul
             }
 
             LogstashMarker diagnosticEventMarker = Markers.defer(() -> {
-                Stream<ILoggingEvent> stream = Collections.fromIterator(Collections.fromCyclicAppender(cyclic));
-                String eventJson = stream.map(this::encodeEventToJson).collect(Collectors.joining(","));
-                return Markers.appendRaw(getFieldName(), "[" + eventJson + "]");
+                try {
+                    Stream<ILoggingEvent> stream = Collections.fromIterator(Collections.fromCyclicAppender(cyclic));
+                    String eventJson = stream.map(this::encodeEventToJson).collect(Collectors.joining(","));
+                    return Markers.appendRaw(getFieldName(), "[" + eventJson + "]");
+                } finally {
+                    cyclic.reset();
+                }
             });
             Marker joinedMarker = joinMarkers(diagnosticEventMarker, marker);
             ILoggingEventFactory<ILoggingEvent> loggingEventFactory = getLoggingEventFactory();
