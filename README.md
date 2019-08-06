@@ -407,46 +407,6 @@ Threshold based ring buffer is singular: there is only one for the entire loggin
 
 ### Marker Based Ring Buffer
 
-Marker based ring buffers use a turbo filter, but export the logic to a marker factory, `com.tersesystems.logback.ringbuffer.RingBufferMarkerFactory`.  The marker factory holds the ring buffer, and the turbo filter will add logging statements through the marker.
-
-This means that the turbofilter doesn't need any direct configuration:
-
-```xml
-<configuration>
-    <turboFilter class="com.tersesystems.logback.ringbuffer.MarkerRingBufferTurboFilter">
-    </turboFilter>
-</configuration>
-```
-
-Recording to the ring buffer and triggering the dump of the ring buffer are done through record markers and trigger markers, respectively:
-
-```java
-public class Test {
-    @Test
-    public void testWithInfoWithoutDump() throws JoranException {
-        LoggerContext loggerFactory = createLoggerFactory();
-
-        RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory<>(10);
-        Marker recordMarker = markerFactory.createRecordMarker();
-        Marker triggerMarker = markerFactory.createTriggerMarker();
-
-        Logger logger = loggerFactory.getLogger("com.example.Test");
-        logger.info(recordMarker, "info stuff");
-        logger.debug(recordMarker, "debug stuff");
-        logger.error("Don't dump all the messages");
-
-        logger.error(triggerMarker,"Now dump them");
-
-        ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
-        assertThat(listAppender.list.size()).isEqualTo(4);
-    }
-}
-```
-
-This means that you can have several ring buffers in play, and don't have triggers tied to a specific logging level threshold.
-
-## Marker Based Ring Buffer
-
 If you want to have diagnostic events displayed as part of the log message, then you can use `MarkerEventRingBufferTurboFilter` from the `ringbuffer-event` module.  This code depends on `logstash-logback-encoder` to encode the logging events inside the error logging statement.
 
 To use, add the following turbomarker:
@@ -676,7 +636,6 @@ yields the following:
   ]
 }
 ```
-
 
 ## Instrumenting Compiled Code with Logging using Byte Buddy
 
