@@ -516,6 +516,8 @@ Finally, there's `AppenderRingBufferTurboFilter`, a turbo filter which uses the 
 
 This may be an easier fit for some applications vs `ThresholdRingBufferTurboFilter`, as you can leave the processing logic mostly the same, and specify filters on the appenders as normal.
 
+Note that we use an `EncodingRingBufferAppender` here, which processes the event and stores JSON internally in the ring buffer.  This means more CPU processing since serialization to JSON happens on all debug events, but it does mean that all references in logging events are freed up when processed.
+
 This does require a bit more configuration:
 
 ```xml
@@ -523,13 +525,16 @@ This does require a bit more configuration:
     <!-- appender-ref is only on "root" so tweak it for turbofilter -->
     <newRule pattern="configuration/turboFilter/appender-ref"
              actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
-
-    <appender name="DEBUG-CYCLIC" class="ch.qos.logback.core.read.CyclicBufferAppender">
+  
+    <!-- appender has to be defined before turbo filter since we reference it -->
+    <appender name="DEBUG-CYCLIC" class="com.tersesystems.logback.classic.EncodingRingBufferAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>DEBUG</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        </encoder>
     </appender>
 
     <turboFilter class="com.tersesystems.logback.ringbuffer.appender.AppenderRingBufferTurboFilter">
@@ -641,7 +646,7 @@ yields the following:
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
 
-I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives the same performance as inline code.  I use a `ThreadLocal` logger here, as it gives me more control over logging capabilities than using MDC would, but there are many options available.
+I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives the same performance as inline code.
 
 There are two ways you can instrument code.  The first way is to do it in process, after the JVM has loaded.  The second way is to load the java agent before the JVM starts, which lets you instrument classes on the system classloader.
 
@@ -750,7 +755,7 @@ The `[Byte Buddy]` statements up top are caused by the debug listener, and let y
 
 Instrumenting system level classes is a bit more involved, but can be done in configuration.
 
-> **NOTE**: There are some limitations to instrumenting code.  You cannot instrument native methods like `java.lang.System.currentTimeMillis()` for example.
+> **NOTE**: There are some limitations to instrumenting system level code.  You cannot instrument native methods like `java.lang.System.currentTimeMillis()` for example.
 
 First, you set the java agent, either directly on the command line:
 

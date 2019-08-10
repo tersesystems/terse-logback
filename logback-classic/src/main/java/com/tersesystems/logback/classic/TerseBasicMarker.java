@@ -96,12 +96,6 @@ public class TerseBasicMarker implements Marker {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Stream<Marker> stream(Marker marker) {
-        Spliterator spliterator = Spliterators.spliteratorUnknownSize(marker.iterator(), 0);
-        return (Stream<Marker>) StreamSupport.stream(spliterator, false);
-    }
-
     private static final String OPEN = "[ ";
     private static final String CLOSE = " ]";
     private static final String SEP = ", ";
