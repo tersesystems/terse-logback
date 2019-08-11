@@ -641,130 +641,95 @@ yields the following:
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
 
-There's two different ways to do it.  You can use interception, which gives you a straightforward method delegation model, or you can use `Advice`, which rewrites the bytecode inline before the JVM gets to it.  Either way, you can write to a logger without touching the class itself, and you can modify which classes and methods you touch.
-
 I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives the same performance as inline code.  I use a `ThreadLocal` logger here, as it gives me more control over logging capabilities than using MDC would, but there are many options available.
 
-With Interception:
+This is driven from configuration, so with the following code:
 
 ```java
-public class InterceptionTest {
+public class ClassCalledByAgent {
+    public void printStatement() {
+        System.out.println("I am a simple println method with no logging");
+    }
 
-   // This is a class we're going to wrap entry and exit methods around.
-   public static class SomeLibraryClass {
-       public void doesNotUseLogging() {
-           System.out.println("Logging sucks, I use println");
-       }
-   }
+    public void printArgument(String arg) {
+        System.out.println("I am a simple println, printing " + arg);
+    }
 
-   // We can do this by intercepting the class and putting stuff around it.
-   static class Interception {
-       // Do it through wrapping
-       public SomeLibraryClass instrumentClass() throws IllegalAccessException, InstantiationException {
-           Class<SomeLibraryClass> offendingClass = SomeLibraryClass.class;
-           String offendingMethodName = "doesNotUseLogging";
-
-           return new ByteBuddy()
-                   .subclass(offendingClass)
-                   .method(ElementMatchers.named(offendingMethodName))
-                   .intercept(MethodDelegation.to(new TraceLoggingInterceptor()))
-                   .make()
-                   .load(offendingClass.getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
-                   .getLoaded()
-                   .newInstance();
-       }
-
-       public void doStuff() throws IllegalAccessException, InstantiationException {
-           SomeLibraryClass someLibraryClass = this.instrumentClass();
-           someLibraryClass.doesNotUseLogging();
-       }
-   }
-
-   public static void main(String[] args) throws InstantiationException, IllegalAccessException {
-       // Helps if you install the byte buddy agents before anything else at all happens...
-       ByteBuddyAgent.install();
-
-       Logger logger = LoggerFactory.getLogger(InterceptionTest.class);
-       ThreadLocalLogger.setLogger(logger);
-
-       new Interception().doStuff();
-   }
+    public void throwException(String arg) {
+        throw new RuntimeException("I'm a squirrel!");
+    }
 }
 ```
 
-Provides (with the bytebuddy instrumentation debug output included):
+And the following configuration in `application.conf`:
 
-```text
-438   TRACE c.t.l.bytebuddy.InterceptionTest - entering: com.tersesystems.logback.bytebuddy.InterceptionTest$SomeLibraryClass.doesNotUseLogging()
-Logging sucks, I use println
-440   TRACE c.t.l.bytebuddy.InterceptionTest - exit: com.tersesystems.logback.bytebuddy.InterceptionTest$SomeLibraryClass.doesNotUseLogging() => response=[null]
+```hocon
+bytebuddy {
+  classNames = [
+    "com.tersesystems.logback.bytebuddy.ClassCalledByAgent",
+  ]
+
+  methodNames = [
+    "printStatement",
+    "printArgument",
+    "throwException"
+  ]
+}
 ```
 
-With Class Advice:
+We can start up the agent, add in the builder and run through the methods:
 
 ```java
 public class AgentBasedTest {
 
-    // This is a class we're going to redefine completely.
-    public static class SomeOtherLibraryClass {
-        public void doesNotUseLogging() {
-            System.out.println("I agree, I don't use logging either");
-        }
-    }
-
-    static class AgentBased {
-        public static void premain() {
-            try {
-                String className = "SomeOtherLibraryClass";
-                String methodName = "doesNotUseLogging";
-
-                // The debugging listener shows what classes are being picked up by the instrumentation
-                Listener.Filtering debuggingListener = new Listener.Filtering(
-                        new StringMatcher(className, StringMatcher.Mode.CONTAINS),
-                        Listener.StreamWriting.toSystemOut());
-
-                // Create and install the byte buddy remapper
-                new AgentBuilder.Default()
-                        .disableClassFormatChanges()
-                        //.with(debuggingListener)
-                        .type(ElementMatchers.nameContains(className))
-                        .transform((builder, type, classLoader, module) ->
-                                builder.visit(Advice.to(ClassAdviceRewriter.class).on(named(methodName)))
-                        )
-                        .installOnByteBuddyAgent();
-            } catch (RuntimeException e) {
-                System.out.println("Exception instrumenting code : " + e);
-                e.printStackTrace();
-            }
-        };
-
-        public void doStuff() {
-            // No code change necessary here, you can wrap completely in the agent...
-            SomeOtherLibraryClass someOtherLibraryClass = new SomeOtherLibraryClass();
-            someOtherLibraryClass.doesNotUseLogging();
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
-        AgentBased.premain();
+        Config config = ConfigFactory.load();
+        List<String> classNames = config.getStringList("bytebuddy.classNames");
+        List<String> methodNames = config.getStringList("bytebuddy.methodNames");
+        ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
+
+        // The debugging listener shows what classes are being picked up by the instrumentation
+        Listener debugListener = createDebugListener(classNames);
+        new ClassAdviceAgentBuilder()
+                .builderFromConfig(classAdviceConfig)
+                .with(debugListener)
+                .installOnByteBuddyAgent();
 
         Logger logger = LoggerFactory.getLogger(AgentBasedTest.class);
         ThreadLocalLogger.setLogger(logger);
 
-        new AgentBased().doStuff();
+        // No code change necessary here, you can wrap completely in the agent...
+        ClassCalledByAgent classCalledByAgent = new ClassCalledByAgent();
+        classCalledByAgent.printStatement();
+        classCalledByAgent.printArgument("42");
+        try {
+            classCalledByAgent.throwException("hello world");
+        } catch (Exception e) {
+            // I am too lazy to catch this exception.  I hope someone does it for me.
+        }
     }
 }
 ```
 
-produces:
+And get the following:
 
 ```text
-391   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.AgentBasedTest$SomeOtherLibraryClass.doesNotUseLogging() with arguments=[]
-I agree, I don't use logging either
-395   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.AgentBasedTest$SomeOtherLibraryClass.doesNotUseLogging() with arguments=[] => returnType=void
+[Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
+[Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
+[Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
+235   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[]
+I am a simple println method with no logging
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] => returnType=void
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42]
+I am a simple println, printing 42
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world]
+237   ERROR c.t.l.bytebuddy.AgentBasedTest - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
 ```
+
+The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.
 
 ## Censoring Sensitive Information
 
