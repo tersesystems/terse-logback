@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.CompletionStage;
 
 import static com.tersesystems.logback.bytebuddy.ClassAdviceUtils.createDebugListener;
 import static net.bytebuddy.agent.builder.AgentBuilder.Listener;
@@ -30,34 +29,29 @@ public class AgentBasedTest {
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
+        Config config = ConfigFactory.load();
+        List<String> classNames = config.getStringList("bytebuddy.classNames");
+        List<String> methodNames = config.getStringList("bytebuddy.methodNames");
+        ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
 
-        try {
-            Config config = ConfigFactory.load();
-            List<String> classNames = config.getStringList("bytebuddy.classNames");
-            List<String> methodNames = config.getStringList("bytebuddy.methodNames");
-            ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
-
-            // The debugging listener shows what classes are being picked up by the instrumentation
-            Listener debugListener = createDebugListener(classNames);
-            new ClassAdviceAgentBuilder().builderFromConfig(classAdviceConfig).with(debugListener).installOnByteBuddyAgent();
-        } catch (RuntimeException e) {
-            System.out.println("Exception instrumenting code : " + e);
-            e.printStackTrace();
-        }
+        // The debugging listener shows what classes are being picked up by the instrumentation
+        Listener debugListener = createDebugListener(classNames);
+        new ClassAdviceAgentBuilder()
+                .builderFromConfig(classAdviceConfig)
+                .with(debugListener)
+                .installOnByteBuddyAgent();
 
         Logger logger = LoggerFactory.getLogger(AgentBasedTest.class);
         ThreadLocalLogger.setLogger(logger);
 
         // No code change necessary here, you can wrap completely in the agent...
         ClassCalledByAgent classCalledByAgent = new ClassCalledByAgent();
-        classCalledByAgent.doesNotUseLogging();
+        classCalledByAgent.printStatement();
         classCalledByAgent.printArgument("42");
         try {
             classCalledByAgent.throwException("hello world");
         } catch (Exception e) {
             // I am too lazy to catch this exception.  I hope someone does it for me.
         }
-        CompletionStage<Integer> integerCompletionStage = classCalledByAgent.printFuture();
-        integerCompletionStage.thenAccept(System.out::println);
     }
 }

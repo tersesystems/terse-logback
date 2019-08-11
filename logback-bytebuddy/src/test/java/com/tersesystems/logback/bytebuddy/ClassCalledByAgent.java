@@ -1,11 +1,20 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
 package com.tersesystems.logback.bytebuddy;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
-// This is a class we're going to redefine completely.
+/**
+ * This class does no logging.
+ */
 public class ClassCalledByAgent {
-    public void doesNotUseLogging() {
+    public void printStatement() {
         System.out.println("I am a simple println method with no logging");
     }
 
@@ -15,9 +24,5 @@ public class ClassCalledByAgent {
 
     public void throwException(String arg) {
         throw new RuntimeException("I'm a squirrel!");
-    }
-
-    public CompletionStage<Integer> printFuture() {
-        return CompletableFuture.supplyAsync(() -> Math.toIntExact(System.currentTimeMillis()));
     }
 }

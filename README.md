@@ -647,7 +647,7 @@ This is driven from configuration, so with the following code:
 
 ```java
 public class ClassCalledByAgent {
-    public void doesNotUseLogging() {
+    public void printStatement() {
         System.out.println("I am a simple println method with no logging");
     }
 
@@ -657,10 +657,6 @@ public class ClassCalledByAgent {
 
     public void throwException(String arg) {
         throw new RuntimeException("I'm a squirrel!");
-    }
-
-    public CompletionStage<Integer> printFuture() {
-        return CompletableFuture.supplyAsync(() -> Math.toIntExact(System.currentTimeMillis()));
     }
 }
 ```
@@ -674,10 +670,9 @@ bytebuddy {
   ]
 
   methodNames = [
-    "doesNotUseLogging",
+    "printStatement",
     "printArgument",
-    "throwException",
-    "printFuture"
+    "throwException"
   ]
 }
 ```
@@ -690,38 +685,30 @@ public class AgentBasedTest {
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
+        Config config = ConfigFactory.load();
+        List<String> classNames = config.getStringList("bytebuddy.classNames");
+        List<String> methodNames = config.getStringList("bytebuddy.methodNames");
+        ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
 
-        try {
-            Config config = ConfigFactory.load();
-            List<String> classNames = config.getStringList("bytebuddy.classNames");
-            List<String> methodNames = config.getStringList("bytebuddy.methodNames");
-            ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
-
-            // The debugging listener shows what classes are being picked up by the instrumentation
-            Listener debugListener = createDebugListener(classNames);
-            new ClassAdviceAgentBuilder()
+        // The debugging listener shows what classes are being picked up by the instrumentation
+        Listener debugListener = createDebugListener(classNames);
+        new ClassAdviceAgentBuilder()
                 .builderFromConfig(classAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
-        } catch (RuntimeException e) {
-            System.out.println("Exception instrumenting code : " + e);
-            e.printStackTrace();
-        }
 
         Logger logger = LoggerFactory.getLogger(AgentBasedTest.class);
         ThreadLocalLogger.setLogger(logger);
 
         // No code change necessary here, you can wrap completely in the agent...
         ClassCalledByAgent classCalledByAgent = new ClassCalledByAgent();
-        classCalledByAgent.doesNotUseLogging();
+        classCalledByAgent.printStatement();
         classCalledByAgent.printArgument("42");
         try {
             classCalledByAgent.throwException("hello world");
         } catch (Exception e) {
             // I am too lazy to catch this exception.  I hope someone does it for me.
         }
-        CompletionStage<Integer> integerCompletionStage = classCalledByAgent.printFuture();
-        integerCompletionStage.thenAccept(System.out::println);
     }
 }
 ```
@@ -732,17 +719,17 @@ And get the following:
 [Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
 [Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
 [Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
-225   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.doesNotUseLogging() with arguments=[]
+235   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[]
 I am a simple println method with no logging
-227   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.doesNotUseLogging() with arguments=[] => returnType=void
-228   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42]
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] => returnType=void
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42]
 I am a simple println, printing 42
-228   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void
-228   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world]
-228   ERROR c.t.l.bytebuddy.AgentBasedTest - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
-228   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printFuture() with arguments=[]
-231   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printFuture() with arguments=[] => returnType=java.util.concurrent.CompletionStage
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void
+237   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world]
+237   ERROR c.t.l.bytebuddy.AgentBasedTest - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
 ```
+
+The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.
 
 ## Censoring Sensitive Information
 
