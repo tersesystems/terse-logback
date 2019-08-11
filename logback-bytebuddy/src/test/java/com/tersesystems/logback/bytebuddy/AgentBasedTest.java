@@ -10,44 +10,36 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-import static net.bytebuddy.agent.builder.AgentBuilder.*;
-
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import net.bytebuddy.agent.ByteBuddyAgent;
-
-import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.matcher.StringMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+
+import static com.tersesystems.logback.bytebuddy.ClassAdviceUtils.createDebugListener;
+import static net.bytebuddy.agent.builder.AgentBuilder.Listener;
 
 /**
  * Use ByteBuddy to add logging to classes that don't have it.
  */
 public class AgentBasedTest {
 
-    // This is a class we're going to redefine completely.
-    public static class SomeOtherLibraryClass {
-        public void doesNotUseLogging() {
-            System.out.println("I am a simple println method with no logging");
-        }
-    }
-
-    static AgentBuilder.Listener createDebugListener() {
-        Listener listener = new Listener.Filtering(
-                new StringMatcher("SomeOtherLibraryClass", StringMatcher.Mode.CONTAINS),
-                Listener.StreamWriting.toSystemOut());
-        return listener;
-    }
-
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
 
         try {
-            ClassAdviceConfig config = ClassAdviceConfig.create("SomeOtherLibraryClass", "doesNotUseLogging");
+            Config config = ConfigFactory.load();
+            List<String> classNames = config.getStringList("bytebuddy.classNames");
+            List<String> methodNames = config.getStringList("bytebuddy.methodNames");
+            ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
 
             // The debugging listener shows what classes are being picked up by the instrumentation
-            Listener debugListener = createDebugListener();
-            new ClassAdviceAgentBuilder().builderFromConfig(config).with(debugListener).installOnByteBuddyAgent();
+            Listener debugListener = createDebugListener(classNames);
+            new ClassAdviceAgentBuilder().builderFromConfig(classAdviceConfig).with(debugListener).installOnByteBuddyAgent();
         } catch (RuntimeException e) {
             System.out.println("Exception instrumenting code : " + e);
             e.printStackTrace();
@@ -57,7 +49,15 @@ public class AgentBasedTest {
         ThreadLocalLogger.setLogger(logger);
 
         // No code change necessary here, you can wrap completely in the agent...
-        SomeOtherLibraryClass someOtherLibraryClass = new SomeOtherLibraryClass();
-        someOtherLibraryClass.doesNotUseLogging();
+        ClassCalledByAgent classCalledByAgent = new ClassCalledByAgent();
+        classCalledByAgent.doesNotUseLogging();
+        classCalledByAgent.printArgument("42");
+        try {
+            classCalledByAgent.throwException("hello world");
+        } catch (Exception e) {
+            // I am too lazy to catch this exception.  I hope someone does it for me.
+        }
+        CompletionStage<Integer> integerCompletionStage = classCalledByAgent.printFuture();
+        integerCompletionStage.thenAccept(System.out::println);
     }
 }
