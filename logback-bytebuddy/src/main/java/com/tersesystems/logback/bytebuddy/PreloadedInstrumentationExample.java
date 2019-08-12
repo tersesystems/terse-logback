@@ -1,17 +1,11 @@
 package com.tersesystems.logback.bytebuddy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.security.Permission;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 
 /**
- * Use the agent loaded with
- *
- * export JAVA_TOOL_OPTIONS="-javaagent:logback-bytebuddy.jar"
- * java com.tersesystems.logback.bytebuddy.PreloadedInstrumentationExample
+ * Borrowed from securityfixer, showing tracing when you set the security manager.
  */
 public class PreloadedInstrumentationExample {
 
@@ -36,7 +30,6 @@ public class PreloadedInstrumentationExample {
             // Happens on normal circumstances...
             System.err.println("ATTACK SUCCEEDED: Security manager was reset!");
         } catch (IllegalStateException e) {
-            // Happens on agent redefinition of java.lang.System
             System.out.println("ATTACK FAILED: " + e.getMessage());
         }
     }

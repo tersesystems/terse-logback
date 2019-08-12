@@ -12,8 +12,6 @@ dependencies {
 }
 
 jar {
-    // make a fatjar otherwise it's painful getting the boot-class-path correct when deploying
-    //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes(
         "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
@@ -25,9 +23,14 @@ jar {
     }
 }
 
-// This has to be run after you create the JAR
-// "./gradlew jar"
-// "./gradlew run" or "./gradlew initZip"
+// I had trouble getting a working example in Gradle using a fresh JVM and an agent, so I cheated.
+// Here's what I did instead:
+//
+// gradle distZip
+// cd logback-bytebuddy/build/distributions
+// unzip logback-bytebuddy-0.0.0.zip
+// cd logback-bytebuddy-0.0.0
+// bin/logback-bytebuddy
 application {
     mainClassName = 'com.tersesystems.logback.bytebuddy.PreloadedInstrumentationExample'
     applicationDefaultJvmArgs = [
