@@ -1,11 +1,40 @@
+plugins {
+    id 'application'
+}
+
 dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "net.bytebuddy:byte-buddy:$bytebuddyVersion"
     compile "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"
+    compile group: 'com.typesafe', name: 'config', version: "$configVersion"
     compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    runtime "ch.qos.logback:logback-classic:$logbackVersion"
+}
 
-    testCompile "ch.qos.logback:logback-classic:$logbackVersion"
-    testCompile group: 'com.typesafe', name: 'config', version: '1.3.4'
+jar {
+    // make a fatjar otherwise it's painful getting the boot-class-path correct when deploying
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes(
+        "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
+        "Can-Redefine-Classes": true,
+        "Can-Retransform-Classes": true,
+        "Boot-Class-Path": "logback-bytebuddy-" + version + ".jar",
+        "Premain-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent"
+        )
+    }
+}
+
+// This has to be run after you create the JAR
+// "./gradlew jar"
+// "./gradlew run" or "./gradlew initZip"
+application {
+    mainClassName = 'com.tersesystems.logback.bytebuddy.PreloadedInstrumentationExample'
+    applicationDefaultJvmArgs = [
+            '-Dconfig.file=/home/wsargent/work/terse-logback/logback-bytebuddy/src/test/resources/application.conf',
+            '-Dlogback.configurationFile=test/resources/logback-test.xml',
+            '-javaagent:../libs/logback-bytebuddy-0.0.0.jar',
+    ]
 }
 
 config {

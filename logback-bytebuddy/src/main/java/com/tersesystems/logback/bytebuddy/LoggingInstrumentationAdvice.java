@@ -12,30 +12,44 @@ package com.tersesystems.logback.bytebuddy;
 
 import net.bytebuddy.asm.Advice;
 import net.logstash.logback.argument.StructuredArgument;
-import org.slf4j.Logger;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
+import org.slf4j.*;
 
 import static net.logstash.logback.argument.StructuredArguments.*;
 
-public class ClassAdviceRewriter {
+/**
+ *
+ */
+public class LoggingInstrumentationAdvice {
     // https://github.com/qos-ch/slf4j/blob/master/slf4j-ext/src/main/java/org/slf4j/ext/XLogger.java#L44
     static Marker FLOW_MARKER = MarkerFactory.getMarker("FLOW");
     static Marker ENTRY_MARKER = MarkerFactory.getMarker("ENTRY");
     static Marker EXIT_MARKER = MarkerFactory.getMarker("EXIT");
     static Marker EXCEPTION_MARKER = MarkerFactory.getMarker("EXCEPTION");
 
+    private static LoggerResolver loggerResolver = new DeclaringTypeLoggerResolver(LoggerFactory.getILoggerFactory());
+
     static {
         ENTRY_MARKER.add(FLOW_MARKER);
         EXIT_MARKER.add(FLOW_MARKER);
     }
 
+    public static LoggerResolver getLoggerResolver() {
+        return loggerResolver;
+    }
+
+    public static void setLoggerResolver(LoggerResolver loggerResolver) {
+        LoggingInstrumentationAdvice.loggerResolver = loggerResolver;
+    }
+
+    public static Logger getLogger(String origin) {
+        return loggerResolver.resolve(origin);
+    }
 
     @Advice.OnMethodEnter
     public static void enter(@Advice.Origin("#t|#m|#s") String origin,
                              @Advice.AllArguments Object[] allArguments)
             throws Exception {
-        Logger logger = ThreadLocalLogger.getLogger();
+        Logger logger = getLogger(origin);
         if (logger != null && logger.isTraceEnabled(ENTRY_MARKER)) {
             String[] args = origin.split("\\|");
             String declaringType = args[0];
@@ -53,26 +67,27 @@ public class ClassAdviceRewriter {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class)
     public static void exit(@Advice.Origin("#t|#m|#d|#s|#r") String origin, @Advice.AllArguments Object[] allArguments, @Advice.Thrown Throwable thrown) throws Exception {
-        Logger logger = ThreadLocalLogger.getLogger();
+        Logger logger = getLogger(origin);
         if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
             String[] args = origin.split("\\|");
             String declaringType = args[0];
             String method = args[1];
-            String descriptor = args[2];
+            //String descriptor = args[2];
             String signature = args[3];
             String returnType = args[4];
-            StructuredArgument aClass = v("class", declaringType);
-            StructuredArgument aMethod = v("method", method);
-            StructuredArgument aSignature = v("signature", signature);
-            StructuredArgument aDescriptor = kv("descriptor", descriptor);
-            StructuredArgument aReturnType = kv("returnType", returnType);
+            StructuredArgument aClass = v("class", declaringType); // ClassCalledByAgent
+            StructuredArgument aMethod = v("method", method); // printArgument
+            StructuredArgument aSignature = v("signature", signature); // (java.lang.String)
+            //StructuredArgument aDescriptor = kv("descriptor", descriptor); // descriptor=(Ljava/lang/String;)V
+            StructuredArgument aReturnType = kv("returnType", returnType); // returnType=void
             if (thrown != null) {
                 StructuredArgument aThrown = kv("thrown", thrown);
                 StructuredArgument arrayParameters = array("arguments", allArguments);
-                logger.error(EXCEPTION_MARKER, "throwing: {}.{}{} with {} ! {}", aClass, aMethod, aSignature, arrayParameters, aThrown);
+                // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
+                logger.error(EXCEPTION_MARKER, "throwing: {}.{}{} with {} ! {}", aClass, aMethod, aSignature, arrayParameters, aThrown, thrown);
             } else {
                 StructuredArgument arrayParameters = array("arguments", allArguments);
-                logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aDescriptor);
+                logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType);
             }
         }
     }

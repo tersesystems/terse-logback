@@ -22,36 +22,44 @@ import static com.tersesystems.logback.bytebuddy.ClassAdviceUtils.createDebugLis
 import static net.bytebuddy.agent.builder.AgentBuilder.Listener;
 
 /**
- * Use ByteBuddy to add logging to classes that don't have it.
+ * Run the agent inside an already running JVM.
+ *
+ * This will instrument classes that have not already been loaded into the JVM, such as ClassCalledByAgent,
+ * but will not allow you to instrument classes loaded by the system classloader, such as java.lang.Thread.
+ *
+ * This should still be perfectly fine for 99% of users who don't need an agent loaded from the command line.
  */
-public class AgentBasedTest {
+public class InProcessInstrumentationExample {
 
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
+
+        Logger logger = LoggerFactory.getLogger(InProcessInstrumentationExample.class);
+        LoggingInstrumentationAdvice.setLoggerResolver(new FixedLoggerResolver(logger));
+
         Config config = ConfigFactory.load();
-        List<String> classNames = config.getStringList("bytebuddy.classNames");
-        List<String> methodNames = config.getStringList("bytebuddy.methodNames");
+        List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
+        List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
         ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(classNames);
-        new ClassAdviceAgentBuilder()
+        new LoggingInstrumentationByteBuddyBuilder()
                 .builderFromConfig(classAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
-
-        Logger logger = LoggerFactory.getLogger(AgentBasedTest.class);
-        ThreadLocalLogger.setLogger(logger);
 
         // No code change necessary here, you can wrap completely in the agent...
         ClassCalledByAgent classCalledByAgent = new ClassCalledByAgent();
         classCalledByAgent.printStatement();
         classCalledByAgent.printArgument("42");
+
         try {
             classCalledByAgent.throwException("hello world");
         } catch (Exception e) {
             // I am too lazy to catch this exception.  I hope someone does it for me.
         }
+
     }
 }
