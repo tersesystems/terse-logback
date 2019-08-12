@@ -21,10 +21,10 @@ import static net.logstash.logback.argument.StructuredArguments.*;
  */
 public class LoggingInstrumentationAdvice {
     // https://github.com/qos-ch/slf4j/blob/master/slf4j-ext/src/main/java/org/slf4j/ext/XLogger.java#L44
-    static Marker FLOW_MARKER = MarkerFactory.getMarker("FLOW");
-    static Marker ENTRY_MARKER = MarkerFactory.getMarker("ENTRY");
-    static Marker EXIT_MARKER = MarkerFactory.getMarker("EXIT");
-    static Marker EXCEPTION_MARKER = MarkerFactory.getMarker("EXCEPTION");
+    public static final Marker FLOW_MARKER = MarkerFactory.getMarker("FLOW");
+    public static final Marker ENTRY_MARKER = MarkerFactory.getMarker("ENTRY");
+    public static final Marker EXIT_MARKER = MarkerFactory.getMarker("EXIT");
+    public static final Marker EXCEPTION_MARKER = MarkerFactory.getMarker("EXCEPTION");
 
     private static LoggerResolver loggerResolver = new DeclaringTypeLoggerResolver(LoggerFactory.getILoggerFactory());
 

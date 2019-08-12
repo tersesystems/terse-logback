@@ -7,19 +7,19 @@ dependencies {
     compile "net.bytebuddy:byte-buddy:$bytebuddyVersion"
     compile "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"
     compile group: 'com.typesafe', name: 'config', version: "$configVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
     compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
-    runtime "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
 jar {
     // make a fatjar otherwise it's painful getting the boot-class-path correct when deploying
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes(
         "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
         "Can-Redefine-Classes": true,
         "Can-Retransform-Classes": true,
-        "Boot-Class-Path": "logback-bytebuddy-" + version + ".jar",
+        "Boot-Class-Path": "byte-buddy-${bytebuddyVersion}.jar slf4j-api-${slf4jVersion}.jar config-${configVersion}.jar logback-core-${logbackVersion}.jar logback-classic-${logbackVersion}.jar logstash-logback-encoder-${logstashVersion}.jar logback-bytebuddy-${version}.jar",
         "Premain-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent"
         )
     }
@@ -32,8 +32,8 @@ application {
     mainClassName = 'com.tersesystems.logback.bytebuddy.PreloadedInstrumentationExample'
     applicationDefaultJvmArgs = [
             '-Dconfig.file=/home/wsargent/work/terse-logback/logback-bytebuddy/src/test/resources/application.conf',
-            '-Dlogback.configurationFile=test/resources/logback-test.xml',
-            '-javaagent:../libs/logback-bytebuddy-0.0.0.jar',
+            '-Dlogback.configurationFile=/home/wsargent/work/terse-logback/logback-bytebuddy/src/test/resources/logback-test.xml',
+            '-javaagent:lib/logback-bytebuddy-0.0.0.jar',
     ]
 }
 
