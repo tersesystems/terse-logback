@@ -643,6 +643,19 @@ If you have library code that doesn't pass around `ILoggerFactory` and doesn't l
 
 I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives the same performance as inline code.  I use a `ThreadLocal` logger here, as it gives me more control over logging capabilities than using MDC would, but there are many options available.
 
+There are two ways you can instrument code.  The first way is to do it in process, after the JVM has loaded.  The second way is to load the java agent before the JVM starts, which lets you instrument classes on the system classloader.
+
+### Instrumenting Application Code
+
+The in process instrumentation is done with `com.tersesystems.logback.bytebuddy.LoggingInstrumentationByteBuddyBuilder`, which takes in some configuration and then installs itself on the byte buddy agent.
+
+```java
+new LoggingInstrumentationByteBuddyBuilder()
+        .builderFromConfig(loggingAdviceConfig)
+        .with(debugListener)
+        .installOnByteBuddyAgent();
+```
+
 This is driven from configuration, so with the following code:
 
 ```java
@@ -680,30 +693,32 @@ bytebuddy {
 We can start up the agent, add in the builder and run through the methods:
 
 ```java
-public class AgentBasedTest {
+public class InProcessInstrumentationExample {
 
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
+
+        Logger logger = LoggerFactory.getLogger(InProcessInstrumentationExample.class);
+        LoggingInstrumentationAdvice.setLoggerResolver(new FixedLoggerResolver(logger));
+
         Config config = ConfigFactory.load();
-        List<String> classNames = config.getStringList("bytebuddy.classNames");
-        List<String> methodNames = config.getStringList("bytebuddy.methodNames");
-        ClassAdviceConfig loggingAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
+        List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
+        List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
+        LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(classNames);
-        new ClassAdviceAgentBuilder()
+        new LoggingInstrumentationByteBuddyBuilder()
                 .builderFromConfig(loggingAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
-
-        Logger logger = LoggerFactory.getLogger(AgentBasedTest.class);
-        ThreadLocalLogger.setLogger(logger);
 
         // No code change necessary here, you can wrap completely in the agent...
         ClassCalledByAgent classCalledByAgent = new ClassCalledByAgent();
         classCalledByAgent.printStatement();
         classCalledByAgent.printArgument("42");
+
         try {
             classCalledByAgent.throwException("hello world");
         } catch (Exception e) {
@@ -730,6 +745,58 @@ I am a simple println, printing 42
 ```
 
 The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.
+
+### Instrumenting System Classes
+
+Instrumenting system level classes is a bit more involved, but can be done in configuration.
+
+> **NOTE**: There are some limitations to instrumenting code.  You cannot instrument native methods like `java.lang.System.currentTimeMillis()` for example.
+
+First, you set the java agent, either directly on the command line:
+
+```bash
+java \
+  -javaagent:path/to/logback-bytebuddy-x.x.x.jar=debug \
+  -Dconfig.file=conf/application.conf \
+  -Dlogback.configurationFile=conf/logback-test.xml \
+  com.example.PreloadedInstrumentationExample
+```
+
+or by using `JAVA_TOOLS_OPTIONS` environment variable
+
+```bash
+export JAVA_TOOLS_OPTIONS="..."
+```
+
+and then in `application.conf`:
+
+```hocon
+logback.bytebuddy {
+  classNames = [ "java.lang.Thread" ]
+  methodNames = [ "run" ]
+}
+``` 
+
+and the code as follows:
+
+```java
+public class PreloadedInstrumentationExample {
+    public static void main(String[] args) throws Exception {
+        Thread thread = Thread.currentThread();
+        thread.run();
+    }
+}
+```
+
+yields
+
+```text
+[Byte Buddy] DISCOVERY java.lang.Thread [null, null, loaded=true]
+[Byte Buddy] TRANSFORM java.lang.Thread [null, null, loaded=true]
+[Byte Buddy] COMPLETE java.lang.Thread [null, null, loaded=true]
+92    TRACE java.lang.Thread - entering: java.lang.Thread.run() with arguments=[]
+93    TRACE java.lang.Thread - exiting: java.lang.Thread.run() with arguments=[] => returnType=void
+```
 
 ## Censoring Sensitive Information
 

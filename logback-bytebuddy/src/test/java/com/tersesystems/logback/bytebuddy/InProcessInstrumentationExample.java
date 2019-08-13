@@ -60,6 +60,5 @@ public class InProcessInstrumentationExample {
         } catch (Exception e) {
             // I am too lazy to catch this exception.  I hope someone does it for me.
         }
-
     }
 }
