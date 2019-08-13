@@ -41,13 +41,13 @@
                 </encoder>
             </appender>
 
-            <appender class="ch.qos.logback.core.FileAppender">
-                <name>staging-file</name>
-                <file>file.log</file>
-                <encoder>
-                    <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
-                </encoder>
-            </appender>
+            <!--<appender class="ch.qos.logback.core.FileAppender">-->
+            <!--    <name>staging-file</name>-->
+            <!--    <file>file.log</file>-->
+            <!--    <encoder>-->
+            <!--        <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>-->
+            <!--    </encoder>-->
+            <!--</appender>-->
         </appender>
     </appender>
 

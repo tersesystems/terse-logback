@@ -21,28 +21,31 @@ import static com.tersesystems.logback.bytebuddy.ClassAdviceUtils.methodMatcher;
 import static com.tersesystems.logback.bytebuddy.ClassAdviceUtils.typeMatcher;
 import static java.util.Collections.singleton;
 
-public interface ClassAdviceConfig {
+/**
+ * Config for bytebuddy agent builder, so types and methods can be rolled up nicely.
+ */
+public interface LoggingAdviceConfig {
 
     ElementMatcher.Junction<? super MethodDescription> methods();
 
     ElementMatcher.Junction<? super TypeDescription> types();
 
-    default ClassAdviceConfig join(ClassAdviceConfig other) {
+    default LoggingAdviceConfig join(LoggingAdviceConfig other) {
         final ElementMatcher.Junction<? super MethodDescription> methodMatcher = methods().or(other.methods());
         final ElementMatcher.Junction<? super TypeDescription> typeMatcher = types().or(other.types());
-        return new DefaultClassAdviceConfig(typeMatcher, methodMatcher);
+        return new DefaultLoggingAdviceConfig(typeMatcher, methodMatcher);
     }
 
-    public static ClassAdviceConfig create(String className, String methodName) {
-        return new DefaultClassAdviceConfig(typeMatcher(singleton(className)), methodMatcher(singleton(methodName)));
+    public static LoggingAdviceConfig create(String className, String methodName) {
+        return new DefaultLoggingAdviceConfig(typeMatcher(singleton(className)), methodMatcher(singleton(methodName)));
     }
 
-    public static ClassAdviceConfig create(String className, String... methodNames) {
-        return new DefaultClassAdviceConfig(typeMatcher(singleton(className)), methodMatcher(Arrays.asList(methodNames)));
+    public static LoggingAdviceConfig create(String className, String... methodNames) {
+        return new DefaultLoggingAdviceConfig(typeMatcher(singleton(className)), methodMatcher(Arrays.asList(methodNames)));
     }
 
-    public static ClassAdviceConfig create(Collection<String> typeNames, Collection<String> methodNames) {
-        return new DefaultClassAdviceConfig(typeMatcher(typeNames), methodMatcher(methodNames));
+    public static LoggingAdviceConfig create(Collection<String> typeNames, Collection<String> methodNames) {
+        return new DefaultLoggingAdviceConfig(typeMatcher(typeNames), methodMatcher(methodNames));
     }
 
 }

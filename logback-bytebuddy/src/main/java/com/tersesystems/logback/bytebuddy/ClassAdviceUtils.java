@@ -20,6 +20,9 @@ import net.bytebuddy.matcher.StringMatcher;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Utils for LoggingAdviceConfig.
+ */
 public final class ClassAdviceUtils {
 
     public static ElementMatcher.Junction<? super MethodDescription> methodMatcher(Collection<String> methodNames) {

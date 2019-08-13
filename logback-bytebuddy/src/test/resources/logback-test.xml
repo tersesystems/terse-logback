@@ -18,9 +18,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.tersesystems.logback.bytebuddy" level="TRACE"/>
-
-    <root level="ERROR">
+    <root level="TRACE">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
