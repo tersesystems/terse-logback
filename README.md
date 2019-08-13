@@ -1,5 +1,5 @@
 [<img src="https://img.shields.io/travis/tersesystems/terse-logback.svg"/>](https://travis-ci.org/tersesystems/terse-logback) 
-[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.9.2) ](https://bintray.com/tersesystems/maven/terse-logback/0.9.2/link)
+[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.10.0) ](https://bintray.com/tersesystems/maven/terse-logback/0.10.0/link)
 
 # Structured Logging Example with Logback
 
