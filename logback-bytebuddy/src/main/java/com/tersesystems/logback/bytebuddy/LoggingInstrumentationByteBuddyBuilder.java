@@ -12,19 +12,22 @@ package com.tersesystems.logback.bytebuddy;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 import static net.bytebuddy.matcher.ElementMatchers.any;
 
+/**
+ * Creates byte buddy agent builders with the LoggingInstrumentation advice.
+ */
 public class LoggingInstrumentationByteBuddyBuilder {
 
+    private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
+
     /**
-     * Creates a builder using
+     * Creates a builder from the element matchers.
      *
      * @param typesMatcher an element matcher for types we should instrument.
      * @param methodsMatcher an element matcher for the methods in the types that should be instrumented.
@@ -40,7 +43,7 @@ public class LoggingInstrumentationByteBuddyBuilder {
                 .type(typesMatcher) // for these classes...
                 .transform((builder, type, classLoader, module) ->
                         // ...apply this advice to these methods.
-                        builder.visit(Advice.to(LoggingInstrumentationAdvice.class).on(methodsMatcher))
+                        builder.visit(Advice.to(INSTRUMENTATION_ADVICE_CLASS).on(methodsMatcher))
                 );
     }
 
@@ -78,11 +81,11 @@ public class LoggingInstrumentationByteBuddyBuilder {
         return builderFromConfig(typesMatcher, methodsMatcher).with(listener);
     }
 
-    public AgentBuilder builderFromConfig(ClassAdviceConfig c) {
+    public AgentBuilder builderFromConfig(LoggingAdviceConfig c) {
         return builderFromConfig(c.types(), c.methods());
     }
 
-    public AgentBuilder builderFromConfigWithRetransformation(ClassAdviceConfig c) {
+    public AgentBuilder builderFromConfigWithRetransformation(LoggingAdviceConfig c) {
         return builderFromConfigWithRetransformation(c.types(), c.methods());
     }
 }

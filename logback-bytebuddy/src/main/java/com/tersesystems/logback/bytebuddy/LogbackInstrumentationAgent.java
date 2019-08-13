@@ -24,6 +24,9 @@ import static java.util.Collections.singletonMap;
 import static net.bytebuddy.dynamic.ClassFileLocator.ForClassLoader.read;
 import static net.bytebuddy.dynamic.loading.ClassInjector.UsingInstrumentation.Target.BOOTSTRAP;
 
+/**
+ * The agent class.  This has the magic "premain" and "agentmain" methods for the Java Instrumentation API.
+ */
 public class LogbackInstrumentationAgent extends LogbackInstrumentation {
 
     private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
@@ -32,14 +35,16 @@ public class LogbackInstrumentationAgent extends LogbackInstrumentation {
         Config config = ConfigFactory.load();
         LogbackInstrumentationAgent agent = new LogbackInstrumentationAgent();
         injectBootstrapClasses(instrumentation);
-        agent.initialize(config, instrumentation);
+        boolean debug = "debug".equalsIgnoreCase(arg);
+        agent.initialize(config, instrumentation, debug);
     }
 
     public static void agentmain(String arg, Instrumentation instrumentation) throws Exception {
         Config config = ConfigFactory.load();
         LogbackInstrumentationAgent agent = new LogbackInstrumentationAgent();
         injectBootstrapClasses(instrumentation);
-        agent.initialize(config, instrumentation);
+        boolean debug = "debug".equalsIgnoreCase(arg);
+        agent.initialize(config, instrumentation, debug);
     }
 
     private static void injectBootstrapClasses(Instrumentation instrumentation) throws IOException {

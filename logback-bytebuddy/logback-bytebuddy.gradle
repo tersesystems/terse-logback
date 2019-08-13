@@ -34,8 +34,8 @@ jar {
 application {
     mainClassName = 'com.tersesystems.logback.bytebuddy.PreloadedInstrumentationExample'
     applicationDefaultJvmArgs = [
-            '-Dconfig.file=/home/wsargent/work/terse-logback/logback-bytebuddy/src/test/resources/application.conf',
-            '-Dlogback.configurationFile=/home/wsargent/work/terse-logback/logback-bytebuddy/src/test/resources/logback-test.xml',
+            "-Dconfig.file=$buildDir/../src/test/resources/application.conf",
+            "-Dlogback.configurationFile=$buildDir/../src/test/resources/logback-test.xml",
             '-javaagent:lib/logback-bytebuddy-0.0.0.jar',
     ]
 }

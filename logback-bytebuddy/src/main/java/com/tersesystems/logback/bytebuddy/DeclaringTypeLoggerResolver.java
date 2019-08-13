@@ -15,6 +15,9 @@ import org.slf4j.Logger;
 
 import java.util.Objects;
 
+/**
+ * Returns the logger with the class that was instrumented.
+ */
 public class DeclaringTypeLoggerResolver implements LoggerResolver {
 
     private final ILoggerFactory loggerFactory;

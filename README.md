@@ -688,12 +688,12 @@ public class AgentBasedTest {
         Config config = ConfigFactory.load();
         List<String> classNames = config.getStringList("bytebuddy.classNames");
         List<String> methodNames = config.getStringList("bytebuddy.methodNames");
-        ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
+        ClassAdviceConfig loggingAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(classNames);
         new ClassAdviceAgentBuilder()
-                .builderFromConfig(classAdviceConfig)
+                .builderFromConfig(loggingAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
 

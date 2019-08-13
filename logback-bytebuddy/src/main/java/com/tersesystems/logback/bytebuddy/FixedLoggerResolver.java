@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Always returns the same logger.
+ */
 public class FixedLoggerResolver implements LoggerResolver {
     private final Logger logger;
 

@@ -17,7 +17,7 @@ import org.slf4j.*;
 import static net.logstash.logback.argument.StructuredArguments.*;
 
 /**
- *
+ * The code to be added on entry / exit to the methods under instrumentation.
  */
 public class LoggingInstrumentationAdvice {
     // https://github.com/qos-ch/slf4j/blob/master/slf4j-ext/src/main/java/org/slf4j/ext/XLogger.java#L44

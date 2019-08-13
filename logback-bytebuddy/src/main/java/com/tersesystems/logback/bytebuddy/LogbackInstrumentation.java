@@ -11,7 +11,6 @@
 package com.tersesystems.logback.bytebuddy;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
 import net.bytebuddy.agent.builder.AgentBuilder;
 
 import java.lang.instrument.Instrumentation;
@@ -25,18 +24,20 @@ import java.util.List;
  */
 public abstract class LogbackInstrumentation {
 
-    public void initialize(Config config, Instrumentation instrumentation) {
+    public void initialize(Config config, Instrumentation instrumentation, boolean debug) {
         try {
             List<String> classNames = getClassNames(config);
             List<String> methodNames = getMethodNames(config);
-            ClassAdviceConfig classAdviceConfig = ClassAdviceConfig.create(classNames, methodNames);
+            LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+            AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
+                    .builderFromConfigWithRetransformation(loggingAdviceConfig);
 
             // The debugging listener shows what classes are being picked up by the instrumentation
-            AgentBuilder.Listener debugListener = createDebugListener(classNames);
-            new LoggingInstrumentationByteBuddyBuilder()
-                    .builderFromConfigWithRetransformation(classAdviceConfig)
-                    .with(debugListener)
-                    .installOn(instrumentation);
+            if (debug) {
+                AgentBuilder.Listener debugListener = createDebugListener(classNames);
+                agentBuilder = agentBuilder.with(debugListener);
+            }
+            agentBuilder.installOn(instrumentation);
         } catch (Exception e) {
             e.printStackTrace();
         }
