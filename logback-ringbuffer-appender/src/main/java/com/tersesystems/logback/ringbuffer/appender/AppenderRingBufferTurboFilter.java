@@ -15,12 +15,12 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.Appender;
-import ch.qos.logback.core.read.CyclicBufferAppender;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import ch.qos.logback.core.spi.FilterReply;
+import com.tersesystems.logback.classic.EncodingRingBufferAppender;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
-import com.tersesystems.logback.core.Collections;
+import com.tersesystems.logback.core.RingBufferAppender;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import net.logstash.logback.encoder.CompositeJsonEncoder;
 import net.logstash.logback.encoder.LogstashEncoder;
@@ -98,12 +98,12 @@ public class AppenderRingBufferTurboFilter extends TurboFilter implements Defaul
 
     private final AppenderAttachableImpl<ILoggingEvent> aae = new AppenderAttachableImpl<>();
 
-    private CyclicBufferAppender<ILoggingEvent> findCyclicAppender() {
+    private EncodingRingBufferAppender findRingBufferAppender() {
         Iterator<Appender<ILoggingEvent>> appenderIterator = aae.iteratorForAppenders();
         while (appenderIterator.hasNext()) {
             Appender<ILoggingEvent> next = appenderIterator.next();
-            if (next instanceof CyclicBufferAppender<?>) {
-                return (CyclicBufferAppender<ILoggingEvent>) next;
+            if (next instanceof EncodingRingBufferAppender) {
+                return (EncodingRingBufferAppender) next;
             }
         }
         return null;
@@ -116,19 +116,19 @@ public class AppenderRingBufferTurboFilter extends TurboFilter implements Defaul
     @Override
     public FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
         if (isDumpTriggered(marker, logger, level, format, params, t)) {
-            CyclicBufferAppender<ILoggingEvent> cyclic = findCyclicAppender();
-            if (cyclic == null) {
-                addError("No cyclic appender found!");
+            EncodingRingBufferAppender ringBufferAppender = findRingBufferAppender();
+            if (ringBufferAppender == null) {
+                addError("No ringBufferAppender appender found!");
                 return FilterReply.NEUTRAL;
             }
 
             LogstashMarker diagnosticEventMarker = Markers.defer(() -> {
                 try {
-                    Stream<ILoggingEvent> stream = Collections.fromIterator(Collections.fromCyclicAppender(cyclic));
+                    Stream<byte[]> stream = ringBufferAppender.getRingBuffer().stream();
                     String eventJson = stream.map(this::encodeEventToJson).collect(Collectors.joining(","));
                     return Markers.appendRaw(getFieldName(), "[" + eventJson + "]");
                 } finally {
-                    cyclic.reset();
+                    ringBufferAppender.reset();
                 }
             });
             Marker joinedMarker = joinMarkers(diagnosticEventMarker, marker);
@@ -148,9 +148,7 @@ public class AppenderRingBufferTurboFilter extends TurboFilter implements Defaul
         return Markers.aggregate(diagnosticEventMarker, marker);
     }
 
-    protected String encodeEventToJson(ILoggingEvent event) {
-        Objects.requireNonNull(event);
-        byte[] bytes = getEncoder().encode(event);
+    protected String encodeEventToJson(byte[] bytes) {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
