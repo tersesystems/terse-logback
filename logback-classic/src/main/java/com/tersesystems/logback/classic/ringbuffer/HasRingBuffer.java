@@ -8,10 +8,11 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.core;
+package com.tersesystems.logback.classic.ringbuffer;
 
-import ch.qos.logback.core.Appender;
+import com.tersesystems.logback.core.RingBuffer;
 
-public interface RingBufferAppender<E, EncodingT> extends Appender<E>,  Iterable<EncodingT>  {
-    RingBuffer<EncodingT> getRingBuffer();
+public interface HasRingBuffer<I> {
+
+    public RingBuffer<I> getRingBuffer();
 }

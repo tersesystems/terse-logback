@@ -8,13 +8,12 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.classic;
+package com.tersesystems.logback.classic.ringbuffer;
 
 import ch.qos.logback.classic.layout.TTLLLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
-import com.tersesystems.logback.core.AbstractRingBufferAppender;
 
 /**
  * A cyclic buffer appender that takes an encoder and appends the encoded version of E.

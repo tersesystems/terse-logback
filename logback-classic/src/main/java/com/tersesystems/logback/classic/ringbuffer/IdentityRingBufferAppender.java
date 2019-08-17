@@ -8,19 +8,19 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.core;
+package com.tersesystems.logback.classic.ringbuffer;
+
+import ch.qos.logback.classic.spi.ILoggingEvent;
 
 /**
  * A cyclic buffer appender that adds the event itself to the ring buffer.
- *
- * @param <E>
  */
-public class IdentityRingBufferAppender<E> extends AbstractRingBufferAppender<E, E> {
+public class IdentityRingBufferAppender extends AbstractRingBufferAppender<ILoggingEvent, ILoggingEvent> {
     @Override
-    protected void append(E eventObject) {
+    protected void append(ILoggingEvent eventObject) {
         if (!isStarted()) {
             return;
         }
-        ringBuffer.add(eventObject);
+        getRingBuffer().add(eventObject);
     }
 }

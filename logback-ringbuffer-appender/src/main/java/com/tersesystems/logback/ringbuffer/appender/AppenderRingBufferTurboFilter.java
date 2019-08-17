@@ -17,10 +17,9 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import ch.qos.logback.core.spi.FilterReply;
-import com.tersesystems.logback.classic.EncodingRingBufferAppender;
+import com.tersesystems.logback.classic.ringbuffer.EncodingRingBufferAppender;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
-import com.tersesystems.logback.core.RingBufferAppender;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import net.logstash.logback.encoder.CompositeJsonEncoder;
 import net.logstash.logback.encoder.LogstashEncoder;
@@ -30,7 +29,6 @@ import org.slf4j.Marker;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
