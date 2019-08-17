@@ -15,20 +15,16 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.sift.SiftingAppender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.read.CyclicBufferAppender;
 import ch.qos.logback.core.sift.AppenderTracker;
-import ch.qos.logback.core.sift.DefaultDiscriminator;
-import com.tersesystems.logback.classic.sift.DiscriminatingMarker;
+import com.tersesystems.logback.classic.LogbackUtils;
 import com.tersesystems.logback.classic.sift.DiscriminatingMarkerFactory;
-import com.tersesystems.logback.core.IdentityRingBufferAppender;
-import com.tersesystems.logback.core.RingBufferAppender;
+import com.tersesystems.logback.core.RingBuffer;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.slf4j.Marker;
 
 import java.net.URL;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,16 +40,21 @@ public class SiftingRingBufferTest {
         logger.info(marker, "this is pretty ordinary");
         logger.info(marker, "this is SPECIAL");
 
-        Logger rootLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-
-        SiftingAppender siftingAppender = (SiftingAppender) rootLogger.getAppender("SIFT");
+        SiftingAppender siftingAppender = LogbackUtils.getSiftingAppender(loggerContext, "SIFT").get();
         AppenderTracker<ILoggingEvent> appenderTracker = siftingAppender.getAppenderTracker();
         assertThat(appenderTracker.getComponentCount()).isEqualTo(2);
 
-        IdentityRingBufferAppender<ILoggingEvent> defaultAppender = (IdentityRingBufferAppender<ILoggingEvent>)appenderTracker.find("default");
-        assertThat(defaultAppender.getRingBuffer().size()).isEqualTo(1);
-        IdentityRingBufferAppender<ILoggingEvent> specialAppender = (IdentityRingBufferAppender<ILoggingEvent>) appenderTracker.find("SPECIAL");
-        assertThat(specialAppender.getRingBuffer().size()).isEqualTo(1);
+        RingBuffer<ILoggingEvent> defaultRingBuffer = getRingBuffer("SIFT", "default").get();
+        assertThat(defaultRingBuffer.size()).isEqualTo(1);
+
+        RingBuffer<ILoggingEvent> specialRingBuffer= getRingBuffer("SIFT", "SPECIAL").get();
+        assertThat(specialRingBuffer.size()).isEqualTo(1);
+    }
+
+    private Optional<RingBuffer<ILoggingEvent>> getRingBuffer(String appenderName, String key) {
+        return LogbackUtils.getSiftingAppender(appenderName)
+                .flatMap(a -> LogbackUtils.getAppenderByKey(a, key))
+                .flatMap(LogbackUtils::getRingBuffer);
     }
 
     String discriminate(ILoggingEvent event) {
