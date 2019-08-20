@@ -1,0 +1,64 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <!-- the http client is async, so must be given time to process and shut down -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <appender name="HONEYCOMB" class="com.tersesystems.logback.honeycomb.HoneycombAppender">
+        <apiKey>${HONEYCOMB_API_KEY}</apiKey>
+        <dataSet>terse-logback</dataSet>
+        <sampleRate>1</sampleRate>
+        <queueSize>3</queueSize>
+        <batch>true</batch>
+
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                    <timeZone>UTC</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</pattern>
+                </timestamp>
+                <message/>
+                <loggerName/>
+                <threadName/>
+                <logLevel/>
+                <stackHash/>
+                <mdc/>
+                <logstashMarkers/>
+                <arguments/>
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <rootCauseFirst>true</rootCauseFirst>
+                    </throwableConverter>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- set to DEBUG for wire output -->
+    <logger name="play.shaded.ahc.org.asynchttpclient" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="HONEYCOMB" />
+    </root>
+
+</configuration>

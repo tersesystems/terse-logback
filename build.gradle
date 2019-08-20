@@ -3,7 +3,8 @@ plugins {
     // https://aalmiray.github.io/kordamp-gradle-plugins/#_project_structure
     id 'org.kordamp.gradle.project' version '0.14.0'            
     id 'org.kordamp.gradle.bintray' version '0.14.0'     
-    id 'com.gradle.build-scan'      version '2.2.1'       
+    id 'com.gradle.build-scan'      version '2.2.1'
+    //id 'org.inferred.processors'    version '2.3.0'
 }
 
 if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
@@ -62,6 +63,10 @@ allprojects {
 
     repositories {
         jcenter()
+    }
+
+    tasks.withType(Sign) {
+        onlyIf { 1 == 0 }
     }
 }
 

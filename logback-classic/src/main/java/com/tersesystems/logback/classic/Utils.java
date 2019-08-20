@@ -13,6 +13,7 @@ package com.tersesystems.logback.classic;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextSelectorStaticBinder;
 import ch.qos.logback.core.Appender;
@@ -21,6 +22,8 @@ import com.tersesystems.logback.classic.functional.RingBufferFunction;
 import com.tersesystems.logback.classic.functional.RootLoggerSupplier;
 import com.tersesystems.logback.classic.functional.SiftingRingBufferFunction;
 import com.tersesystems.logback.core.RingBuffer;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -34,7 +37,13 @@ public class Utils {
     }
 
     public static LoggerContext defaultContext() {
-        return ContextSelectorStaticBinder.getSingleton().getContextSelector().getLoggerContext();
+        ContextSelectorStaticBinder singleton = ContextSelectorStaticBinder.getSingleton();
+        if (singleton != null && singleton.getContextSelector() != null) {
+            return singleton.getContextSelector().getLoggerContext();
+        } else {
+            ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+            return (LoggerContext) loggerFactory;
+        }
     }
 
     public static Utils create(LoggerContext loggerContext) {
@@ -100,5 +109,9 @@ public class Utils {
 
     public <E extends Appender<ILoggingEvent>> Optional<E> getAppender(String appenderName) {
         return GetAppenderFunction.<E>create(loggerContext).apply(appenderName);
+    }
+
+    public LoggingEventFactory getLoggingEventFactory() {
+        return new LoggingEventFactory();
     }
 }
