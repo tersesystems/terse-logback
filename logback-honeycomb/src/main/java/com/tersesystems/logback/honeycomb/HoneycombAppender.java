@@ -11,6 +11,8 @@
 package com.tersesystems.logback.honeycomb;
 
 import akka.actor.ActorSystem;
+import akka.actor.BootstrapSetup;
+import akka.actor.setup.ActorSystemSetup;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
@@ -32,6 +34,8 @@ import static com.tersesystems.logback.honeycomb.HoneycombClient.DEFAULT_ACTORSY
  * Creates an appender that sends data to Honeycomb.
  */
 public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
+
+    private static final String AKKA_MAX_THREADS_KEY = "akka.actor.default-dispatcher.fork-join-executor.parallelism-max";
 
     private String dataSet;
     private String apiKey;
@@ -95,7 +99,10 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
         }
 
         try {
-            actorSystem = ActorSystem.create(DEFAULT_ACTORSYSTEM_NAME);
+            // We don't need a big actor system here.
+            Map<String, ?> cfg = Collections.singletonMap(AKKA_MAX_THREADS_KEY, 2);
+            Config config = ConfigFactory.parseMap(cfg).withFallback(ConfigFactory.load());
+            actorSystem = ActorSystem.create(DEFAULT_ACTORSYSTEM_NAME, config);
             honeycombClient = createClient(apiKey, actorSystem);
             if (batch) {
                 eventQueue = new ArrayBlockingQueue<>(queueSize);

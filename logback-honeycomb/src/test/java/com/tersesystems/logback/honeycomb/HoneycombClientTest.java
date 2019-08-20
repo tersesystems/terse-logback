@@ -4,8 +4,11 @@ import akka.actor.ActorSystem;
 import akka.actor.CoordinatedShutdown;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.Encoder;
+import ch.qos.logback.core.joran.spi.JoranException;
 import com.tersesystems.logback.classic.LoggingEventFactory;
 import com.tersesystems.logback.classic.Utils;
 import com.typesafe.config.Config;
@@ -18,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 import static com.tersesystems.logback.honeycomb.HoneycombClient.DEFAULT_ACTORSYSTEM_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,12 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HoneycombClientTest {
 
     @Test
-    public void testClient() throws ExecutionException, InterruptedException, IOException {
-        Utils utils = Utils.create();
+    public void testClient() throws Exception {
+        Utils utils = Utils.create("/logback-honeycomb-event.xml");
+
         LoggingEventFactory loggingEventFactory = utils.getLoggingEventFactory();
         Logger logger = utils.getLogger("com.example.Test").get();
 
-        HoneycombMarkerFactory markerService = new HoneycombMarkerFactory();
         ILoggingEvent loggingEvent = loggingEventFactory.create(null, logger, Level.INFO, "testClient", null, null);
 
         HoneycombAppender appender = utils.<HoneycombAppender>getAppender("HONEYCOMB").get();

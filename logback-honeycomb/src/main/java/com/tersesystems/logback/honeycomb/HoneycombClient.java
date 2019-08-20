@@ -53,22 +53,6 @@ public class HoneycombClient implements DefaultBodyWritables, DefaultBodyReadabl
     private final String apiKey;
     private final JsonFactory factory = new JsonFactory();
 
-    /**
-     * Creates a honeycomb client, pulling config from the default `ConfigFactory.load`.
-     */
-    public HoneycombClient(Function<ILoggingEvent, byte[]> encodeFunction) {
-        this(ConfigFactory.load(), encodeFunction);
-    }
-
-    /**
-     * Creates a honeycomb client, pulling the api key from "logback.honeycomb.key" in the config.
-     */
-    public HoneycombClient(Config config, Function<ILoggingEvent, byte[]> encodeFunction) {
-        this(AhcWSClientConfigFactory.forConfig(config, config.getClass().getClassLoader()),
-                ActorSystem.create(DEFAULT_ACTORSYSTEM_NAME, config),
-                config.getString(LOGBACK_HONEYCOMB_KEY), encodeFunction);
-    }
-
     public HoneycombClient(AhcWSClientConfig ahcWSClientConfig,
                            ActorSystem system,
                            String apiKey,

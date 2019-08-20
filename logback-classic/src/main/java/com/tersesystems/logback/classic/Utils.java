@@ -12,11 +12,13 @@ package com.tersesystems.logback.classic;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextSelectorStaticBinder;
 import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.joran.spi.JoranException;
 import com.tersesystems.logback.classic.functional.GetAppenderFunction;
 import com.tersesystems.logback.classic.functional.RingBufferFunction;
 import com.tersesystems.logback.classic.functional.RootLoggerSupplier;
@@ -25,6 +27,7 @@ import com.tersesystems.logback.core.RingBuffer;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -46,8 +49,21 @@ public class Utils {
         }
     }
 
+    public static LoggerContext contextFromResource(String resourcePath) throws JoranException {
+        LoggerContext context = new LoggerContext();
+        URL resource = requireNonNull(Utils.class.getResource(requireNonNull(resourcePath)));
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(context);
+        configurator.doConfigure(resource);
+        return context;
+    }
+
     public static Utils create(LoggerContext loggerContext) {
         return new Utils(loggerContext);
+    }
+
+    public static Utils create(String resourcePath) throws JoranException {
+        return new Utils(contextFromResource(resourcePath));
     }
 
     public static Utils create() {

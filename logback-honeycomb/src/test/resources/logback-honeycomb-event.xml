@@ -19,16 +19,10 @@
         <apiKey>${HONEYCOMB_API_KEY}</apiKey>
         <dataSet>terse-logback</dataSet>
         <sampleRate>1</sampleRate>
-        <queueSize>3</queueSize>
-        <batch>true</batch>
+        <batch>false</batch>
 
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
-                <timestamp>
-                    <fieldName>timestamp</fieldName>
-                    <timeZone>UTC</timeZone>
-                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</pattern>
-                </timestamp>
                 <message/>
                 <loggerName/>
                 <threadName/>
@@ -53,12 +47,13 @@
     </appender>
 
     <!-- set to DEBUG for wire output -->
-    <logger name="play.shaded.ahc.org.asynchttpclient" level="WARN" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
+    <!--    <logger name="play.shaded.ahc.org.asynchttpclient" level="WARN" additivity="false">-->
+    <!--        <appender-ref ref="STDOUT" />-->
+    <!--    </logger>-->
 
     <root level="INFO">
         <appender-ref ref="HONEYCOMB" />
+        <appender-ref ref="STDOUT" />
     </root>
 
 </configuration>

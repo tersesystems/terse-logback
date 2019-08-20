@@ -11,6 +11,7 @@
 package com.tersesystems.logback.honeycomb;
 
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusManager;
 import com.tersesystems.logback.classic.Utils;
@@ -22,12 +23,15 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class HoneycombTest {
 
     @Test
-    public void testOutput() throws InterruptedException {
-        Utils utils = Utils.create();
+    public void testOutput() throws InterruptedException, JoranException {
+        Utils utils = Utils.create("/logback-honeycomb-batch.xml");
         Logger logger = utils.getLogger("com.example.Test").get();
 
         // close the span and get the marker out.
@@ -39,31 +43,20 @@ public class HoneycombTest {
         logger.info( "Message six");
 
         Thread.sleep(1000);
-        dumpStatus();
 
-        // TODO add an assertion
-    }
-
-    // Get the status manager and look at the messages sent back.
-    private void dumpStatus() {
-        Utils utils = Utils.create();
         StatusManager statusManager = utils.getLoggerContext().getStatusManager();
-        List<Status> copyOfStatusList = statusManager.getCopyOfStatusList();
-        for (Status status : copyOfStatusList) {
-            String message = status.getMessage();
-            if (status.getLevel() == Status.ERROR) {
-                System.err.println(message);
-            } else {
-                System.out.println(message);
-            }
-        }
+        List<Status> successes = statusManager.getCopyOfStatusList().stream()
+                .filter(status -> status.getMessage().contains("postBatch: successful post"))
+                .collect(Collectors.toList());
+
+        assertThat(successes.size()).isEqualTo(3);
     }
 
     @Test
-    public void testMarker() {
+    public void testMarker() throws JoranException, InterruptedException {
+        Utils utils = Utils.create("/logback-honeycomb-event.xml");
         HoneycombMarkerFactory markerFactory = new HoneycombMarkerFactory();
 
-        Utils utils = Utils.create();
         Logger logger = utils.getLogger("com.example.Test").get();
 
         // https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#manual-tracing
@@ -80,7 +73,17 @@ public class HoneycombTest {
         logger.info(span1Marker, "called first");
         logger.info(span2Marker, "called second");
 
-        // TODO add an assertion
+        // Give the client time to post...
+        Thread.sleep(1000);
+
+        //dumpStatus(utils);
+
+        StatusManager statusManager = utils.getLoggerContext().getStatusManager();
+        List<Status> successes = statusManager.getCopyOfStatusList().stream()
+                .filter(status -> status.getMessage().contains("postEvent: successful post"))
+                .collect(Collectors.toList());
+
+        assertThat(successes.size()).isEqualTo(2);
     }
 
     @Test
@@ -89,6 +92,19 @@ public class HoneycombTest {
         // TODO add an assertion
     }
 
+    // Get the status manager and look at the messages sent back.
+    private void dumpStatus(Utils utils) {
+        StatusManager statusManager = utils.getLoggerContext().getStatusManager();
+        List<Status> copyOfStatusList = statusManager.getCopyOfStatusList();
+        for (Status status : copyOfStatusList) {
+            String message = status.getMessage();
+            if (status.getLevel() == Status.ERROR) {
+                System.err.println(message);
+            } else {
+                System.out.println(message);
+            }
+        }
+    }
 
     private SpanInfo createRootSpan(String traceId, String methodName, Instant creationTime) {
         String serviceName = "sample_service";
@@ -102,6 +118,5 @@ public class HoneycombTest {
                 .setDurationSupplier(durationSupplier)
                 .build();
     }
-
 
 }
