@@ -1,13 +1,15 @@
 sudo: false
 language: java
 jdk:
-  - openjdk8
-
+- openjdk8
 before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -rf ~/.gradle/caches/5.2.1/
-  - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -rf ~/.gradle/caches/5.2.1/
+- find ~/.gradle/caches/ -name "*.lock" -type f -delete
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+env:
+  matrix:
+    secure: qKX2rKAj1zVg/KjZsJQQigbprVFc+PUMAO9KV35f4OixNu9HGHV2Xyks/qTnywpK1E9uFqNCp17nV+Nc8EcZSYlFh2O3BdtCzbdkXVV8SuVu7aNxQe7DvXwbIfWkfBxi+dzcL5vb0Uiedw+gp8A7cljaFFnN0tSvF0LrUjPKfqzMByZF17rgXJBTrK5hspq1wCCVAP5FSJ/sx9DeZg427UBjT8hdTtDVwb9o1Hmw6vXlMT7JpeRWUNlqW2inKVwyuqSKxcd+iIlp2tf00vykpoSbjHB0Vamtmvt7UDeqz7/WcC51XlZRrBylnXCFkFgzBA8C4PLLIhKa+U5hdeM6I3lSl0WmnkEUnOoN5oIe+l2p+NUt910Dpqz12WQvjw9qy6vraz7C4JuqSOkkP+b4AE6HqiRRAvnc+UO9VlNztrBYcAWxrncOsw8kHQC3eNy7Xwu0ydQQ0NdsLsSKj0Rx1FYJbEeCC9MAveO7paTO8+etrY9JsjMOcBzOAYN08A/zalhSSI9aW9iRimms2gb+734PO2BwPOiy15X14wqha8Q0ZsUmUedJsivvcVVlyJKp/xobehRdlHZpP2APmQhDQRAYZeZ5YJnSrGmGZZeegNgwG4+8IjVJazEaKr1Nr9hsPoJQiT6smO+pfujq4zJYnZCS4Op2AI9LAbdxS/p96uY=
