@@ -158,6 +158,82 @@ Avoid [Mapped Diagnostic Context](https://logback.qos.ch/manual/mdc.html).  MDC 
 
 MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses `CompletableFuture` and `ExecutorService` may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.
 
+## Logging to Honeycomb
+
+You can connect Logback to Honeycomb directly through the Honeycomb appender.  The appender uses the [event API](https://docs.honeycomb.io/api/events/):
+
+```xml
+<configuration>
+  <appender name="HONEYCOMB" class="com.tersesystems.logback.honeycomb.HoneycombAppender">
+      <apiKey>${HONEYCOMB_API_KEY}</apiKey>
+      <dataSet>terse-logback</dataSet>
+      <sampleRate>1</sampleRate>
+      <queueSize>10</queueSize>
+      <batch>true</batch>
+
+      <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+          <providers>
+              <message/>
+              <loggerName/>
+              <threadName/>
+              <logLevel/>
+              <stackHash/>
+              <mdc/>
+              <logstashMarkers/>
+              <arguments/>
+              <stackTrace>
+                  <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                      <rootCauseFirst>true</rootCauseFirst>
+                  </throwableConverter>
+              </stackTrace>
+          </providers>
+      </encoder>
+  </appender>
+
+  <!-- the honeycomb appender depends on classes here, so keep it high -->
+  <logger name="play.shaded" level="ERROR"/>
+
+  <root level="INFO">
+      <appender-ref ref="HONEYCOMB" />
+  </root>
+</configuration>
+```
+
+You can also send tracing information to Honeycomb through SLF4J markers, using the `HoneycombMarkerFactory`.  This is more clunky than using the [Honeycomb Beeline client](https://docs.honeycomb.io/getting-data-in/java/), but can be done directly through markers.
+
+Underneath the hood, the SpanInfo puts together logstash markers according to [manual tracing](https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#manual-tracing).
+
+```java
+HoneycombMarkerFactory markerFactory = new HoneycombMarkerFactory();
+String traceId = UUID.randomUUID().toString();
+String spanId = UUID.randomUUID().toString();
+String serviceName = "sample_service";
+
+Instant creationTime = Instant.now().minusSeconds(3);
+Supplier<Duration> durationSupplier = () -> Duration.between(creationTime, Instant.now());
+SpanInfo method1Span = SpanInfo.builder()
+          .setName("rootMethod")
+          .setSpanId(spanId)
+          .setTraceId(traceId)
+          .setServiceName(serviceName)
+          .setDurationSupplier(durationSupplier)
+          .build();
+LogstashMarker span1Marker = markerFactory.create(method1Span);
+
+SpanInfo method2Span = method1Span.childBuilder()
+        .setName("childMethod")
+        .setDurationSupplier(() ->
+           Duration.between(Instant.now().minusSeconds(2),
+                            Instant.now())
+        ).build();
+LogstashMarker span2Marker = markerFactory.create(method2Span);
+
+logger.info(span1Marker, "called first");
+logger.info(span2Marker, "called second");
+```
+
+This generates a trace with a root span of "rootMethod" and child span of "childMethod" in Honeycomb.
+
 ## Selectively Logging with TurboMarkers
 
 [Turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter) are filters that decide whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
