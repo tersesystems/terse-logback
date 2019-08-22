@@ -160,7 +160,19 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 ## Logging to Honeycomb
 
-You can connect Logback to Honeycomb directly through the Honeycomb appender.  The appender uses the [event API](https://docs.honeycomb.io/api/events/):
+You can connect Logback to Honeycomb directly through the Honeycomb appender.  
+
+The honeycomb appender is split into the appender, which talks to a `HoneycombClient` API, backed by an HTTP client implementation using the [event API](https://docs.honeycomb.io/api/events/) with Play-WS.  
+
+As such, you'll want to add both the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-playws':
+
+```gradle
+compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
+compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-client' // optional
+compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-playws'
+```
+
+The appender is as followed:
 
 ```xml
 <configuration>
@@ -190,7 +202,10 @@ You can connect Logback to Honeycomb directly through the Honeycomb appender.  T
       </encoder>
   </appender>
 
-  <!-- the honeycomb appender depends on classes here, so keep it high -->
+  <!-- 
+    the honeycomb appender depends on classes here, so keep it at ERROR or OFF,
+    otherwise you can get into a loop 
+  -->
   <logger name="play.shaded" level="ERROR"/>
 
   <root level="INFO">
@@ -199,40 +214,52 @@ You can connect Logback to Honeycomb directly through the Honeycomb appender.  T
 </configuration>
 ```
 
-You can also send tracing information to Honeycomb through SLF4J markers, using the `HoneycombMarkerFactory`.  This is more clunky than using the [Honeycomb Beeline client](https://docs.honeycomb.io/getting-data-in/java/), but can be done directly through markers.
+You can also send tracing information to Honeycomb through SLF4J markers, using the `SpanMarkerFactory`.  Underneath the hood, the SpanInfo puts together logstash markers according to [manual tracing](https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#manual-tracing).
 
-Underneath the hood, the SpanInfo puts together logstash markers according to [manual tracing](https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#manual-tracing).
+The way this works in practice is that you start up a `SpanInfo` at the beginning of a request, and call `buildNow` to mark the start of the span.  At the end of the operation, you log with a marker, by passing through the marker factory:
 
 ```java
-HoneycombMarkerFactory markerFactory = new HoneycombMarkerFactory();
-String traceId = UUID.randomUUID().toString();
-String spanId = UUID.randomUUID().toString();
-String serviceName = "sample_service";
-
-Instant creationTime = Instant.now().minusSeconds(3);
-Supplier<Duration> durationSupplier = () -> Duration.between(creationTime, Instant.now());
-SpanInfo method1Span = SpanInfo.builder()
-          .setName("rootMethod")
-          .setSpanId(spanId)
-          .setTraceId(traceId)
-          .setServiceName(serviceName)
-          .setDurationSupplier(durationSupplier)
-          .build();
-LogstashMarker span1Marker = markerFactory.create(method1Span);
-
-SpanInfo method2Span = method1Span.childBuilder()
-        .setName("childMethod")
-        .setDurationSupplier(() ->
-           Duration.between(Instant.now().minusSeconds(2),
-                            Instant.now())
-        ).build();
-LogstashMarker span2Marker = markerFactory.create(method2Span);
-
-logger.info(span1Marker, "called first");
-logger.info(span2Marker, "called second");
+SpanInfo spanInfo = builder.setRootSpan("index").buildNow();
+// ...
+logger.info(markerFactory.apply(spanInfo), "completed successfully!");
 ```
 
-This generates a trace with a root span of "rootMethod" and child span of "childMethod" in Honeycomb.
+For example, in Play you might run a controller as follows:
+
+```scala
+import com.tersesystems.logback.honeycomb.SpanMarkerFactory
+import com.tersesystems.logback.honeycomb.client.SpanInfo
+import javax.inject._
+import org.slf4j.LoggerFactory
+import play.api.mvc._
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
+
+@Singleton
+class HomeController @Inject()(cc: ControllerComponents)(implicit ec: ExecutionContext) 
+  extends AbstractController(cc) {
+  
+  val markerFactory = new SpanMarkerFactory()
+
+  private val logger = LoggerFactory.getLogger(getClass)
+
+  def builder: SpanInfo.Builder = SpanInfo.builder().setServiceName("play_hello_world")
+
+  def index(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    val spanInfo = builder.setRootSpan("index").buildNow()
+
+    Future.successful(Ok(views.html.index())).andThen {
+      case Success(_) =>
+        logger.info(markerFactory(spanInfo), "completed successfully!")
+      case Failure(e) =>
+        logger.error(markerFactory(spanInfo), "completed with error", e)
+    }
+  }
+}
+```
+
+This generates a trace with a root span of "index" and a `duration_ms` in Honeycomb for the controller method.
 
 ## Selectively Logging with TurboMarkers
 

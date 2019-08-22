@@ -15,14 +15,20 @@ import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 
 /**
- * This is a marker that adds several logstash markers to itself as references, using the
- * honeycomb format.
+ * This is a marker factory that adds several logstash markers to create a span in
+ * Honeycomb format.
  */
-public class HoneycombMarkerFactory {
+public class SpanMarkerFactory {
 
+    // Java API
     public LogstashMarker create(SpanInfo spanInfo) {
         LogstashMarker[] markers = generateMarkers(spanInfo);
         return Markers.aggregate(markers);
+    }
+
+    // Scala API
+    public LogstashMarker apply(SpanInfo spanInfo) {
+       return create(spanInfo);
     }
 
     protected LogstashMarker[] generateMarkers(SpanInfo spanInfo) {
