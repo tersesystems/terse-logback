@@ -1,0 +1,31 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api project(":logback-honeycomb-client")
+
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
+
+    // https://mvnrepository.com/artifact/com.typesafe.akka/akka-stream
+    implementation group: 'com.typesafe.akka', name: 'akka-stream_2.12', version: '2.5.24'
+
+    // https://mvnrepository.com/artifact/com.typesafe.play/play-ws-standalone
+    implementation group: 'com.typesafe.play', name: 'play-ahc-ws-standalone_2.12', version: '2.0.7'
+
+    compile group: 'com.google.auto.service', name: 'auto-service', version: '1.0-rc6'
+    annotationProcessor "com.google.auto.service:auto-service:1.0-rc6"
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}
