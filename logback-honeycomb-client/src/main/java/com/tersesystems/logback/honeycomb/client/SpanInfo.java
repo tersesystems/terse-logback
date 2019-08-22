@@ -15,6 +15,7 @@ import com.google.auto.value.AutoValue;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @AutoValue
@@ -36,6 +37,8 @@ public abstract class SpanInfo {
 
     public abstract String serviceName();
 
+    public abstract Instant startTime();
+
     public Duration duration() {
         return durationSupplier().get();
     }
@@ -54,12 +57,32 @@ public abstract class SpanInfo {
                 .setParentId(spanId());
     }
 
+    /**
+     * Provides a function with a child that can be used as a
+     * convenience wrapper, which calls {@code childBuilder().setName().buildNow()}
+     * under the hood.
+     *
+     * {@code <pre>return parentSpanInfo.withChild("doThing", childSpan -> {
+     *    return doThing(childSpan);
+     * });
+     * </pre>}
+     *
+     * @param methodName the name of the child span
+     * @param childFunction the child function
+     * @param <T> the type of the return value
+     * @return the return value
+     */
+    public <T> T withChild(String methodName, Function<SpanInfo, T> childFunction) {
+        return childFunction.apply(childBuilder().setName(methodName).buildNow());
+    }
+
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder setName(String name);
         public abstract Builder setSpanId(String spanId);
         public abstract Builder setParentId(String parentId);
         public abstract Builder setTraceId(String traceId);
+        public abstract Builder setStartTime(Instant startTime);
         public abstract Builder setServiceName(String serviceName);
         public abstract Builder setDurationSupplier(Supplier<Duration> duration);
         public abstract SpanInfo build();
@@ -76,12 +99,18 @@ public abstract class SpanInfo {
                     .setName(name);
         }
 
+        public Builder startNow() {
+            Instant startTime = Instant.now();
+            return this
+                    .setDurationSupplier(() -> Duration.between(startTime, Instant.now()))
+                    .setStartTime(startTime);
+        }
+
         /**
          * Builds a span info, setting the duration supplier to be {@code Duration.between(now, Instant.now())}
          */
         public SpanInfo buildNow() {
-            Instant now = Instant.now();
-            return this.setDurationSupplier(() -> Duration.between(now, Instant.now())).build();
+            return startNow().build();
         }
     }
 }

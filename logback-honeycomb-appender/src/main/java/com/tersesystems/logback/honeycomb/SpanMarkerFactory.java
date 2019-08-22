@@ -22,8 +22,9 @@ public class SpanMarkerFactory {
 
     // Java API
     public LogstashMarker create(SpanInfo spanInfo) {
+        StartTimeMarker startTime = new StartTimeMarker(spanInfo.startTime());
         LogstashMarker[] markers = generateMarkers(spanInfo);
-        return Markers.aggregate(markers);
+        return Markers.aggregate(markers).and(startTime);
     }
 
     // Scala API
@@ -38,7 +39,6 @@ public class SpanMarkerFactory {
         LogstashMarker traceIdMarker = Markers.append("trace.trace_id", spanInfo.traceId());
         LogstashMarker serviceNameMarker = Markers.append("service_name", spanInfo.serviceName());
         LogstashMarker durationMs = Markers.append("duration_ms", spanInfo.duration().toMillis());
-
         LogstashMarker[] markers = {
           nameMarker, spanIdMarker, parentIdMarker, traceIdMarker, serviceNameMarker, durationMs
         };

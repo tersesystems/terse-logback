@@ -224,6 +224,21 @@ SpanInfo spanInfo = builder.setRootSpan("index").buildNow();
 logger.info(markerFactory.apply(spanInfo), "completed successfully!");
 ```
 
+If you want to create a child span, you can do it from the parent using `withChild`:
+
+```java
+return spanInfo.withChild("doSomething", childInfo -> {
+   return doSomething(childInfo);
+});
+```
+
+or asking for a child builder that you can build yourself:
+
+
+```java
+SpanInfo childInfo = spanInfo.childBuilder().setSpanName("doSomething").buildNow();
+```
+
 For example, in Play you might run a controller as follows:
 
 ```scala
@@ -231,35 +246,49 @@ import com.tersesystems.logback.honeycomb.SpanMarkerFactory
 import com.tersesystems.logback.honeycomb.client.SpanInfo
 import javax.inject._
 import org.slf4j.LoggerFactory
+import play.api.libs.concurrent.Futures
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+import scala.concurrent.duration._
+
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents)(implicit ec: ExecutionContext) 
-  extends AbstractController(cc) {
-  
-  val markerFactory = new SpanMarkerFactory()
+class HomeController @Inject()(cc: ControllerComponents, futures: Futures)
+  (implicit ec: ExecutionContext) extends AbstractController(cc) {
+  private val markerFactory = new SpanMarkerFactory()
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  def builder: SpanInfo.Builder = SpanInfo.builder().setServiceName("play_hello_world")
+  private def builder: SpanInfo.Builder = SpanInfo.builder().setServiceName("play_hello_world")
 
   def index(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     val spanInfo = builder.setRootSpan("index").buildNow()
 
-    Future.successful(Ok(views.html.index())).andThen {
+    val f: Future[Result] = spanInfo.withChild("renderPage", renderPage(_))
+    f.andThen {
       case Success(_) =>
-        logger.info(markerFactory(spanInfo), "completed successfully!")
+        logger.info(markerFactory(spanInfo), "index completed successfully!")
       case Failure(e) =>
-        logger.error(markerFactory(spanInfo), "completed with error", e)
+        logger.error(markerFactory(spanInfo), "index completed with error", e)
+    }
+  }
+
+  def renderPage(spanInfo: SpanInfo): Future[Result] = {
+    futures.delay(5.seconds).map { _ =>
+      Ok(views.html.index())
+    }.andThen {
+       case Success(_) =>
+         logger.info(markerFactory(spanInfo), "renderPage completed successfully!")
+       case Failure(e) =>
+         logger.error(markerFactory(spanInfo), "renderPage completed with error", e)
     }
   }
 }
 ```
 
-This generates a trace with a root span of "index" and a `duration_ms` in Honeycomb for the controller method.
+This generates a trace with a root span of "index", a child span of "renderPage" each with their own durations.
 
 ## Selectively Logging with TurboMarkers
 
