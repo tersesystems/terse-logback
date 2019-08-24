@@ -3,10 +3,12 @@ package com.tersesystems.logback.postgresjson;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.joran.spi.JoranException;
 import com.tersesystems.logback.classic.Utils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PostgresJsonAppenderTest {
 
+    @Disabled
     @Test
     public void testJson() throws JoranException, InterruptedException {
 
