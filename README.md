@@ -1,5 +1,5 @@
 [<img src="https://img.shields.io/travis/tersesystems/terse-logback.svg"/>](https://travis-ci.org/tersesystems/terse-logback) 
-[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.11.0) ](https://bintray.com/tersesystems/maven/terse-logback/0.11.0/link)
+[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.12.0) ](https://bintray.com/tersesystems/maven/terse-logback/0.12.0/link)
 
 # Structured Logging Example with Logback
 
@@ -291,9 +291,9 @@ This generates a trace with a root span of "index", a child span of "renderPage"
 
 ## Rendering to Postgres JSON
 
-You can log structured information to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html).  This is great, because there's [lots you can do with postgresql and JSON](http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/).
+You can log JSON to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html).  There's [lots you can do with postgresql and JSON](http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/).  Beyond the straight queries, you can do all kinds of fun visualizations using [ObservableHQ](https://observablehq.com/@observablehq/connecting-to-databases).  ObservableHQ isn't a substitute for a full-on [Databricks](https://databricks.com/) type processing notebook, but it does open the door to pattern recognition based debugging that you may not get with charts and graphs.
 
-First, install PostgresSQL, create a database `logback`, a role `logback` and a password `logback` and add the following table:
+First, install PostgreSQL, create a database `logback`, a role `logback` and a password `logback` and add the following table:
 
 ```sql
 CREATE TABLE logging_table (
@@ -341,11 +341,9 @@ Then, add the following `logback.xml`:
 </configuration>
 ```
 
-The appender uses HikariCP 3.3.1 under the hood for connection pooling.  
+The appender uses [HikariCP](https://brettwooldridge.github.io/HikariCP/) under the hood for connection pooling.  
 
 If you have extra logs that you want to import into PostgreSQL, you can [use PSQL to do that](https://stackoverflow.com/questions/39224382/how-can-i-import-a-json-file-into-postgresql/57445995#57445995).
-
-Once you have JSON in a database, you can do all kinds of fun visualizations using [ObservableHQ](https://observablehq.com/@observablehq/connecting-to-databases).  ObservableHQ isn't a substitute for a full-on Databricks type processing notebook, but it does open the door to pattern recognition based debugging that you may not get with charts and graphs.
 
 ## Selectively Logging with TurboMarkers
 
