@@ -1,0 +1,33 @@
+plugins {
+    id "org.flywaydb.flyway" version "6.0.0"
+}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/logback'
+    user = 'logback'
+    password = 'logback'
+}
+
+dependencies {
+    testImplementation project(":logback-classic")
+    testImplementation "org.flywaydb:flyway-core:6.0.0"
+}
+
+dependencies {
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
+    implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.3.1'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
+}
+
+config {
+    javadoc {
+        options.charSet = 'UTF-8'
+        options.encoding = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+        options.use = true
+        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
+    }
+}
