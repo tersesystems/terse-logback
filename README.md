@@ -169,7 +169,7 @@ As such, you'll want to add both the appender module 'logback-honeycomb-appender
 ```gradle
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-client' // optional
-compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-playws'
+compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-playws_2.12'
 ```
 
 The appender is as followed:
