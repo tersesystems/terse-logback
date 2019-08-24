@@ -39,5 +39,6 @@ includeProject 'logback-sigar'
 includeProject 'logback-honeycomb-client'
 includeProject 'logback-honeycomb-playws'
 includeProject 'logback-honeycomb-appender'
+includeProject 'logback-honeycomb-okhttp'
 
 //includeProject 'guide'
