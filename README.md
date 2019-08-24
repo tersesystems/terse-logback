@@ -162,14 +162,13 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 You can connect Logback to Honeycomb directly through the Honeycomb appender.  
 
-The honeycomb appender is split into the appender, which talks to a `HoneycombClient` API, backed by an HTTP client implementation using the [event API](https://docs.honeycomb.io/api/events/) with Play-WS.  
+The honeycomb appender is split into the appender and a client, which can be OKHTTP or Play WS.
 
-As such, you'll want to add both the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-playws':
+As such, you'll want to add both the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-okhttp':
 
 ```gradle
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
-compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-client' // optional
-compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-playws_2.12'
+compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
 ```
 
 The appender is as followed:
@@ -203,10 +202,10 @@ The appender is as followed:
   </appender>
 
   <!-- 
-    the honeycomb appender depends on classes here, so keep it at ERROR or OFF,
-    otherwise you can get into a loop 
+    don't send the logs from the http engine to the appender or you
+    may end up in a loop
   -->
-  <logger name="play.shaded" level="ERROR"/>
+  <logger name="okhttp" level="ERROR"/>
 
   <root level="INFO">
       <appender-ref ref="HONEYCOMB" />
