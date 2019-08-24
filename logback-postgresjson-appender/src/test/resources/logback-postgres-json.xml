@@ -1,0 +1,41 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <!-- the http client is async, so must be given time to process and shut down -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <!-- SQL is blocking, so use an async lmax appender here -->
+    <appender name="ASYNC_POSTGRES" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender class="com.tersesystems.logback.postgresjson.PostgresJsonAppender">
+            <url>jdbc:postgresql://localhost:5432/logback</url>
+            <sqlStatement>insert into logging_table(ts, level_int, level, evt) values(?, ?, ?, ?)</sqlStatement>
+            <username>logback</username>
+            <password>logback</password>
+
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            </encoder>
+        </appender>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_POSTGRES"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

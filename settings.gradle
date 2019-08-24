@@ -37,8 +37,10 @@ includeProject 'logback-ringbuffer-event'
 includeProject 'logback-ringbuffer-appender'
 includeProject 'logback-sigar'
 includeProject 'logback-honeycomb-client'
-includeProject 'logback-honeycomb-playws_2.12'
 includeProject 'logback-honeycomb-appender'
+includeProject 'logback-honeycomb-playws_2.12'
 includeProject 'logback-honeycomb-okhttp'
+includeProject 'logback-postgresjson-appender'
+
 
 //includeProject 'guide'

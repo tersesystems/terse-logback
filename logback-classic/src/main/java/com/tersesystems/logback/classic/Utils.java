@@ -19,6 +19,8 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextSelectorStaticBinder;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.status.StatusManager;
 import com.tersesystems.logback.classic.functional.GetAppenderFunction;
 import com.tersesystems.logback.classic.functional.RingBufferFunction;
 import com.tersesystems.logback.classic.functional.RootLoggerSupplier;
@@ -28,6 +30,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -70,6 +73,11 @@ public class Utils {
         return new Utils(defaultContext());
     }
 
+    public List<Status> getStatusList() {
+        StatusManager statusManager = getLoggerContext().getStatusManager();
+        return statusManager.getCopyOfStatusList();
+    }
+
     public LoggerContext getLoggerContext() {
         return loggerContext;
     }
@@ -101,12 +109,12 @@ public class Utils {
         return RootLoggerSupplier.create(loggerContext).get();
     }
 
-    public Optional<Logger> getLogger(String loggerName) {
-        return Optional.ofNullable(loggerContext.getLogger(loggerName));
+    public Logger getLogger(String loggerName) {
+        return (loggerContext.getLogger(loggerName));
     }
 
-    public Optional<Logger> getLogger(Class<?> clazz) {
-        return Optional.ofNullable(loggerContext.getLogger(clazz));
+    public Logger getLogger(Class<?> clazz) {
+        return (loggerContext.getLogger(clazz));
     }
 
     public <E> Optional<E> getObject(Class<E> classType, String name) {
