@@ -12,14 +12,26 @@
 -->
 <configuration>
 
-    <!-- the http client is async, so must be given time to process and shut down -->
+    <!-- async appender needs a shutdown hook to make sure this clears -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
     <!-- SQL is blocking, so use an async lmax appender here -->
     <appender name="ASYNC_POSTGRES" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+
         <appender class="com.tersesystems.logback.postgresjson.PostgresJsonAppender">
-            <url>jdbc:postgresql://localhost:5432/logback</url>
+            <!--
+                CREATE TABLE logging_table (
+                   ID serial NOT NULL PRIMARY KEY,
+                   ts TIMESTAMP NOT NULL,
+                   level_int int NOT NULL,
+                   level VARCHAR(7) NOT NULL,
+                   evt jsonb NOT NULL
+                );
+            -->
+            <!-- SQL statement takes a TIMESTAMP, INT, VARCHAR, PGObject -->
             <sqlStatement>insert into logging_table(ts, level_int, level, evt) values(?, ?, ?, ?)</sqlStatement>
+
+            <url>jdbc:postgresql://localhost:5432/logback</url>
             <username>logback</username>
             <password>logback</password>
 

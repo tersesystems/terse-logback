@@ -15,6 +15,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusManager;
 import com.tersesystems.logback.classic.Utils;
+import com.tersesystems.logback.honeycomb.client.SpanInfo;
 import net.logstash.logback.marker.LogstashMarker;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +33,7 @@ public class HoneycombTest {
     @Test
     public void testOutput() throws InterruptedException, JoranException {
         Utils utils = Utils.create("/logback-honeycomb-batch.xml");
-        Logger logger = utils.getLogger("com.example.Test").get();
+        Logger logger = utils.getLogger("com.example.Test");
 
         // close the span and get the marker out.
         logger.info( "Message one");
@@ -44,8 +45,9 @@ public class HoneycombTest {
 
         Thread.sleep(1000);
 
-        StatusManager statusManager = utils.getLoggerContext().getStatusManager();
-        List<Status> successes = statusManager.getCopyOfStatusList().stream()
+        List<Status> statusList = utils.getStatusList();
+        statusList.forEach(System.out::println);
+        List<Status> successes = statusList.stream()
                 .filter(status -> status.getMessage().contains("postBatch: successful post"))
                 .collect(Collectors.toList());
 
@@ -55,9 +57,9 @@ public class HoneycombTest {
     @Test
     public void testMarker() throws JoranException, InterruptedException {
         Utils utils = Utils.create("/logback-honeycomb-event.xml");
-        HoneycombMarkerFactory markerFactory = new HoneycombMarkerFactory();
+        SpanMarkerFactory markerFactory = new SpanMarkerFactory();
 
-        Logger logger = utils.getLogger("com.example.Test").get();
+        Logger logger = utils.getLogger("com.example.Test");
 
         // https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#manual-tracing
         String traceId = UUID.randomUUID().toString();
@@ -114,6 +116,7 @@ public class HoneycombTest {
         return SpanInfo.builder().setName(methodName)
                 .setSpanId(spanId)
                 .setTraceId(traceId)
+                .setStartTime(creationTime)
                 .setServiceName(serviceName)
                 .setDurationSupplier(durationSupplier)
                 .build();

@@ -289,6 +289,64 @@ class HomeController @Inject()(cc: ControllerComponents, futures: Futures)
 
 This generates a trace with a root span of "index", a child span of "renderPage" each with their own durations.
 
+## Rendering to Postgres JSON
+
+You can log structured information to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html).  This is great, because there's [lots you can do with postgresql and JSON](http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/).
+
+First, install PostgresSQL, create a database `logback`, a role `logback` and a password `logback` and add the following table:
+
+```sql
+CREATE TABLE logging_table (
+   ID serial NOT NULL PRIMARY KEY,
+   ts TIMESTAMP NOT NULL,
+   level_int int NOT NULL,
+   level VARCHAR(7) NOT NULL,
+   evt jsonb NOT NULL
+);
+CREATE INDEX idxgin ON logging_table USING gin (evt);
+```
+
+Then, add the following `logback.xml`:
+
+```xml
+<configuration>
+    <!-- async appender needs a shutdown hook to make sure this clears -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <!-- SQL is blocking, so use an async lmax appender here -->
+    <appender name="ASYNC_POSTGRES" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <appender class="com.tersesystems.logback.postgresjson.PostgresJsonAppender">
+            <!-- SQL statement takes a TIMESTAMP, INT, VARCHAR, PGObject -->
+            <sqlStatement>insert into logging_table(ts, level_int, level, evt) values(?, ?, ?, ?)</sqlStatement>
+
+            <url>jdbc:postgresql://localhost:5432/logback</url>
+            <username>logback</username>
+            <password>logback</password>
+
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            </encoder>
+        </appender>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_POSTGRES"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+```
+
+The appender uses HikariCP 3.3.1 under the hood for connection pooling.  
+
+If you have extra logs that you want to import into PostgreSQL, you can [use PSQL to do that](https://stackoverflow.com/questions/39224382/how-can-i-import-a-json-file-into-postgresql/57445995#57445995).
+
+Once you have JSON in a database, you can do all kinds of fun visualizations using [ObservableHQ](https://observablehq.com/@observablehq/connecting-to-databases).  ObservableHQ isn't a substitute for a full-on Databricks type processing notebook, but it does open the door to pattern recognition based debugging that you may not get with charts and graphs.
+
 ## Selectively Logging with TurboMarkers
 
 [Turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter) are filters that decide whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.

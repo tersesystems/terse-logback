@@ -19,7 +19,7 @@
         <apiKey>${HONEYCOMB_API_KEY}</apiKey>
         <dataSet>terse-logback</dataSet>
         <sampleRate>1</sampleRate>
-        <queueSize>10</queueSize>
+        <queueSize>3</queueSize>
         <batch>true</batch>
 
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
