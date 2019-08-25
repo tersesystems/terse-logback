@@ -10,12 +10,16 @@
  */
 package com.tersesystems.logback.postgresjson;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
+import com.tersesystems.logback.classic.StartTime;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.postgresql.util.PGobject;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,6 +34,7 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private String url;
     private String username;
     private String password;
+    private int maxPoolSize = 2;
 
     public void setUrl(String url) {
         this.url = url;
@@ -49,6 +54,10 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
     }
 
     @Override
@@ -83,11 +92,13 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
     }
 
     private HikariDataSource createDataSource(String url, String username, String password) {
-        HikariDataSource ds = new HikariDataSource();
-        ds.setJdbcUrl(url);
-        ds.setUsername(username);
-        ds.setPassword(password);
-        return ds;
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setPoolName("postgres-appender-hikari-pool");
+        config.setMaximumPoolSize(maxPoolSize);
+        return new HikariDataSource(config);
     }
 
     @Override
@@ -97,13 +108,22 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
             Connection conn = dataSource.getConnection();
             PreparedStatement statement = conn.prepareStatement(sqlStatement);
             try {
+                long eventMillis = event.getTimeStamp();
+                statement.setTimestamp(1, new java.sql.Timestamp(eventMillis));
+                statement.setBigDecimal(2, new BigDecimal(eventMillis));
+
+                long startTime = StartTime.from(event).toEpochMilli();
+                statement.setBigDecimal(3, new BigDecimal(startTime));
+
+                Level level = event.getLevel();
+                statement.setInt(4, level.toInt());
+                statement.setString(5, level.toString());
+
                 PGobject jsonObject = new PGobject();
                 jsonObject.setType("json");
                 jsonObject.setValue(new String(encode, StandardCharsets.UTF_8));
-                statement.setTimestamp(1, new java.sql.Timestamp(event.getTimeStamp()));
-                statement.setInt(2, event.getLevel().toInt());
-                statement.setString(3, event.getLevel().toString());
-                statement.setObject(4, jsonObject);
+                statement.setObject(6, jsonObject);
+
                 int results = statement.executeUpdate();
                 addInfo("Inserted a row");
             } finally {

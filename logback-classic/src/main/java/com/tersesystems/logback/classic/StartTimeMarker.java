@@ -8,9 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.honeycomb;
-
-import com.tersesystems.logback.classic.TerseBasicMarker;
+package com.tersesystems.logback.classic;
 
 import java.time.Instant;
 import java.util.Objects;

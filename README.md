@@ -323,7 +323,22 @@ Then, add the following `logback.xml`:
             <username>logback</username>
             <password>logback</password>
 
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <message/>
+                    <loggerName/>
+                    <threadName/>
+                    <logLevel/>
+                    <stackHash/>
+                    <mdc/>
+                    <logstashMarkers/>
+                    <arguments/>
+                    <stackTrace>
+                        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                            <rootCauseFirst>true</rootCauseFirst>
+                        </throwableConverter>
+                    </stackTrace>
+                </providers>
             </encoder>
         </appender>
     </appender>

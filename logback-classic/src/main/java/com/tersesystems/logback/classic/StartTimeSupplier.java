@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.honeycomb;
+package com.tersesystems.logback.classic;
 
 import java.time.Instant;
 
