@@ -23,6 +23,9 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Types;
+import java.time.Instant;
+import java.util.Optional;
 
 public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
@@ -110,12 +113,14 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
             try {
                 long eventMillis = event.getTimeStamp();
                 statement.setTimestamp(1, new java.sql.Timestamp(eventMillis));
-                statement.setBigDecimal(2, new BigDecimal(eventMillis));
+                statement.setLong(2, eventMillis);
 
-                BigDecimal startTime = StartTime.fromOptional(event)
-                        .map(st -> new BigDecimal(st.toEpochMilli()))
-                        .orElse(null);
-                statement.setBigDecimal(3, startTime);
+                Optional<Long> startTime = StartTime.fromOptional(event).map(Instant::toEpochMilli);
+                if (startTime.isPresent()) {
+                    statement.setLong(3, startTime.get());
+                } else {
+                    statement.setNull(3,  Types.BIGINT);
+                }
 
                 Level level = event.getLevel();
                 statement.setInt(4, level.toInt());
