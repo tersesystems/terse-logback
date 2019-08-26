@@ -13,13 +13,11 @@ package com.tersesystems.logback.honeycomb;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
-import com.tersesystems.logback.classic.Utils;
-import com.tersesystems.logback.core.StreamUtils;
+import com.tersesystems.logback.classic.StartTime;
+import com.tersesystems.logback.classic.StartTimeMarker;
 import com.tersesystems.logback.honeycomb.client.*;
-import org.slf4j.Marker;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -141,7 +139,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
         if (batch) {
             // If queue is full, then drain and post it.
             HoneycombRequest<ILoggingEvent> request = new HoneycombRequest<>(sampleRate,
-                    getTimestamp(eventObject),
+                    StartTime.from(eventObject),
                     eventObject);
             if (! eventQueue.offer(request)) {
                 List<HoneycombRequest<ILoggingEvent>> list = new ArrayList<>();
@@ -151,23 +149,10 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
             }
         } else {
             HoneycombRequest<ILoggingEvent> request = new HoneycombRequest<>(sampleRate,
-                    getTimestamp(eventObject),
+                    StartTime.from(eventObject),
                     eventObject);
             postEvent(request);
         }
-    }
-
-    private Instant getTimestamp(ILoggingEvent eventObject) {
-        // If this is a span, then we want to register the START of the span,
-        // rather than when the logging event occurred (which is the END of
-        // the span).  So we look for a special marker that overrides
-        // the given timestamp.
-        Optional<Instant> optStartTime = StreamUtils.fromMarker(eventObject.getMarker())
-                .filter(marker -> marker instanceof StartTimeSupplier)
-                .map(marker -> (StartTimeSupplier) marker)
-                .map(StartTimeSupplier::getStartTime)
-                .findFirst();
-        return optStartTime.orElse(Instant.ofEpochMilli(eventObject.getTimeStamp()));
     }
 
     private CompletionStage<Void> postEvent(HoneycombRequest<ILoggingEvent> honeycombRequest) {

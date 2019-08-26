@@ -36,6 +36,8 @@
     <!-- highlight based on context map -->
     <conversionRule conversionWord="terseHighlight" converterClass="com.tersesystems.logback.classic.TerseHighlightConverter" />
 
+    <conversionRule conversionWord="startTime" converterClass="com.tersesystems.logback.classic.StartTimeConverter" />
+
     <!-- time since epoch -->
     <conversionRule conversionWord="tse" converterClass="com.tersesystems.logback.classic.TimeSinceEpochConverter" />
 
