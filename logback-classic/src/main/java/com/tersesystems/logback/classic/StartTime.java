@@ -8,17 +8,20 @@ import java.util.Optional;
 
 public class StartTime {
 
-    public static Instant from(ILoggingEvent eventObject) {
-        // If this is a span, then we want to register the START of the span,
-        // rather than when the logging event occurred (which is the END of
-        // the span).  So we look for a special marker that overrides
-        // the given timestamp.
-        Optional<Instant> optStartTime = StreamUtils.fromMarker(eventObject.getMarker())
+    // If this is a span, then we want to register the START of the span,
+    // rather than when the logging event occurred (which is the END of
+    // the span).  So we look for a special marker that overrides
+    // the given timestamp.
+    public static Optional<Instant> fromOptional(ILoggingEvent event) {
+        return StreamUtils.fromMarker(event.getMarker())
                 .filter(marker -> marker instanceof StartTimeSupplier)
                 .map(marker -> (StartTimeSupplier) marker)
                 .map(StartTimeSupplier::getStartTime)
                 .findFirst();
-        return optStartTime.orElse(Instant.ofEpochMilli(eventObject.getTimeStamp()));
+    }
+
+    public static Instant from(ILoggingEvent eventObject) {
+        return fromOptional(eventObject).orElse(Instant.ofEpochMilli(eventObject.getTimeStamp()));
     }
 
 }

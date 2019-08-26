@@ -112,8 +112,10 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
                 statement.setTimestamp(1, new java.sql.Timestamp(eventMillis));
                 statement.setBigDecimal(2, new BigDecimal(eventMillis));
 
-                long startTime = StartTime.from(event).toEpochMilli();
-                statement.setBigDecimal(3, new BigDecimal(startTime));
+                BigDecimal startTime = StartTime.fromOptional(event)
+                        .map(st -> new BigDecimal(st.toEpochMilli()))
+                        .orElse(null);
+                statement.setBigDecimal(3, startTime);
 
                 Level level = event.getLevel();
                 statement.setInt(4, level.toInt());
