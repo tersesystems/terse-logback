@@ -160,21 +160,21 @@ MDC does not deal well with multi-threaded applications which may pass execution
 
 ## Logging to Honeycomb
 
-You can connect Logback to Honeycomb directly through the Honeycomb appender.  
+You can connect Logback to Honeycomb directly through the Honeycomb Logback appender.  The appender is split into the appender and an HTTP client implementation, which can be OKHTTP or Play WS.
 
-The honeycomb appender is split into the appender and a client, which can be OKHTTP or Play WS.
-
-As such, you'll want to add both the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-okhttp':
+Add the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-okhttp':
 
 ```gradle
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
 ```
 
-The appender is as followed:
+The appender is as follows:
 
 ```xml
 <configuration>
+  <conversionRule conversionWord="startTime" converterClass="com.tersesystems.logback.classic.StartTimeConverter" />
+
   <appender name="HONEYCOMB" class="com.tersesystems.logback.honeycomb.HoneycombAppender">
       <apiKey>${HONEYCOMB_API_KEY}</apiKey>
       <dataSet>terse-logback</dataSet>
@@ -191,6 +191,11 @@ The appender is as followed:
               <stackHash/>
               <mdc/>
               <logstashMarkers/>
+              <pattern>
+                <pattern>
+                    { "start_ms": "#asLong(%startTime)" }
+                </pattern>
+             </pattern>
               <arguments/>
               <stackTrace>
                   <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
@@ -237,6 +242,8 @@ or asking for a child builder that you can build yourself:
 ```java
 SpanInfo childInfo = spanInfo.childBuilder().setSpanName("doSomething").buildNow();
 ```
+
+The start time information is captured in a `StartTimeMarker` which can be extracted by `StartTime.from`.  The event timestamp serves as the span's end time.
 
 For example, in Play you might run a controller as follows:
 
@@ -291,20 +298,24 @@ This generates a trace with a root span of "index", a child span of "renderPage"
 
 ## Rendering to Postgres JSON
 
-You can log JSON to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html).  There's [lots you can do with postgresql and JSON](http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/).  Beyond the straight queries, you can do all kinds of fun visualizations using [ObservableHQ](https://observablehq.com/@observablehq/connecting-to-databases).  ObservableHQ isn't a substitute for a full-on [Databricks](https://databricks.com/) type processing notebook, but it does open the door to pattern recognition based debugging that you may not get with charts and graphs.
+You can log JSON to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html). 
 
 First, install PostgreSQL, create a database `logback`, a role `logback` and a password `logback` and add the following table:
 
 ```sql
 CREATE TABLE logging_table (
    ID serial NOT NULL PRIMARY KEY,
-   ts TIMESTAMP NOT NULL,
-   level_int int NOT NULL,
+   ts TIMESTAMPTZ(6) NOT NULL,
+   tse_ms numeric NOT NULL,
+   start_ms numeric NULL,
+   level_value int NOT NULL,
    level VARCHAR(7) NOT NULL,
    evt jsonb NOT NULL
 );
 CREATE INDEX idxgin ON logging_table USING gin (evt);
 ```
+
+A couple of notes here.  Database timestamps record time with microsecond resolution, whereas millisecond resolution is commonplace for logging, so for convenience both the timestamp (the TZ suffix specifies UTC timezone to Postgres) and the time since epoch are recorded.  For span information, the start time must also be recorded as TSE.  Likewise, the level is recorded as both a text string for visual reference, and a level value so that you can order and filter database queries.
 
 Then, add the following `logback.xml`:
 
@@ -313,11 +324,12 @@ Then, add the following `logback.xml`:
     <!-- async appender needs a shutdown hook to make sure this clears -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
+    <conversionRule conversionWord="startTime" converterClass="com.tersesystems.logback.classic.StartTimeConverter" />
+
     <!-- SQL is blocking, so use an async lmax appender here -->
     <appender name="ASYNC_POSTGRES" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
         <appender class="com.tersesystems.logback.postgresjson.PostgresJsonAppender">
-            <!-- SQL statement takes a TIMESTAMP, INT, VARCHAR, PGObject -->
-            <sqlStatement>insert into logging_table(ts, level_int, level, evt) values(?, ?, ?, ?)</sqlStatement>
+            <sqlStatement>insert into logging_table(ts, tse_ms, start_ms, level_value, level, evt) values(?, ?, ?, ?, ?, ?)</sqlStatement>
 
             <url>jdbc:postgresql://localhost:5432/logback</url>
             <username>logback</username>
@@ -332,6 +344,11 @@ Then, add the following `logback.xml`:
                     <stackHash/>
                     <mdc/>
                     <logstashMarkers/>
+                    <pattern>
+                        <pattern>
+                            { "start_ms": "#asLong(%startTime)" }
+                        </pattern>
+                    </pattern>
                     <arguments/>
                     <stackTrace>
                         <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
@@ -356,7 +373,22 @@ Then, add the following `logback.xml`:
 </configuration>
 ```
 
-The appender uses [HikariCP](https://brettwooldridge.github.io/HikariCP/) under the hood for connection pooling.  
+The appender uses [HikariCP](https://brettwooldridge.github.io/HikariCP/) under the hood for connection pooling, with a maxPoolSize of 2.
+
+[Querying](http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/) requires a little bit of extra syntax, using `evt->'myfield'` to select:
+
+```sql
+select 
+  ts as end_date, 
+  start_ms as epoch_start, 
+  tse_ms as epoch_end, 
+  evt->'trace.span_id' as span_id, 
+  evt->'name' as name, 
+  evt->'message' as message,  
+  evt->'trace.parent_id' as parent,
+  evt->'duration_ms' as duration_ms 
+from logging_table where evt->'trace.trace_id' IS NOT NULL order by ts desc limit 5
+```
 
 If you have extra logs that you want to import into PostgreSQL, you can [use PSQL to do that](https://stackoverflow.com/questions/39224382/how-can-i-import-a-json-file-into-postgresql/57445995#57445995).
 
