@@ -12,8 +12,8 @@ package com.tersesystems.logback.sigar;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.tersesystems.logback.sigar.functions.SigarCpuPercFunction;
 import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.SigarException;
 
 import java.util.Objects;
 
@@ -21,15 +21,8 @@ public class CPUPercentageConverter extends ClassicConverter implements SigarCon
 
     @Override
     public String convert(ILoggingEvent event) {
-        return getSigar().map(sigar -> {
-            try {
-                CpuPerc cpu = sigar.getCpuPerc();
-                return format(cpu);
-            } catch (SigarException e) {
-                addError("Cannot retrieve CPU percentage", e);
-                return "";
-            }
-        }).orElseGet(() -> {
+        SigarCpuPercFunction fn = new SigarCpuPercFunction();
+        return getSigar().map(fn).map(this::format).orElseGet(() -> {
             addError("Sigar is not registered!");
             return "";
         });

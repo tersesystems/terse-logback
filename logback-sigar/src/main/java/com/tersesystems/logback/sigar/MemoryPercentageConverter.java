@@ -12,21 +12,14 @@ package com.tersesystems.logback.sigar;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.tersesystems.logback.sigar.functions.SigarMemoryFunction;
 import org.hyperic.sigar.Mem;
-import org.hyperic.sigar.SigarException;
 
 public class MemoryPercentageConverter extends ClassicConverter implements SigarContextAware {
     @Override
     public String convert(ILoggingEvent event) {
-        return getSigar().map(sigar -> {
-            try {
-                Mem mem = sigar.getMem();
-                return format(mem);
-            } catch (SigarException e) {
-                addError("Cannot retrieve mem", e);
-                return "";
-            }
-        }).orElseGet(() -> {
+        SigarMemoryFunction fn = new SigarMemoryFunction();
+        return getSigar().map(fn).map(this::format).orElseGet(() -> {
             addError("Sigar is not registered!");
             return "";
         });
