@@ -115,7 +115,7 @@ public class PostgresJsonAppender extends UnsynchronizedAppenderBase<ILoggingEve
                 statement.setTimestamp(1, new java.sql.Timestamp(eventMillis));
                 statement.setLong(2, eventMillis);
 
-                Optional<Long> startTime = StartTime.fromOptional(event).map(Instant::toEpochMilli);
+                Optional<Long> startTime = StartTime.fromOptional(context, event).map(Instant::toEpochMilli);
                 if (startTime.isPresent()) {
                     statement.setLong(3, startTime.get());
                 } else {

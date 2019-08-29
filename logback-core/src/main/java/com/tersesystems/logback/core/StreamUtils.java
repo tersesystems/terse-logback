@@ -10,6 +10,8 @@
  */
 package com.tersesystems.logback.core;
 
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.spi.ContextAware;
 import org.slf4j.Marker;
 
 import java.util.Iterator;
@@ -34,8 +36,11 @@ public final class StreamUtils {
         if (! marker.hasReferences()) {
             return Stream.of(marker);
         }
-        Spliterator spliterator = Spliterators.spliteratorUnknownSize(marker.iterator(), 0);
-        return (Stream<Marker>) Stream.concat(Stream.of(marker), StreamSupport.stream(spliterator, false));
+        return Stream.concat(Stream.of(marker), fromIterator(marker.iterator()));
+    }
+
+    public static Stream<Marker> fromMarker(Context context, Marker marker) {
+        return fromMarker(marker).peek(s -> setContext(context, s));
     }
 
     public static <E> Stream<E> fromIterator(Iterator<E> iterator) {
@@ -43,5 +48,14 @@ public final class StreamUtils {
         return StreamSupport.stream(spliterator, false);
     }
 
+    public static <E> Stream<E> fromIterator(Context context, Iterator<E> iterator) {
+       return fromIterator(context, iterator).peek(s -> setContext(context, s));
+    }
+
+    private static <E> void setContext(Context context, E s) {
+        if (s instanceof ContextAware) {
+            ((ContextAware) s).setContext(context);
+        }
+    }
 
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
 public class StartTimeConverter extends ClassicConverter {
     @Override
     public String convert(ILoggingEvent event) {
-        Optional<String> optStartTime = StartTime.fromOptional(event).map(st -> Long.toString(st.toEpochMilli()));
+        Optional<String> optStartTime = StartTime.fromOptional(getContext(), event).map(st -> Long.toString(st.toEpochMilli()));
         return optStartTime.orElse(null);
     }
 }

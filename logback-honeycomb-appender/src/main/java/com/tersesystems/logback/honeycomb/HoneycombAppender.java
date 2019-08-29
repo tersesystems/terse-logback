@@ -139,7 +139,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
         if (batch) {
             // If queue is full, then drain and post it.
             HoneycombRequest<ILoggingEvent> request = new HoneycombRequest<>(sampleRate,
-                    StartTime.from(eventObject),
+                    StartTime.from(context, eventObject),
                     eventObject);
             if (! eventQueue.offer(request)) {
                 List<HoneycombRequest<ILoggingEvent>> list = new ArrayList<>();
@@ -149,7 +149,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
             }
         } else {
             HoneycombRequest<ILoggingEvent> request = new HoneycombRequest<>(sampleRate,
-                    StartTime.from(eventObject),
+                    StartTime.from(context, eventObject),
                     eventObject);
             postEvent(request);
         }

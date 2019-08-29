@@ -34,7 +34,7 @@ public class MarkerBasedDiscriminator<LoggingEventT extends ILoggingEvent> exten
     }
 
     public Optional<DiscriminatingValue> getDiscriminatorMarker(ILoggingEvent loggingEvent) {
-        return StreamUtils.fromMarker(loggingEvent.getMarker())
+        return StreamUtils.fromMarker(context, loggingEvent.getMarker())
                     .filter(marker -> marker instanceof DiscriminatingValue)
                     .map(m -> (DiscriminatingValue) m).findFirst();
     }
