@@ -880,7 +880,7 @@ yields the following:
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
 
-I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives the same performance as inline code.
+I like this approach better than the annotation or aspect-oriented programming approaches, because it is completely transparent to the code and gives roughly the same performance as inline code, adding [130 ns/op](https://github.com/raphw/byte-buddy/issues/714) by calling `class.getMethod`.
 
 There are two ways you can instrument code.  The first way is to do it in process, after the JVM has loaded.  The second way is to load the java agent before the JVM starts, which lets you instrument classes on the system classloader.
 

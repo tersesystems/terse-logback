@@ -14,6 +14,8 @@ import net.bytebuddy.asm.Advice;
 import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.*;
 
+import java.util.Optional;
+
 import static net.logstash.logback.argument.StructuredArguments.*;
 
 /**
@@ -59,7 +61,17 @@ public class LoggingInstrumentationAdvice {
             StructuredArgument aMethod = v("method", method);
             StructuredArgument aSignature = v("signature", signature);
             StructuredArgument arrayParameters = a("arguments", allArguments);
-            logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
+
+            MethodInfoLookup lookup = MethodInfoLookup.getInstance();
+            Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, signature);
+            if (methodInfo.isPresent()) {
+                MethodInfo mi = methodInfo.get();
+                StructuredArgument aSource = v("source", mi.source);
+                StructuredArgument aLineNumber = v("line", mi.line);
+                logger.trace(ENTRY_MARKER, "entering: {}.{}{} from source {}:{} with {}", aClass, aMethod, aSignature,  aSource, aLineNumber, arrayParameters);
+            } else {
+                logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
+            }
         }
     }
 

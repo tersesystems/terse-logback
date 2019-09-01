@@ -12,9 +12,21 @@ package com.tersesystems.logback.bytebuddy;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
+import net.bytebuddy.asm.AsmVisitorWrapper;
+import net.bytebuddy.description.field.FieldDescription;
+import net.bytebuddy.description.field.FieldList;
 import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.description.method.MethodList;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.jar.asm.ClassVisitor;
+import net.bytebuddy.jar.asm.Label;
+import net.bytebuddy.jar.asm.MethodVisitor;
+import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.pool.TypePool;
+
+import java.util.function.Consumer;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 import static net.bytebuddy.matcher.ElementMatchers.any;
@@ -24,12 +36,14 @@ import static net.bytebuddy.matcher.ElementMatchers.any;
  */
 public class LoggingInstrumentationByteBuddyBuilder {
 
+    private static final MethodInfoLookup METHOD_INFO_LOOKUP = MethodInfoLookup.getInstance();
+
     private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
 
     /**
      * Creates a builder from the element matchers.
      *
-     * @param typesMatcher an element matcher for types we should instrument.
+     * @param typesMatcher   an element matcher for types we should instrument.
      * @param methodsMatcher an element matcher for the methods in the types that should be instrumented.
      * @return
      */
@@ -41,16 +55,67 @@ public class LoggingInstrumentationByteBuddyBuilder {
                 .with(AgentBuilder.TypeStrategy.Default.REDEFINE)
                 .disableClassFormatChanges() // frozen instrumented types
                 .type(typesMatcher) // for these classes...
-                .transform((builder, type, classLoader, module) ->
-                        // ...apply this advice to these methods.
-                        builder.visit(Advice.to(INSTRUMENTATION_ADVICE_CLASS).on(methodsMatcher))
-                );
+                .transform((builder, type, classLoader, module) -> {
+                    // ...apply this advice to these methods.
+                    Advice to = Advice.to(INSTRUMENTATION_ADVICE_CLASS);
+                    AsmVisitorWrapper on = to.on(methodsMatcher);
+                    AsmVisitorWrapper lineWrapper = wrapper(METHOD_INFO_LOOKUP);
+                    return builder.visit(lineWrapper).visit(on);
+                });
+    }
+
+    private AsmVisitorWrapper wrapper(Consumer<MethodInfo> consumer) {
+        return new AsmVisitorWrapper.AbstractBase() {
+            @Override
+            public ClassVisitor wrap(TypeDescription instrumentedType,
+                                     ClassVisitor classVisitor,
+                                     Implementation.Context implementationContext,
+                                     TypePool typePool,
+                                     FieldList<FieldDescription.InDefinedShape> fields,
+                                     MethodList<?> methods, int writerFlags, int readerFlags) {
+                return new ClassVisitor(Opcodes.ASM5, classVisitor) {
+
+                    private String name;
+                    private String source;
+                    private String debug;
+
+                    @Override
+                    public void visitSource(String source, String debug) {
+                        this.source = source;
+                        this.debug = debug;
+                        super.visitSource(source, debug);
+                    }
+
+                    @Override
+                    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+                        this.name = name != null ? name.replace('/', '.') : null;
+                        super.visit(version, access, name, signature, superName, interfaces);
+                    }
+
+                    @Override
+                    public MethodVisitor visitMethod(int access,
+                                                     String n,
+                                                     String d,
+                                                     String s,
+                                                     String[] e) {
+                        MethodVisitor methodVisitor = super.visitMethod(access, n, d, s, e);
+                        return new MethodVisitor(Opcodes.ASM5, methodVisitor) {
+                            @Override
+                            public void visitLineNumber(int line, Label start) {
+                                consumer.accept(new MethodInfo(access, n, d, s, e, name, source, debug, line));
+                                super.visitLineNumber(line, start);
+                            }
+                        };
+                    }
+                };
+            }
+        };
     }
 
     /**
      * Use this method if you want to redefine system classloader classes.
      *
-     * @param typesMatcher an element matcher for types we should instrument.
+     * @param typesMatcher   an element matcher for types we should instrument.
      * @param methodsMatcher an element matcher for the methods in the types that should be instrumented.
      * @return agent builder with ignore and RETRANSFORMATION set.
      */
@@ -68,10 +133,10 @@ public class LoggingInstrumentationByteBuddyBuilder {
     public AgentBuilder.RawMatcher.ForElementMatchers ignoreMatchers() {
         ElementMatcher.Junction<? super TypeDescription> matchers =
                 nameStartsWith("net.bytebuddy.")
-                //.or(nameStartsWith("com.tersesystems.logback.bytebuddy"))
-                .or(nameStartsWith("org.slf4j."))
-                .or(nameStartsWith("ch.qos.logback."))
-                .or(isSynthetic());
+                        //.or(nameStartsWith("com.tersesystems.logback.bytebuddy"))
+                        .or(nameStartsWith("org.slf4j."))
+                        .or(nameStartsWith("ch.qos.logback."))
+                        .or(isSynthetic());
         return new AgentBuilder.RawMatcher.ForElementMatchers(matchers, any(), any());
     }
 
