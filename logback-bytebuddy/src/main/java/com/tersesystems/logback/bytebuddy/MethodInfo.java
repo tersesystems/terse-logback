@@ -4,65 +4,43 @@ import java.util.Arrays;
 import java.util.Objects;
 
 class MethodInfo {
-    final int modifiers;
-    final String internalName;
+    final String methodName;
     final String descriptor;
-    final String signature;
     final String[] exceptions;
-    final int line;
-    final String debug;
     final String source;
-    final String declaringType;
+    private int startLine;
+    private int endLine;
 
-    MethodInfo(int modifiers, String internalName, String descriptor, String signature, String[] exceptions,
-               String declaringType,
-               String source, String debug, int line) {
-        this.modifiers = modifiers;
-        this.internalName = internalName;
+    MethodInfo(String methodName, String descriptor, String[] exceptions, String source) {
+        this.methodName = Objects.requireNonNull(methodName);
         this.descriptor = descriptor;
-        this.signature = signature;
         this.exceptions = exceptions;
-        this.declaringType = declaringType;
         this.source = source;
-        this.debug = debug;
-        this.line = line;
+    }
+
+    public void setStartLine(int line) {
+        this.startLine = line;
+    }
+
+    public void setEndLine(int line) {
+        this.endLine = line;
+    }
+
+    public int getStartLine() {
+        return startLine;
+    }
+
+    public int getEndLine() {
+        return endLine;
     }
 
     @Override
     public String toString() {
         return "MethodInfo{" +
-                "modifiers=" + modifiers +
-                ", internalName='" + internalName + '\'' +
+                "methodName='" + methodName + '\'' +
                 ", descriptor='" + descriptor + '\'' +
-                ", signature='" + signature + '\'' +
                 ", exceptions=" + Arrays.toString(exceptions) +
-                ", line=" + line +
-                ", debug='" + debug + '\'' +
                 ", source='" + source + '\'' +
-                ", declaringType='" + declaringType + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MethodInfo that = (MethodInfo) o;
-        return modifiers == that.modifiers &&
-                line == that.line &&
-                Objects.equals(internalName, that.internalName) &&
-                Objects.equals(descriptor, that.descriptor) &&
-                Objects.equals(signature, that.signature) &&
-                Arrays.equals(exceptions, that.exceptions) &&
-                Objects.equals(debug, that.debug) &&
-                Objects.equals(source, that.source) &&
-                Objects.equals(declaringType, that.declaringType);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(modifiers, internalName, descriptor, signature, line, debug, source, declaringType);
-        result = 31 * result + Arrays.hashCode(exceptions);
-        return result;
     }
 }

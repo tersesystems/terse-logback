@@ -26,8 +26,6 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.pool.TypePool;
 
-import java.util.function.Consumer;
-
 import static net.bytebuddy.matcher.ElementMatchers.*;
 import static net.bytebuddy.matcher.ElementMatchers.any;
 
@@ -59,12 +57,12 @@ public class LoggingInstrumentationByteBuddyBuilder {
                     // ...apply this advice to these methods.
                     Advice to = Advice.to(INSTRUMENTATION_ADVICE_CLASS);
                     AsmVisitorWrapper on = to.on(methodsMatcher);
-                    AsmVisitorWrapper lineWrapper = wrapper(METHOD_INFO_LOOKUP);
+                    AsmVisitorWrapper lineWrapper = wrapper();
                     return builder.visit(lineWrapper).visit(on);
                 });
     }
 
-    private AsmVisitorWrapper wrapper(Consumer<MethodInfo> consumer) {
+    private AsmVisitorWrapper wrapper() {
         return new AsmVisitorWrapper.AbstractBase() {
             @Override
             public ClassVisitor wrap(TypeDescription instrumentedType,
@@ -74,21 +72,18 @@ public class LoggingInstrumentationByteBuddyBuilder {
                                      FieldList<FieldDescription.InDefinedShape> fields,
                                      MethodList<?> methods, int writerFlags, int readerFlags) {
                 return new ClassVisitor(Opcodes.ASM5, classVisitor) {
-
-                    private String name;
+                    private String className;
                     private String source;
-                    private String debug;
 
                     @Override
                     public void visitSource(String source, String debug) {
                         this.source = source;
-                        this.debug = debug;
                         super.visitSource(source, debug);
                     }
 
                     @Override
                     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-                        this.name = name != null ? name.replace('/', '.') : null;
+                        this.className = name != null ? name.replace('/', '.') : null;
                         super.visit(version, access, name, signature, superName, interfaces);
                     }
 
@@ -100,10 +95,32 @@ public class LoggingInstrumentationByteBuddyBuilder {
                                                      String[] e) {
                         MethodVisitor methodVisitor = super.visitMethod(access, n, d, s, e);
                         return new MethodVisitor(Opcodes.ASM5, methodVisitor) {
+                            private int line;
+                            MethodInfo methodInfo = new MethodInfo(n, d, e, source);
+
+                            boolean isStart = false;
+
+                            @Override
+                            public void visitCode() {
+                                isStart = true;
+                                super.visitCode();
+                            }
+
                             @Override
                             public void visitLineNumber(int line, Label start) {
-                                consumer.accept(new MethodInfo(access, n, d, s, e, name, source, debug, line));
+                                if (isStart) {
+                                    methodInfo.setStartLine(line);
+                                    isStart = false;
+                                }
+                                this.line = line;
                                 super.visitLineNumber(line, start);
+                            }
+
+                            @Override
+                            public void visitEnd() {
+                                methodInfo.setEndLine(line);
+                                METHOD_INFO_LOOKUP.add(className, methodInfo);
+                                super.visitEnd();
                             }
                         };
                     }

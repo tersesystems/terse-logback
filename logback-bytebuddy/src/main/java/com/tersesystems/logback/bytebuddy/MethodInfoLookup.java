@@ -10,41 +10,39 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
 
-public class MethodInfoLookup implements Consumer<MethodInfo> {
+public class MethodInfoLookup {
 
-    private final ConcurrentLinkedQueue<MethodInfo> queue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentMap<String, Set<MethodInfo>> classNameToMethods = new ConcurrentHashMap<>();
 
     static MethodInfoLookup getInstance() {
         return SingletonHolder.instance;
     }
 
     static class SingletonHolder {
-       static MethodInfoLookup instance = new MethodInfoLookup();
+       public static MethodInfoLookup instance = new MethodInfoLookup();
     }
 
-    @Override
-    public void accept(MethodInfo methodInfo) {
-        queue.add(methodInfo);
+    public void add(String className, MethodInfo methodInfo) {
+        Set<MethodInfo> infos = classNameToMethods.computeIfAbsent(className, k -> new HashSet<>());
+        infos.add(methodInfo);
     }
 
-    public Optional<MethodInfo> find(String declaringType, String name, String signature) {
-        return queue
-                .stream()
-                .filter(info -> Objects.equals(info.declaringType, declaringType)
-                && Objects.equals(info.internalName, name)
-                && compareSignatureAndDescriptor(signature, info.descriptor))
-                .findFirst();
+    public Optional<MethodInfo> find(String className, String methodName, String descriptor) {
+        Set<MethodInfo> infos = classNameToMethods.computeIfAbsent(className, k -> new HashSet<>());
+        return infos.stream().filter(matchingInfo(methodName, descriptor)).findFirst();
     }
 
-    private boolean compareSignatureAndDescriptor(String signature, String descriptor) {
-        // TODO rationalize signature vs descriptor format.
-        //System.out.println("signature = " + signature + ", descriptor = " + descriptor);
-        return true;
+    private Predicate<MethodInfo> matchingInfo( String methodName, String descriptor) {
+        return info -> Objects.equals(info.methodName, methodName)
+                && Objects.equals(descriptor, info.descriptor);
     }
 }
 
