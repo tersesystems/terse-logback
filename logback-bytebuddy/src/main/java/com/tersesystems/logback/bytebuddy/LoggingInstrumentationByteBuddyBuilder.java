@@ -95,9 +95,8 @@ public class LoggingInstrumentationByteBuddyBuilder {
                                                      String[] e) {
                         MethodVisitor methodVisitor = super.visitMethod(access, n, d, s, e);
                         return new MethodVisitor(Opcodes.ASM5, methodVisitor) {
-                            private int line;
-                            MethodInfo methodInfo = new MethodInfo(n, d, e, source);
-
+                            int line;
+                            final MethodInfo methodInfo = new MethodInfo(n, d, source);
                             boolean isStart = false;
 
                             @Override
