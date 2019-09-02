@@ -14,6 +14,8 @@ import net.bytebuddy.asm.Advice;
 import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.*;
 
+import java.util.Optional;
+
 import static net.logstash.logback.argument.StructuredArguments.*;
 
 /**
@@ -46,7 +48,7 @@ public class LoggingInstrumentationAdvice {
     }
 
     @Advice.OnMethodEnter
-    public static void enter(@Advice.Origin("#t|#m|#s") String origin,
+    public static void enter(@Advice.Origin("#t|#m|#d|#s") String origin,
                              @Advice.AllArguments Object[] allArguments)
             throws Exception {
         Logger logger = getLogger(origin);
@@ -54,12 +56,23 @@ public class LoggingInstrumentationAdvice {
             String[] args = origin.split("\\|");
             String declaringType = args[0];
             String method = args[1];
-            String signature = args[2];
+            String descriptor = args[2];
+            String signature = args[3];
             StructuredArgument aClass = v("class", declaringType);
             StructuredArgument aMethod = v("method", method);
             StructuredArgument aSignature = v("signature", signature);
             StructuredArgument arrayParameters = a("arguments", allArguments);
-            logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
+
+            MethodInfoLookup lookup = MethodInfoLookup.getInstance();
+            Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
+            if (methodInfo.isPresent()) {
+                MethodInfo mi = methodInfo.get();
+                StructuredArgument aSource = v("source", mi.source);
+                StructuredArgument aLineNumber = v("line", mi.getStartLine());
+                logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {} from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aSource, aLineNumber);
+            } else {
+                logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
+            }
         }
     }
 
@@ -72,7 +85,7 @@ public class LoggingInstrumentationAdvice {
             String[] args = origin.split("\\|");
             String declaringType = args[0];
             String method = args[1];
-            //String descriptor = args[2];
+            String descriptor = args[2];
             String signature = args[3];
             String returnType = args[4];
             StructuredArgument aClass = v("class", declaringType); // ClassCalledByAgent
@@ -87,7 +100,19 @@ public class LoggingInstrumentationAdvice {
                 logger.error(EXCEPTION_MARKER, "throwing: {}.{}{} with {} ! {}", aClass, aMethod, aSignature, arrayParameters, aThrown, thrown);
             } else {
                 StructuredArgument arrayParameters = array("arguments", allArguments);
-                logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType);
+
+                MethodInfoLookup lookup = MethodInfoLookup.getInstance();
+                Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
+                if (methodInfo.isPresent()) {
+                    MethodInfo mi = methodInfo.get();
+                    StructuredArgument aSource = v("source", mi.source);
+                    StructuredArgument aLineNumber = v("line", mi.getEndLine());
+                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {} from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aSource, aLineNumber);
+                } else {
+                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType);
+                }
+
+
             }
         }
     }
