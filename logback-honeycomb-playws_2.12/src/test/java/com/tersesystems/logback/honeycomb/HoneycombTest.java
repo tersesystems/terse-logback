@@ -30,8 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class HoneycombTest {
 
-    @Test
-    public void testOutput() throws InterruptedException, JoranException {
+    public void notTestOutput() throws InterruptedException, JoranException {
         Utils utils = Utils.create("/logback-honeycomb-batch.xml");
         Logger logger = utils.getLogger("com.example.Test");
 
@@ -54,8 +53,7 @@ public class HoneycombTest {
         assertThat(successes.size()).isEqualTo(3);
     }
 
-    @Test
-    public void testMarker() throws JoranException, InterruptedException {
+    public void notTestMarker() throws JoranException, InterruptedException {
         Utils utils = Utils.create("/logback-honeycomb-event.xml");
         SpanMarkerFactory markerFactory = new SpanMarkerFactory();
 
