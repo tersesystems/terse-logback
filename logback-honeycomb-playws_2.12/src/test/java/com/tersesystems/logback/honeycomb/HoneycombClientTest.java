@@ -30,9 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class HoneycombClientTest {
 
-    @Test
-    @Ignore
-    public void testClient() throws Exception {
+    public void notATest() throws Exception {
         Utils utils = Utils.create("/logback-honeycomb-event.xml");
 
         LoggingEventFactory loggingEventFactory = utils.getLoggingEventFactory();
