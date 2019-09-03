@@ -10,8 +10,6 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ClassInjector;
 
@@ -27,33 +25,41 @@ import static net.bytebuddy.dynamic.loading.ClassInjector.UsingInstrumentation.T
 /**
  * The agent class.  This has the magic "premain" and "agentmain" methods for the Java Instrumentation API.
  */
-public class LogbackInstrumentationAgent extends LogbackInstrumentation {
+public class LogbackInstrumentationAgent {
 
     private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
 
     public static void premain(String arg, Instrumentation instrumentation) throws Exception {
-        Config config = ConfigFactory.load();
-        LogbackInstrumentationAgent agent = new LogbackInstrumentationAgent();
         injectBootstrapClasses(instrumentation);
+        LoggingInstrumentationAdvice logbackInst = (LoggingInstrumentationAdvice) INSTRUMENTATION_ADVICE_CLASS.newInstance();
+
         boolean debug = "debug".equalsIgnoreCase(arg);
-        agent.initialize(config, instrumentation, debug);
+        logbackInst.initialize(instrumentation, debug);
     }
 
     public static void agentmain(String arg, Instrumentation instrumentation) throws Exception {
-        Config config = ConfigFactory.load();
-        LogbackInstrumentationAgent agent = new LogbackInstrumentationAgent();
         injectBootstrapClasses(instrumentation);
+
         boolean debug = "debug".equalsIgnoreCase(arg);
-        agent.initialize(config, instrumentation, debug);
+        LoggingInstrumentationAdvice logbackInst = (LoggingInstrumentationAdvice) INSTRUMENTATION_ADVICE_CLASS.newInstance();
+        logbackInst.initialize(instrumentation, debug);
     }
 
+    /**
+     * Loads the advice class into the bootstrap classloader, so we can access the instantiation.
+     *
+     * @param instrumentation
+     * @throws IOException
+     */
     private static void injectBootstrapClasses(Instrumentation instrumentation) throws IOException {
         File tempDir = Files.createTempDirectory("logback-bytebuddy").toFile();
         tempDir.deleteOnExit();
 
+        // Inject the instrumentation advice class directly
         byte[] classData = read(INSTRUMENTATION_ADVICE_CLASS);
         TypeDescription typeDescription = new TypeDescription.ForLoadedType(INSTRUMENTATION_ADVICE_CLASS);
         ClassInjector classInjector = ClassInjector.UsingInstrumentation.of(tempDir, BOOTSTRAP, instrumentation);
         classInjector.inject(singletonMap(typeDescription, classData));
     }
+
 }

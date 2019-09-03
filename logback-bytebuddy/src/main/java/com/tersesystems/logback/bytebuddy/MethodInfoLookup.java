@@ -22,7 +22,7 @@ public class MethodInfoLookup {
 
     private final ConcurrentMap<String, Set<MethodInfo>> classNameToMethods = new ConcurrentHashMap<>();
 
-    static MethodInfoLookup getInstance() {
+    public static MethodInfoLookup getInstance() {
         return SingletonHolder.instance;
     }
 

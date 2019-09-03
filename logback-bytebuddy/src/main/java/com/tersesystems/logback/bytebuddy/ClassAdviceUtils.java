@@ -10,7 +10,6 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -18,7 +17,6 @@ import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.matcher.StringMatcher;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Utils for LoggingAdviceConfig.
@@ -47,11 +45,4 @@ public final class ClassAdviceUtils {
         }
         return acc;
     }
-
-    public static AgentBuilder.Listener createDebugListener(List<String> classNames) {
-        return new AgentBuilder.Listener.Filtering(
-                ClassAdviceUtils.stringMatcher(classNames),
-                AgentBuilder.Listener.StreamWriting.toSystemOut());
-    }
-
 }

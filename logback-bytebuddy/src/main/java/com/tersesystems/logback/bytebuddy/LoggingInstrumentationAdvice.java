@@ -10,110 +10,137 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigRenderOptions;
+import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
-import net.logstash.logback.argument.StructuredArgument;
-import org.slf4j.*;
 
-import java.util.Optional;
-
-import static net.logstash.logback.argument.StructuredArguments.*;
+import java.io.File;
+import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * The code to be added on entry / exit to the methods under instrumentation.
  */
 public class LoggingInstrumentationAdvice {
-    // https://github.com/qos-ch/slf4j/blob/master/slf4j-ext/src/main/java/org/slf4j/ext/XLogger.java#L44
-    public static final Marker FLOW_MARKER = MarkerFactory.getMarker("FLOW");
-    public static final Marker ENTRY_MARKER = MarkerFactory.getMarker("ENTRY");
-    public static final Marker EXIT_MARKER = MarkerFactory.getMarker("EXIT");
-    public static final Marker EXCEPTION_MARKER = MarkerFactory.getMarker("EXCEPTION");
 
-    private static LoggerResolver loggerResolver = new DeclaringTypeLoggerResolver(LoggerFactory.getILoggerFactory());
+    private static final String LOGBACK = "logback";
 
-    static {
-        ENTRY_MARKER.add(FLOW_MARKER);
-        EXIT_MARKER.add(FLOW_MARKER);
+    private static final String LOGBACK_TEST = "logback-test";
+
+    private static final String LOGBACK_REFERENCE_CONF = "logback-reference.conf";
+
+    private static final String CONFIG_FILE_PROPERTY = "terse.logback.configurationFile";
+
+    private static final ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+
+    // We need to load the implementation of enter / exit methods from the system classloader,
+    // so that we don't end up hauling SLF4J impl factory into bootstrap classloader, which
+    // will hopelessly confuse the JVM.
+    static class Enter {
+        static Method applyMethod;
+
+        static {
+            try {
+                String className = "com.tersesystems.logback.bytebuddy.impl.Enter";
+                Class<?> enterClass = systemClassLoader.loadClass(className);
+                applyMethod = enterClass.getMethod("apply", String.class, Object[].class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static LoggerResolver getLoggerResolver() {
-        return loggerResolver;
+    static class Exit {
+        static Method applyMethod;
+
+        static {
+            try {
+                String className = "com.tersesystems.logback.bytebuddy.impl.Exit";
+                Class<?> exitClass = systemClassLoader.loadClass(className);
+                applyMethod = exitClass.getMethod("apply", String.class, Object[].class, Throwable.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static void setLoggerResolver(LoggerResolver loggerResolver) {
-        LoggingInstrumentationAdvice.loggerResolver = loggerResolver;
+    // The code here recapitulates the logback-config code, but in a bootstrap classloader.
+    // This does mean that typesafe-config classes are pulled from bootstrap thereafter, but
+    // this is pretty safe.
+    private Config generateConfig(ClassLoader classLoader, boolean debug) {
+        // Look for logback.json, logback.conf, logback.properties
+        Config systemProperties = ConfigFactory.systemProperties();
+        String fileName = System.getProperty(CONFIG_FILE_PROPERTY);
+        Config file = ConfigFactory.empty();
+        if (fileName != null) {
+            file = ConfigFactory.parseFile(new File(fileName));
+        }
+
+        Config testResources = ConfigFactory.parseResourcesAnySyntax(classLoader, LOGBACK_TEST);
+        Config resources = ConfigFactory.parseResourcesAnySyntax(classLoader, LOGBACK);
+        Config reference = ConfigFactory.parseResources(classLoader, LOGBACK_REFERENCE_CONF);
+
+        Config config = systemProperties        // Look for a property from system properties first...
+                .withFallback(file)          // if we don't find it, then look in an explicitly defined file...
+                .withFallback(testResources) // if not, then if logback-test.conf exists, look for it there...
+                .withFallback(resources)     // then look in logback.conf...
+                .withFallback(reference)     // and then finally in logback-reference.conf.
+                .resolve();                  // Tell config that we want to use ${?ENV_VAR} type stuff.
+
+        // Add a check to show the config value if nothing is working...
+        if (debug) {
+            String configString = config.root().render(ConfigRenderOptions.defaults());
+            System.out.println(configString);
+        }
+        return config;
     }
 
-    public static Logger getLogger(String origin) {
-        return loggerResolver.resolve(origin);
+    void initialize(Instrumentation instrumentation, boolean debug) {
+        try {
+            Config config = generateConfig(this.getClass().getClassLoader(), debug);
+            List<String> classNames = getClassNames(config);
+            List<String> methodNames = getMethodNames(config);
+            LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+            AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
+                    .builderFromConfigWithRetransformation(loggingAdviceConfig);
+
+            // The debugging listener shows what classes are being picked up by the instrumentation
+            if (debug) {
+                AgentBuilder.Listener debugListener = createDebugListener(classNames);
+                agentBuilder = agentBuilder.with(debugListener);
+            }
+            agentBuilder.installOn(instrumentation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static AgentBuilder.Listener createDebugListener(List<String> classNames) {
+        return new AgentBuilder.Listener.Filtering(
+                ClassAdviceUtils.stringMatcher(classNames),
+                AgentBuilder.Listener.StreamWriting.toSystemOut());
+    }
+
+    private List<String> getMethodNames(Config config) {
+        return config.getStringList("logback.bytebuddy.methodNames");
+    }
+
+    private List<String> getClassNames(Config config) {
+        return config.getStringList("logback.bytebuddy.classNames");
     }
 
     @Advice.OnMethodEnter
     public static void enter(@Advice.Origin("#t|#m|#d|#s") String origin,
                              @Advice.AllArguments Object[] allArguments)
             throws Exception {
-        Logger logger = getLogger(origin);
-        if (logger != null && logger.isTraceEnabled(ENTRY_MARKER)) {
-            String[] args = origin.split("\\|");
-            String declaringType = args[0];
-            String method = args[1];
-            String descriptor = args[2];
-            String signature = args[3];
-            StructuredArgument aClass = v("class", declaringType);
-            StructuredArgument aMethod = v("method", method);
-            StructuredArgument aSignature = v("signature", signature);
-            StructuredArgument arrayParameters = a("arguments", allArguments);
-
-            MethodInfoLookup lookup = MethodInfoLookup.getInstance();
-            Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
-            if (methodInfo.isPresent()) {
-                MethodInfo mi = methodInfo.get();
-                StructuredArgument aSource = v("source", mi.source);
-                StructuredArgument aLineNumber = v("line", mi.getStartLine());
-                logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {} from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aSource, aLineNumber);
-            } else {
-                logger.trace(ENTRY_MARKER, "entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
-            }
-        }
+        Enter.applyMethod.invoke(null, origin, allArguments);
     }
-
-    // @Advice.Return Object returnValue
 
     @Advice.OnMethodExit(onThrowable = Throwable.class)
     public static void exit(@Advice.Origin("#t|#m|#d|#s|#r") String origin, @Advice.AllArguments Object[] allArguments, @Advice.Thrown Throwable thrown) throws Exception {
-        Logger logger = getLogger(origin);
-        if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
-            String[] args = origin.split("\\|");
-            String declaringType = args[0];
-            String method = args[1];
-            String descriptor = args[2];
-            String signature = args[3];
-            String returnType = args[4];
-            StructuredArgument aClass = v("class", declaringType); // ClassCalledByAgent
-            StructuredArgument aMethod = v("method", method); // printArgument
-            StructuredArgument aSignature = v("signature", signature); // (java.lang.String)
-            //StructuredArgument aDescriptor = kv("descriptor", descriptor); // descriptor=(Ljava/lang/String;)V
-            StructuredArgument aReturnType = kv("returnType", returnType); // returnType=void
-            if (thrown != null) {
-                StructuredArgument aThrown = kv("thrown", thrown);
-                StructuredArgument arrayParameters = array("arguments", allArguments);
-                // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
-                logger.error(EXCEPTION_MARKER, "throwing: {}.{}{} with {} ! {}", aClass, aMethod, aSignature, arrayParameters, aThrown, thrown);
-            } else {
-                StructuredArgument arrayParameters = array("arguments", allArguments);
-
-                MethodInfoLookup lookup = MethodInfoLookup.getInstance();
-                Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
-                if (methodInfo.isPresent()) {
-                    MethodInfo mi = methodInfo.get();
-                    StructuredArgument aSource = v("source", mi.source);
-                    StructuredArgument aLineNumber = v("line", mi.getEndLine());
-                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {} from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aSource, aLineNumber);
-                } else {
-                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType);
-                }
-
-
-            }
-        }
+        Exit.applyMethod.invoke(null, origin, allArguments, thrown);
     }
 }

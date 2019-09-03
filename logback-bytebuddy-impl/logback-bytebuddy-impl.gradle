@@ -1,0 +1,26 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation project(":logback-bytebuddy")
+
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    implementation "com.typesafe:config:${configVersion}"
+    implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+
+    testImplementation "net.bytebuddy:byte-buddy:$bytebuddyVersion"
+    testImplementation "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"
+
+    runtime "ch.qos.logback:logback-classic:$logbackVersion"
+}
