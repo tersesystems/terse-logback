@@ -21,7 +21,8 @@ dependencies {
     implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
 
     // You'll need this, but better to use the version already defined in project
-    testRuntime "ch.qos.logback:logback-classic:$logbackVersion"
+    testImplementation "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
 shadowJar {
@@ -41,6 +42,7 @@ shadowJar {
     }
 }
 
+// We're publishing the shaded bit only.
 publishing {
     publications {
         shadow(MavenPublication) { publication ->
