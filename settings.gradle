@@ -30,7 +30,6 @@ def includeProject = { String projectName ->
 }
 
 includeProject 'logback-bytebuddy'
-includeProject 'logback-bytebuddy-impl'
 includeProject 'logback-censor'
 includeProject 'logback-core'
 includeProject 'logback-classic'

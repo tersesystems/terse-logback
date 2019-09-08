@@ -35,7 +35,7 @@ public class InProcessInstrumentationExample {
 
     public static AgentBuilder.Listener createDebugListener(List<String> classNames) {
         return new AgentBuilder.Listener.Filtering(
-                ClassAdviceUtils.stringMatcher(classNames),
+                LoggingInstrumentationAdvice.stringMatcher(classNames),
                 AgentBuilder.Listener.StreamWriting.toSystemOut());
     }
 
@@ -49,12 +49,12 @@ public class InProcessInstrumentationExample {
         Config config = ConfigFactory.load();
         List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
         List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
-        LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+        LoggingInstrumentationAdviceConfig loggingInstrumentationAdviceConfig = LoggingInstrumentationAdviceConfig.create(classNames, methodNames);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(classNames);
         new LoggingInstrumentationByteBuddyBuilder()
-                .builderFromConfig(loggingAdviceConfig)
+                .builderFromConfig(loggingInstrumentationAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
 

@@ -890,7 +890,7 @@ The in process instrumentation is done with `com.tersesystems.logback.bytebuddy.
 
 ```java
 new LoggingInstrumentationByteBuddyBuilder()
-        .builderFromConfig(loggingAdviceConfig)
+        .builderFromConfig(loggingInstrumentationAdviceConfig)
         .with(debugListener)
         .installOnByteBuddyAgent();
 ```
@@ -944,12 +944,12 @@ public class InProcessInstrumentationExample {
         Config config = ConfigFactory.load();
         List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
         List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
-        LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+        LoggingAdviceConfig loggingInstrumentationAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(classNames);
         new LoggingInstrumentationByteBuddyBuilder()
-                .builderFromConfig(loggingAdviceConfig)
+                .builderFromConfig(loggingInstrumentationAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
 
@@ -996,7 +996,7 @@ First, you set the java agent, either directly on the command line:
 ```bash
 java \
   -javaagent:path/to/logback-bytebuddy-x.x.x.jar=debug \
-  -Dconfig.file=conf/application.conf \
+  -Dterse.logback.configurationFile=conf/logback.conf \
   -Dlogback.configurationFile=conf/logback-test.xml \
   com.example.PreloadedInstrumentationExample
 ```

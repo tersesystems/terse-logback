@@ -162,11 +162,11 @@ public class LoggingInstrumentationByteBuddyBuilder {
         return builderFromConfig(typesMatcher, methodsMatcher).with(listener);
     }
 
-    public AgentBuilder builderFromConfig(LoggingAdviceConfig c) {
+    public AgentBuilder builderFromConfig(LoggingInstrumentationAdviceConfig c) {
         return builderFromConfig(c.types(), c.methods());
     }
 
-    public AgentBuilder builderFromConfigWithRetransformation(LoggingAdviceConfig c) {
+    public AgentBuilder builderFromConfigWithRetransformation(LoggingInstrumentationAdviceConfig c) {
         return builderFromConfigWithRetransformation(c.types(), c.methods());
     }
 }
