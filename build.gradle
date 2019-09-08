@@ -1,8 +1,18 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
 plugins {
     // http://andresalmiray.com/an-opinionated-way-to-build-gradle-projects/
     // https://aalmiray.github.io/kordamp-gradle-plugins/#_project_structure
-    id 'org.kordamp.gradle.project' version '0.14.0'            
-    id 'org.kordamp.gradle.bintray' version '0.14.0'     
+    id 'org.kordamp.gradle.project' version '0.26.0'
+    id 'org.kordamp.gradle.bintray' version '0.26.0'
     id 'com.gradle.build-scan'      version '2.2.1'
     //id 'org.inferred.processors'    version '2.3.0'
 }
@@ -37,7 +47,8 @@ config {
         }
     }
 
-    license {
+    licensing {
+        enabled
         licenses {
             license {
                 id = 'CC0-1.0'

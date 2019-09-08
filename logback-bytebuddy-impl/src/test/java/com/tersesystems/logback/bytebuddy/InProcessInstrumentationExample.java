@@ -10,15 +10,17 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
+import com.tersesystems.logback.bytebuddy.impl.FixedLoggerResolver;
+import com.tersesystems.logback.bytebuddy.impl.SystemFlow;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import net.bytebuddy.agent.ByteBuddyAgent;
+import net.bytebuddy.agent.builder.AgentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.tersesystems.logback.bytebuddy.ClassAdviceUtils.createDebugListener;
 import static net.bytebuddy.agent.builder.AgentBuilder.Listener;
 
 /**
@@ -31,12 +33,18 @@ import static net.bytebuddy.agent.builder.AgentBuilder.Listener;
  */
 public class InProcessInstrumentationExample {
 
+    public static AgentBuilder.Listener createDebugListener(List<String> classNames) {
+        return new AgentBuilder.Listener.Filtering(
+                ClassAdviceUtils.stringMatcher(classNames),
+                AgentBuilder.Listener.StreamWriting.toSystemOut());
+    }
+
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
 
         Logger logger = LoggerFactory.getLogger(InProcessInstrumentationExample.class);
-        LoggingInstrumentationAdvice.setLoggerResolver(new FixedLoggerResolver(logger));
+        SystemFlow.setLoggerResolver(new FixedLoggerResolver(logger));
 
         Config config = ConfigFactory.load();
         List<String> classNames = config.getStringList("logback.bytebuddy.classNames");

@@ -8,21 +8,22 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.bytebuddy;
+package com.tersesystems.logback.bytebuddy.impl;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Returns the logger with the class that was instrumented.
  */
 public class DeclaringTypeLoggerResolver implements LoggerResolver {
 
-    private final ILoggerFactory loggerFactory;
+    private final Supplier<ILoggerFactory> loggerFactory;
 
-    public DeclaringTypeLoggerResolver(ILoggerFactory loggerFactory) {
+    public DeclaringTypeLoggerResolver(Supplier<ILoggerFactory> loggerFactory) {
         this.loggerFactory = Objects.requireNonNull(loggerFactory);
     }
 
@@ -30,6 +31,6 @@ public class DeclaringTypeLoggerResolver implements LoggerResolver {
     public Logger resolve(String origin) {
         int firstPipe = origin.indexOf('|');
         String declaringType = origin.substring(0, firstPipe);
-        return loggerFactory.getLogger(declaringType);
+        return loggerFactory.get().getLogger(declaringType);
     }
 }

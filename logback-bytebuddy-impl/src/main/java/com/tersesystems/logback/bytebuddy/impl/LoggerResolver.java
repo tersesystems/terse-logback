@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.bytebuddy;
+package com.tersesystems.logback.bytebuddy.impl;
 
 import org.slf4j.Logger;
 
