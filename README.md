@@ -1,5 +1,5 @@
 [<img src="https://img.shields.io/travis/tersesystems/terse-logback.svg"/>](https://travis-ci.org/tersesystems/terse-logback) 
-[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.12.0) ](https://bintray.com/tersesystems/maven/terse-logback/0.12.0/link)
+[ ![Download](https://api.bintray.com/packages/tersesystems/maven/terse-logback/images/download.svg?version=0.13.0) ](https://bintray.com/tersesystems/maven/terse-logback/0.13.0/link)
 
 # Structured Logging Example with Logback
 
@@ -890,7 +890,7 @@ The in process instrumentation is done with `com.tersesystems.logback.bytebuddy.
 
 ```java
 new LoggingInstrumentationByteBuddyBuilder()
-        .builderFromConfig(loggingAdviceConfig)
+        .builderFromConfig(loggingInstrumentationAdviceConfig)
         .with(debugListener)
         .installOnByteBuddyAgent();
 ```
@@ -944,12 +944,12 @@ public class InProcessInstrumentationExample {
         Config config = ConfigFactory.load();
         List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
         List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
-        LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+        LoggingAdviceConfig loggingInstrumentationAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(classNames);
         new LoggingInstrumentationByteBuddyBuilder()
-                .builderFromConfig(loggingAdviceConfig)
+                .builderFromConfig(loggingInstrumentationAdviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
 
@@ -970,20 +970,26 @@ public class InProcessInstrumentationExample {
 And get the following:
 
 ```text
-[Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
-[Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
-[Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@18b4aac2, null, loaded=false]
-235   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[]
+> Task :logback-bytebuddy:InProcessInstrumentationExample.main()
+[Byte Buddy] IGNORE java.lang.Thread [null, null, loaded=true]
+[Byte Buddy] COMPLETE java.lang.Thread [null, null, loaded=true]
+[Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=false]
+[Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=false]
+[Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=false]
+530   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] from source ClassCalledByAgent.java:18
 I am a simple println method with no logging
-237   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] => returnType=void
-237   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42]
+533   TRACE c.t.l.b.InProcessInstrumentationExample - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] => returnType=void from source ClassCalledByAgent.java:19
+533   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] from source ClassCalledByAgent.java:22
 I am a simple println, printing 42
-237   TRACE c.t.l.bytebuddy.AgentBasedTest - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void
-237   TRACE c.t.l.bytebuddy.AgentBasedTest - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world]
-237   ERROR c.t.l.bytebuddy.AgentBasedTest - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
+534   TRACE c.t.l.b.InProcessInstrumentationExample - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void from source ClassCalledByAgent.java:23
+534   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] from source ClassCalledByAgent.java:26
+536   ERROR c.t.l.b.InProcessInstrumentationExample - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
+java.lang.RuntimeException: I'm a squirrel!
+	at com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(ClassCalledByAgent.java:26)
+	at com.tersesystems.logback.bytebuddy.InProcessInstrumentationExample.main(InProcessInstrumentationExample.java:67)
 ```
 
-The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.
+The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.  Note also that there is no runtime overhead in pulling line numbers or source files into the enter/exit methods, as these are pulled directly from bytecode and do not involve `fillInStackTrace`.
 
 ### Instrumenting System Classes
 
@@ -996,7 +1002,7 @@ First, you set the java agent, either directly on the command line:
 ```bash
 java \
   -javaagent:path/to/logback-bytebuddy-x.x.x.jar=debug \
-  -Dconfig.file=conf/application.conf \
+  -Dterse.logback.configurationFile=conf/logback.conf \
   -Dlogback.configurationFile=conf/logback-test.xml \
   com.example.PreloadedInstrumentationExample
 ```
@@ -1035,6 +1041,50 @@ yields
 [Byte Buddy] COMPLETE java.lang.Thread [null, null, loaded=true]
 92    TRACE java.lang.Thread - entering: java.lang.Thread.run() with arguments=[]
 93    TRACE java.lang.Thread - exiting: java.lang.Thread.run() with arguments=[] => returnType=void
+```
+
+This is especially helpful when you're trying to debug SSL issues:
+
+```hocon
+logback.bytebuddy {
+  classNames = [
+    "sun.security.ssl.X509TrustManagerImpl"
+    "sun.security.ssl.SSLEngineImpl"
+    "javax.net.ssl.SSLContext",
+    "javax.net.ssl.SSLContext",
+  ]
+
+  methodNames = [
+    "setDefault",
+    "getInstance"
+    "init"
+  ]
+}
+```
+
+will immediately result in:
+
+```
+FcJ3XfsdKnM6O0Qbm7EAAA 12:31:55.498 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] from source SSLContext.java:155
+FcJ3XfsdKng6O0Qbm7EAAA 12:31:55.503 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
+FcJ3XfsdKng6O0Qbm7EAAB 12:31:55.504 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@27a97e08], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@5918c260], null] from source SSLContext.java:282
+FcJ3XfsdKnk6O0Qbm7EAAA 12:31:55.504 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@27a97e08], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@5918c260], null] => returnType=void from source SSLContext.java:283
+FcJ3XfsdLwg6O0Qbm7EAAA 12:31:56.672 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] from source SSLContext.java:155
+FcJ3XfsdLwk6O0Qbm7EAAA 12:31:56.672 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
+FcJ3XfsdLwk6O0Qbm7EAAB 12:31:56.673 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@5111aeb1], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@29e3c429], null] from source SSLContext.java:282
+FcJ3XfsdLwo6O0Qbm7EAAA 12:31:56.673 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@5111aeb1], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@29e3c429], null] => returnType=void from source SSLContext.java:283
+FcJ3XfsdMmc6O0Qbm7EAAA 12:31:57.534 [INFO ] a.e.s.Slf4jLogger -  Slf4jLogger started
+FcJ3XfsdMrk6O0Qbm7EAAA 12:31:57.617 [DEBUG] p.a.l.c.ActorSystemProvider -  Starting application default Akka system: application
+FcJ3XfsdM2E6O0Qbm7EAAA 12:31:57.785 [INFO ] play.api.Play -  Application started (Prod) (no global state)
+FcJ3XfsdM8AdHaINzdiAAA 12:31:57.880 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLSv1.2] from source SSLContext.java:155
+FcJ3XfsdM8EdHaINzdiAAA 12:31:57.881 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLSv1.2] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
+FcJ3XfsdM8EdHaINzdiAAB 12:31:57.882 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[null, null, null] from source SSLContext.java:282
+FcJ3XfsdNBI6O0Qbm7EAAA 12:31:57.961 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[null, null, null] => returnType=void from source SSLContext.java:283
+FcJ3XfsdNBg6O0Qbm7EAAA 12:31:57.968 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[Default] from source SSLContext.java:155
+FcJ3XfsdNBo6O0Qbm7EAAA 12:31:57.969 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[Default] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
+FcJ3XfsdNWg6O0Qbm7EAAA 12:31:58.304 [TRACE] s.s.s.SSLEngineImpl -  entering: sun.security.ssl.SSLEngineImpl.init(sun.security.ssl.SSLContextImpl) with arguments=[sun.security.ssl.SSLContextImpl$DefaultSSLContext@687eb455] from source SSLEngineImpl.java:359
+FcJ3XfsdNWk6O0Qbm7EAAA 12:31:58.305 [TRACE] s.s.s.SSLEngineImpl -  exiting: sun.security.ssl.SSLEngineImpl.init(sun.security.ssl.SSLContextImpl) with arguments=[sun.security.ssl.SSLContextImpl$DefaultSSLContext@687eb455] => returnType=void from source SSLEngineImpl.java:424
+FcJ3XfsdNjs6O0Qbm7EAAA 12:31:58.514 [INFO ] p.c.s.AkkaHttpServer -  Listening for HTTP on /0:0:0:0:0:0:0:0:9000
 ```
 
 ## Censoring Sensitive Information

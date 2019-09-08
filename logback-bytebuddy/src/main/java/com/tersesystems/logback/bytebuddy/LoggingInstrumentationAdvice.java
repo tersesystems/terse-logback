@@ -15,10 +15,14 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.matcher.StringMatcher;
 
 import java.io.File;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,31 +43,26 @@ public class LoggingInstrumentationAdvice {
     // We need to load the implementation of enter / exit methods from the system classloader,
     // so that we don't end up hauling SLF4J impl factory into bootstrap classloader, which
     // will hopelessly confuse the JVM.
-    static class Enter {
-        static Method applyMethod;
+    public static Method enterMethod;
 
-        static {
-            try {
-                String className = "com.tersesystems.logback.bytebuddy.impl.Enter";
-                Class<?> enterClass = systemClassLoader.loadClass(className);
-                applyMethod = enterClass.getMethod("apply", String.class, Object[].class);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    static {
+        try {
+            String className = "com.tersesystems.logback.bytebuddy.impl.Enter";
+            Class<?> enterClass = systemClassLoader.loadClass(className);
+            enterMethod = enterClass.getMethod("apply", String.class, Object[].class);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    static class Exit {
-        static Method applyMethod;
-
-        static {
-            try {
-                String className = "com.tersesystems.logback.bytebuddy.impl.Exit";
-                Class<?> exitClass = systemClassLoader.loadClass(className);
-                applyMethod = exitClass.getMethod("apply", String.class, Object[].class, Throwable.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public static Method exitMethod;
+    static {
+        try {
+            String className = "com.tersesystems.logback.bytebuddy.impl.Exit";
+            Class<?> exitClass = systemClassLoader.loadClass(className);
+            exitMethod = exitClass.getMethod("apply", String.class, Object[].class, Throwable.class);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -103,9 +102,9 @@ public class LoggingInstrumentationAdvice {
             Config config = generateConfig(this.getClass().getClassLoader(), debug);
             List<String> classNames = getClassNames(config);
             List<String> methodNames = getMethodNames(config);
-            LoggingAdviceConfig loggingAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+            LoggingInstrumentationAdviceConfig loggingInstrumentationAdviceConfig = LoggingInstrumentationAdviceConfig.create(classNames, methodNames);
             AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
-                    .builderFromConfigWithRetransformation(loggingAdviceConfig);
+                    .builderFromConfigWithRetransformation(loggingInstrumentationAdviceConfig);
 
             // The debugging listener shows what classes are being picked up by the instrumentation
             if (debug) {
@@ -120,8 +119,23 @@ public class LoggingInstrumentationAdvice {
 
     private static AgentBuilder.Listener createDebugListener(List<String> classNames) {
         return new AgentBuilder.Listener.Filtering(
-                ClassAdviceUtils.stringMatcher(classNames),
+                stringMatcher(classNames),
                 AgentBuilder.Listener.StreamWriting.toSystemOut());
+    }
+
+    public static ElementMatcher.Junction<? super String> stringMatcher(Collection<String> typeNames) {
+        boolean seen = false;
+        ElementMatcher.Junction<? super String> acc = ElementMatchers.none();
+        for (String typeName : typeNames) {
+            StringMatcher stringMatcher = new StringMatcher(typeName, StringMatcher.Mode.EQUALS_FULLY);
+            if (!seen) {
+                seen = true;
+                acc = stringMatcher;
+            } else {
+                acc = acc.or(stringMatcher);
+            }
+        }
+        return acc;
     }
 
     private List<String> getMethodNames(Config config) {
@@ -136,11 +150,11 @@ public class LoggingInstrumentationAdvice {
     public static void enter(@Advice.Origin("#t|#m|#d|#s") String origin,
                              @Advice.AllArguments Object[] allArguments)
             throws Exception {
-        Enter.applyMethod.invoke(null, origin, allArguments);
+        enterMethod.invoke(null, origin, allArguments);
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class)
     public static void exit(@Advice.Origin("#t|#m|#d|#s|#r") String origin, @Advice.AllArguments Object[] allArguments, @Advice.Thrown Throwable thrown) throws Exception {
-        Exit.applyMethod.invoke(null, origin, allArguments, thrown);
+        exitMethod.invoke(null, origin, allArguments, thrown);
     }
 }
