@@ -58,6 +58,7 @@ config {
 
     bintray {
         enabled = false
+        publications = ['shadow']
         credentials {
             // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
             username = project.bintrayUsername
