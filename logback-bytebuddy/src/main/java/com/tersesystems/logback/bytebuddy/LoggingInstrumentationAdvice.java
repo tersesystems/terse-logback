@@ -10,9 +10,7 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigRenderOptions;
+import com.typesafe.config.*;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -22,8 +20,8 @@ import net.bytebuddy.matcher.StringMatcher;
 import java.io.File;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The code to be added on entry / exit to the methods under instrumentation.
@@ -66,11 +64,29 @@ public class LoggingInstrumentationAdvice {
         }
     }
 
+    void initialize(Instrumentation instrumentation, boolean debug) {
+        try {
+            Config config = generateConfig(this.getClass().getClassLoader(), debug);
+            LoggingInstrumentationAdviceConfig adviceConfig = generateAdviceConfig(config);
+            AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
+                    .builderFromConfigWithRetransformation(adviceConfig);
+
+            // The debugging listener shows what classes are being picked up by the instrumentation
+            if (debug) {
+                AgentBuilder.Listener debugListener = createDebugListener(adviceConfig.classNames());
+                agentBuilder = agentBuilder.with(debugListener);
+            }
+            agentBuilder.installOn(instrumentation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // The code here recapitulates the logback-config code, but in a bootstrap classloader.
     // This does mean that typesafe-config classes are pulled from bootstrap thereafter, but
     // this is pretty safe.
-    private Config generateConfig(ClassLoader classLoader, boolean debug) {
-        // Look for logback.json, logback.conf, logback.properties
+    public static Config generateConfig(ClassLoader classLoader, boolean debug) {
+        // Look for logback.loadjson, logback.conf, logback.properties
         Config systemProperties = ConfigFactory.systemProperties();
         String fileName = System.getProperty(CONFIG_FILE_PROPERTY);
         Config file = ConfigFactory.empty();
@@ -97,24 +113,27 @@ public class LoggingInstrumentationAdvice {
         return config;
     }
 
-    void initialize(Instrumentation instrumentation, boolean debug) {
-        try {
-            Config config = generateConfig(this.getClass().getClassLoader(), debug);
-            List<String> classNames = getClassNames(config);
-            List<String> methodNames = getMethodNames(config);
-            LoggingInstrumentationAdviceConfig loggingInstrumentationAdviceConfig = LoggingInstrumentationAdviceConfig.create(classNames, methodNames);
-            AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
-                    .builderFromConfigWithRetransformation(loggingInstrumentationAdviceConfig);
-
-            // The debugging listener shows what classes are being picked up by the instrumentation
-            if (debug) {
-                AgentBuilder.Listener debugListener = createDebugListener(classNames);
-                agentBuilder = agentBuilder.with(debugListener);
+    public static LoggingInstrumentationAdviceConfig generateAdviceConfig(Config config) throws Exception {
+        List<LoggingInstrumentationAdviceConfig> configs = new ArrayList<>();
+        Set<Map.Entry<String, ConfigValue>> entries = config.getConfig("logback.bytebuddy").entrySet();
+        for (Map.Entry<String, ConfigValue> entry : entries) {
+            String className = clean(entry.getKey());
+            ConfigValue value = entry.getValue();
+            if (value.valueType() == ConfigValueType.LIST) {
+                List<String> methodNames = ((List<String>) value.unwrapped()).stream()
+                        .map(LoggingInstrumentationAdvice::clean)
+                        .collect(Collectors.toList());
+                configs.add(LoggingInstrumentationAdviceConfig.create(className, methodNames));
+            } else {
+                throw new IllegalStateException("unknown config!");
             }
-            agentBuilder.installOn(instrumentation);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        return configs.stream().reduce(LoggingInstrumentationAdviceConfig::join).get();
+    }
+
+    private static String clean(String key) {
+        return key.replaceAll("\"", "").trim();
     }
 
     private static AgentBuilder.Listener createDebugListener(List<String> classNames) {
@@ -136,14 +155,6 @@ public class LoggingInstrumentationAdvice {
             }
         }
         return acc;
-    }
-
-    private List<String> getMethodNames(Config config) {
-        return config.getStringList("logback.bytebuddy.methodNames");
-    }
-
-    private List<String> getClassNames(Config config) {
-        return config.getStringList("logback.bytebuddy.classNames");
     }
 
     @Advice.OnMethodEnter

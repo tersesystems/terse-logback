@@ -46,15 +46,13 @@ public class InProcessInstrumentationExample {
         Logger logger = LoggerFactory.getLogger(InProcessInstrumentationExample.class);
         SystemFlow.setLoggerResolver(new FixedLoggerResolver(logger));
 
-        Config config = ConfigFactory.load();
-        List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
-        List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
-        LoggingInstrumentationAdviceConfig loggingInstrumentationAdviceConfig = LoggingInstrumentationAdviceConfig.create(classNames, methodNames);
+        Config config = LoggingInstrumentationAdvice.generateConfig(ClassLoader.getSystemClassLoader(), false);
+        LoggingInstrumentationAdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
-        Listener debugListener = createDebugListener(classNames);
+        Listener debugListener = createDebugListener(adviceConfig.classNames());
         new LoggingInstrumentationByteBuddyBuilder()
-                .builderFromConfig(loggingInstrumentationAdviceConfig)
+                .builderFromConfig(adviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
 

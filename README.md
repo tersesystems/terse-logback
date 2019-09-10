@@ -913,18 +913,14 @@ public class ClassCalledByAgent {
 }
 ```
 
-And the following configuration in `application.conf`:
+And the following configuration in `logback.conf`:
 
 ```hocon
-bytebuddy {
-  classNames = [
-    "com.tersesystems.logback.bytebuddy.ClassCalledByAgent",
-  ]
-
-  methodNames = [
+logback.bytebuddy {
+  "com.tersesystems.logback.bytebuddy.ClassCalledByAgent" = [
     "printStatement",
     "printArgument",
-    "throwException"
+    "throwException",
   ]
 }
 ```
@@ -934,22 +930,26 @@ We can start up the agent, add in the builder and run through the methods:
 ```java
 public class InProcessInstrumentationExample {
 
+    public static AgentBuilder.Listener createDebugListener(List<String> classNames) {
+        return new AgentBuilder.Listener.Filtering(
+                LoggingInstrumentationAdvice.stringMatcher(classNames),
+                AgentBuilder.Listener.StreamWriting.toSystemOut());
+    }
+
     public static void main(String[] args) throws Exception {
         // Helps if you install the byte buddy agents before anything else at all happens...
         ByteBuddyAgent.install();
 
         Logger logger = LoggerFactory.getLogger(InProcessInstrumentationExample.class);
-        LoggingInstrumentationAdvice.setLoggerResolver(new FixedLoggerResolver(logger));
+        SystemFlow.setLoggerResolver(new FixedLoggerResolver(logger));
 
-        Config config = ConfigFactory.load();
-        List<String> classNames = config.getStringList("logback.bytebuddy.classNames");
-        List<String> methodNames = config.getStringList("logback.bytebuddy.methodNames");
-        LoggingAdviceConfig loggingInstrumentationAdviceConfig = LoggingAdviceConfig.create(classNames, methodNames);
+        Config config = LoggingInstrumentationAdvice.generateConfig(ClassLoader.getSystemClassLoader(), false);
+        LoggingInstrumentationAdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
-        Listener debugListener = createDebugListener(classNames);
+        Listener debugListener = createDebugListener(adviceConfig.classNames());
         new LoggingInstrumentationByteBuddyBuilder()
-                .builderFromConfig(loggingInstrumentationAdviceConfig)
+                .builderFromConfig(adviceConfig)
                 .with(debugListener)
                 .installOnByteBuddyAgent();
 
@@ -970,23 +970,22 @@ public class InProcessInstrumentationExample {
 And get the following:
 
 ```text
-> Task :logback-bytebuddy:InProcessInstrumentationExample.main()
 [Byte Buddy] IGNORE java.lang.Thread [null, null, loaded=true]
 [Byte Buddy] COMPLETE java.lang.Thread [null, null, loaded=true]
-[Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=false]
-[Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=false]
-[Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=false]
-530   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] from source ClassCalledByAgent.java:18
+[Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=true]
+[Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=true]
+[Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=true]
+524   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] from source ClassCalledByAgent.java:18
 I am a simple println method with no logging
-533   TRACE c.t.l.b.InProcessInstrumentationExample - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] => returnType=void from source ClassCalledByAgent.java:19
-533   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] from source ClassCalledByAgent.java:22
+529   TRACE c.t.l.b.InProcessInstrumentationExample - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printStatement() with arguments=[] => returnType=void from source ClassCalledByAgent.java:19
+529   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] from source ClassCalledByAgent.java:22
 I am a simple println, printing 42
-534   TRACE c.t.l.b.InProcessInstrumentationExample - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void from source ClassCalledByAgent.java:23
-534   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] from source ClassCalledByAgent.java:26
-536   ERROR c.t.l.b.InProcessInstrumentationExample - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
+529   TRACE c.t.l.b.InProcessInstrumentationExample - exiting: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.printArgument(java.lang.String) with arguments=[42] => returnType=void from source ClassCalledByAgent.java:23
+529   TRACE c.t.l.b.InProcessInstrumentationExample - entering: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] from source ClassCalledByAgent.java:26
+532   ERROR c.t.l.b.InProcessInstrumentationExample - throwing: com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(java.lang.String) with arguments=[hello world] ! thrown=java.lang.RuntimeException: I'm a squirrel!
 java.lang.RuntimeException: I'm a squirrel!
 	at com.tersesystems.logback.bytebuddy.ClassCalledByAgent.throwException(ClassCalledByAgent.java:26)
-	at com.tersesystems.logback.bytebuddy.InProcessInstrumentationExample.main(InProcessInstrumentationExample.java:67)
+	at com.tersesystems.logback.bytebuddy.InProcessInstrumentationExample.main(InProcessInstrumentationExample.java:65)
 ```
 
 The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.  Note also that there is no runtime overhead in pulling line numbers or source files into the enter/exit methods, as these are pulled directly from bytecode and do not involve `fillInStackTrace`.
@@ -1013,12 +1012,13 @@ or by using `JAVA_TOOLS_OPTIONS` environment variable
 export JAVA_TOOLS_OPTIONS="..."
 ```
 
-and then in `application.conf`:
+and then in `logback.conf`:
 
 ```hocon
 logback.bytebuddy {
-  classNames = [ "java.lang.Thread" ]
-  methodNames = [ "run" ]
+  "java.lang.Thread" = [
+    "run"
+  ]
 }
 ``` 
 
