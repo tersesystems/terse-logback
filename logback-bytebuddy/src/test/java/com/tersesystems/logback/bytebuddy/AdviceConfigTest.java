@@ -11,7 +11,6 @@
 package com.tersesystems.logback.bytebuddy;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +20,7 @@ public class AdviceConfigTest {
     @Test
     public void testConfig() throws Exception {
         Config config = LoggingInstrumentationAdvice.generateConfig(ClassLoader.getSystemClassLoader(), false);
-        LoggingInstrumentationAdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config);
+        AdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config, true);
         assertThat(adviceConfig.classNames()).contains("com.tersesystems.logback.bytebuddy.ClassCalledByAgent");
     }
 }

@@ -990,6 +990,14 @@ java.lang.RuntimeException: I'm a squirrel!
 
 The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.  Note also that there is no runtime overhead in pulling line numbers or source files into the enter/exit methods, as these are pulled directly from bytecode and do not involve `fillInStackTrace`.
 
+If you want to trace all the methods in a class, you can use 
+
+```hocon
+logback.bytebuddy {
+ "javax.net.ssl.SSLContext" = ["*"]
+}
+```
+
 ### Instrumenting System Classes
 
 Instrumenting system level classes is a bit more involved, but can be done in configuration.

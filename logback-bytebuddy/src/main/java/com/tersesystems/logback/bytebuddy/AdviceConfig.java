@@ -15,34 +15,38 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import static java.util.Collections.singletonList;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
-public class LoggingInstrumentationAdviceConfig {
+public class AdviceConfig {
 
     private final List<String> classNames;
     private final ElementMatcher.Junction<? super TypeDescription> typeMatcher;
     private final ElementMatcher.Junction<? super MethodDescription> methodMatcher;
 
-    LoggingInstrumentationAdviceConfig(List<String> classNames,
-                                       ElementMatcher.Junction<? super TypeDescription> typeMatcher,
-                                       ElementMatcher.Junction<? super MethodDescription> methodMatcher) {
+    private AdviceConfig(List<String> classNames,
+                 ElementMatcher.Junction<? super TypeDescription> typeMatcher,
+                 ElementMatcher.Junction<? super MethodDescription> methodMatcher) {
         this.typeMatcher = Objects.requireNonNull(typeMatcher);
         this.methodMatcher = Objects.requireNonNull(methodMatcher);
         this.classNames = classNames;
     }
 
-    public static LoggingInstrumentationAdviceConfig create(String className, List<String> methodNames) throws Exception {
+    public static AdviceConfig create(String className, List<String> methodNames) throws Exception {
         Class<?> aClass = ClassLoader.getSystemClassLoader().loadClass(className);
+        return new AdviceConfig(singletonList(className), is(aClass), methodNames.stream()
+                .map(m -> named(m).and(isDeclaredBy(aClass)))
+                .reduce(none(), ElementMatcher.Junction::or));
+    }
 
-        ElementMatcher.Junction<? super TypeDescription> types = is(aClass);
-        ElementMatcher.Junction<? super MethodDescription> methods = methodMatcher(aClass, methodNames);
-        return new LoggingInstrumentationAdviceConfig(singletonList(className), types, methods);
+    public static AdviceConfig create(String className) throws Exception {
+        Class<?> aClass = ClassLoader.getSystemClassLoader().loadClass(className);
+        // We don't want to get the constructor, so get a list of all methods from the class.
+        Method[] methods = aClass.getDeclaredMethods();
+        return new AdviceConfig(singletonList(className), is(aClass), ElementMatchers.anyOf(methods));
     }
 
     public List<String> classNames() {
@@ -57,17 +61,12 @@ public class LoggingInstrumentationAdviceConfig {
         return typeMatcher;
     }
 
-    public LoggingInstrumentationAdviceConfig join(LoggingInstrumentationAdviceConfig other) {
+    public AdviceConfig join(AdviceConfig other) {
         final ElementMatcher.Junction<? super MethodDescription> methodMatcher = methods().or(other.methods());
         final ElementMatcher.Junction<? super TypeDescription> typeMatcher = types().or(other.types());
         List<String> classNames = new ArrayList<>(classNames());
         classNames.addAll(other.classNames());
-        return new LoggingInstrumentationAdviceConfig(classNames, typeMatcher, methodMatcher);
-    }
-
-    private static ElementMatcher.Junction<? super MethodDescription> methodMatcher(Class aClass, Collection<String> methodNames) {
-        return methodNames.stream().map(m -> named(m).and(isDeclaredBy(aClass)))
-                .reduce(none(), ElementMatcher.Junction::or);
+        return new AdviceConfig(classNames, typeMatcher, methodMatcher);
     }
 
 }

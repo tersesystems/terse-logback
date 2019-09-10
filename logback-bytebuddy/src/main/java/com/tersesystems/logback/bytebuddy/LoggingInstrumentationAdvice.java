@@ -67,7 +67,7 @@ public class LoggingInstrumentationAdvice {
     void initialize(Instrumentation instrumentation, boolean debug) {
         try {
             Config config = generateConfig(this.getClass().getClassLoader(), debug);
-            LoggingInstrumentationAdviceConfig adviceConfig = generateAdviceConfig(config);
+            AdviceConfig adviceConfig = generateAdviceConfig(config, debug);
             AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
                     .builderFromConfigWithRetransformation(adviceConfig);
 
@@ -86,7 +86,7 @@ public class LoggingInstrumentationAdvice {
     // This does mean that typesafe-config classes are pulled from bootstrap thereafter, but
     // this is pretty safe.
     public static Config generateConfig(ClassLoader classLoader, boolean debug) {
-        // Look for logback.loadjson, logback.conf, logback.properties
+        // Look for logback.json, logback.conf, logback.properties
         Config systemProperties = ConfigFactory.systemProperties();
         String fileName = System.getProperty(CONFIG_FILE_PROPERTY);
         Config file = ConfigFactory.empty();
@@ -113,8 +113,8 @@ public class LoggingInstrumentationAdvice {
         return config;
     }
 
-    public static LoggingInstrumentationAdviceConfig generateAdviceConfig(Config config) throws Exception {
-        List<LoggingInstrumentationAdviceConfig> configs = new ArrayList<>();
+    public static AdviceConfig generateAdviceConfig(Config config, boolean debug) throws Exception {
+        List<AdviceConfig> configs = new ArrayList<>();
         Set<Map.Entry<String, ConfigValue>> entries = config.getConfig("logback.bytebuddy").entrySet();
         for (Map.Entry<String, ConfigValue> entry : entries) {
             String className = clean(entry.getKey());
@@ -123,13 +123,20 @@ public class LoggingInstrumentationAdvice {
                 List<String> methodNames = ((List<String>) value.unwrapped()).stream()
                         .map(LoggingInstrumentationAdvice::clean)
                         .collect(Collectors.toList());
-                configs.add(LoggingInstrumentationAdviceConfig.create(className, methodNames));
+                if (methodNames.size() == 1 && Objects.equals(methodNames.get(0), "*")) {
+                    if (debug) {
+                        System.out.println("Using wildcard matching for class " + className);
+                    }
+                    configs.add(AdviceConfig.create(className));
+                } else {
+                    configs.add(AdviceConfig.create(className, methodNames));
+                }
             } else {
                 throw new IllegalStateException("unknown config!");
             }
         }
 
-        return configs.stream().reduce(LoggingInstrumentationAdviceConfig::join).get();
+        return configs.stream().reduce(AdviceConfig::join).get();
     }
 
     private static String clean(String key) {

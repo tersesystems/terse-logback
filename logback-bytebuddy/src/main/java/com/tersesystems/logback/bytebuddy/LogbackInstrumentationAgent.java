@@ -33,14 +33,19 @@ public class LogbackInstrumentationAgent {
         injectBootstrapClasses(instrumentation);
         LoggingInstrumentationAdvice logbackInst = (LoggingInstrumentationAdvice) INSTRUMENTATION_ADVICE_CLASS.newInstance();
 
-        boolean debug = "debug".equalsIgnoreCase(arg);
+        boolean debug = parseDebug(arg);
         logbackInst.initialize(instrumentation, debug);
+    }
+
+    private static boolean parseDebug(String arg) {
+        return true;
+        //return "debug".equalsIgnoreCase(arg);
     }
 
     public static void agentmain(String arg, Instrumentation instrumentation) throws Exception {
         injectBootstrapClasses(instrumentation);
 
-        boolean debug = "debug".equalsIgnoreCase(arg);
+        boolean debug = parseDebug(arg);
         LoggingInstrumentationAdvice logbackInst = (LoggingInstrumentationAdvice) INSTRUMENTATION_ADVICE_CLASS.newInstance();
         logbackInst.initialize(instrumentation, debug);
     }

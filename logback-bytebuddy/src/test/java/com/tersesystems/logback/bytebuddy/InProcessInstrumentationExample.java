@@ -13,7 +13,6 @@ package com.tersesystems.logback.bytebuddy;
 import com.tersesystems.logback.bytebuddy.impl.FixedLoggerResolver;
 import com.tersesystems.logback.bytebuddy.impl.SystemFlow;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class InProcessInstrumentationExample {
         SystemFlow.setLoggerResolver(new FixedLoggerResolver(logger));
 
         Config config = LoggingInstrumentationAdvice.generateConfig(ClassLoader.getSystemClassLoader(), false);
-        LoggingInstrumentationAdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config);
+        AdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config, false);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(adviceConfig.classNames());

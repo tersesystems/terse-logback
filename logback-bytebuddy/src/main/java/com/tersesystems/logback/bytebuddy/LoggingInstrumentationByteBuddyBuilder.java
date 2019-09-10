@@ -147,7 +147,7 @@ public class LoggingInstrumentationByteBuddyBuilder {
     public AgentBuilder.RawMatcher.ForElementMatchers ignoreMatchers() {
         ElementMatcher.Junction<? super TypeDescription> matchers =
                 nameStartsWith("net.bytebuddy.")
-                        .or(nameStartsWith("com.tersesystems.logback.bytebuddy"))
+                        .or(nameStartsWith("com.tersesystems.logback.bytebuddy."))
                         .or(nameStartsWith("org.slf4j."))
                         .or(nameStartsWith("ch.qos.logback."))
                         .or(isSynthetic());
@@ -160,11 +160,11 @@ public class LoggingInstrumentationByteBuddyBuilder {
         return builderFromConfig(typesMatcher, methodsMatcher).with(listener);
     }
 
-    public AgentBuilder builderFromConfig(LoggingInstrumentationAdviceConfig c) {
+    public AgentBuilder builderFromConfig(AdviceConfig c) {
         return builderFromConfig(c.types(), c.methods());
     }
 
-    public AgentBuilder builderFromConfigWithRetransformation(LoggingInstrumentationAdviceConfig c) {
+    public AgentBuilder builderFromConfigWithRetransformation(AdviceConfig c) {
         return builderFromConfigWithRetransformation(c.types(), c.methods());
     }
 }
