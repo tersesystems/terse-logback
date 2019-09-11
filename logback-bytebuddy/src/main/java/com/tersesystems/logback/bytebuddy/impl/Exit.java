@@ -23,7 +23,7 @@ import static com.tersesystems.logback.bytebuddy.impl.SystemFlow.*;
 
 public class Exit {
 
-    public static void apply(String origin, Object[] allArguments, Throwable thrown) {
+    public static void apply(String origin, Object[] allArguments, Throwable thrown, Object returnValue) {
         Logger logger = getLogger(origin);
         if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
             String[] args = origin.split("\\|");
@@ -37,6 +37,7 @@ public class Exit {
             StructuredArgument aSignature = v("signature", signature); // (java.lang.String)
             //StructuredArgument aDescriptor = kv("descriptor", descriptor); // descriptor=(Ljava/lang/String;)V
             StructuredArgument aReturnType = kv("returnType", returnType); // returnType=void
+            Object aReturnValue = kv("returnValue", returnValue);
             if (thrown != null) {
                 StructuredArgument aThrown = kv("thrown", thrown);
                 StructuredArgument arrayParameters = array("arguments", allArguments);
@@ -51,9 +52,9 @@ public class Exit {
                     MethodInfo mi = methodInfo.get();
                     StructuredArgument aSource = v("source", mi.source);
                     StructuredArgument aLineNumber = v("line", mi.getEndLine());
-                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {} from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aSource, aLineNumber);
+                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => ({} {}) from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aReturnType, aReturnValue, aSource, aLineNumber);
                 } else {
-                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => {}", aClass, aMethod, aSignature, arrayParameters, aReturnType);
+                    logger.trace(EXIT_MARKER, "exiting: {}.{}{} with {} => ({} {})", aClass, aMethod, aSignature, arrayParameters, aReturnType, aReturnValue);
                 }
             }
         }

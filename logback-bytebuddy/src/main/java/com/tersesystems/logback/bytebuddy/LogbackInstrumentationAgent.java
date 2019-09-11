@@ -38,8 +38,7 @@ public class LogbackInstrumentationAgent {
     }
 
     private static boolean parseDebug(String arg) {
-        return true;
-        //return "debug".equalsIgnoreCase(arg);
+        return "debug".equalsIgnoreCase(arg);
     }
 
     public static void agentmain(String arg, Instrumentation instrumentation) throws Exception {
@@ -51,7 +50,7 @@ public class LogbackInstrumentationAgent {
     }
 
     /**
-     * Loads the advice class into the bootstrap classloader, so we can access the instantiation.
+     * Loads the advice class into the bootstrap target of instrumentation.
      *
      * @param instrumentation
      * @throws IOException

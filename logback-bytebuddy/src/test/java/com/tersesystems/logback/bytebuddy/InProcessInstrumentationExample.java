@@ -45,8 +45,9 @@ public class InProcessInstrumentationExample {
         Logger logger = LoggerFactory.getLogger(InProcessInstrumentationExample.class);
         SystemFlow.setLoggerResolver(new FixedLoggerResolver(logger));
 
-        Config config = LoggingInstrumentationAdvice.generateConfig(ClassLoader.getSystemClassLoader(), false);
-        AdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config, false);
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        Config config = LoggingInstrumentationAdvice.generateConfig(classLoader, false);
+        AdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(classLoader, config, false);
 
         // The debugging listener shows what classes are being picked up by the instrumentation
         Listener debugListener = createDebugListener(adviceConfig.classNames());
