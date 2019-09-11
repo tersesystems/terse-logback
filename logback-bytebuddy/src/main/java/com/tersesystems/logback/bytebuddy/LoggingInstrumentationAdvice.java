@@ -13,6 +13,7 @@ package com.tersesystems.logback.bytebuddy;
 import com.typesafe.config.*;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
+import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.matcher.StringMatcher;
@@ -58,7 +59,7 @@ public class LoggingInstrumentationAdvice {
         try {
             String className = "com.tersesystems.logback.bytebuddy.impl.Exit";
             Class<?> exitClass = systemClassLoader.loadClass(className);
-            exitMethod = exitClass.getMethod("apply", String.class, Object[].class, Throwable.class);
+            exitMethod = exitClass.getMethod("apply", String.class, Object[].class, Throwable.class, Object.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,8 +67,8 @@ public class LoggingInstrumentationAdvice {
 
     void initialize(Instrumentation instrumentation, boolean debug) {
         try {
-            Config config = generateConfig(this.getClass().getClassLoader(), debug);
-            AdviceConfig adviceConfig = generateAdviceConfig(config, debug);
+            Config config = generateConfig(systemClassLoader, debug);
+            AdviceConfig adviceConfig = generateAdviceConfig(systemClassLoader, config, debug);
             AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
                     .builderFromConfigWithRetransformation(adviceConfig);
 
@@ -113,7 +114,7 @@ public class LoggingInstrumentationAdvice {
         return config;
     }
 
-    public static AdviceConfig generateAdviceConfig(Config config, boolean debug) throws Exception {
+    public static AdviceConfig generateAdviceConfig(ClassLoader classLoader, Config config, boolean debug) throws Exception {
         List<AdviceConfig> configs = new ArrayList<>();
         Set<Map.Entry<String, ConfigValue>> entries = config.getConfig("logback.bytebuddy").entrySet();
         for (Map.Entry<String, ConfigValue> entry : entries) {
@@ -127,9 +128,9 @@ public class LoggingInstrumentationAdvice {
                     if (debug) {
                         System.out.println("Using wildcard matching for class " + className);
                     }
-                    configs.add(AdviceConfig.create(className));
+                    configs.add(AdviceConfig.create(classLoader, className));
                 } else {
-                    configs.add(AdviceConfig.create(className, methodNames));
+                    configs.add(AdviceConfig.create(classLoader, className, methodNames));
                 }
             } else {
                 throw new IllegalStateException("unknown config!");
@@ -172,7 +173,7 @@ public class LoggingInstrumentationAdvice {
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class)
-    public static void exit(@Advice.Origin("#t|#m|#d|#s|#r") String origin, @Advice.AllArguments Object[] allArguments, @Advice.Thrown Throwable thrown) throws Exception {
-        exitMethod.invoke(null, origin, allArguments, thrown);
+    public static void exit(@Advice.Origin("#t|#m|#d|#s|#r") String origin, @Advice.AllArguments Object[] allArguments, @Advice.Thrown Throwable thrown, @Advice.Return(typing = Assigner.Typing.DYNAMIC) Object returnValue) throws Exception {
+        exitMethod.invoke(null, origin, allArguments, thrown, returnValue);
     }
 }

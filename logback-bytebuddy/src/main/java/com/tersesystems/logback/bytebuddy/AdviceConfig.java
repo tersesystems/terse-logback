@@ -11,12 +11,13 @@
 package com.tersesystems.logback.bytebuddy;
 
 import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.description.method.MethodList;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static java.util.Collections.singletonList;
 import static net.bytebuddy.matcher.ElementMatchers.*;
@@ -35,18 +36,21 @@ public class AdviceConfig {
         this.classNames = classNames;
     }
 
-    public static AdviceConfig create(String className, List<String> methodNames) throws Exception {
-        Class<?> aClass = ClassLoader.getSystemClassLoader().loadClass(className);
+    public static AdviceConfig create(ClassLoader classLoader, String className, List<String> methodNames) throws Exception {
+        TypeDescription aClass = createTypeDescription(classLoader, className);
+
         return new AdviceConfig(singletonList(className), is(aClass), methodNames.stream()
-                .map(m -> named(m).and(isDeclaredBy(aClass)))
+                .map(m -> named(m).and(isDeclaredBy(aClass)).and(not(isNative().or(isConstructor()))))
                 .reduce(none(), ElementMatcher.Junction::or));
     }
 
-    public static AdviceConfig create(String className) throws Exception {
-        Class<?> aClass = ClassLoader.getSystemClassLoader().loadClass(className);
-        // We don't want to get the constructor, so get a list of all methods from the class.
-        Method[] methods = aClass.getDeclaredMethods();
-        return new AdviceConfig(singletonList(className), is(aClass), ElementMatchers.anyOf(methods));
+    public static AdviceConfig create(ClassLoader classLoader, String className) throws Exception {
+        TypeDescription aClass = createTypeDescription(classLoader, className);
+
+        // Get a list of all non-native methods from the class, with no constructor.
+        MethodList<MethodDescription.InDefinedShape> methods = aClass.getDeclaredMethods()
+                .filter(not(isNative().or(isConstructor())));
+        return new AdviceConfig(singletonList(className), is(aClass), anyOf(methods));
     }
 
     public List<String> classNames() {
@@ -69,4 +73,15 @@ public class AdviceConfig {
         return new AdviceConfig(classNames, typeMatcher, methodMatcher);
     }
 
+    // Push a class definition into any classloader (useful for on the fly created types)
+    //private static void injectClass(ClassLoader classLoader, String className, byte[] classBytes) throws IOException {
+    //    //byte[] classBytes = ClassFileLocator.ForJarFile.ofClassPath().locate(className).resolve();
+    //    Map<String, byte[]> byteMap = Collections.singletonMap(className, classBytes);
+    //    ClassInjector classInjector = new ClassInjector.UsingReflection(classLoader);
+    //    classInjector.injectRaw(byteMap);
+    //}
+
+    private static TypeDescription createTypeDescription(ClassLoader classLoader, String className) throws Exception {
+        return new TypeDescription.ForLoadedType(classLoader.loadClass(className));
+    }
 }

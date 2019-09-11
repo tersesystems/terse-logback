@@ -19,8 +19,9 @@ public class AdviceConfigTest {
 
     @Test
     public void testConfig() throws Exception {
-        Config config = LoggingInstrumentationAdvice.generateConfig(ClassLoader.getSystemClassLoader(), false);
-        AdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(config, true);
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        Config config = LoggingInstrumentationAdvice.generateConfig(classLoader, false);
+        AdviceConfig adviceConfig = LoggingInstrumentationAdvice.generateAdviceConfig(classLoader, config, false);
         assertThat(adviceConfig.classNames()).contains("com.tersesystems.logback.bytebuddy.ClassCalledByAgent");
     }
 }
