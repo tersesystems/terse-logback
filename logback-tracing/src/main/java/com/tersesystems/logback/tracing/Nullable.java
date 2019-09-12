@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.honeycomb.client;
+package com.tersesystems.logback.tracing;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

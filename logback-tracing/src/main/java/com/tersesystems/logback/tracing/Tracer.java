@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.bytebuddy.impl;
+package com.tersesystems.logback.tracing;
 
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
@@ -28,7 +28,7 @@ public class Tracer {
     private static LogstashMarker serviceNameMarker = Markers.empty();
 
     public static void setServiceName(String serviceName) {
-        serviceNameMarker = append("service_name", serviceName);
+        serviceNameMarker = Markers.append("service_name", serviceName);
     }
 
     private static final ThreadLocal<Stack<Span>> threadLocal = ThreadLocal.withInitial(Stack::new);
@@ -37,11 +37,11 @@ public class Tracer {
         return threadLocal.get();
     }
 
-    static Optional<Span> popSpan() {
+    public static Optional<Span> popSpan() {
         return Optional.ofNullable(stack().pop());
     }
 
-    static void pushSpan(String name) {
+    public static void pushSpan(String name) {
         Span span;
         if (!stack().empty()) {
             Span parent = stack().peek();
@@ -54,12 +54,12 @@ public class Tracer {
         stack().push(span);
     }
 
-    static Marker createExitMarkers(Span span, Marker... markers) {
-        LogstashMarker traceMarker = append("trace.trace_id", span.traceId);
-        LogstashMarker spanMarker = append("trace.span_id", span.spanId);
-        LogstashMarker durationMsMarker = append("duration_ms", span.durationMs());
-        LogstashMarker nameMarker = append("name", span.name());
-        LogstashMarker baseMarkers = aggregate(markers)
+    public static Marker createExitMarkers(Span span, Marker... markers) {
+        LogstashMarker traceMarker = Markers.append("trace.trace_id", span.traceId);
+        LogstashMarker spanMarker = Markers.append("trace.span_id", span.spanId);
+        LogstashMarker durationMsMarker = Markers.append("duration_ms", span.durationMs());
+        LogstashMarker nameMarker = Markers.append("name", span.name());
+        LogstashMarker baseMarkers = Markers.aggregate(markers)
                 .and(traceMarker)
                 .and(nameMarker)
                 .and(spanMarker)
@@ -67,14 +67,14 @@ public class Tracer {
                 .and(durationMsMarker);
 
         if (span.parentId != null) {
-            LogstashMarker parentMarker = append("trace.parent_id", span.parentId);
+            LogstashMarker parentMarker = Markers.append("trace.parent_id", span.parentId);
             return baseMarkers.and(parentMarker);
         } else {
             return baseMarkers;
         }
     }
 
-    static class Span {
+    public static class Span {
         private final Instant startTime;
         private final String spanId;
         private final String name;

@@ -248,8 +248,8 @@ The start time information is captured in a `StartTimeMarker` which can be extra
 For example, in Play you might run a controller as follows:
 
 ```scala
-import com.tersesystems.logback.honeycomb.SpanMarkerFactory
-import com.tersesystems.logback.honeycomb.client.SpanInfo
+import com.tersesystems.logback.tracing.SpanMarkerFactory
+import com.tersesystems.logback.tracing.SpanInfo
 import javax.inject._
 import org.slf4j.LoggerFactory
 import play.api.libs.concurrent.Futures

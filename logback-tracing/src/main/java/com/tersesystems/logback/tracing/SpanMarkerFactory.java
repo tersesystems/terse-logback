@@ -8,10 +8,9 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.honeycomb;
+package com.tersesystems.logback.tracing;
 
 import com.tersesystems.logback.classic.StartTimeMarker;
-import com.tersesystems.logback.honeycomb.client.SpanInfo;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.Markers;
 

@@ -10,7 +10,7 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-import com.tersesystems.logback.bytebuddy.impl.Tracer;
+import com.tersesystems.logback.tracing.Tracer;
 import com.typesafe.config.*;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;

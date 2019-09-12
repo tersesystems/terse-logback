@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.honeycomb.client;
+package com.tersesystems.logback.tracing;
 
 import com.google.auto.value.AutoValue;
 
@@ -29,7 +29,8 @@ public abstract class SpanInfo {
 
     public abstract String spanId();
 
-    @Nullable public abstract String parentId();
+    @Nullable
+    public abstract String parentId();
 
     public abstract String traceId();
 

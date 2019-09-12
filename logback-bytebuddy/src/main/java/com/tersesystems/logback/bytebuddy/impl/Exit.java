@@ -12,6 +12,7 @@ package com.tersesystems.logback.bytebuddy.impl;
 
 import com.tersesystems.logback.bytebuddy.MethodInfo;
 import com.tersesystems.logback.bytebuddy.MethodInfoLookup;
+import com.tersesystems.logback.tracing.Tracer;
 import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
