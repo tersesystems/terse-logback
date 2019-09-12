@@ -10,6 +10,7 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
+import com.tersesystems.logback.bytebuddy.impl.Tracer;
 import com.typesafe.config.*;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
@@ -69,6 +70,8 @@ public class LoggingInstrumentationAdvice {
         try {
             Config config = generateConfig(systemClassLoader, debug);
             AdviceConfig adviceConfig = generateAdviceConfig(systemClassLoader, config, debug);
+            Tracer.setServiceName(adviceConfig.getServiceName());
+
             AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
                     .builderFromConfigWithRetransformation(adviceConfig);
 
@@ -116,7 +119,11 @@ public class LoggingInstrumentationAdvice {
 
     public static AdviceConfig generateAdviceConfig(ClassLoader classLoader, Config config, boolean debug) throws Exception {
         List<AdviceConfig> configs = new ArrayList<>();
-        Set<Map.Entry<String, ConfigValue>> entries = config.getConfig("logback.bytebuddy").entrySet();
+
+        String serviceName = config.getString("logback.bytebuddy.service-name");
+        AdviceConfig adviceConfig = new AdviceConfig(classLoader, serviceName);
+
+        Set<Map.Entry<String, ConfigValue>> entries = config.getConfig("logback.bytebuddy.tracing").entrySet();
         for (Map.Entry<String, ConfigValue> entry : entries) {
             String className = clean(entry.getKey());
             ConfigValue value = entry.getValue();
@@ -128,16 +135,15 @@ public class LoggingInstrumentationAdvice {
                     if (debug) {
                         System.out.println("Using wildcard matching for class " + className);
                     }
-                    configs.add(AdviceConfig.create(classLoader, className));
+                    adviceConfig.addTrace(className);
                 } else {
-                    configs.add(AdviceConfig.create(classLoader, className, methodNames));
+                    adviceConfig.addTrace(className, methodNames);
                 }
             } else {
                 throw new IllegalStateException("unknown config!");
             }
         }
-
-        return configs.stream().reduce(AdviceConfig::join).get();
+        return adviceConfig;
     }
 
     private static String clean(String key) {
