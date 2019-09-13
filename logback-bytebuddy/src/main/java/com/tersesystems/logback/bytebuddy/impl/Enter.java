@@ -17,12 +17,14 @@ import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-
-import static net.logstash.logback.argument.StructuredArguments.a;
-import static net.logstash.logback.argument.StructuredArguments.v;
+import java.util.stream.Collectors;
 
 import static com.tersesystems.logback.bytebuddy.impl.SystemFlow.*;
+import static net.logstash.logback.argument.StructuredArguments.*;
 import static net.logstash.logback.marker.Markers.aggregate;
 
 public class Enter {
@@ -39,7 +41,7 @@ public class Enter {
             StructuredArgument aClass = v("class", declaringType);
             StructuredArgument aMethod = v("method", method);
             StructuredArgument aSignature = v("signature", signature);
-            StructuredArgument arrayParameters = a("arguments", allArguments);
+            StructuredArgument arrayParameters = safeArguments(allArguments);
 
             String name = createName(declaringType, method, signature);
             Tracer.pushSpan(name);
@@ -62,4 +64,8 @@ public class Enter {
         return className + "." + method + signature;
     }
 
+    private static StructuredArgument safeArguments(Object[] allArguments) {
+        List<String> safeArgs = Arrays.stream(allArguments).map(Objects::toString).collect(Collectors.toList());
+        return kv("arguments", safeArgs);
+    }
 }
