@@ -13,13 +13,15 @@ package com.tersesystems.logback.honeycomb.playws;
 import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 import akka.stream.ActorMaterializerSettings;
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.auto.service.AutoService;
-import com.tersesystems.logback.honeycomb.client.*;
+import com.tersesystems.logback.honeycomb.client.HoneycombClient;
+import com.tersesystems.logback.honeycomb.client.HoneycombHeaders;
+import com.tersesystems.logback.honeycomb.client.HoneycombRequest;
+import com.tersesystems.logback.honeycomb.client.HoneycombResponse;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import play.api.libs.ws.ahc.AhcWSClientConfig;
@@ -35,12 +37,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
-
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
-import static java.util.Objects.requireNonNull;
 
 @AutoService(HoneycombClient.class)
 public class HoneycombPlayWSClient implements HoneycombClient, DefaultBodyWritables, DefaultBodyReadables {

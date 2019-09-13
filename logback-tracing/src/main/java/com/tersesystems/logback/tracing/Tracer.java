@@ -10,100 +10,48 @@
  */
 package com.tersesystems.logback.tracing;
 
-import net.logstash.logback.marker.LogstashMarker;
-import net.logstash.logback.marker.Markers;
-import org.slf4j.Marker;
-
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Optional;
-import java.util.Stack;
-import java.util.UUID;
-
-import static net.logstash.logback.marker.Markers.aggregate;
-import static net.logstash.logback.marker.Markers.append;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.Supplier;
 
 public class Tracer {
 
-    private static LogstashMarker serviceNameMarker = Markers.empty();
+    // We don't want to measure a stack more than 300 elements deep, because after that it's just no fun.
+    private static final int MAX_THREAD_SIZE = 300;
 
-    public static void setServiceName(String serviceName) {
-        serviceNameMarker = Markers.append("service_name", serviceName);
-    }
+    // Don't use Stack, it has synchronized methods.
+    private static final ThreadLocal<Queue<SpanInfo>> threadLocal = ThreadLocal.withInitial(() -> new ArrayBlockingQueue<>(MAX_THREAD_SIZE));
 
-    private static final ThreadLocal<Stack<Span>> threadLocal = ThreadLocal.withInitial(Stack::new);
-
-    private static Stack<Span> stack() {
+    private static Queue<SpanInfo> stack() {
         return threadLocal.get();
     }
 
-    public static Optional<Span> popSpan() {
-        return Optional.ofNullable(stack().pop());
+    public static Optional<SpanInfo> popSpan() {
+        return Optional.ofNullable(stack().poll());
     }
 
-    public static void pushSpan(String name) {
-        Span span;
-        if (!stack().empty()) {
-            Span parent = stack().peek();
-            String traceId = parent.traceId;
-            String parentId = parent.spanId;
-            span = new Span(name, traceId, parentId);
+    public static SpanInfo pushSpan(String name, String serviceName, Supplier<String> idGenerator) {
+        Queue<SpanInfo> stack = stack();
+        SpanInfo parent = stack.peek();
+
+        SpanInfo span;
+        if (parent != null) {
+            span = parent.childBuilder().setName(name).buildNow();
         } else {
-            span = new Span(name, UUID.randomUUID().toString(), UUID.randomUUID().toString());
+            span = SpanInfo.builder().setRootSpan(idGenerator, name).setServiceName(serviceName).buildNow();
         }
-        stack().push(span);
+        stack.offer(span);
+        return span;
     }
 
-    public static Marker createExitMarkers(Span span, Marker... markers) {
-        LogstashMarker traceMarker = Markers.append("trace.trace_id", span.traceId);
-        LogstashMarker spanMarker = Markers.append("trace.span_id", span.spanId);
-        LogstashMarker durationMsMarker = Markers.append("duration_ms", span.durationMs());
-        LogstashMarker nameMarker = Markers.append("name", span.name());
-        LogstashMarker baseMarkers = Markers.aggregate(markers)
-                .and(traceMarker)
-                .and(nameMarker)
-                .and(spanMarker)
-                .and(serviceNameMarker)
-                .and(durationMsMarker);
-
-        if (span.parentId != null) {
-            LogstashMarker parentMarker = Markers.append("trace.parent_id", span.parentId);
-            return baseMarkers.and(parentMarker);
-        } else {
-            return baseMarkers;
-        }
+    public static Optional<SpanInfo> activeSpan() {
+        Queue<SpanInfo> stack = stack();
+        return !stack.isEmpty() ? Optional.ofNullable(stack.peek()) : Optional.empty();
     }
 
-    public static class Span {
-        private final Instant startTime;
-        private final String spanId;
-        private final String name;
-        private final String traceId;
-        private final String parentId;
-
-        Span(String name, String traceId, String parentId) {
-            this.name = name;
-            this.traceId = traceId;
-            this.parentId = parentId;
-            this.startTime = Instant.now();
-            this.spanId = UUID.randomUUID().toString();
-        }
-
-        public String getSpanId() {
-            return spanId;
-        }
-
-        public Instant getStartTime() {
-            return startTime;
-        }
-
-        public Long durationMs() {
-            return Duration.between(startTime, Instant.now()).toMillis();
-        }
-
-        public String name() {
-            return name;
-        }
+    public static void clear() {
+        stack().clear();
     }
 
 }

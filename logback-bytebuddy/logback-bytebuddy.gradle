@@ -24,6 +24,7 @@ dependencies {
     shadow "ch.qos.logback:logback-core:$logbackVersion"
     shadow "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
     shadow "com.google.auto.value:auto-value-annotations:1.6.2"
+    shadow group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
 
     // You'll need this, but better to use the version already defined in project
     testImplementation "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"

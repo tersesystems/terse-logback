@@ -10,10 +10,26 @@
  */
 package com.tersesystems.logback.bytebuddy.impl;
 
+import com.fasterxml.uuid.impl.RandomBasedGenerator;
+import com.tersesystems.logback.tracing.SpanInfo;
+import com.tersesystems.logback.tracing.SpanMarkerFactory;
+import com.tersesystems.logback.tracing.Tracer;
+import net.logstash.logback.argument.StructuredArgument;
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static net.logstash.logback.marker.Markers.append;
 
 public final class SystemFlow {
     // https://github.com/qos-ch/slf4j/blob/master/slf4j-ext/src/main/java/org/slf4j/ext/XLogger.java#L44
@@ -22,9 +38,22 @@ public final class SystemFlow {
     public static final Marker EXIT_MARKER = MarkerFactory.getMarker("EXIT");
     public static final Marker EXCEPTION_MARKER = MarkerFactory.getMarker("EXCEPTION");
 
+    private static final SpanMarkerFactory markerFactory = new SpanMarkerFactory();
+
     static {
         ENTRY_MARKER.add(FLOW_MARKER);
         EXIT_MARKER.add(FLOW_MARKER);
+    }
+
+    private static String serviceName;
+    private static Supplier<String> idGenerator;
+
+    static {
+        // The out of the box UUID.randomUUID() is synchronized, which will block threads and
+        // generally gum things up.  The faster XML one is better, but still need to benchmark
+        // considering how tracing can be injected anywhere.
+        RandomBasedGenerator uuidGenerator = new RandomBasedGenerator(null);
+        SystemFlow.setIdGenerator(() -> uuidGenerator.generate().toString());
     }
 
     private static LoggerResolver loggerResolver = new DeclaringTypeLoggerResolver(LoggerFactory::getILoggerFactory);
@@ -39,6 +68,51 @@ public final class SystemFlow {
 
     public static Logger getLogger(String origin) {
         return loggerResolver.resolve(origin);
+    }
+
+    public static void setServiceName(String serviceName) {
+        SystemFlow.serviceName = serviceName;
+    }
+
+    public static void setIdGenerator(Supplier<String> idGenerator) {
+        SystemFlow.idGenerator = idGenerator;
+    }
+
+    public static LogstashMarker createMarker(SpanInfo span) {
+       return markerFactory.create(span).and(threadMarkers());
+    }
+
+    public static void pushSpan(String name) {
+        Tracer.pushSpan(name, serviceName, idGenerator);
+    }
+
+    public static Optional<SpanInfo> popSpan() {
+        return Tracer.popSpan();
+    }
+
+    // objects in general cannot be passed to StructuredArgument, because there is a contract
+    // that a StructuredArgument is safe for JSON serialization, and we could do nasty
+    // things like call sslContext.getSocketFactory() which can throw an exception.
+    static StructuredArgument safeReturnValue(Object returnValue) {
+        String safeReturnValue = Objects.toString(returnValue);
+        return kv("return_value", safeReturnValue);
+    }
+
+    static StructuredArgument safeArguments(Object[] allArguments) {
+        List<String> safeArgs = Arrays.stream(allArguments).map(Objects::toString).collect(Collectors.toList());
+        return kv("arguments", safeArgs);
+    }
+
+
+    static String createName(String className, String method, String signature) {
+        return className + "." + method + signature;
+    }
+
+    static LogstashMarker threadMarkers() {
+        Thread t = Thread.currentThread();
+        //LogstashMarker threadNameMarker = append("trace.thread_name", t.getName());
+        LogstashMarker threadIdMarker = append("thread_id", t.getId());
+        return threadIdMarker.and(threadIdMarker);
     }
 
 }

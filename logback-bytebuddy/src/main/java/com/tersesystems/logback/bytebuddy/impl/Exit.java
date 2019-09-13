@@ -12,27 +12,26 @@ package com.tersesystems.logback.bytebuddy.impl;
 
 import com.tersesystems.logback.bytebuddy.MethodInfo;
 import com.tersesystems.logback.bytebuddy.MethodInfoLookup;
-import com.tersesystems.logback.tracing.Tracer;
+import com.tersesystems.logback.tracing.SpanInfo;
 import net.logstash.logback.argument.StructuredArgument;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static net.logstash.logback.argument.StructuredArguments.*;
 
 import static com.tersesystems.logback.bytebuddy.impl.SystemFlow.*;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static net.logstash.logback.argument.StructuredArguments.v;
 
 public class Exit {
+
+    private static String exitFormatWithSource = "exiting: {}.{}{} with {} => ({} {}) from source {}:{}";
+    private static String exitFormat = "exiting: {}.{}{} with {} => ({} {})";
 
     public static void apply(String origin, Object[] allArguments, Throwable thrown, Object returnValue) {
         Logger logger = getLogger(origin);
         if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
-            Optional<Tracer.Span> span = Tracer.popSpan();
+            Optional<SpanInfo> span = popSpan();
 
             String[] args = origin.split("\\|");
             String declaringType = args[0];
@@ -49,41 +48,30 @@ public class Exit {
 
             if (thrown != null) {
                 Marker markers = (span.isPresent())
-                        ? Tracer.createExitMarkers(span.get(), EXCEPTION_MARKER)
+                        ? createMarker(span.get()).and(EXCEPTION_MARKER)
                         : EXCEPTION_MARKER;
                 // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
                 logger.error(markers, "throwing: {}.{}{} with {}", aClass, aMethod, aSignature, safeArguments, thrown);
             } else {
-                StructuredArgument aReturnType = kv("returnType", returnType);
-                StructuredArgument safeReturnValue = safeReturnValue(returnType);
+                StructuredArgument aReturnType = kv("return_type", returnType);
+                StructuredArgument safeReturnValue = safeReturnValue(returnValue);
 
                 MethodInfoLookup lookup = MethodInfoLookup.getInstance();
                 Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
                 Marker markers = (span.isPresent())
-                        ? Tracer.createExitMarkers(span.get(), EXIT_MARKER)
+                        ? createMarker(span.get()).and(EXIT_MARKER)
                         : EXIT_MARKER;
                 if (methodInfo.isPresent()) {
                     MethodInfo mi = methodInfo.get();
                     StructuredArgument aSource = v("source", mi.source);
                     StructuredArgument aLineNumber = v("line", mi.getEndLine());
-                    logger.trace(markers, "exiting: {}.{}{} with {} => ({} {}) from source {}:{}", aClass, aMethod, aSignature, safeArguments, aReturnType, safeReturnValue, aSource, aLineNumber);
+                    ;
+                    logger.trace(markers, exitFormatWithSource, aClass, aMethod, aSignature, safeArguments, aReturnType, safeReturnValue, aSource, aLineNumber);
                 } else {
-                    logger.trace(markers, "exiting: {}.{}{} with {} => ({} {})", aClass, aMethod, aSignature, safeArguments, aReturnType, safeReturnValue);
+                    logger.trace(markers, exitFormat, aClass, aMethod, aSignature, safeArguments, aReturnType, safeReturnValue);
                 }
             }
         }
     }
 
-    // objects in general cannot be passed to StructuredArgument, because there is a contract
-    // that a StructuredArgument is safe for JSON serialization, and we could do nasty
-    // things like call sslContext.getSocketFactory() which can throw an exception.
-    private static StructuredArgument safeReturnValue(String returnType) {
-        String safeReturnValue = Objects.toString(returnType);
-        return kv("returnValue", safeReturnValue);
-    }
-
-    private static StructuredArgument safeArguments(Object[] allArguments) {
-        List<String> safeArgs = Arrays.stream(allArguments).map(Objects::toString).collect(Collectors.toList());
-        return kv("arguments", safeArgs);
-    }
 }
