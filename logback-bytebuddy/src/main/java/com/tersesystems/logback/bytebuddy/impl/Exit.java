@@ -22,6 +22,7 @@ import java.util.Optional;
 import static com.tersesystems.logback.bytebuddy.impl.SystemFlow.*;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static net.logstash.logback.argument.StructuredArguments.v;
+import static net.logstash.logback.marker.Markers.empty;
 
 public class Exit {
 
@@ -47,9 +48,7 @@ public class Exit {
             StructuredArgument safeArguments = safeArguments(allArguments);
 
             if (thrown != null) {
-                Marker markers = (span.isPresent())
-                        ? createMarker(span.get()).and(EXCEPTION_MARKER)
-                        : EXCEPTION_MARKER;
+                Marker markers = span.map(SystemFlow::createMarker).orElse(empty()).and(EXCEPTION_MARKER);
                 // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
                 logger.error(markers, "throwing: {}.{}{} with {}", aClass, aMethod, aSignature, safeArguments, thrown);
             } else {
@@ -58,9 +57,7 @@ public class Exit {
 
                 MethodInfoLookup lookup = MethodInfoLookup.getInstance();
                 Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
-                Marker markers = (span.isPresent())
-                        ? createMarker(span.get()).and(EXIT_MARKER)
-                        : EXIT_MARKER;
+                Marker markers = span.map(SystemFlow::createMarker).orElse(empty()).and(EXIT_MARKER);
                 if (methodInfo.isPresent()) {
                     MethodInfo mi = methodInfo.get();
                     StructuredArgument aSource = v("source", mi.source);

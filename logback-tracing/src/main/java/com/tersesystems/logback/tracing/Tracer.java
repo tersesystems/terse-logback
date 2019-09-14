@@ -10,6 +10,8 @@
  */
 package com.tersesystems.logback.tracing;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -20,10 +22,9 @@ public class Tracer {
     // We don't want to measure a stack more than 300 elements deep, because after that it's just no fun.
     private static final int MAX_THREAD_SIZE = 300;
 
-    // Don't use Stack, it has synchronized methods.
-    private static final ThreadLocal<Queue<SpanInfo>> threadLocal = ThreadLocal.withInitial(() -> new ArrayBlockingQueue<>(MAX_THREAD_SIZE));
+    private static final ThreadLocal<Deque<SpanInfo>> threadLocal = ThreadLocal.withInitial(() -> new ArrayDeque<>(MAX_THREAD_SIZE));
 
-    private static Queue<SpanInfo> stack() {
+    private static Deque<SpanInfo> stack() {
         return threadLocal.get();
     }
 
@@ -32,7 +33,7 @@ public class Tracer {
     }
 
     public static SpanInfo pushSpan(String name, String serviceName, Supplier<String> idGenerator) {
-        Queue<SpanInfo> stack = stack();
+        Deque<SpanInfo> stack = stack();
         SpanInfo parent = stack.peek();
 
         SpanInfo span;
@@ -41,12 +42,14 @@ public class Tracer {
         } else {
             span = SpanInfo.builder().setRootSpan(idGenerator, name).setServiceName(serviceName).buildNow();
         }
-        stack.offer(span);
+        if (!stack.offerFirst(span)) {
+            // TODO should log a warning saying the stack is full?
+        };
         return span;
     }
 
     public static Optional<SpanInfo> activeSpan() {
-        Queue<SpanInfo> stack = stack();
+        Deque<SpanInfo> stack = stack();
         return !stack.isEmpty() ? Optional.ofNullable(stack.peek()) : Optional.empty();
     }
 

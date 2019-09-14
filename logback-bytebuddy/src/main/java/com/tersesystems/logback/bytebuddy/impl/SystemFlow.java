@@ -103,7 +103,6 @@ public final class SystemFlow {
         return kv("arguments", safeArgs);
     }
 
-
     static String createName(String className, String method, String signature) {
         return className + "." + method + signature;
     }
