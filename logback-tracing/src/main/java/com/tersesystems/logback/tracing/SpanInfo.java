@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.honeycomb.client;
+package com.tersesystems.logback.tracing;
 
 import com.google.auto.value.AutoValue;
 
@@ -29,7 +29,8 @@ public abstract class SpanInfo {
 
     public abstract String spanId();
 
-    @Nullable public abstract String parentId();
+    @Nullable
+    public abstract String parentId();
 
     public abstract String traceId();
 
@@ -45,6 +46,9 @@ public abstract class SpanInfo {
 
     public abstract Supplier<Duration> durationSupplier();
 
+    public abstract Supplier<String> idGenerator();
+
+
     /**
      * Creates a child builder with the parent id set to the current span id,
      * a random UUID set to the span id.
@@ -53,7 +57,8 @@ public abstract class SpanInfo {
      */
     public Builder childBuilder() {
         return this.toBuilder()
-                .setSpanId(UUID.randomUUID().toString())
+                .setSpanId(idGenerator().get())
+                .setIdGenerator(idGenerator())
                 .setParentId(spanId());
     }
 
@@ -82,6 +87,7 @@ public abstract class SpanInfo {
         public abstract Builder setSpanId(String spanId);
         public abstract Builder setParentId(String parentId);
         public abstract Builder setTraceId(String traceId);
+        public abstract Builder setIdGenerator(Supplier<String> idGenerator);
         public abstract Builder setStartTime(Instant startTime);
         public abstract Builder setServiceName(String serviceName);
         public abstract Builder setDurationSupplier(Supplier<Duration> duration);
@@ -93,9 +99,10 @@ public abstract class SpanInfo {
          * @param name the span name
          * @return the configured builder.
          */
-        public Builder setRootSpan(String name) {
-            return this.setTraceId(UUID.randomUUID().toString())
-                    .setSpanId(UUID.randomUUID().toString())
+        public Builder setRootSpan(Supplier<String> idGenerator, String name) {
+            return this.setTraceId(idGenerator.get())
+                    .setSpanId(idGenerator.get())
+                    .setIdGenerator(idGenerator)
                     .setName(name);
         }
 

@@ -13,9 +13,9 @@ plugins {
 }
 
 dependencies {
-    implementation project(":logback-classic")
-    implementation project(":logback-honeycomb-client")
+    api project(":logback-honeycomb-client")
 
+    implementation project(":logback-classic")
     implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
 }
 

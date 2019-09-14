@@ -165,6 +165,7 @@ You can connect Logback to Honeycomb directly through the Honeycomb Logback appe
 Add the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-okhttp':
 
 ```gradle
+compile group: 'com.tersesystems.logback', name: 'logback-tracing'
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
 ```
@@ -181,6 +182,7 @@ The appender is as follows:
       <sampleRate>1</sampleRate>
       <queueSize>10</queueSize>
       <batch>true</batch>
+      <includeCallerData>false</includeCallerData>
 
       <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
           <providers>
@@ -248,8 +250,8 @@ The start time information is captured in a `StartTimeMarker` which can be extra
 For example, in Play you might run a controller as follows:
 
 ```scala
-import com.tersesystems.logback.honeycomb.SpanMarkerFactory
-import com.tersesystems.logback.honeycomb.client.SpanInfo
+import com.tersesystems.logback.tracing.SpanMarkerFactory
+import com.tersesystems.logback.tracing.SpanInfo
 import javax.inject._
 import org.slf4j.LoggerFactory
 import play.api.libs.concurrent.Futures
@@ -917,13 +919,18 @@ And the following configuration in `logback.conf`:
 
 ```hocon
 logback.bytebuddy {
-  "com.tersesystems.logback.bytebuddy.ClassCalledByAgent" = [
-    "printStatement",
-    "printArgument",
-    "throwException",
-  ]
+  service-name = "example-service"
+  tracing {
+    "com.tersesystems.logback.bytebuddy.ClassCalledByAgent" = [
+      "printStatement",
+      "printArgument",
+      "throwException",
+    ]
+  }
 }
 ```
+
+and have `com.tersesystems.logback.bytebuddy.ClassCalledByAgent` logging level set to `TRACE` in `logback.xml`.
 
 We can start up the agent, add in the builder and run through the methods:
 
@@ -970,8 +977,6 @@ public class InProcessInstrumentationExample {
 And get the following:
 
 ```text
-[Byte Buddy] IGNORE java.lang.Thread [null, null, loaded=true]
-[Byte Buddy] COMPLETE java.lang.Thread [null, null, loaded=true]
 [Byte Buddy] DISCOVERY com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=true]
 [Byte Buddy] TRANSFORM com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=true]
 [Byte Buddy] COMPLETE com.tersesystems.logback.bytebuddy.ClassCalledByAgent [sun.misc.Launcher$AppClassLoader@75b84c92, null, loaded=true]
@@ -990,13 +995,34 @@ java.lang.RuntimeException: I'm a squirrel!
 
 The `[Byte Buddy]` statements up top are caused by the debug listener, and let you know that Byte Buddy has successfully instrumented the class.  Note also that there is no runtime overhead in pulling line numbers or source files into the enter/exit methods, as these are pulled directly from bytecode and do not involve `fillInStackTrace`.
 
-If you want to trace all the methods in a class, you can use 
+If you want to trace all the methods in a class, you can use a wildcard, i.e. `"mypackage.MyClass" = ["*"]`.
+
+If you are using `logback-typesafe-config` then you can also set the levels from `logback.conf`, which can be very convenient.  For example in a Play application, you could set:
 
 ```hocon
+levels {
+  controllers = TRACE
+  services = TRACE
+  models = TRACE
+  play.api.mvc = TRACE
+}
+
 logback.bytebuddy {
- "javax.net.ssl.SSLContext" = ["*"]
+  service-name = "play-hello-world"
+
+  tracing {
+    "play.api.mvc.ActionBuilder" = ["*"]
+    "play.api.mvc.BodyParser" = ["*"]
+    "play.api.mvc.ActionFunction" = ["*"]
+
+    "services.ComputerService" = ["*"]
+    "controllers.HomeController" = ["*"]
+    "models.Computer" = ["*"]
+  }
 }
 ```
+
+and get automatic tracing.  This works particularly well with the honeycomb appender.
 
 ### Instrumenting System Classes
 
@@ -1014,7 +1040,7 @@ java \
   com.example.PreloadedInstrumentationExample
 ```
 
-or by using `JAVA_TOOLS_OPTIONS` environment variable
+or by using the [`JAVA_TOOLS_OPTIONS` environment variable](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/envvars002.html).
 
 ```bash
 export JAVA_TOOLS_OPTIONS="..."
@@ -1023,12 +1049,19 @@ export JAVA_TOOLS_OPTIONS="..."
 and then in `logback.conf`:
 
 ```hocon
-logback.bytebuddy {
-  "java.lang.Thread" = [
-    "run"
-  ]
+levels {
+  java.lang.Thread = TRACE
 }
-``` 
+
+logback.bytebuddy {
+  service-name = "some-service"
+  tracing {
+    "java.lang.Thread" = [
+      "run"
+    ]
+  }
+}
+```
 
 and the code as follows:
 
@@ -1054,46 +1087,29 @@ yields
 This is especially helpful when you're trying to debug SSL issues:
 
 ```hocon
-logback.bytebuddy {
-  classNames = [
-    "sun.security.ssl.X509TrustManagerImpl"
-    "sun.security.ssl.SSLEngineImpl"
-    "javax.net.ssl.SSLContext",
-    "javax.net.ssl.SSLContext",
-  ]
+levels {
+  sun.security.ssl = TRACE
+  javax.net.ssl = TRACE
+}
 
-  methodNames = [
-    "setDefault",
-    "getInstance"
-    "init"
-  ]
+logback.bytebuddy {
+  service-name = "some-service"
+  tracing {  
+    "javax.net.ssl.SSLContext" = ["*"]
+  }
 }
 ```
 
-will immediately result in:
+will result in:
 
 ```
 FcJ3XfsdKnM6O0Qbm7EAAA 12:31:55.498 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] from source SSLContext.java:155
 FcJ3XfsdKng6O0Qbm7EAAA 12:31:55.503 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
 FcJ3XfsdKng6O0Qbm7EAAB 12:31:55.504 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@27a97e08], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@5918c260], null] from source SSLContext.java:282
 FcJ3XfsdKnk6O0Qbm7EAAA 12:31:55.504 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@27a97e08], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@5918c260], null] => returnType=void from source SSLContext.java:283
-FcJ3XfsdLwg6O0Qbm7EAAA 12:31:56.672 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] from source SSLContext.java:155
-FcJ3XfsdLwk6O0Qbm7EAAA 12:31:56.672 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLS] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
-FcJ3XfsdLwk6O0Qbm7EAAB 12:31:56.673 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@5111aeb1], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@29e3c429], null] from source SSLContext.java:282
-FcJ3XfsdLwo6O0Qbm7EAAA 12:31:56.673 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[[org.postgresql.ssl.LazyKeyManager@5111aeb1], [org.postgresql.ssl.NonValidatingFactory$NonValidatingTM@29e3c429], null] => returnType=void from source SSLContext.java:283
-FcJ3XfsdMmc6O0Qbm7EAAA 12:31:57.534 [INFO ] a.e.s.Slf4jLogger -  Slf4jLogger started
-FcJ3XfsdMrk6O0Qbm7EAAA 12:31:57.617 [DEBUG] p.a.l.c.ActorSystemProvider -  Starting application default Akka system: application
-FcJ3XfsdM2E6O0Qbm7EAAA 12:31:57.785 [INFO ] play.api.Play -  Application started (Prod) (no global state)
-FcJ3XfsdM8AdHaINzdiAAA 12:31:57.880 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLSv1.2] from source SSLContext.java:155
-FcJ3XfsdM8EdHaINzdiAAA 12:31:57.881 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[TLSv1.2] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
-FcJ3XfsdM8EdHaINzdiAAB 12:31:57.882 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[null, null, null] from source SSLContext.java:282
-FcJ3XfsdNBI6O0Qbm7EAAA 12:31:57.961 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.init([Ljavax.net.ssl.KeyManager;,[Ljavax.net.ssl.TrustManager;,java.security.SecureRandom) with arguments=[null, null, null] => returnType=void from source SSLContext.java:283
-FcJ3XfsdNBg6O0Qbm7EAAA 12:31:57.968 [TRACE] j.n.s.SSLContext -  entering: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[Default] from source SSLContext.java:155
-FcJ3XfsdNBo6O0Qbm7EAAA 12:31:57.969 [TRACE] j.n.s.SSLContext -  exiting: javax.net.ssl.SSLContext.getInstance(java.lang.String) with arguments=[Default] => returnType=javax.net.ssl.SSLContext from source SSLContext.java:157
-FcJ3XfsdNWg6O0Qbm7EAAA 12:31:58.304 [TRACE] s.s.s.SSLEngineImpl -  entering: sun.security.ssl.SSLEngineImpl.init(sun.security.ssl.SSLContextImpl) with arguments=[sun.security.ssl.SSLContextImpl$DefaultSSLContext@687eb455] from source SSLEngineImpl.java:359
-FcJ3XfsdNWk6O0Qbm7EAAA 12:31:58.305 [TRACE] s.s.s.SSLEngineImpl -  exiting: sun.security.ssl.SSLEngineImpl.init(sun.security.ssl.SSLContextImpl) with arguments=[sun.security.ssl.SSLContextImpl$DefaultSSLContext@687eb455] => returnType=void from source SSLEngineImpl.java:424
-FcJ3XfsdNjs6O0Qbm7EAAA 12:31:58.514 [INFO ] p.c.s.AkkaHttpServer -  Listening for HTTP on /0:0:0:0:0:0:0:0:9000
 ```
+
+Be warned that JSSE can be extremely verbose in its `toString` output.
 
 ## Censoring Sensitive Information
 

@@ -8,9 +8,14 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
+
+plugins {
+    id 'java-library'
+}
+
 dependencies {
-    compile project(':logback-core')
-    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    api project(':logback-core')
+    api "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
 config {

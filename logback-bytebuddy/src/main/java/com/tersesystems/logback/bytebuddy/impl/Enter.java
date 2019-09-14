@@ -12,22 +12,21 @@ package com.tersesystems.logback.bytebuddy.impl;
 
 import com.tersesystems.logback.bytebuddy.MethodInfo;
 import com.tersesystems.logback.bytebuddy.MethodInfoLookup;
-
 import net.logstash.logback.argument.StructuredArgument;
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.tersesystems.logback.bytebuddy.impl.SystemFlow.*;
-import static net.logstash.logback.argument.StructuredArguments.*;
-import static net.logstash.logback.marker.Markers.aggregate;
+import static net.logstash.logback.argument.StructuredArguments.v;
+import static net.logstash.logback.marker.Markers.append;
 
 public class Enter {
+
+    private static final String format = "entering: {}.{}{} with {}";
+    private static final String formatWithSource = "entering: {}.{}{} with {} from source {}:{}";
 
     public static void apply(String origin, Object[] allArguments) {
         Logger logger = getLogger(origin);
@@ -44,8 +43,9 @@ public class Enter {
             StructuredArgument arrayParameters = safeArguments(allArguments);
 
             String name = createName(declaringType, method, signature);
-            Tracer.pushSpan(name);
-            Marker markers = ENTRY_MARKER;
+            pushSpan(name);
+            LogstashMarker nameMarker = append("name", name);
+            Marker markers = baseMarkers().and(nameMarker).and(ENTRY_MARKER);
 
             MethodInfoLookup lookup = MethodInfoLookup.getInstance();
             Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
@@ -53,19 +53,12 @@ public class Enter {
                 MethodInfo mi = methodInfo.get();
                 StructuredArgument aSource = v("source", mi.source);
                 StructuredArgument aLineNumber = v("line", mi.getStartLine());
-                logger.trace(markers, "entering: {}.{}{} with {} from source {}:{}", aClass, aMethod, aSignature, arrayParameters, aSource, aLineNumber);
+
+                logger.trace(markers, formatWithSource, aClass, aMethod, aSignature, arrayParameters, aSource, aLineNumber);
             } else {
-                logger.trace(markers, "entering: {}.{}{} with {}", aClass, aMethod, aSignature, arrayParameters);
+                logger.trace(markers, format, aClass, aMethod, aSignature, arrayParameters);
             }
         }
     }
 
-    private static String createName(String className, String method, String signature) {
-        return className + "." + method + signature;
-    }
-
-    private static StructuredArgument safeArguments(Object[] allArguments) {
-        List<String> safeArgs = Arrays.stream(allArguments).map(Objects::toString).collect(Collectors.toList());
-        return kv("arguments", safeArgs);
-    }
 }

@@ -29,6 +29,7 @@ dependencies {
     compile group: 'com.google.auto.service', name: 'auto-service', version: '1.0-rc6'
     annotationProcessor "com.google.auto.service:auto-service:1.0-rc6"
 
+    testImplementation project(":logback-tracing")
     testImplementation project(":logback-classic")
     testImplementation project(":logback-honeycomb-appender")
     testImplementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"

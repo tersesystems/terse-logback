@@ -15,7 +15,8 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusManager;
 import com.tersesystems.logback.classic.Utils;
-import com.tersesystems.logback.honeycomb.client.SpanInfo;
+import com.tersesystems.logback.tracing.SpanInfo;
+import com.tersesystems.logback.tracing.SpanMarkerFactory;
 import net.logstash.logback.marker.LogstashMarker;
 import org.junit.jupiter.api.Test;
 

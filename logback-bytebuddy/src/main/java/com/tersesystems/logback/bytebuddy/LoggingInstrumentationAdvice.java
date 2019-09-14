@@ -10,7 +10,10 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-import com.tersesystems.logback.bytebuddy.impl.Tracer;
+import com.fasterxml.uuid.UUIDGenerator;
+import com.fasterxml.uuid.impl.RandomBasedGenerator;
+import com.tersesystems.logback.bytebuddy.impl.SystemFlow;
+import com.tersesystems.logback.tracing.Tracer;
 import com.typesafe.config.*;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
@@ -22,6 +25,7 @@ import net.bytebuddy.matcher.StringMatcher;
 import java.io.File;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,7 +74,11 @@ public class LoggingInstrumentationAdvice {
         try {
             Config config = generateConfig(systemClassLoader, debug);
             AdviceConfig adviceConfig = generateAdviceConfig(systemClassLoader, config, debug);
-            Tracer.setServiceName(adviceConfig.getServiceName());
+            if (debug) {
+                System.out.println("Generated Advice Config = " + adviceConfig);
+            }
+
+            SystemFlow.setServiceName(adviceConfig.getServiceName());
 
             AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
                     .builderFromConfigWithRetransformation(adviceConfig);

@@ -17,8 +17,14 @@ dependencies {
     implementation "net.bytebuddy:byte-buddy:$bytebuddyVersion"
     implementation "com.typesafe:config:${configVersion}"
 
-    implementation "org.slf4j:slf4j-api:$slf4jVersion"
-    implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    // We cannot allow dependencies from logback-tracing in here.
+    shadow project(":logback-tracing")
+    shadow "org.slf4j:slf4j-api:$slf4jVersion"
+    shadow "ch.qos.logback:logback-classic:$logbackVersion"
+    shadow "ch.qos.logback:logback-core:$logbackVersion"
+    shadow "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    shadow "com.google.auto.value:auto-value-annotations:1.6.2"
+    shadow group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
 
     // You'll need this, but better to use the version already defined in project
     testImplementation "net.bytebuddy:byte-buddy-agent:$bytebuddyVersion"
