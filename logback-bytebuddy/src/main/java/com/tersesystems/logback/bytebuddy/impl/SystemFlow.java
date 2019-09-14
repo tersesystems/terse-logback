@@ -16,6 +16,7 @@ import com.tersesystems.logback.tracing.SpanMarkerFactory;
 import com.tersesystems.logback.tracing.Tracer;
 import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -79,7 +80,7 @@ public final class SystemFlow {
     }
 
     public static LogstashMarker createMarker(SpanInfo span) {
-       return markerFactory.create(span).and(threadMarkers());
+       return baseMarkers().and(markerFactory.create(span));
     }
 
     public static void pushSpan(String name) {
@@ -107,11 +108,12 @@ public final class SystemFlow {
         return className + "." + method + signature;
     }
 
-    static LogstashMarker threadMarkers() {
-        Thread t = Thread.currentThread();
-        //LogstashMarker threadNameMarker = append("trace.thread_name", t.getName());
-        LogstashMarker threadIdMarker = append("thread_id", t.getId());
-        return threadIdMarker.and(threadIdMarker);
+    static LogstashMarker baseMarkers() {
+        //        Thread t = Thread.currentThread();
+        //        //LogstashMarker threadNameMarker = append("trace.thread_name", t.getName());
+        //        LogstashMarker threadIdMarker = append("thread_id", t.getId());
+        //        return threadIdMarker.and(threadIdMarker);
+        return Markers.empty();
     }
 
 }

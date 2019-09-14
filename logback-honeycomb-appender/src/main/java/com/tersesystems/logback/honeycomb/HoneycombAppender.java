@@ -13,6 +13,7 @@ package com.tersesystems.logback.honeycomb;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
+import ch.qos.logback.core.spi.DeferredProcessingAware;
 import com.tersesystems.logback.classic.StartTime;
 import com.tersesystems.logback.classic.StartTimeMarker;
 import com.tersesystems.logback.honeycomb.client.*;
@@ -37,6 +38,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     private Integer queueSize = 50;
     private BlockingQueue<HoneycombRequest<ILoggingEvent>> eventQueue;
     private boolean batch = true;
+    private boolean includeCallerData = false;
 
     private HoneycombClient honeycombClient;
 
@@ -66,6 +68,21 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     public void setBatch(boolean batch) {
         this.batch = batch;
+    }
+
+    public boolean isIncludeCallerData() {
+        return includeCallerData;
+    }
+
+    public void setIncludeCallerData(boolean includeCallerData) {
+        this.includeCallerData = includeCallerData;
+    }
+
+    protected void prepareForDeferredProcessing(ILoggingEvent event) {
+        event.prepareForDeferredProcessing();
+        if (includeCallerData) {
+            event.getCallerData();
+        }
     }
 
     @Override
@@ -136,6 +153,12 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     @Override
     protected void append(ILoggingEvent eventObject) {
+        try {
+            prepareForDeferredProcessing(eventObject);
+        } catch (RuntimeException e) {
+            addWarn("Unable to prepare event for deferred processing.  Event output might be missing data.", e);
+        }
+
         if (batch) {
             // If queue is full, then drain and post it.
             HoneycombRequest<ILoggingEvent> request = new HoneycombRequest<>(sampleRate,

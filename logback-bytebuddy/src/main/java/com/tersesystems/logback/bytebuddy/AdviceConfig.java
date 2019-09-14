@@ -23,8 +23,10 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 public class AdviceConfig {
 
     private final ClassLoader classLoader;
+
     private final Collection<TraceConfig> traceConfigCollection;
     private final String serviceName;
+
     private TraceConfig traceConfig;
 
     public AdviceConfig(ClassLoader classLoader, String serviceName) {
@@ -117,17 +119,14 @@ public class AdviceConfig {
             return new TraceConfig(classNames, typeMatcher, methodMatcher);
         }
 
-        // Push a class definition into any classloader (useful for on the fly created types)
-        //private static void injectClass(ClassLoader classLoader, String className, byte[] classBytes) throws IOException {
-        //    //byte[] classBytes = ClassFileLocator.ForJarFile.ofClassPath().locate(className).resolve();
-        //    Map<String, byte[]> byteMap = Collections.singletonMap(className, classBytes);
-        //    ClassInjector classInjector = new ClassInjector.UsingReflection(classLoader);
-        //    classInjector.injectRaw(byteMap);
-        //}
-
-        private static TypeDescription createTypeDescription(ClassLoader classLoader, String className) throws Exception {
+        private static TypeDescription createTypeDescription(ClassLoader classLoader,
+                                                             String className) throws Exception {
             return new TypeDescription.ForLoadedType(classLoader.loadClass(className));
         }
     }
 
+    @Override
+    public String toString() {
+        return "AdviceConfig{service-name = " + getServiceName() + ", methods=" + methods() + ", types='" + types() + '\'' + '}';
+    }
 }

@@ -45,7 +45,7 @@ public class Enter {
             String name = createName(declaringType, method, signature);
             pushSpan(name);
             LogstashMarker nameMarker = append("name", name);
-            Marker markers = threadMarkers().and(nameMarker).and(ENTRY_MARKER);
+            Marker markers = baseMarkers().and(nameMarker).and(ENTRY_MARKER);
 
             MethodInfoLookup lookup = MethodInfoLookup.getInstance();
             Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);

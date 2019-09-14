@@ -74,6 +74,10 @@ public class LoggingInstrumentationAdvice {
         try {
             Config config = generateConfig(systemClassLoader, debug);
             AdviceConfig adviceConfig = generateAdviceConfig(systemClassLoader, config, debug);
+            if (debug) {
+                System.out.println("Generated Advice Config = " + adviceConfig);
+            }
+
             SystemFlow.setServiceName(adviceConfig.getServiceName());
 
             AgentBuilder agentBuilder = new LoggingInstrumentationByteBuddyBuilder()
