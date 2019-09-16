@@ -12,8 +12,8 @@ package com.tersesystems.logback.bytebuddy.impl;
 
 import com.tersesystems.logback.bytebuddy.MethodInfo;
 import com.tersesystems.logback.bytebuddy.MethodInfoLookup;
-import com.tersesystems.logback.tracing.SpanInfo;
 import net.logstash.logback.argument.StructuredArgument;
+import net.logstash.logback.marker.LogstashMarker;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
@@ -32,8 +32,6 @@ public class Exit {
     public static void apply(String origin, Object[] allArguments, Throwable thrown, Object returnValue) {
         Logger logger = getLogger(origin);
         if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
-            Optional<SpanInfo> span = popSpan();
-
             String[] args = origin.split("\\|");
             String declaringType = args[0];
             String method = args[1];
@@ -47,8 +45,9 @@ public class Exit {
 
             StructuredArgument safeArguments = safeArguments(allArguments);
 
+            LogstashMarker spanMarker = popSpan().map(SystemFlow::createMarker).orElse(empty());
             if (thrown != null) {
-                Marker markers = span.map(SystemFlow::createMarker).orElse(empty()).and(EXCEPTION_MARKER);
+                Marker markers = spanMarker.and(THROWING_MARKER);
                 // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
                 logger.error(markers, "throwing: {}.{}{} with {}", aClass, aMethod, aSignature, safeArguments, thrown);
             } else {
@@ -57,7 +56,7 @@ public class Exit {
 
                 MethodInfoLookup lookup = MethodInfoLookup.getInstance();
                 Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
-                Marker markers = span.map(SystemFlow::createMarker).orElse(empty()).and(EXIT_MARKER);
+                Marker markers = spanMarker.and(EXIT_MARKER);
                 if (methodInfo.isPresent()) {
                     MethodInfo mi = methodInfo.get();
                     StructuredArgument aSource = v("source", mi.source);

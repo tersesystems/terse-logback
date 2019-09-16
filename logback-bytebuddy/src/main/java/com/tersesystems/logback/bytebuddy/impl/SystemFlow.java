@@ -38,16 +38,19 @@ public final class SystemFlow {
     public static final Marker ENTRY_MARKER = MarkerFactory.getMarker("ENTRY");
     public static final Marker EXIT_MARKER = MarkerFactory.getMarker("EXIT");
     public static final Marker EXCEPTION_MARKER = MarkerFactory.getMarker("EXCEPTION");
+    public static final Marker THROWING_MARKER = MarkerFactory.getMarker("THROWING");
 
     private static final SpanMarkerFactory markerFactory = new SpanMarkerFactory();
 
     static {
         ENTRY_MARKER.add(FLOW_MARKER);
         EXIT_MARKER.add(FLOW_MARKER);
+        THROWING_MARKER.add(EXCEPTION_MARKER);
     }
 
     private static String serviceName;
     private static Supplier<String> idGenerator;
+    private static SafeArguments safeArguments = new SafeArguments();
 
     static {
         // The out of the box UUID.randomUUID() is synchronized, which will block threads and
@@ -79,6 +82,14 @@ public final class SystemFlow {
         SystemFlow.idGenerator = idGenerator;
     }
 
+    public static SafeArguments getSafeArguments() {
+        return safeArguments;
+    }
+
+    public static void setSafeArguments(SafeArguments safeArguments) {
+        SystemFlow.safeArguments = safeArguments;
+    }
+
     public static LogstashMarker createMarker(SpanInfo span) {
        return baseMarkers().and(markerFactory.create(span));
     }
@@ -91,17 +102,15 @@ public final class SystemFlow {
         return Tracer.popSpan();
     }
 
-    // objects in general cannot be passed to StructuredArgument, because there is a contract
-    // that a StructuredArgument is safe for JSON serialization, and we could do nasty
-    // things like call sslContext.getSocketFactory() which can throw an exception.
     static StructuredArgument safeReturnValue(Object returnValue) {
-        String safeReturnValue = Objects.toString(returnValue);
+        String safeReturnValue = safeArguments.apply(returnValue);
         return kv("return_value", safeReturnValue);
     }
 
     static StructuredArgument safeArguments(Object[] allArguments) {
-        List<String> safeArgs = Arrays.stream(allArguments).map(Objects::toString).collect(Collectors.toList());
+        List<String> safeArgs = safeArguments.apply(allArguments);
         return kv("arguments", safeArgs);
+
     }
 
     static String createName(String className, String method, String signature) {
