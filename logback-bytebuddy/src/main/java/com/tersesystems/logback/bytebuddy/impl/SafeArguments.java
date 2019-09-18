@@ -21,19 +21,23 @@ public class SafeArguments {
     }
 
     public String apply(Object returnValue) {
-        if (returnValue instanceof Collection<?>) {
-            return parseCollection((Collection<Object>) returnValue);
-        }
+        try {
+            if (returnValue instanceof Collection<?>) {
+                return parseCollection((Collection<Object>) returnValue);
+            }
 
-        if (returnValue instanceof Object[]) {
-            return parseArray((Object[]) returnValue);
-        }
+            if (returnValue instanceof Object[]) {
+                return parseArray((Object[]) returnValue);
+            }
 
-        if (returnValue instanceof X509Certificate) {
-            return parseCertificate((X509Certificate) returnValue);
-        }
+            if (returnValue instanceof X509Certificate) {
+                return parseCertificate((X509Certificate) returnValue);
+            }
 
-        return Objects.toString(returnValue);
+            return Objects.toString(returnValue);
+        } catch (Exception e) {
+            return "Exception rendering safeArguments: " + e.toString();
+        }
     }
 
     private String parseCertificate(X509Certificate cert) {
