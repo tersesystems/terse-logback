@@ -11,9 +11,11 @@
 plugins {
     // http://andresalmiray.com/an-opinionated-way-to-build-gradle-projects/
     // https://aalmiray.github.io/kordamp-gradle-plugins/#_project_structure
+    // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
     id 'org.kordamp.gradle.project' version '0.26.0'
     id 'org.kordamp.gradle.bintray' version '0.26.0'
     id 'com.gradle.build-scan'      version '2.2.1'
+    id 'nebula.release'             version '11.0.0'
     //id 'org.inferred.processors'    version '2.3.0'
 }
 
@@ -23,8 +25,6 @@ ext.travis = (System.env['TRAVIS'] ?: false) as boolean
 ext.publishing = (System.env['PUBLISH'] ?: false) as boolean
 
 config {
-    release = (rootProject.findProperty('release') ?: false).toBoolean()
-
     info {
         name          = rootProject.name
         vendor        = 'tersesystems'
@@ -67,7 +67,6 @@ config {
         userOrg    = 'tersesystems'
         name       = rootProject.name
     }
-
 }
 
 allprojects {
@@ -84,7 +83,7 @@ allprojects {
 
 subprojects { subproj ->
     apply plugin: 'java'
-
+   
     if (!subproj.name.contains('example')) {
         // Allow signing with the Yubikey using gpg-agent
         if (publishing && ! travis) {

@@ -73,11 +73,11 @@ jar {
     }
 }
 
-tasks.withType(Test).configureEach {
-    doFirst {
-        //jvmArgs "-javaagent:${shadowJar.archivePath}"
-    }
-}
+// tasks.withType(Test).configureEach {
+//     doFirst {
+//         //jvmArgs "-javaagent:${shadowJar.archivePath}"
+//     }
+// }
 
 // I had trouble getting a working example in Gradle using a fresh JVM and an agent, so I cheated.
 // Here's what I did instead:
