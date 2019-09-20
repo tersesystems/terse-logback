@@ -50,15 +50,15 @@ shadowJar {
     }
 }
 
-
+// This clobbers every other project if I enable it.
 // https://github.com/serenity-bdd/serenity-cli/blob/7c7bf7791fe263818585fda16c8dab021ad17b3c/build.gradle
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-        }
-    }
-}
+// publishing {
+//     publications {
+//         shadow(MavenPublication) { publication ->
+//             project.shadow.component(publication)
+//         }
+//     }
+// }
 
 jar {
     archiveClassifier.set 'unbundled'

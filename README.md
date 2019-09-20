@@ -1995,7 +1995,7 @@ Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
 I can never remember how to release projects, so I'm using [Kordamp Gradle Plugins](https://aalmiray.github.io/kordamp-gradle-plugins/) to do most of the work.  I've added some properties to deal with signing artifacts with gpg2 and a Yubikey 4 and staging on Bintray.
 
 ```bash
-./gradlew devSnapshot publishToMavenLocal
+./gradlew devSnapshot publishToMavenLocal -Pbintray.enabled=false --info
 ```
 
 To make sure everything works:
