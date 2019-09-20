@@ -2011,6 +2011,12 @@ HISTCONTROL=ignoreboth ./gradlew clean check release -Pbintray.enabled=true -Pbi
 HISTCONTROL=ignoreboth ./gradlew clean check release -Pbintray.enabled=true --info
 ```
 
+Candidate:
+
+```
+./gradlew release candidate -Pbintray.enabled=true --info
+```
+
 You will need to set up the bintray credentials before you can even compile anything (sorry about that):
 
 In `~/.gradle/gradle.properties`
