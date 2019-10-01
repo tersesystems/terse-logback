@@ -2,10 +2,20 @@ sudo: false
 language: java
 jdk:
 - openjdk8
+
+#don't build tags
+branches:
+  except:
+  - /^v\d/
+
+script:
+ - ./gradlew build -s && ./gradlew ciPerformRelease
+
 before_cache:
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -rf ~/.gradle/caches/5.6.1/
 - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+
 cache:
   directories:
   - "$HOME/.gradle/caches/"
