@@ -20,10 +20,10 @@ allprojects {
             key = System.getenv("BINTRAY_API_KEY")
 
             pkg {
-                repo = 'terse-logback'
+                repo = 'maven'
                 user = 'tersesystems'
                 userOrg = 'tersesystems'
-                name = 'maven'
+                name = 'terse-logback'
                 licenses = ['CC0']
                 labels = ['logback', 'slf4j' ]
             }
