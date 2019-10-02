@@ -16,20 +16,16 @@ shipkit {
 
 allprojects {
     plugins.withId("org.shipkit.bintray") {
-
-        //Bintray configuration is handled by JFrog Bintray Gradle Plugin
-        //For reference see the official documentation: https://github.com/bintray/gradle-bintray-plugin
         bintray {
             key = System.getenv("BINTRAY_API_KEY")
 
             pkg {
-                //TODO configure Bintray settings per your project (https://github.com/bintray/gradle-bintray-plugin)
-                repo = 'bootstrap'
-                user = 'shipkit-bootstrap-bot'
-                userOrg = 'shipkit-bootstrap'
+                repo = 'terse-logback'
+                user = 'tersesystems'
+                userOrg = 'tersesystems'
                 name = 'maven'
-                licenses = ['MIT']
-                labels = ['continuous delivery', 'release automation', 'shipkit']
+                licenses = ['CC0']
+                labels = ['logback', 'slf4j', ]
             }
         }
     }
