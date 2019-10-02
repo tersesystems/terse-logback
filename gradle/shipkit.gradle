@@ -25,7 +25,7 @@ allprojects {
                 userOrg = 'tersesystems'
                 name = 'maven'
                 licenses = ['CC0']
-                labels = ['logback', 'slf4j', ]
+                labels = ['logback', 'slf4j' ]
             }
         }
     }
