@@ -1,16 +1,6 @@
-//This default Shipkit configuration file was created automatically and is intended to be checked-in.
-//Default configuration is sufficient for local testing and trying out Shipkit.
-//To leverage Shipkit fully, please fix the TODO items, refer to our Getting Started Guide for help:
-//
-//     https://github.com/mockito/shipkit/blob/master/docs/getting-started.md
-//
 shipkit {
     gitHub.repository = "tersesystems/terse-logback"
-
     gitHub.readOnlyAuthToken = "f602321e7bdca17438b3ea4b8473c7b1662e7d2b"
-
-    //TODO generate GitHub write token, and ensure your Travis CI has this env variable exported
-    //More: https://github.com/mockito/shipkit/blob/master/docs/getting-started.md#write-token
     gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
 }
 

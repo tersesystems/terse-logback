@@ -9,7 +9,8 @@ branches:
   - /^v\d/
 
 script:
- - ./gradlew build -s && ./gradlew ciPerformRelease
+ - ./gradlew build -s
+ #- ./gradlew build -s && ./gradlew ciPerformRelease
 
 before_cache:
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
