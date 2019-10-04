@@ -32,7 +32,8 @@ dependencies {
 }
 
 shadowJar {
-    classifier null
+
+    archiveName = "$baseName-$version.$extension"
 
     // Shade typesafe config and bytebuddy itself since this is used in bootstrap classloader
     // and so would be visible to everything downstream
@@ -50,6 +51,10 @@ shadowJar {
     }
 }
 
+artifacts {
+    archives shadowJar
+}
+
 // This clobbers every other project if I enable it.
 // https://github.com/serenity-bdd/serenity-cli/blob/7c7bf7791fe263818585fda16c8dab021ad17b3c/build.gradle
 // publishing {
@@ -60,18 +65,17 @@ shadowJar {
 //     }
 // }
 
-jar {
-    archiveClassifier.set 'unbundled'
-
-    manifest {
-        attributes(
-            "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
-            "Premain-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
-            "Can-Redefine-Classes": true,
-            "Can-Retransform-Classes": true
-        )
-    }
-}
+// jar {
+//     archiveClassifier.set 'unbundled'
+//     manifest {
+//         attributes(
+//             "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
+//             "Premain-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
+//             "Can-Redefine-Classes": true,
+//             "Can-Retransform-Classes": true
+//         )
+//     }
+// }
 
 // tasks.withType(Test).configureEach {
 //     doFirst {
