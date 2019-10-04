@@ -32,7 +32,6 @@ dependencies {
 }
 
 shadowJar {
-
     archiveName = "$baseName-$version.$extension"
 
     // Shade typesafe config and bytebuddy itself since this is used in bootstrap classloader
