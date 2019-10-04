@@ -1,0 +1,22 @@
+shipkit {
+    gitHub.repository = "tersesystems/terse-logback"
+    gitHub.readOnlyAuthToken = "f602321e7bdca17438b3ea4b8473c7b1662e7d2b"
+    gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
+}
+
+allprojects {
+    plugins.withId("org.shipkit.bintray") {
+        bintray {
+            key = System.getenv("BINTRAY_API_KEY")
+
+            pkg {
+                repo = 'maven'
+                user = 'tersesystems'
+                userOrg = 'tersesystems'
+                name = 'terse-logback'
+                licenses = ['CC0']
+                labels = ['logback', 'slf4j' ]
+            }
+        }
+    }
+}

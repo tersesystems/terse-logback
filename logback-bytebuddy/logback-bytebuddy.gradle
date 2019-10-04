@@ -32,7 +32,7 @@ dependencies {
 }
 
 shadowJar {
-    classifier null
+    archiveName = "$baseName-$version.$extension"
 
     // Shade typesafe config and bytebuddy itself since this is used in bootstrap classloader
     // and so would be visible to everything downstream
@@ -50,48 +50,6 @@ shadowJar {
     }
 }
 
-// This clobbers every other project if I enable it.
-// https://github.com/serenity-bdd/serenity-cli/blob/7c7bf7791fe263818585fda16c8dab021ad17b3c/build.gradle
-// publishing {
-//     publications {
-//         shadow(MavenPublication) { publication ->
-//             project.shadow.component(publication)
-//         }
-//     }
-// }
-
-jar {
-    archiveClassifier.set 'unbundled'
-
-    manifest {
-        attributes(
-            "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
-            "Premain-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent",
-            "Can-Redefine-Classes": true,
-            "Can-Retransform-Classes": true
-        )
-    }
+artifacts {
+    archives shadowJar
 }
-
-// tasks.withType(Test).configureEach {
-//     doFirst {
-//         //jvmArgs "-javaagent:${shadowJar.archivePath}"
-//     }
-// }
-
-// I had trouble getting a working example in Gradle using a fresh JVM and an agent, so I cheated.
-// Here's what I did instead:
-//
-// gradle distZip
-// cd logback-bytebuddy/build/distributions
-// unzip logback-bytebuddy-0.0.0.zip
-// cd logback-bytebuddy-0.0.0
-// bin/logback-bytebuddy
-//application {
-//    mainClassName = 'com.tersesystems.logback.bytebuddy.PreloadedInstrumentationExample'
-//    applicationDefaultJvmArgs = [
-//            "-Dconfig.file=$buildDir/../src/test/resources/application.conf",
-//            "-Dlogback.configurationFile=$buildDir/../src/test/resources/logback-test.xml",
-//            '-javaagent:lib/logback-bytebuddy-0.0.0.jar',
-//    ]
-//}

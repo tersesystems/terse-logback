@@ -15,7 +15,7 @@ plugins {
     id 'org.kordamp.gradle.project' version '0.26.0'
     id 'org.kordamp.gradle.bintray' version '0.26.0'
     id 'com.gradle.build-scan'      version '2.2.1'
-    id 'nebula.release'             version '11.0.0'
+    id "org.shipkit.java"           version "2.2.5"
     //id 'org.inferred.processors'    version '2.3.0'
 }
 
