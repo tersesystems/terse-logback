@@ -21,8 +21,6 @@ plugins {
 
 if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
 if (!project.hasProperty('bintrayApiKey'))   ext.bintrayApiKey = ''
-ext.travis = (System.env['TRAVIS'] ?: false) as boolean
-ext.publishing = (System.env['PUBLISH'] ?: false) as boolean
 
 config {
     info {
@@ -55,18 +53,6 @@ config {
             }
         }
     }
-
-    bintray {
-        enabled = false
-        publications = ['shadow']
-        credentials {
-            // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
-            username = project.bintrayUsername
-            password = project.bintrayApiKey
-        }
-        userOrg    = 'tersesystems'
-        name       = rootProject.name
-    }
 }
 
 allprojects {
@@ -84,20 +70,6 @@ allprojects {
 subprojects { subproj ->
     apply plugin: 'java'
    
-    if (!subproj.name.contains('example')) {
-        // Allow signing with the Yubikey using gpg-agent
-        if (publishing && ! travis) {
-            config {
-                bintray { enabled = true }
-            }
-
-            signing {
-                useGpgCmd()
-                sign configurations.archives
-            }
-        }
-    }
-
     dependencies {
         testCompile 'org.assertj:assertj-core:3.8.0'
         testCompile "junit:junit:$junitVersion"
