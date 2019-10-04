@@ -9,11 +9,7 @@
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
 plugins {
-    // http://andresalmiray.com/an-opinionated-way-to-build-gradle-projects/
-    // https://aalmiray.github.io/kordamp-gradle-plugins/#_project_structure
-    // http://andresalmiray.com/gaining-insight-into-a-gradle-build/
     id 'org.kordamp.gradle.project' version '0.26.0'
-    id 'org.kordamp.gradle.bintray' version '0.26.0'
     id 'com.gradle.build-scan'      version '2.2.1'
     id "org.shipkit.java"           version "2.2.5"
     //id 'org.inferred.processors'    version '2.3.0'
