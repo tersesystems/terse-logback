@@ -15,9 +15,6 @@ plugins {
     //id 'org.inferred.processors'    version '2.3.0'
 }
 
-if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
-if (!project.hasProperty('bintrayApiKey'))   ext.bintrayApiKey = ''
-
 config {
     info {
         name          = rootProject.name
@@ -52,8 +49,6 @@ config {
 }
 
 allprojects {
-    apply plugin: 'idea'
-
     repositories {
         jcenter()
     }
@@ -65,7 +60,7 @@ allprojects {
 
 subprojects { subproj ->
     apply plugin: 'java'
-   
+
     dependencies {
         testCompile 'org.assertj:assertj-core:3.8.0'
         testCompile "junit:junit:$junitVersion"
