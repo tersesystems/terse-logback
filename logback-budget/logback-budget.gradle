@@ -14,13 +14,3 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 }
-
-config {
-    javadoc {
-        options.charSet = 'UTF-8'
-        options.encoding = 'UTF-8'
-        options.docEncoding = 'UTF-8'
-        options.use = true
-        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
-    }
-}

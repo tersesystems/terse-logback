@@ -9,44 +9,61 @@
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
 plugins {
-    id 'org.kordamp.gradle.project' version '0.26.0'
+   
     id 'com.gradle.build-scan'      version '2.2.1'
     id "org.shipkit.java"           version "2.2.5"
+    
     //id 'org.inferred.processors'    version '2.3.0'
 }
 
-config {
-    info {
-        name          = rootProject.name
-        vendor        = 'tersesystems'
-        description   = 'Terse Logback'
-        inceptionYear = '2018'
-        tags          = ['logging', 'logback']
+// config {
+//     info {
+//         name          = rootProject.name
+//         vendor        = 'tersesystems'
+//         description   = 'Terse Logback'
+//         inceptionYear = '2018'
+//         tags          = ['logging', 'logback']
 
-        links {
-            website      = "https://github.com/tersesystem/${rootProject.name}"
-            issueTracker = "https://github.com/tersesystem/${rootProject.name}/issues"
-            scm          = "https://github.com/tersesystem/${rootProject.name}.git"
-        }
+//         links {
+//             website      = "https://github.com/tersesystem/${rootProject.name}"
+//             issueTracker = "https://github.com/tersesystem/${rootProject.name}/issues"
+//             scm          = "https://github.com/tersesystem/${rootProject.name}.git"
+//         }
 
-        people {
-            person {
-                id    = 'wsargent'
-                name  = 'Will Sargent'
-                roles = ['developer']
-            }
-        }
-    }
+//         people {
+//             person {
+//                 id    = 'wsargent'
+//                 name  = 'Will Sargent'
+//                 roles = ['developer']
+//             }
+//         }
+//     }
 
-    licensing {
-        enabled
-        licenses {
-            license {
-                id = 'CC0-1.0'
-            }
-        }
-    }
-}
+//     licensing {
+//         enabled
+//         licenses {
+//             license {
+//                 id = 'CC0-1.0'
+//             }
+//         }
+//     }
+
+//     bintray {
+//         enabled=true
+//         credentials {
+//             username = "tersesystems"
+//             password = System.getenv("BINTRAY_API_KEY")
+//         }
+        
+//         repo = 'maven'
+//         userOrg = 'tersesystems'
+//         name = 'terse-logback'    
+//     }
+
+//     publishing {
+//         enabled=true
+//     }
+// }
 
 allprojects {
     repositories {
