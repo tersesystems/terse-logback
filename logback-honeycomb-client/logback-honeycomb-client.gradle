@@ -8,13 +8,3 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-
-config {
-    javadoc {
-        options.charSet = 'UTF-8'
-        options.encoding = 'UTF-8'
-        options.docEncoding = 'UTF-8'
-        options.use = true
-        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
-    }
-}

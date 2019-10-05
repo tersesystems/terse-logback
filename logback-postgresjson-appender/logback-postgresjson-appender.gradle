@@ -20,13 +20,3 @@ dependencies {
     // technically any JSON string is valid input, so we only require logstash-logback-encoder for testing
     testImplementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
 }
-
-config {
-    javadoc {
-        options.charSet = 'UTF-8'
-        options.encoding = 'UTF-8'
-        options.docEncoding = 'UTF-8'
-        options.use = true
-        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
-    }
-}

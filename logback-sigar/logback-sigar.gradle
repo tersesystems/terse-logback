@@ -22,13 +22,3 @@ dependencies {
     // sigar-loader handles all the JVM stuff.
     compile group: 'io.kamon', name: 'sigar-loader', version: '1.6.6'
 }
-
-config {
-    javadoc {
-        options.charSet = 'UTF-8'
-        options.encoding = 'UTF-8'
-        options.docEncoding = 'UTF-8'
-        options.use = true
-        options.links = [jvmToJavadoc(targetCompatibility)] + javadocFromDependencies(configurations.compile)
-    }
-}
