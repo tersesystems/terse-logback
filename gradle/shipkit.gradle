@@ -11,7 +11,7 @@ allprojects {
 
             pkg {
                 repo = 'maven'
-                user = 'tersesystems'
+                user = 'wsargent'
                 userOrg = 'tersesystems'
                 name = 'terse-logback'
                 licenses = ['CC0']
