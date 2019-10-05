@@ -14,5 +14,5 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface ExceptionMapping extends Function<Throwable, List<ExceptionProperty>> {
-    String getName();
+  String getName();
 }

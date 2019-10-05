@@ -16,5 +16,13 @@ import ch.qos.logback.core.spi.FilterReply;
 import org.slf4j.Marker;
 
 public interface ContextAwareTurboFilterDecider<C> {
-    FilterReply decide(ContextAwareTurboMarker<C> marker, C context, Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t);
+  FilterReply decide(
+      ContextAwareTurboMarker<C> marker,
+      C context,
+      Marker rootMarker,
+      Logger logger,
+      Level level,
+      String format,
+      Object[] params,
+      Throwable t);
 }

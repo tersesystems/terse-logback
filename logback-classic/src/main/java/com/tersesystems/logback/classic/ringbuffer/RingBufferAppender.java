@@ -13,5 +13,5 @@ package com.tersesystems.logback.classic.ringbuffer;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 
-public interface RingBufferAppender<E extends ILoggingEvent, EncodingT> extends Appender<E>,  Iterable<EncodingT>, HasRingBuffer<EncodingT> {
-}
+public interface RingBufferAppender<E extends ILoggingEvent, EncodingT>
+    extends Appender<E>, Iterable<EncodingT>, HasRingBuffer<EncodingT> {}

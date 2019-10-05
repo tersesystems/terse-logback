@@ -12,15 +12,14 @@ package com.tersesystems.logback.classic.ringbuffer;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
-/**
- * A cyclic buffer appender that adds the event itself to the ring buffer.
- */
-public class IdentityRingBufferAppender extends AbstractRingBufferAppender<ILoggingEvent, ILoggingEvent> {
-    @Override
-    protected void append(ILoggingEvent eventObject) {
-        if (!isStarted()) {
-            return;
-        }
-        getRingBuffer().add(eventObject);
+/** A cyclic buffer appender that adds the event itself to the ring buffer. */
+public class IdentityRingBufferAppender
+    extends AbstractRingBufferAppender<ILoggingEvent, ILoggingEvent> {
+  @Override
+  protected void append(ILoggingEvent eventObject) {
+    if (!isStarted()) {
+      return;
     }
+    getRingBuffer().add(eventObject);
+  }
 }

@@ -12,21 +12,20 @@ package com.tersesystems.logback.classic.sift;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.tersesystems.logback.classic.TerseBasicMarker;
-
 import java.util.function.Function;
 
 public class DiscriminatingMarker extends TerseBasicMarker implements DiscriminatingValue {
 
-    private static final String TS_DISCRIMINATING_MARKER = "TS_DESCRIMINATING_MARKER";
-    private final Function<ILoggingEvent, String> discriminatingFunction;
+  private static final String TS_DISCRIMINATING_MARKER = "TS_DESCRIMINATING_MARKER";
+  private final Function<ILoggingEvent, String> discriminatingFunction;
 
-    public DiscriminatingMarker(Function<ILoggingEvent, String> discriminatingFunction) {
-        super(TS_DISCRIMINATING_MARKER);
-        this.discriminatingFunction = discriminatingFunction;
-    }
+  public DiscriminatingMarker(Function<ILoggingEvent, String> discriminatingFunction) {
+    super(TS_DISCRIMINATING_MARKER);
+    this.discriminatingFunction = discriminatingFunction;
+  }
 
-    @Override
-    public String getDiscriminatingValue(ILoggingEvent loggingEvent) {
-        return discriminatingFunction.apply(loggingEvent);
-    }
+  @Override
+  public String getDiscriminatingValue(ILoggingEvent loggingEvent) {
+    return discriminatingFunction.apply(loggingEvent);
+  }
 }

@@ -10,19 +10,17 @@
  */
 package com.tersesystems.logback.bytebuddy;
 
-/**
- * This class does no logging.
- */
+/** This class does no logging. */
 public class ClassCalledByAgent {
-    public void printStatement() {
-        System.out.println("I am a simple println method with no logging");
-    }
+  public void printStatement() {
+    System.out.println("I am a simple println method with no logging");
+  }
 
-    public void printArgument(String arg) {
-        System.out.println("I am a simple println, printing " + arg);
-    }
+  public void printArgument(String arg) {
+    System.out.println("I am a simple println, printing " + arg);
+  }
 
-    public void throwException(String arg) {
-        throw new RuntimeException("I'm a squirrel!");
-    }
+  public void throwException(String arg) {
+    throw new RuntimeException("I'm a squirrel!");
+  }
 }

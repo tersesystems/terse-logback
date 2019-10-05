@@ -10,6 +10,8 @@
  */
 package com.tersesystems.logback.turbomarker;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -17,47 +19,47 @@ import ch.qos.logback.core.read.ListAppender;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class UserMarkerTest {
 
-    @Test
-    public void testMatchingUserMarker() throws JoranException {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+  @Test
+  public void testMatchingUserMarker() throws JoranException {
+    LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+    ch.qos.logback.classic.Logger logger =
+        loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
-        String userId = "28";
-        ApplicationContext applicationContext = new ApplicationContext(userId);
-        UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
-        userMarkerFactory.addUserId(userId); // say we want logging events created for this user id
+    String userId = "28";
+    ApplicationContext applicationContext = new ApplicationContext(userId);
+    UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
+    userMarkerFactory.addUserId(userId); // say we want logging events created for this user id
 
-        UserMarker userMarker = userMarkerFactory.create(applicationContext);
+    UserMarker userMarker = userMarkerFactory.create(applicationContext);
 
-        logger.info(userMarker, "Hello world, I am info");
-        logger.debug(userMarker, "Hello world, I am debug");
+    logger.info(userMarker, "Hello world, I am info");
+    logger.debug(userMarker, "Hello world, I am debug");
 
-        ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
-        assertThat(appender.list.size()).isEqualTo(2);
+    ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
+    assertThat(appender.list.size()).isEqualTo(2);
 
-        appender.list.clear();
-    }
+    appender.list.clear();
+  }
 
-    @Test
-    public void testNonMatchingUserMarker() throws JoranException {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        ch.qos.logback.classic.Logger logger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+  @Test
+  public void testNonMatchingUserMarker() throws JoranException {
+    LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+    ch.qos.logback.classic.Logger logger =
+        loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
-        String userId = "28";
-        ApplicationContext applicationContext = new ApplicationContext(userId);
-        UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
-        UserMarker userMatchMarker = userMarkerFactory.create(applicationContext);
+    String userId = "28";
+    ApplicationContext applicationContext = new ApplicationContext(userId);
+    UserMarkerFactory userMarkerFactory = new UserMarkerFactory();
+    UserMarker userMatchMarker = userMarkerFactory.create(applicationContext);
 
-        logger.info(userMatchMarker, "Hello world, I am info");
-        logger.debug(userMatchMarker, "Hello world, I am debug");
+    logger.info(userMatchMarker, "Hello world, I am info");
+    logger.debug(userMatchMarker, "Hello world, I am debug");
 
-        ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
-        assertThat(appender.list.size()).isEqualTo(0);
+    ListAppender<ILoggingEvent> appender = (ListAppender<ILoggingEvent>) logger.getAppender("LIST");
+    assertThat(appender.list.size()).isEqualTo(0);
 
-        appender.list.clear();
-    }
+    appender.list.clear();
+  }
 }

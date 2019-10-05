@@ -11,5 +11,5 @@
 package com.tersesystems.logback.uniqueid;
 
 interface IdGenerator {
-    String generateId();
+  String generateId();
 }

@@ -11,22 +11,22 @@
 package com.tersesystems.logback.classic.sift;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-
 import java.util.function.Function;
 
 public class DiscriminatingMarkerFactory {
 
-    private final Function<ILoggingEvent, String> discriminatingFunction;
+  private final Function<ILoggingEvent, String> discriminatingFunction;
 
-    public DiscriminatingMarkerFactory(Function<ILoggingEvent, String> discriminatingFunction) {
-        this.discriminatingFunction = discriminatingFunction;
-    }
+  public DiscriminatingMarkerFactory(Function<ILoggingEvent, String> discriminatingFunction) {
+    this.discriminatingFunction = discriminatingFunction;
+  }
 
-    public static DiscriminatingMarkerFactory create(Function<ILoggingEvent, String> discriminatingFunction) {
-        return new DiscriminatingMarkerFactory(discriminatingFunction);
-    }
+  public static DiscriminatingMarkerFactory create(
+      Function<ILoggingEvent, String> discriminatingFunction) {
+    return new DiscriminatingMarkerFactory(discriminatingFunction);
+  }
 
-    public DiscriminatingMarker createMarker() {
-        return new DiscriminatingMarker(discriminatingFunction);
-    }
+  public DiscriminatingMarker createMarker() {
+    return new DiscriminatingMarker(discriminatingFunction);
+  }
 }

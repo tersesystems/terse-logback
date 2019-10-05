@@ -13,5 +13,5 @@ package com.tersesystems.logback.classic.sift;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
 public interface DiscriminatingValue {
-    String getDiscriminatingValue(ILoggingEvent loggingEvent);
+  String getDiscriminatingValue(ILoggingEvent loggingEvent);
 }

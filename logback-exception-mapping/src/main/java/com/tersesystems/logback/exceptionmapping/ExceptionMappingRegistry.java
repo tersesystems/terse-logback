@@ -15,34 +15,34 @@ import java.util.function.Function;
 
 public interface ExceptionMappingRegistry {
 
-    void register(Map<String, List<String>> mappers);
+  void register(Map<String, List<String>> mappers);
 
-    void register(ClassLoader classLoader, Map<String, List<String>> mappers);
+  void register(ClassLoader classLoader, Map<String, List<String>> mappers);
 
-    void register(String className, String... methodNames);
+  void register(String className, String... methodNames);
 
-    void register(ClassLoader classLoader, String className, String... methodNames);
+  void register(ClassLoader classLoader, String className, String... methodNames);
 
-    <E extends Throwable> void register(Class<E> exceptionClass, String... propertyNames);
+  <E extends Throwable> void register(Class<E> exceptionClass, String... propertyNames);
 
-    <E extends Throwable> void register(Class<E> exceptionClass, Function<E, List<ExceptionProperty>> f);
+  <E extends Throwable> void register(
+      Class<E> exceptionClass, Function<E, List<ExceptionProperty>> f);
 
-    void register(String className, Function<Throwable, List<ExceptionProperty>> f);
+  void register(String className, Function<Throwable, List<ExceptionProperty>> f);
 
-    void register(ExceptionMapping mapper);
+  void register(ExceptionMapping mapper);
 
-    List<ExceptionProperty> apply(Throwable e);
+  List<ExceptionProperty> apply(Throwable e);
 
-    Iterator<ExceptionMapping> iterator();
+  Iterator<ExceptionMapping> iterator();
 
-    ExceptionMapping get(String name);
+  ExceptionMapping get(String name);
 
-    boolean contains(ExceptionMapping exceptionMapping);
+  boolean contains(ExceptionMapping exceptionMapping);
 
-    boolean contains(String name);
+  boolean contains(String name);
 
-    boolean remove(ExceptionMapping exceptionMapping);
+  boolean remove(ExceptionMapping exceptionMapping);
 
-    boolean remove(String name);
-
+  boolean remove(String name);
 }

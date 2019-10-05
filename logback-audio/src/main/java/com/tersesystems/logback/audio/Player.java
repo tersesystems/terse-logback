@@ -11,5 +11,5 @@
 package com.tersesystems.logback.audio;
 
 public interface Player {
-    void play();
+  void play();
 }

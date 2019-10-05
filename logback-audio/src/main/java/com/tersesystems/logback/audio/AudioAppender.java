@@ -15,29 +15,29 @@ import ch.qos.logback.core.AppenderBase;
 
 public class AudioAppender extends AppenderBase<ILoggingEvent> implements PlayerAttachable {
 
-    private Player player;
+  private Player player;
 
-    @Override
-    protected void append(ILoggingEvent eventObject) {
-        player.play();
-    }
+  @Override
+  protected void append(ILoggingEvent eventObject) {
+    player.play();
+  }
 
-    @Override
-    public void addPlayer(Player player) {
-        this.player = player;
-    }
+  @Override
+  public void addPlayer(Player player) {
+    this.player = player;
+  }
 
-    @Override
-    public void clearAllPlayers() {
-        this.player = null;
-    }
+  @Override
+  public void clearAllPlayers() {
+    this.player = null;
+  }
 
-    @Override
-    public void start() {
-        if (player == null) {
-            addError("No player found!");
-        } else {
-            super.start();
-        }
+  @Override
+  public void start() {
+    if (player == null) {
+      addError("No player found!");
+    } else {
+      super.start();
     }
+  }
 }

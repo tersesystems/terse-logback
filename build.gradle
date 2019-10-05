@@ -8,10 +8,22 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.24.3"
+    }
+}
+
 plugins {
     id 'com.gradle.build-scan'         version '2.2.1'
     id "org.shipkit.java"              version "2.2.5"
     id "com.github.hierynomus.license" version "0.15.0"
+
     //id 'org.inferred.processors'    version '2.3.0'
 }
 
@@ -24,6 +36,17 @@ allprojects {
 
 subprojects { subproj ->
     apply plugin: 'java'
+    apply plugin: "com.diffplug.gradle.spotless"
+
+    spotless {
+        java {
+            googleJavaFormat()
+        }
+
+        freshmark {
+            target 'README.md'
+        }
+    }
 
     dependencies {
         testImplementation 'org.apiguardian:apiguardian-api:1.1.0'

@@ -10,18 +10,18 @@
  */
 package com.tersesystems.logback.tracing;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * autovalue wants a Nullable but doesn't tell us from where.
  *
- * anything will work, so defining one here.
+ * <p>anything will work, so defining one here.
  *
- * https://github.com/google/auto/issues/283#issuecomment-337281043
+ * <p>https://github.com/google/auto/issues/283#issuecomment-337281043
  */
 @Target(TYPE_USE)
 @Retention(SOURCE)

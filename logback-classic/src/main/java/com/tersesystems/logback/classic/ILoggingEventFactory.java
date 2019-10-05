@@ -10,11 +10,11 @@
  */
 package com.tersesystems.logback.classic;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.slf4j.Marker;
 
 public interface ILoggingEventFactory<E extends ILoggingEvent> {
-    E create(Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t);
+  E create(Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t);
 }

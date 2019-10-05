@@ -16,28 +16,32 @@ import com.tersesystems.logback.sigar.functions.SigarMemoryFunction;
 import org.hyperic.sigar.Mem;
 
 public class MemoryPercentageConverter extends ClassicConverter implements SigarContextAware {
-    @Override
-    public String convert(ILoggingEvent event) {
-        SigarMemoryFunction fn = new SigarMemoryFunction();
-        return getSigar().map(fn).map(this::format).orElseGet(() -> {
-            addError("Sigar is not registered!");
-            return "";
-        });
-    }
+  @Override
+  public String convert(ILoggingEvent event) {
+    SigarMemoryFunction fn = new SigarMemoryFunction();
+    return getSigar()
+        .map(fn)
+        .map(this::format)
+        .orElseGet(
+            () -> {
+              addError("Sigar is not registered!");
+              return "";
+            });
+  }
 
-    private String format(Mem mem) {
-        return used(mem) + " " + usedPercent(mem) + " " + total(mem);
-    }
+  private String format(Mem mem) {
+    return used(mem) + " " + usedPercent(mem) + " " + total(mem);
+  }
 
-    private String used(Mem mem) {
-        return "used=" + mem.getUsed();
-    }
+  private String used(Mem mem) {
+    return "used=" + mem.getUsed();
+  }
 
-    private String usedPercent(Mem mem) {
-        return "used%=" + mem.getUsedPercent();
-    }
+  private String usedPercent(Mem mem) {
+    return "used%=" + mem.getUsedPercent();
+  }
 
-    private String total(Mem mem) {
-        return "total=" + mem.getTotal();
-    }
+  private String total(Mem mem) {
+    return "total=" + mem.getTotal();
+  }
 }

@@ -15,56 +15,51 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
+import java.util.Map;
 import org.xml.sax.Attributes;
 
-import java.util.Map;
-
-/**
- * Sets the logger levels using a map with the levels key.
- */
+/** Sets the logger levels using a map with the levels key. */
 public class SetLoggerLevelsAction extends Action {
 
-    public static final String LEVELS_KEY = "levels";
-    public String levelsKey = LEVELS_KEY;
+  public static final String LEVELS_KEY = "levels";
+  public String levelsKey = LEVELS_KEY;
 
-    public String getLevelsKey() {
-        return levelsKey;
+  public String getLevelsKey() {
+    return levelsKey;
+  }
+
+  public void setLevelsKey(String levelsKey) {
+    this.levelsKey = levelsKey;
+  }
+
+  @Override
+  public void begin(InterpretationContext ic, String name, Attributes attributes)
+      throws ActionException {
+    doConfigure(ic);
+  }
+
+  @Override
+  public void end(InterpretationContext ic, String name) throws ActionException {}
+
+  @SuppressWarnings("unchecked")
+  protected void doConfigure(InterpretationContext ic) {
+    LoggerContext ctx = (LoggerContext) ic.getContext();
+    Map<String, String> levelsMap = (Map<String, String>) ctx.getObject(levelsKey);
+    if (levelsMap == null) {
+      addWarn("No levels found in context, cannot set levels.");
+      return;
     }
 
-    public void setLevelsKey(String levelsKey) {
-        this.levelsKey = levelsKey;
+    for (Map.Entry<String, String> entry : levelsMap.entrySet()) {
+      String name = entry.getKey();
+      try {
+        Logger logger = ctx.getLogger(name);
+        String level = entry.getValue();
+        new ChangeLogLevel().changeLogLevel(logger, level);
+        addInfo("Setting level of " + name + " logger to " + level);
+      } catch (Exception e) {
+        addError("Unexpected exception resolving " + name, e);
+      }
     }
-
-    @Override
-    public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
-        doConfigure(ic);
-    }
-
-    @Override
-    public void end(InterpretationContext ic, String name) throws ActionException {
-
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void doConfigure(InterpretationContext ic) {
-        LoggerContext ctx = (LoggerContext) ic.getContext();
-        Map<String, String> levelsMap = (Map<String, String>) ctx.getObject(levelsKey);
-        if (levelsMap == null) {
-            addWarn("No levels found in context, cannot set levels.");
-            return;
-        }
-
-        for (Map.Entry<String, String> entry : levelsMap.entrySet()) {
-            String name = entry.getKey();
-            try {
-                Logger logger = ctx.getLogger(name);
-                String level = entry.getValue();
-                new ChangeLogLevel().changeLogLevel(logger, level);
-                addInfo("Setting level of " + name + " logger to " + level);
-            } catch (Exception e) {
-                addError("Unexpected exception resolving " + name, e);
-            }
-        }
-
-    }
+  }
 }

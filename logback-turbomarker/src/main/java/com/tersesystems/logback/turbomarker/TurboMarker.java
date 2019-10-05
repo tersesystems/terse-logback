@@ -13,10 +13,11 @@ package com.tersesystems.logback.turbomarker;
 import com.tersesystems.logback.classic.TerseBasicMarker;
 
 /**
- * This class is a marker that can test to see whether an event should be allowed through a turbo filter.
+ * This class is a marker that can test to see whether an event should be allowed through a turbo
+ * filter.
  */
 public abstract class TurboMarker extends TerseBasicMarker implements TurboFilterDecider {
-    public TurboMarker(String name) {
-        super(name);
-    }
+  public TurboMarker(String name) {
+    super(name);
+  }
 }

@@ -11,38 +11,37 @@
 package com.tersesystems.logback.audio;
 
 import com.tersesystems.logback.classic.TerseBasicMarker;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 
 public class AudioMarker extends TerseBasicMarker implements Player {
 
-    private static final String MARKER_NAME = "TS_AUDIO_MARKER";
+  private static final String MARKER_NAME = "TS_AUDIO_MARKER";
 
-    private final Player player;
+  private final Player player;
 
-    public AudioMarker(URL url) {
-        super(MARKER_NAME);
-        player = SimplePlayer.fromURL(url);
-    }
+  public AudioMarker(URL url) {
+    super(MARKER_NAME);
+    player = SimplePlayer.fromURL(url);
+  }
 
-    public AudioMarker(Path path) {
-        super(MARKER_NAME);
-        player = SimplePlayer.fromPath(path);
-    }
+  public AudioMarker(Path path) {
+    super(MARKER_NAME);
+    player = SimplePlayer.fromPath(path);
+  }
 
-    public AudioMarker(InputStream inputStream) {
-        super(MARKER_NAME);
-        player = SimplePlayer.fromInputStream(inputStream);
-    }
+  public AudioMarker(InputStream inputStream) {
+    super(MARKER_NAME);
+    player = SimplePlayer.fromInputStream(inputStream);
+  }
 
-    public AudioMarker(Player player) {
-        super(MARKER_NAME);
-        this.player = player;
-    }
+  public AudioMarker(Player player) {
+    super(MARKER_NAME);
+    this.player = player;
+  }
 
-    public void play() {
-        player.play();
-    }
+  public void play() {
+    player.play();
+  }
 }

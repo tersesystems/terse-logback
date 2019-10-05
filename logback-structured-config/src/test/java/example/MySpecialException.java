@@ -14,19 +14,19 @@ import java.time.Instant;
 
 public class MySpecialException extends Exception {
 
-    private final Instant timestamp;
+  private final Instant timestamp;
 
-    public MySpecialException(String message, Instant timestamp) {
-        super(message);
-        this.timestamp = timestamp;
-    }
+  public MySpecialException(String message, Instant timestamp) {
+    super(message);
+    this.timestamp = timestamp;
+  }
 
-    public MySpecialException(String message, Instant timestamp, Throwable cause) {
-        super(message, cause);
-        this.timestamp = timestamp;
-    }
+  public MySpecialException(String message, Instant timestamp, Throwable cause) {
+    super(message, cause);
+    this.timestamp = timestamp;
+  }
 
-    public Instant getTimestamp() {
-        return timestamp;
-    }
+  public Instant getTimestamp() {
+    return timestamp;
+  }
 }

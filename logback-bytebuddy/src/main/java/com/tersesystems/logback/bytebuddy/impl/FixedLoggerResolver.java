@@ -10,22 +10,20 @@
  */
 package com.tersesystems.logback.bytebuddy.impl;
 
-import org.slf4j.Logger;
-
 import static java.util.Objects.requireNonNull;
 
-/**
- * Always returns the same logger.
- */
+import org.slf4j.Logger;
+
+/** Always returns the same logger. */
 public class FixedLoggerResolver implements LoggerResolver {
-    private final Logger logger;
+  private final Logger logger;
 
-    public FixedLoggerResolver(Logger logger) {
-        this.logger = requireNonNull(logger);
-    }
+  public FixedLoggerResolver(Logger logger) {
+    this.logger = requireNonNull(logger);
+  }
 
-    @Override
-    public Logger resolve(String origin) {
-        return logger;
-    }
+  @Override
+  public Logger resolve(String origin) {
+    return logger;
+  }
 }

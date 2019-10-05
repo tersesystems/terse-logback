@@ -17,17 +17,17 @@ import java.util.function.Function;
 
 public interface HoneycombClient {
 
-    <E> CompletionStage<HoneycombResponse> postEvent(String apiKey,
-                                                     String dataset,
-                                                     HoneycombRequest<E> request,
-                                                     Function<HoneycombRequest<E>, byte[]> encodeFunction);
+  <E> CompletionStage<HoneycombResponse> postEvent(
+      String apiKey,
+      String dataset,
+      HoneycombRequest<E> request,
+      Function<HoneycombRequest<E>, byte[]> encodeFunction);
 
+  <E> CompletionStage<List<HoneycombResponse>> postBatch(
+      String apiKey,
+      String dataset,
+      List<HoneycombRequest<E>> requests,
+      Function<HoneycombRequest<E>, byte[]> encodeFunction);
 
-    <E> CompletionStage<List<HoneycombResponse>> postBatch(String apiKey,
-                                                           String dataset,
-                                                           List<HoneycombRequest<E>> requests,
-                                                           Function<HoneycombRequest<E>, byte[]> encodeFunction);
-
-    void close() throws IOException;
+  void close() throws IOException;
 }
-

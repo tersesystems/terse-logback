@@ -11,9 +11,10 @@
 package com.tersesystems.logback.turbomarker;
 
 public class UserMarker extends ContextAwareTurboMarker<ApplicationContext> {
-    public UserMarker(String name,
-                      ApplicationContext applicationContext,
-                      ContextAwareTurboFilterDecider<ApplicationContext> decider) {
-        super(name, applicationContext, decider);
-    }
+  public UserMarker(
+      String name,
+      ApplicationContext applicationContext,
+      ContextAwareTurboFilterDecider<ApplicationContext> decider) {
+    super(name, applicationContext, decider);
+  }
 }

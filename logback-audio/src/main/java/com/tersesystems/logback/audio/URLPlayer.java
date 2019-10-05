@@ -11,23 +11,20 @@
 package com.tersesystems.logback.audio;
 
 import ch.qos.logback.core.spi.ContextAwareBase;
-
 import java.net.URL;
 
 public class URLPlayer extends ContextAwareBase implements Player {
 
-    private URL url;
+  private URL url;
 
-    public URLPlayer() {
-    }
+  public URLPlayer() {}
 
-    public void URLPlayer(URL url) {
-        this.url = url;
-    }
+  public void URLPlayer(URL url) {
+    this.url = url;
+  }
 
-    @Override
-    public void play() {
-        SimplePlayer.fromURL(url).play();
-    }
-
+  @Override
+  public void play() {
+    SimplePlayer.fromURL(url).play();
+  }
 }

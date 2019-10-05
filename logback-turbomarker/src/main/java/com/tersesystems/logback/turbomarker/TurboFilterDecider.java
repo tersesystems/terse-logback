@@ -16,5 +16,6 @@ import ch.qos.logback.core.spi.FilterReply;
 import org.slf4j.Marker;
 
 public interface TurboFilterDecider {
-    FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t);
+  FilterReply decide(
+      Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t);
 }

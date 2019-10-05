@@ -10,6 +10,8 @@
  */
 package com.tersesystems.logback.classic;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -19,38 +21,37 @@ import ch.qos.logback.core.spi.FilterReply;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class UtilsTest {
 
-    static class FancyTurboFilter extends TurboFilter {
-        @Override
-        public FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
-            return null;
-        }
+  static class FancyTurboFilter extends TurboFilter {
+    @Override
+    public FilterReply decide(
+        Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+      return null;
     }
+  }
 
-    @Test
-    public void testTurboFilterMatchingType() {
-        LoggerContext loggerContext = new LoggerContext();
-        FancyTurboFilter fancyTurboFilter = new FancyTurboFilter();
-        fancyTurboFilter.setName("fancyTurboFilter");
-        fancyTurboFilter.setContext(loggerContext);
-        loggerContext.addTurboFilter(fancyTurboFilter);
+  @Test
+  public void testTurboFilterMatchingType() {
+    LoggerContext loggerContext = new LoggerContext();
+    FancyTurboFilter fancyTurboFilter = new FancyTurboFilter();
+    fancyTurboFilter.setName("fancyTurboFilter");
+    fancyTurboFilter.setContext(loggerContext);
+    loggerContext.addTurboFilter(fancyTurboFilter);
 
-        Utils utils = Utils.create(loggerContext);
-        assertThat(utils.getTurboFilter(FancyTurboFilter.class, "fancyTurboFilter")).isNotEmpty();
-    }
+    Utils utils = Utils.create(loggerContext);
+    assertThat(utils.getTurboFilter(FancyTurboFilter.class, "fancyTurboFilter")).isNotEmpty();
+  }
 
-    @Test
-    public void testTurboFilterNonMatchingType() {
-        LoggerContext loggerContext = new LoggerContext();
-        FancyTurboFilter fancyTurboFilter = new FancyTurboFilter();
-        fancyTurboFilter.setName("fancyTurboFilter");
-        fancyTurboFilter.setContext(loggerContext);
-        loggerContext.addTurboFilter(fancyTurboFilter);
+  @Test
+  public void testTurboFilterNonMatchingType() {
+    LoggerContext loggerContext = new LoggerContext();
+    FancyTurboFilter fancyTurboFilter = new FancyTurboFilter();
+    fancyTurboFilter.setName("fancyTurboFilter");
+    fancyTurboFilter.setContext(loggerContext);
+    loggerContext.addTurboFilter(fancyTurboFilter);
 
-        Utils utils = Utils.create(loggerContext);
-        assertThat(utils.getTurboFilter(MDCFilter.class, "fancyTurboFilter")).isEmpty();
-    }
+    Utils utils = Utils.create(loggerContext);
+    assertThat(utils.getTurboFilter(MDCFilter.class, "fancyTurboFilter")).isEmpty();
+  }
 }

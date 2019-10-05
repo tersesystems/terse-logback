@@ -10,30 +10,30 @@
  */
 package com.tersesystems.logback.classic;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggingEvent;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public class TerseHighlightConverterTest {
 
-    @Test
-    public void testHighlighter() {
-        TerseHighlightConverter converter = new TerseHighlightConverter();
-        LoggerContext context = new LoggerContext();
-        converter.setContext(context);
-        Map<String, String> properties = new HashMap<>();
-        properties.put("info", "red");
-        context.putObject(TerseHighlightConverter.HIGHLIGHT_CTX_KEY, properties);
-        converter.start();
-        LoggingEvent infoEvent = new LoggingEvent("fcqn", context.getLogger("fcqn"), Level.INFO, "info", null, null);
-        String actual = converter.convert(infoEvent);
+  @Test
+  public void testHighlighter() {
+    TerseHighlightConverter converter = new TerseHighlightConverter();
+    LoggerContext context = new LoggerContext();
+    converter.setContext(context);
+    Map<String, String> properties = new HashMap<>();
+    properties.put("info", "red");
+    context.putObject(TerseHighlightConverter.HIGHLIGHT_CTX_KEY, properties);
+    converter.start();
+    LoggingEvent infoEvent =
+        new LoggingEvent("fcqn", context.getLogger("fcqn"), Level.INFO, "info", null, null);
+    String actual = converter.convert(infoEvent);
 
-        assertThat(actual).contains( TerseHighlightConverter.Color.valueOf("RED").code);
-    }
+    assertThat(actual).contains(TerseHighlightConverter.Color.valueOf("RED").code);
+  }
 }

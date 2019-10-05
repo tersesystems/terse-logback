@@ -10,7 +10,4 @@
  */
 package com.tersesystems.logback.classic;
 
-public class SetLoggerLevelsActionTest {
-
-
-}
+public class SetLoggerLevelsActionTest {}

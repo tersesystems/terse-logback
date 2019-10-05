@@ -14,16 +14,16 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class StartTimeMarker extends TerseBasicMarker implements StartTimeSupplier {
-    private static final String TIMESTAMP_MARKER_NAME = "TS_TIMESTAMP_MARKER";
-    private final Instant startTime;
+  private static final String TIMESTAMP_MARKER_NAME = "TS_TIMESTAMP_MARKER";
+  private final Instant startTime;
 
-    public StartTimeMarker(Instant start) {
-        super(TIMESTAMP_MARKER_NAME);
-        this.startTime = Objects.requireNonNull(start);
-    }
+  public StartTimeMarker(Instant start) {
+    super(TIMESTAMP_MARKER_NAME);
+    this.startTime = Objects.requireNonNull(start);
+  }
 
-    @Override
-    public Instant getStartTime() {
-        return startTime;
-    }
+  @Override
+  public Instant getStartTime() {
+    return startTime;
+  }
 }

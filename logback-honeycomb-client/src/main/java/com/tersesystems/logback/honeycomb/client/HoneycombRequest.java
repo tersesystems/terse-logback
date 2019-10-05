@@ -14,25 +14,25 @@ import java.time.Instant;
 
 public class HoneycombRequest<E> {
 
-    private final Integer sampleRate;
-    private final E event;
-    private final Instant timestamp;
+  private final Integer sampleRate;
+  private final E event;
+  private final Instant timestamp;
 
-    public HoneycombRequest(Integer sampleRate, Instant timestamp, E event) {
-        this.sampleRate = sampleRate;
-        this.timestamp = timestamp;
-        this.event = event;
-    }
+  public HoneycombRequest(Integer sampleRate, Instant timestamp, E event) {
+    this.sampleRate = sampleRate;
+    this.timestamp = timestamp;
+    this.event = event;
+  }
 
-    public E getEvent() {
-        return event;
-    }
+  public E getEvent() {
+    return event;
+  }
 
-    public Integer getSampleRate() {
-        return sampleRate;
-    }
+  public Integer getSampleRate() {
+    return sampleRate;
+  }
 
-    public Instant getTimestamp() {
-        return timestamp;
-    }
+  public Instant getTimestamp() {
+    return timestamp;
+  }
 }

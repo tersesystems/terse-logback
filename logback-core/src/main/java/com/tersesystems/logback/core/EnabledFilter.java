@@ -13,27 +13,25 @@ package com.tersesystems.logback.core;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 
-/**
- * Used to enable and disable appenders.
- */
+/** Used to enable and disable appenders. */
 public class EnabledFilter<E> extends Filter<E> {
 
-    private boolean enabled;
+  private boolean enabled;
 
-    @Override
-    public FilterReply decide(E event) {
-        if (isStarted() && isEnabled()) {
-            return FilterReply.NEUTRAL;
-        } else {
-            return FilterReply.DENY;
-        }
+  @Override
+  public FilterReply decide(E event) {
+    if (isStarted() && isEnabled()) {
+      return FilterReply.NEUTRAL;
+    } else {
+      return FilterReply.DENY;
     }
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 }
