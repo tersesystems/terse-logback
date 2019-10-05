@@ -4,7 +4,7 @@ output = [
 	link(shield('Latest version', 'latest', '{{version}}', 'blue'), 'https://github.com/tersesystems/terse-logback/releases/latest'),
 	link(shield('License CC0', 'license', 'CC0', 'blue'), 'https://tldrlegal.com/license/creative-commons-cc0-1.0-universal'),
 	'',
-	link(shield('Release Notes', 'release', '{{version}}', 'brightgreen'), 'docs/release-notes.md'),
+	link(shield('Release Notes', 'release-notes', '{{version}}', 'brightgreen'), 'docs/release-notes.md'),
 	link(image('Travis CI', 'https://travis-ci.org/tersesystems/terse-logback.svg?branch=master'), 'https://travis-ci.org/tersesystems/terse-logback')
 	].join('\n')
 -->
@@ -12,7 +12,7 @@ output = [
 [![Latest version](https://img.shields.io/badge/latest-0.13.1-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
 [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
-[![Release Notes](https://img.shields.io/badge/release-0.13.1-brightgreen.svg)](docs/release-notes.md)
+[![Release Notes](https://img.shields.io/badge/release--notes-0.13.1-brightgreen.svg)](docs/release-notes.md)
 [![Travis CI](https://travis-ci.org/tersesystems/terse-logback.svg?branch=master)](https://travis-ci.org/tersesystems/terse-logback)
 <!---freshmark /shields -->
 
