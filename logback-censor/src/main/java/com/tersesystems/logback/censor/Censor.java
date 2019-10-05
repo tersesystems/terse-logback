@@ -15,17 +15,13 @@ import ch.qos.logback.core.spi.LifeCycle;
 
 public interface Censor extends ContextAware, LifeCycle {
 
-    /**
-     * Get the name of this appender. The name uniquely identifies the appender.
-     */
-    String getName();
+  /** Get the name of this appender. The name uniquely identifies the appender. */
+  String getName();
 
-    CharSequence censorText(CharSequence input);
+  CharSequence censorText(CharSequence input);
 
-    /**
-     * Set the name of this appender. The name is used by other components to
-     * identify this appender.
-     *
-     */
-    void setName(String name);
+  /**
+   * Set the name of this appender. The name is used by other components to identify this appender.
+   */
+  void setName(String name);
 }

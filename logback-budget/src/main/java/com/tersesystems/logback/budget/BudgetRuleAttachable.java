@@ -12,7 +12,7 @@ package com.tersesystems.logback.budget;
 
 public interface BudgetRuleAttachable {
 
-    void addBudgetRule(BudgetRule budget);
+  void addBudgetRule(BudgetRule budget);
 
-    void clearAllBudgetRules();
+  void clearAllBudgetRules();
 }

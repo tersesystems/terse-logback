@@ -14,5 +14,5 @@ import com.tersesystems.logback.core.RingBuffer;
 
 public interface HasRingBuffer<I> {
 
-    public RingBuffer<I> getRingBuffer();
+  public RingBuffer<I> getRingBuffer();
 }

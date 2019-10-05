@@ -16,46 +16,45 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SafeArguments {
-    public List<String> apply(Object[] allArguments) {
-       return Arrays.stream(allArguments).map(this::apply).collect(Collectors.toList());
+  public List<String> apply(Object[] allArguments) {
+    return Arrays.stream(allArguments).map(this::apply).collect(Collectors.toList());
+  }
+
+  public String apply(Object returnValue) {
+    try {
+      if (returnValue instanceof Collection<?>) {
+        return parseCollection((Collection<Object>) returnValue);
+      }
+
+      if (returnValue instanceof Object[]) {
+        return parseArray((Object[]) returnValue);
+      }
+
+      if (returnValue instanceof X509Certificate) {
+        return parseCertificate((X509Certificate) returnValue);
+      }
+
+      return Objects.toString(returnValue);
+    } catch (Exception e) {
+      return "Exception rendering safeArguments: " + e.toString();
     }
+  }
 
-    public String apply(Object returnValue) {
-        try {
-            if (returnValue instanceof Collection<?>) {
-                return parseCollection((Collection<Object>) returnValue);
-            }
+  private String parseCertificate(X509Certificate cert) {
+    String s = cert.getSerialNumber().toString(16);
+    String sub = cert.getSubjectDN().getName();
+    return "X509Certificate(serialNumber = " + s + ", subject = " + sub + ")";
+  }
 
-            if (returnValue instanceof Object[]) {
-                return parseArray((Object[]) returnValue);
-            }
+  private String parseArray(Object[] returnValue) {
+    return parseStream(Arrays.stream(returnValue));
+  }
 
-            if (returnValue instanceof X509Certificate) {
-                return parseCertificate((X509Certificate) returnValue);
-            }
+  private String parseCollection(Collection<Object> coll) {
+    return parseStream(coll.stream());
+  }
 
-            return Objects.toString(returnValue);
-        } catch (Exception e) {
-            return "Exception rendering safeArguments: " + e.toString();
-        }
-    }
-
-    private String parseCertificate(X509Certificate cert) {
-        String s = cert.getSerialNumber().toString(16);
-        String sub = cert.getSubjectDN().getName();
-        return "X509Certificate(serialNumber = " + s + ", subject = " + sub + ")";
-    }
-
-    private String parseArray(Object[] returnValue) {
-        return parseStream(Arrays.stream(returnValue));
-    }
-
-    private String parseCollection(Collection<Object> coll) {
-        return parseStream(coll.stream());
-    }
-
-    private String parseStream(Stream<Object> stream) {
-        return stream.map(this::apply).collect(Collectors.joining(","));
-    }
-
+  private String parseStream(Stream<Object> stream) {
+    return stream.map(this::apply).collect(Collectors.joining(","));
+  }
 }

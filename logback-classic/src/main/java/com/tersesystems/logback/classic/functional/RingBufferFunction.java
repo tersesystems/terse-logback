@@ -16,7 +16,6 @@ import com.tersesystems.logback.classic.Utils;
 import com.tersesystems.logback.classic.ringbuffer.HasRingBuffer;
 import com.tersesystems.logback.classic.ringbuffer.RingBufferAppender;
 import com.tersesystems.logback.core.RingBuffer;
-
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -27,23 +26,24 @@ import java.util.function.Function;
  */
 public class RingBufferFunction<E> implements Function<String, Optional<RingBuffer<E>>> {
 
-    private final LoggerContext context;
+  private final LoggerContext context;
 
-    public RingBufferFunction(LoggerContext context) {
-        this.context = context;
-    }
+  public RingBufferFunction(LoggerContext context) {
+    this.context = context;
+  }
 
-    @Override
-    public Optional<RingBuffer<E>> apply(String appenderName) {
-        GetAppenderFunction<RingBufferAppender<ILoggingEvent, E>> appenderFn = GetAppenderFunction.create(context);
-        return appenderFn.apply(appenderName).map(HasRingBuffer::getRingBuffer);
-    }
+  @Override
+  public Optional<RingBuffer<E>> apply(String appenderName) {
+    GetAppenderFunction<RingBufferAppender<ILoggingEvent, E>> appenderFn =
+        GetAppenderFunction.create(context);
+    return appenderFn.apply(appenderName).map(HasRingBuffer::getRingBuffer);
+  }
 
-    public static <I> RingBufferFunction<I> create() {
-        return create(Utils.defaultContext());
-    }
+  public static <I> RingBufferFunction<I> create() {
+    return create(Utils.defaultContext());
+  }
 
-    public static <I> RingBufferFunction<I> create(LoggerContext context) {
-        return new RingBufferFunction<>(context);
-    }
+  public static <I> RingBufferFunction<I> create(LoggerContext context) {
+    return new RingBufferFunction<>(context);
+  }
 }

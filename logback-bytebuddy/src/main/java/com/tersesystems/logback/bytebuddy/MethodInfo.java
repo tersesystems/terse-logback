@@ -12,44 +12,48 @@ package com.tersesystems.logback.bytebuddy;
 
 import java.util.Objects;
 
-/**
- * Provides line number and source at compile time without the overhead of fillInStackTrace.
- */
+/** Provides line number and source at compile time without the overhead of fillInStackTrace. */
 public class MethodInfo {
-    final String methodName;
-    final String descriptor;
-    public final String source;
-    private int startLine;
-    private int endLine;
+  final String methodName;
+  final String descriptor;
+  public final String source;
+  private int startLine;
+  private int endLine;
 
-    MethodInfo(String methodName, String descriptor, String source) {
-        this.methodName = Objects.requireNonNull(methodName);
-        this.descriptor = descriptor;
-        this.source = source;
-    }
+  MethodInfo(String methodName, String descriptor, String source) {
+    this.methodName = Objects.requireNonNull(methodName);
+    this.descriptor = descriptor;
+    this.source = source;
+  }
 
-    public void setStartLine(int line) {
-        this.startLine = line;
-    }
+  public void setStartLine(int line) {
+    this.startLine = line;
+  }
 
-    public void setEndLine(int line) {
-        this.endLine = line;
-    }
+  public void setEndLine(int line) {
+    this.endLine = line;
+  }
 
-    public int getStartLine() {
-        return startLine;
-    }
+  public int getStartLine() {
+    return startLine;
+  }
 
-    public int getEndLine() {
-        return endLine;
-    }
+  public int getEndLine() {
+    return endLine;
+  }
 
-    @Override
-    public String toString() {
-        return "MethodInfo{" +
-                "methodName='" + methodName + '\'' +
-                ", descriptor='" + descriptor + '\'' +
-                ", source='" + source + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "MethodInfo{"
+        + "methodName='"
+        + methodName
+        + '\''
+        + ", descriptor='"
+        + descriptor
+        + '\''
+        + ", source='"
+        + source
+        + '\''
+        + '}';
+  }
 }

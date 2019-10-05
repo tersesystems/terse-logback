@@ -12,13 +12,11 @@ package com.tersesystems.logback.bytebuddy.impl;
 
 import org.slf4j.Logger;
 
-/**
- * Finds a logger given some input.
- */
+/** Finds a logger given some input. */
 public interface LoggerResolver {
-    /**
-     * @param origin the class name plus other stuff, provided from bytebuddy advice.
-     * @return a logger.
-     */
-    Logger resolve(String origin);
+  /**
+   * @param origin the class name plus other stuff, provided from bytebuddy advice.
+   * @return a logger.
+   */
+  Logger resolve(String origin);
 }

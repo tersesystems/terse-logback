@@ -12,7 +12,7 @@ package com.tersesystems.logback.censor;
 
 public class CensorConstants {
 
-    public static final String CENSOR_BAG = "CENSOR_BAG";
-    public static final String REF_ATTRIBUTE = "ref";
-    public static final String CENSOR_RULE_NAME = "censor";
+  public static final String CENSOR_BAG = "CENSOR_BAG";
+  public static final String REF_ATTRIBUTE = "ref";
+  public static final String CENSOR_RULE_NAME = "censor";
 }

@@ -20,29 +20,29 @@ import java.util.function.Predicate;
 
 public class MethodInfoLookup {
 
-    private final ConcurrentMap<String, Set<MethodInfo>> classNameToMethods = new ConcurrentHashMap<>();
+  private final ConcurrentMap<String, Set<MethodInfo>> classNameToMethods =
+      new ConcurrentHashMap<>();
 
-    public static MethodInfoLookup getInstance() {
-        return SingletonHolder.instance;
-    }
+  public static MethodInfoLookup getInstance() {
+    return SingletonHolder.instance;
+  }
 
-    static class SingletonHolder {
-       public static MethodInfoLookup instance = new MethodInfoLookup();
-    }
+  static class SingletonHolder {
+    public static MethodInfoLookup instance = new MethodInfoLookup();
+  }
 
-    public void add(String className, MethodInfo methodInfo) {
-        Set<MethodInfo> infos = classNameToMethods.computeIfAbsent(className, k -> new HashSet<>());
-        infos.add(methodInfo);
-    }
+  public void add(String className, MethodInfo methodInfo) {
+    Set<MethodInfo> infos = classNameToMethods.computeIfAbsent(className, k -> new HashSet<>());
+    infos.add(methodInfo);
+  }
 
-    public Optional<MethodInfo> find(String className, String methodName, String descriptor) {
-        Set<MethodInfo> infos = classNameToMethods.computeIfAbsent(className, k -> new HashSet<>());
-        return infos.stream().filter(matchingInfo(methodName, descriptor)).findFirst();
-    }
+  public Optional<MethodInfo> find(String className, String methodName, String descriptor) {
+    Set<MethodInfo> infos = classNameToMethods.computeIfAbsent(className, k -> new HashSet<>());
+    return infos.stream().filter(matchingInfo(methodName, descriptor)).findFirst();
+  }
 
-    private Predicate<MethodInfo> matchingInfo( String methodName, String descriptor) {
-        return info -> Objects.equals(info.methodName, methodName)
-                && Objects.equals(descriptor, info.descriptor);
-    }
+  private Predicate<MethodInfo> matchingInfo(String methodName, String descriptor) {
+    return info ->
+        Objects.equals(info.methodName, methodName) && Objects.equals(descriptor, info.descriptor);
+  }
 }
-

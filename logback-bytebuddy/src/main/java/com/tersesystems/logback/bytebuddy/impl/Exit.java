@@ -10,64 +10,90 @@
  */
 package com.tersesystems.logback.bytebuddy.impl;
 
-import com.tersesystems.logback.bytebuddy.MethodInfo;
-import com.tersesystems.logback.bytebuddy.MethodInfoLookup;
-import net.logstash.logback.argument.StructuredArgument;
-import net.logstash.logback.marker.LogstashMarker;
-import org.slf4j.Logger;
-import org.slf4j.Marker;
-
-import java.util.Optional;
-
 import static com.tersesystems.logback.bytebuddy.impl.SystemFlow.*;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static net.logstash.logback.argument.StructuredArguments.v;
 import static net.logstash.logback.marker.Markers.empty;
 
+import com.tersesystems.logback.bytebuddy.MethodInfo;
+import com.tersesystems.logback.bytebuddy.MethodInfoLookup;
+import java.util.Optional;
+import net.logstash.logback.argument.StructuredArgument;
+import net.logstash.logback.marker.LogstashMarker;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+
 public class Exit {
 
-    private static String exitFormatWithSource = "exiting: {}.{}{} with {} => ({} {}) from source {}:{}";
-    private static String exitFormat = "exiting: {}.{}{} with {} => ({} {})";
+  private static String exitFormatWithSource =
+      "exiting: {}.{}{} with {} => ({} {}) from source {}:{}";
+  private static String exitFormat = "exiting: {}.{}{} with {} => ({} {})";
 
-    public static void apply(String origin, Object[] allArguments, Throwable thrown, Object returnValue) {
-        Logger logger = getLogger(origin);
-        if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
-            String[] args = origin.split("\\|");
-            String declaringType = args[0];
-            String method = args[1];
-            String descriptor = args[2];
-            String signature = args[3];
-            String returnType = args[4];
-            StructuredArgument aClass = v("class", declaringType); // ClassCalledByAgent
-            StructuredArgument aMethod = v("method", method); // printArgument
-            StructuredArgument aSignature = v("signature", signature); // (java.lang.String)
-            //StructuredArgument aDescriptor = kv("descriptor", descriptor); // descriptor=(Ljava/lang/String;)V
+  public static void apply(
+      String origin, Object[] allArguments, Throwable thrown, Object returnValue) {
+    Logger logger = getLogger(origin);
+    if (logger != null && logger.isTraceEnabled(EXIT_MARKER)) {
+      String[] args = origin.split("\\|");
+      String declaringType = args[0];
+      String method = args[1];
+      String descriptor = args[2];
+      String signature = args[3];
+      String returnType = args[4];
+      StructuredArgument aClass = v("class", declaringType); // ClassCalledByAgent
+      StructuredArgument aMethod = v("method", method); // printArgument
+      StructuredArgument aSignature = v("signature", signature); // (java.lang.String)
+      // StructuredArgument aDescriptor = kv("descriptor", descriptor); //
+      // descriptor=(Ljava/lang/String;)V
 
-            StructuredArgument safeArguments = safeArguments(allArguments);
+      StructuredArgument safeArguments = safeArguments(allArguments);
 
-            LogstashMarker spanMarker = popSpan().map(SystemFlow::createMarker).orElse(empty());
-            if (thrown != null) {
-                Marker markers = spanMarker.and(THROWING_MARKER);
-                // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
-                logger.error(markers, "throwing: {}.{}{} with {}", aClass, aMethod, aSignature, safeArguments, thrown);
-            } else {
-                StructuredArgument aReturnType = kv("return_type", returnType);
-                StructuredArgument safeReturnValue = safeReturnValue(returnValue);
+      LogstashMarker spanMarker = popSpan().map(SystemFlow::createMarker).orElse(empty());
+      if (thrown != null) {
+        Marker markers = spanMarker.and(THROWING_MARKER);
+        // Always include the thrown at the end of the list as SLF4J will take care of stack trace.
+        logger.error(
+            markers,
+            "throwing: {}.{}{} with {}",
+            aClass,
+            aMethod,
+            aSignature,
+            safeArguments,
+            thrown);
+      } else {
+        StructuredArgument aReturnType = kv("return_type", returnType);
+        StructuredArgument safeReturnValue = safeReturnValue(returnValue);
 
-                MethodInfoLookup lookup = MethodInfoLookup.getInstance();
-                Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
-                Marker markers = spanMarker.and(EXIT_MARKER);
-                if (methodInfo.isPresent()) {
-                    MethodInfo mi = methodInfo.get();
-                    StructuredArgument aSource = v("source", mi.source);
-                    StructuredArgument aLineNumber = v("line", mi.getEndLine());
-                    ;
-                    logger.trace(markers, exitFormatWithSource, aClass, aMethod, aSignature, safeArguments, aReturnType, safeReturnValue, aSource, aLineNumber);
-                } else {
-                    logger.trace(markers, exitFormat, aClass, aMethod, aSignature, safeArguments, aReturnType, safeReturnValue);
-                }
-            }
+        MethodInfoLookup lookup = MethodInfoLookup.getInstance();
+        Optional<MethodInfo> methodInfo = lookup.find(declaringType, method, descriptor);
+        Marker markers = spanMarker.and(EXIT_MARKER);
+        if (methodInfo.isPresent()) {
+          MethodInfo mi = methodInfo.get();
+          StructuredArgument aSource = v("source", mi.source);
+          StructuredArgument aLineNumber = v("line", mi.getEndLine());
+          ;
+          logger.trace(
+              markers,
+              exitFormatWithSource,
+              aClass,
+              aMethod,
+              aSignature,
+              safeArguments,
+              aReturnType,
+              safeReturnValue,
+              aSource,
+              aLineNumber);
+        } else {
+          logger.trace(
+              markers,
+              exitFormat,
+              aClass,
+              aMethod,
+              aSignature,
+              safeArguments,
+              aReturnType,
+              safeReturnValue);
         }
+      }
     }
-
+  }
 }

@@ -10,16 +10,15 @@
  */
 package com.tersesystems.logback.uniqueid;
 
-import com.fasterxml.uuid.NoArgGenerator;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 
 public class RandomUUIDIdGenerator implements IdGenerator {
 
-    // Using java.util.UUID.fromRandom() has thread contention issues due to synchronized block.
-    private static final RandomBasedGenerator idgen = new RandomBasedGenerator(null);
+  // Using java.util.UUID.fromRandom() has thread contention issues due to synchronized block.
+  private static final RandomBasedGenerator idgen = new RandomBasedGenerator(null);
 
-    @Override
-    public String generateId() {
-        return idgen.generate().toString();
-    }
+  @Override
+  public String generateId() {
+    return idgen.generate().toString();
+  }
 }

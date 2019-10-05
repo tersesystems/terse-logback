@@ -18,16 +18,16 @@ import org.junit.jupiter.api.Test;
 
 public class PostgresJsonAppenderTest {
 
-    @Disabled
-    @Test
-    public void testJson() throws JoranException, InterruptedException {
+  @Disabled
+  @Test
+  public void testJson() throws JoranException, InterruptedException {
 
-        Utils utils = Utils.create("/logback-postgres-json.xml");
-        Logger logger1 = utils.getLogger("com.example.Test");
-        logger1.info("THIS IS A TEST");
+    Utils utils = Utils.create("/logback-postgres-json.xml");
+    Logger logger1 = utils.getLogger("com.example.Test");
+    logger1.info("THIS IS A TEST");
 
-        Thread.sleep(1000);
+    Thread.sleep(1000);
 
-        utils.getStatusList().forEach(System.out::println);
-    }
+    utils.getStatusList().forEach(System.out::println);
+  }
 }

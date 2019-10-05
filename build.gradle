@@ -9,10 +9,19 @@
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
 plugins {
+    id 'java'
     id 'com.gradle.build-scan'         version '2.2.1'
     id "org.shipkit.java"              version "2.2.5"
     id "com.github.hierynomus.license" version "0.15.0"
+	id 'com.diffplug.gradle.spotless'  version '3.24.3'
+
     //id 'org.inferred.processors'    version '2.3.0'
+}
+
+spotless {
+    freshmark {
+        propertiesFile('version.properties')	
+    }
 }
 
 allprojects {
@@ -24,6 +33,13 @@ allprojects {
 
 subprojects { subproj ->
     apply plugin: 'java'
+    apply plugin: 'com.diffplug.gradle.spotless'
+
+    spotless {
+        java {
+            googleJavaFormat()
+        }
+    }
 
     dependencies {
         testImplementation 'org.apiguardian:apiguardian-api:1.1.0'

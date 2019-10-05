@@ -14,48 +14,47 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class BudgetRule {
 
-    private String name;
-    private int threshold;
-    private long interval;
-    private String timeUnit;
+  private String name;
+  private int threshold;
+  private long interval;
+  private String timeUnit;
 
-    public BudgetRule() {
-    }
+  public BudgetRule() {}
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public int getThreshold() {
-        return threshold;
-    }
+  public int getThreshold() {
+    return threshold;
+  }
 
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
-    }
+  public void setThreshold(int threshold) {
+    this.threshold = threshold;
+  }
 
-    public long getInterval() {
-        return interval;
-    }
+  public long getInterval() {
+    return interval;
+  }
 
-    public void setInterval(long interval) {
-        this.interval = interval;
-    }
+  public void setInterval(long interval) {
+    this.interval = interval;
+  }
 
-    public String getTimeUnit() {
-        return timeUnit;
-    }
+  public String getTimeUnit() {
+    return timeUnit;
+  }
 
-    public void setTimeUnit(String timeUnit) {
-        this.timeUnit = timeUnit;
-    }
+  public void setTimeUnit(String timeUnit) {
+    this.timeUnit = timeUnit;
+  }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
+  }
 }

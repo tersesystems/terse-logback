@@ -16,12 +16,12 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 public class SigarCpuPercFunction implements SigarFunction<CpuPerc> {
-    @Override
-    public CpuPerc apply(Sigar sigar) {
-        try {
-            return sigar.getCpuPerc();
-        } catch (SigarException e) {
-            throw new SigarRuntimeException(e);
-        }
+  @Override
+  public CpuPerc apply(Sigar sigar) {
+    try {
+      return sigar.getCpuPerc();
+    } catch (SigarException e) {
+      throw new SigarRuntimeException(e);
     }
+  }
 }

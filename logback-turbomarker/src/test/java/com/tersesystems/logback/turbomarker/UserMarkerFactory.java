@@ -11,27 +11,26 @@
 package com.tersesystems.logback.turbomarker;
 
 import ch.qos.logback.core.spi.FilterReply;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class UserMarkerFactory {
 
-    private final Set<String> userIdSet = new ConcurrentSkipListSet<>();
+  private final Set<String> userIdSet = new ConcurrentSkipListSet<>();
 
-    private final ContextDecider<ApplicationContext> decider = context ->
-        userIdSet.contains(context.currentUserId()) ? FilterReply.ACCEPT : FilterReply.NEUTRAL;
+  private final ContextDecider<ApplicationContext> decider =
+      context ->
+          userIdSet.contains(context.currentUserId()) ? FilterReply.ACCEPT : FilterReply.NEUTRAL;
 
-    public void addUserId(String userId) {
-        userIdSet.add(userId);
-    }
+  public void addUserId(String userId) {
+    userIdSet.add(userId);
+  }
 
-    public void clear() {
-        userIdSet.clear();
-    }
+  public void clear() {
+    userIdSet.clear();
+  }
 
-    public UserMarker create(ApplicationContext applicationContext) {
-        return new UserMarker("userMarker", applicationContext, decider);
-    }
-
+  public UserMarker create(ApplicationContext applicationContext) {
+    return new UserMarker("userMarker", applicationContext, decider);
+  }
 }

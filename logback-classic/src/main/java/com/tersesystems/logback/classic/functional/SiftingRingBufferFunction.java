@@ -16,7 +16,6 @@ import com.tersesystems.logback.classic.Utils;
 import com.tersesystems.logback.classic.ringbuffer.HasRingBuffer;
 import com.tersesystems.logback.classic.ringbuffer.RingBufferAppender;
 import com.tersesystems.logback.core.RingBuffer;
-
 import java.util.Optional;
 import java.util.function.BiFunction;
 
@@ -25,30 +24,32 @@ import java.util.function.BiFunction;
  *
  * @param <E>
  */
-public class SiftingRingBufferFunction<E> implements BiFunction<String, String, Optional<RingBuffer<E>>> {
+public class SiftingRingBufferFunction<E>
+    implements BiFunction<String, String, Optional<RingBuffer<E>>> {
 
-    private final LoggerContext context;
+  private final LoggerContext context;
 
-    public SiftingRingBufferFunction(LoggerContext context) {
-        this.context = context;
-    }
+  public SiftingRingBufferFunction(LoggerContext context) {
+    this.context = context;
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Optional<RingBuffer<E>> apply(String appenderName, String key) {
-        Class<RingBufferAppender> ringBufferClass = RingBufferAppender.class;
-        return GetAppenderFunction.<SiftingAppender>create(context).apply(appenderName)
-                .flatMap(sa -> Optional.ofNullable(sa.getAppenderTracker().find(key)))
-                .filter(a -> ringBufferClass.isAssignableFrom(a.getClass()))
-                .map(ringBufferClass::cast)
-                .map(HasRingBuffer::getRingBuffer);
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  public Optional<RingBuffer<E>> apply(String appenderName, String key) {
+    Class<RingBufferAppender> ringBufferClass = RingBufferAppender.class;
+    return GetAppenderFunction.<SiftingAppender>create(context)
+        .apply(appenderName)
+        .flatMap(sa -> Optional.ofNullable(sa.getAppenderTracker().find(key)))
+        .filter(a -> ringBufferClass.isAssignableFrom(a.getClass()))
+        .map(ringBufferClass::cast)
+        .map(HasRingBuffer::getRingBuffer);
+  }
 
-    public static <I> SiftingRingBufferFunction<I> create() {
-        return create(Utils.defaultContext());
-    }
+  public static <I> SiftingRingBufferFunction<I> create() {
+    return create(Utils.defaultContext());
+  }
 
-    public static <I> SiftingRingBufferFunction<I> create(LoggerContext context) {
-        return new SiftingRingBufferFunction<>(context);
-    }
+  public static <I> SiftingRingBufferFunction<I> create(LoggerContext context) {
+    return new SiftingRingBufferFunction<>(context);
+  }
 }

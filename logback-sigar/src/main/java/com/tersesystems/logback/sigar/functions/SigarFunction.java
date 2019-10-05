@@ -10,9 +10,7 @@
  */
 package com.tersesystems.logback.sigar.functions;
 
+import java.util.function.Function;
 import org.hyperic.sigar.Sigar;
 
-import java.util.function.Function;
-
-public interface SigarFunction<T> extends Function<Sigar, T> {
-}
+public interface SigarFunction<T> extends Function<Sigar, T> {}

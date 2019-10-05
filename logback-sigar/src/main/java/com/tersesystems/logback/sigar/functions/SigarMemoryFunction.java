@@ -16,12 +16,12 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 public class SigarMemoryFunction implements SigarFunction<Mem> {
-    @Override
-    public Mem apply(Sigar sigar) {
-        try {
-            return sigar.getMem();
-        } catch (SigarException e) {
-            throw new SigarRuntimeException(e);
-        }
+  @Override
+  public Mem apply(Sigar sigar) {
+    try {
+      return sigar.getMem();
+    } catch (SigarException e) {
+      throw new SigarRuntimeException(e);
     }
+  }
 }

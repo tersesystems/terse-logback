@@ -13,14 +13,14 @@ package com.tersesystems.logback.bytebuddy;
 /**
  * Borrowed from securityfixer, showing tracing when you set the security manager.
  *
- * Will not work on native methods, i.e. `System.currentTimeMillis`.
+ * <p>Will not work on native methods, i.e. `System.currentTimeMillis`.
  *
- * Move this into the main source path and redeploy if you want to test
- * (I can't figure out how to do agent stuff in Gradle)
+ * <p>Move this into the main source path and redeploy if you want to test (I can't figure out how
+ * to do agent stuff in Gradle)
  */
 public class PreloadedInstrumentationExample {
-    public static void main(String[] args) throws Exception {
-        Thread thread = Thread.currentThread();
-        thread.run();
-    }
+  public static void main(String[] args) throws Exception {
+    Thread thread = Thread.currentThread();
+    thread.run();
+  }
 }

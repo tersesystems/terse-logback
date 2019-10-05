@@ -15,16 +15,15 @@ import com.tersesystems.logback.classic.ProxyLoggingEvent;
 
 public class UniqueIdLoggingEvent extends ProxyLoggingEvent implements IUniqueIdLoggingEvent {
 
-    private final String uniqueId;
+  private final String uniqueId;
 
-        UniqueIdLoggingEvent(ILoggingEvent delegate, String uniqueId) {
-            super(delegate);
-            this.uniqueId = uniqueId;
-        }
+  UniqueIdLoggingEvent(ILoggingEvent delegate, String uniqueId) {
+    super(delegate);
+    this.uniqueId = uniqueId;
+  }
 
-        @Override
-        public String uniqueId() {
-            return this.uniqueId;
-        }
-    }
-
+  @Override
+  public String uniqueId() {
+    return this.uniqueId;
+  }
+}

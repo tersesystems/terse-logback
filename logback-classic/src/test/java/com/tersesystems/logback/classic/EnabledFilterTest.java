@@ -17,28 +17,26 @@ import com.tersesystems.logback.core.EnabledFilter;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class EnabledFilterTest {
-    @Test
-    public void testFilterFalse() {
-        EnabledFilter enabledFilter = new EnabledFilter();
-        enabledFilter.setEnabled(false);
-        enabledFilter.start();
+  @Test
+  public void testFilterFalse() {
+    EnabledFilter enabledFilter = new EnabledFilter();
+    enabledFilter.setEnabled(false);
+    enabledFilter.start();
 
-        ILoggingEvent loggingEvent = new LoggingEventVO();
+    ILoggingEvent loggingEvent = new LoggingEventVO();
 
-        Assertions.assertThat(enabledFilter.decide(loggingEvent)).isEqualTo(FilterReply.DENY);
-    }
+    Assertions.assertThat(enabledFilter.decide(loggingEvent)).isEqualTo(FilterReply.DENY);
+  }
 
-    @Test
-    public void testFilterTrue() {
-        EnabledFilter enabledFilter = new EnabledFilter();
-        enabledFilter.setEnabled(true);
-        enabledFilter.start();
+  @Test
+  public void testFilterTrue() {
+    EnabledFilter enabledFilter = new EnabledFilter();
+    enabledFilter.setEnabled(true);
+    enabledFilter.start();
 
-        ILoggingEvent loggingEvent = new LoggingEventVO();
+    ILoggingEvent loggingEvent = new LoggingEventVO();
 
-        Assertions.assertThat(enabledFilter.decide(loggingEvent)).isEqualTo(FilterReply.NEUTRAL);
-    }
+    Assertions.assertThat(enabledFilter.decide(loggingEvent)).isEqualTo(FilterReply.NEUTRAL);
+  }
 }

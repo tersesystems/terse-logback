@@ -13,22 +13,21 @@ package com.tersesystems.logback.uniqueid;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.tersesystems.logback.core.DecoratingAppender;
 
-public class UniqueIdEventAppender extends DecoratingAppender<ILoggingEvent, IUniqueIdLoggingEvent> {
+public class UniqueIdEventAppender
+    extends DecoratingAppender<ILoggingEvent, IUniqueIdLoggingEvent> {
 
-    private IdGenerator idGenerator = new FlakeIdGenerator();
+  private IdGenerator idGenerator = new FlakeIdGenerator();
 
-    public IdGenerator getIdGenerator() {
-        return idGenerator;
-    }
+  public IdGenerator getIdGenerator() {
+    return idGenerator;
+  }
 
-    public void setIdGenerator(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
-    }
+  public void setIdGenerator(IdGenerator idGenerator) {
+    this.idGenerator = idGenerator;
+  }
 
-    @Override
-    protected IUniqueIdLoggingEvent decorateEvent(ILoggingEvent eventObject) {
-        return new UniqueIdLoggingEvent(eventObject, idGenerator.generateId());
-    }
-
+  @Override
+  protected IUniqueIdLoggingEvent decorateEvent(ILoggingEvent eventObject) {
+    return new UniqueIdLoggingEvent(eventObject, idGenerator.generateId());
+  }
 }
-

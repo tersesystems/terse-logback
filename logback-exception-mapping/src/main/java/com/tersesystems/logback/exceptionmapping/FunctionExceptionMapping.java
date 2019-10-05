@@ -14,21 +14,21 @@ import java.util.List;
 import java.util.function.Function;
 
 public class FunctionExceptionMapping implements ExceptionMapping {
-    private final Function<Throwable, List<ExceptionProperty>> function;
-    private final String name;
+  private final Function<Throwable, List<ExceptionProperty>> function;
+  private final String name;
 
-    public FunctionExceptionMapping(String name, Function<Throwable, List<ExceptionProperty>> f) {
-        this.name = name;
-        this.function = f;
-    }
+  public FunctionExceptionMapping(String name, Function<Throwable, List<ExceptionProperty>> f) {
+    this.name = name;
+    this.function = f;
+  }
 
-    @Override
-    public List<ExceptionProperty> apply(Throwable e) {
-        return function.apply(e);
-    }
+  @Override
+  public List<ExceptionProperty> apply(Throwable e) {
+    return function.apply(e);
+  }
 
-    @Override
-    public String getName() {
-        return name;
-    }
+  @Override
+  public String getName() {
+    return name;
+  }
 }

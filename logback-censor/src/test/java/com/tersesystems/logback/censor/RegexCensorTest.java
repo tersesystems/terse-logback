@@ -10,33 +10,33 @@
  */
 package com.tersesystems.logback.censor;
 
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
 
 public class RegexCensorTest {
 
-    @Test
-    public void testCensor() throws Exception {
-        String replacementText = "*******";
+  @Test
+  public void testCensor() throws Exception {
+    String replacementText = "*******";
 
-        RegexCensor censor = new RegexCensor();
-        censor.setReplacementText(replacementText);
-        censor.setRegex("hunter2");
-        censor.start();
+    RegexCensor censor = new RegexCensor();
+    censor.setReplacementText(replacementText);
+    censor.setRegex("hunter2");
+    censor.start();
 
-        assertThat(censor.censorText("hunter2")).isEqualTo("*******");
-    }
+    assertThat(censor.censorText("hunter2")).isEqualTo("*******");
+  }
 
-    @Test
-    public void testCensorWithNoMatch() throws Exception {
-        String replacementText = "*******";
+  @Test
+  public void testCensorWithNoMatch() throws Exception {
+    String replacementText = "*******";
 
-        RegexCensor censor = new RegexCensor();
-        censor.setReplacementText(replacementText);
-        censor.setRegex("hunter2");
-        censor.start();
+    RegexCensor censor = new RegexCensor();
+    censor.setReplacementText(replacementText);
+    censor.setRegex("hunter2");
+    censor.start();
 
-        assertThat(censor.censorText("password1")).isEqualTo("password1");
-    }
+    assertThat(censor.censorText("password1")).isEqualTo("password1");
+  }
 }

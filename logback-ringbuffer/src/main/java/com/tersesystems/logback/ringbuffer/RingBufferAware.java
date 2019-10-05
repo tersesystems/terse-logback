@@ -16,5 +16,5 @@ package com.tersesystems.logback.ringbuffer;
  * @param <ElementT> the element type.
  */
 public interface RingBufferAware<ElementT> {
-    RingBuffer<ElementT> getRingBuffer();
+  RingBuffer<ElementT> getRingBuffer();
 }

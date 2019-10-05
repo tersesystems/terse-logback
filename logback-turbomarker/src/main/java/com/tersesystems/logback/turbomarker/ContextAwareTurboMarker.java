@@ -10,39 +10,42 @@
  */
 package com.tersesystems.logback.turbomarker;
 
+import static java.util.Objects.requireNonNull;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.spi.FilterReply;
 import org.slf4j.Marker;
 
-import static java.util.Objects.requireNonNull;
-
 /**
- * This class passes through a custom application context and a matcher, which makes the ultimate decision.
+ * This class passes through a custom application context and a matcher, which makes the ultimate
+ * decision.
  *
  * @param <C> the context of the predicate marker.
  */
 public class ContextAwareTurboMarker<C> extends TurboMarker implements TurboFilterDecider {
 
-    private final C context;
-    private final ContextAwareTurboFilterDecider<C> contextAwareDecider;
+  private final C context;
+  private final ContextAwareTurboFilterDecider<C> contextAwareDecider;
 
-    public ContextAwareTurboMarker(String name, C context, ContextAwareTurboFilterDecider<C> decider) {
-        super(name);
-        this.context = requireNonNull(context);
-        this.contextAwareDecider = requireNonNull(decider);
-    }
+  public ContextAwareTurboMarker(
+      String name, C context, ContextAwareTurboFilterDecider<C> decider) {
+    super(name);
+    this.context = requireNonNull(context);
+    this.contextAwareDecider = requireNonNull(decider);
+  }
 
-    ContextAwareTurboFilterDecider<C> getContextAwareDecider() {
-        return contextAwareDecider;
-    }
+  ContextAwareTurboFilterDecider<C> getContextAwareDecider() {
+    return contextAwareDecider;
+  }
 
-    C getContext() {
-        return context;
-    }
+  C getContext() {
+    return context;
+  }
 
-    @Override
-    public FilterReply decide(Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
-        return contextAwareDecider.decide(this, context, rootMarker, logger, level, format, params, t);
-    }
+  @Override
+  public FilterReply decide(
+      Marker rootMarker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+    return contextAwareDecider.decide(this, context, rootMarker, logger, level, format, params, t);
+  }
 }
