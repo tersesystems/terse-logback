@@ -20,18 +20,7 @@ output = [
 
 This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.  It should show how you configure Logback, and how you can reduce the amount of complexity in your end projects by packaging your logging appenders and configurators in a distinct project.
 
-## Blog Posts
-
-* [Application Logging in Java: Creating a Logging Framework](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/)
-* [Application Logging in Java: Adding Configuration](https://tersesystems.com/blog/2019/05/05/application-logging-in-java-part-2/)
-* [Application Logging in Java: Converters](https://tersesystems.com/blog/2019/05/11/application-logging-in-java-part-3/)
-* [Application Logging in Java: Markers](https://tersesystems.com/blog/2019/05/18/application-logging-in-java-part-4/)
-* [Application Logging in Java: Appenders](https://tersesystems.com/blog/2019/05/27/application-logging-in-java-part-5/)
-* [Application Logging in Java: Logging Costs](https://tersesystems.com/blog/2019/06/03/application-logging-in-java-part-6/)
-* [Application Logging in Java: Encoders](https://tersesystems.com/blog/2019/06/09/application-logging-in-java-part-7/)
-* [Application Logging in Java: Tracing 3rd Party Code](https://tersesystems.com/blog/2019/06/11/application-logging-in-java-part-8/)
-* [Application Logging in Java: Filters](https://tersesystems.com/blog/2019/06/15/application-logging-in-java-part-9/)
-* [Application Logging in Java: Putting it all together](https://tersesystems.com/blog/2019/06/23/application-logging-in-java-part-10/)
+I've written about the reasoning and internal architecture in a series of blog posts.  The [full list](https://tersesystems.com/tags/#logging) is available on [https://tersesystems.com](https://tersesystems.com).
 
 ## Project Setup
 
@@ -39,7 +28,7 @@ The project is configured into several modules.  The most relevant one to start 
 
 The `logback-structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  
 
-This is not intended to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
+This is [not intended](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/) to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
 
 ## What is Structured Logging?
 
@@ -1911,25 +1900,6 @@ The XML is as follows:
 
 ## Further Reading
 
-### APIs
-
-SLF4J is essentially the assembly language of Java logging at this point, so if you want to use something else it had better wrap or interoperate with SLF4J.  This is a huge advantage over the historical [logging mess](https://techblog.bozho.net/the-logging-mess/).
-
-There are various wrappers and APIs on top of SLF4J:
-
-* [Godaddy Logger](https://github.com/godaddy/godaddy-logger)
-* [LogMachine](https://github.com/UnquietCode/LogMachine)
-* [structlog4j](https://github.com/jacek99/structlog4j)
-* [slf4j-fluent](https://github.com/ffissore/slf4j-fluent)
-* [slf4j-json-logger](https://github.com/savoirtech/slf4j-json-logger)
-* [json-log-domain](https://github.com/skjolber/json-log-domain)
-* [logbook](https://github.com/zalando/logbook)
-* [logstage](https://izumi.7mind.io/latest/release/doc/logstage/)
-* [descriptive-logger](https://github.com/thombergs/descriptive-logger)
-* [flogger](https://github.com/google/flogger) has an [SLF4J backend](https://github.com/google/flogger/blob/master/slf4j/src/main/java/com/google/common/flogger/backend/slf4j/Slf4jLoggerBackend.java)
-
-I have not used these personally.  I usually roll my own code when I need something on top of SLF4J, because a) I can and b) the wrappers generally aren't great.  By and large, they tend to conflate concepts they're not interested in, so a hardcoded appender is assumed, or the encoder and layout is merged together, or the like.  In some cases, the API will [explicitly disable SLF4J functionality](https://github.com/google/flogger/blob/master/slf4j/src/main/java/com/google/common/flogger/backend/slf4j/Slf4jLoggerBackend.java#L100) like the OFF level.
-
 ### Logback Encoders and Appenders
 
 * [concurrent-build-logger](https://github.com/takari/concurrent-build-logger) (encoders and appenders both)
@@ -1938,15 +1908,10 @@ I have not used these personally.  I usually roll my own code when I need someth
 * [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)
 * [logback-steno](https://github.com/ArpNetworking/logback-steno)
 * [logslack](https://github.com/gmethvin/logslack)
-
-### Other Blog Posts
-
-#### Logback Specific
-
 * [Lessons Learned Writing New Logback Appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/)
 * [Extending logstash-logback-encoder](https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/)
 
-#### Best Practices
+### Best Practices
 
 Many of these are logback specific, but still good overall.
 
@@ -2007,38 +1972,26 @@ Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
 
 ## Release
 
-I can never remember how to release projects, so I'm using [Kordamp Gradle Plugins](https://aalmiray.github.io/kordamp-gradle-plugins/) to do most of the work.  I've added some properties to deal with signing artifacts with gpg2 and a Yubikey 4 and staging on Bintray.
-
-```bash
-./gradlew devSnapshot publishToMavenLocal -Pbintray.enabled=false --info
-```
-
 To make sure everything works:
 
 ```bash
-./gradlew licenseFormat check
+./gradlew clean build check
 ```
 
-To stage on Bintray:
+To format everything using [Spotless](https://github.com/diffplug/spotless/tree/master/plugin-gradle):
 
 ```bash
-HISTCONTROL=ignoreboth ./gradlew clean check release -Pbintray.enabled=true -Pbintray.dryRun=true --info
-HISTCONTROL=ignoreboth ./gradlew clean check release -Pbintray.enabled=true --info
+./gradlew spotlessApply
 ```
 
-Candidate:
+Releases are handled using [shipkit](https://github.com/mockito/shipkit):
 
+```bash
+./gradlew testRelease
 ```
-./gradlew release candidate -Pbintray.enabled=true --info
-```
 
-You will need to set up the bintray credentials before you can even compile anything (sorry about that):
+And then to run the release, which will increment the version number in `version.properties`:
 
-In `~/.gradle/gradle.properties`
-
-```
-bintrayUsername=tersesystems
-
-# https://bintray.com/profile/edit (API key is at the bottom)
-bintrayApiKey=[CENSORED]
+```bash
+./gradlew performRelease
 ```
