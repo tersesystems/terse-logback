@@ -304,7 +304,7 @@ This generates a trace with a root span of "index", a child span of "renderPage"
 
 ## Rendering to Postgres JSON
 
-You can log JSON to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html). 
+You can log JSON to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html).
 
 First, install PostgreSQL, create a database `logback`, a role `logback` and a password `logback` and add the following table:
 
@@ -322,6 +322,8 @@ CREATE INDEX idxgin ON logging_table USING gin (evt);
 ```
 
 A couple of notes here.  Database timestamps record time with microsecond resolution, whereas millisecond resolution is commonplace for logging, so for convenience both the timestamp (the TZ suffix specifies UTC timezone to Postgres) and the time since epoch are recorded.  For span information, the start time must also be recorded as TSE.  Likewise, the level is recorded as both a text string for visual reference, and a level value so that you can order and filter database queries.
+
+ Because logs are inherently time-series data, you can use the [timescaleDB postgresql extension](https://docs.timescale.com/latest/introduction) as described in [Store application logs in timescaleDB/postgres ](https://www.komu.engineer/blogs/timescaledb/timescaledb-for-logs), but that's not required.
 
 Then, add the following `logback.xml`:
 
