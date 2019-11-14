@@ -1,4 +1,4 @@
-package com.tersesystems.logback.graphstream;
+package com.tersesystems.logback.graphstream.markers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

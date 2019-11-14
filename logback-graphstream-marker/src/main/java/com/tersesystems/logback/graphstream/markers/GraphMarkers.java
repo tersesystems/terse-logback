@@ -1,6 +1,6 @@
-package com.tersesystems.logback.graphstream;
+package com.tersesystems.logback.graphstream.markers;
 
-import static com.tersesystems.logback.graphstream.GraphEventMarker.*;
+import static com.tersesystems.logback.graphstream.markers.GraphEventMarker.*;
 
 /** This is the public API for building graphs. */
 public class GraphMarkers {

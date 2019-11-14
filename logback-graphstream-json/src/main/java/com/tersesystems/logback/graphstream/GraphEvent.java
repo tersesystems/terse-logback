@@ -21,7 +21,6 @@ import java.util.Set;
 })
 public abstract class GraphEvent {
 
-  private long timeId;
   private String graphId;
 
   @JsonProperty("op")
