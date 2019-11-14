@@ -1,10 +1,10 @@
 <!---freshmark shields
 output = [
 	link(shield('Bintray', 'bintray', 'tersesystems:terse-logback', 'blue'), 'https://bintray.com/tersesystems/maven/terse-logback/view'),
-	link(shield('Latest version', 'latest', '{{version}}', 'blue'), 'https://github.com/tersesystems/terse-logback/releases/latest'),
+	link(shield('Latest version', 'latest', '{{previousVersion}}', 'blue'), 'https://github.com/tersesystems/terse-logback/releases/latest'),
 	link(shield('License CC0', 'license', 'CC0', 'blue'), 'https://tldrlegal.com/license/creative-commons-cc0-1.0-universal'),
 	'',
-	link(shield('Release Notes', 'release-notes', '{{version}}', 'brightgreen'), 'docs/release-notes.md'),
+	link(shield('Release Notes', 'release-notes', '{{previousVersion}}', 'brightgreen'), 'docs/release-notes.md'),
 	link(image('Travis CI', 'https://travis-ci.org/tersesystems/terse-logback.svg?branch=master'), 'https://travis-ci.org/tersesystems/terse-logback')
 	].join('\n')
 -->
