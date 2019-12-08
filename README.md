@@ -22,13 +22,110 @@ This is a Java project that shows how to use [Logback](https://logback.qos.ch/ma
 
 I've written about the reasoning and internal architecture in a series of blog posts.  The [full list](https://tersesystems.com/tags/#logging) is available on [https://tersesystems.com](https://tersesystems.com).
 
-## Project Setup
+## Quickstart
+
+You want to start up a project immediately and figure things out?  Okay then.
 
 The project is configured into several modules.  The most relevant one to start with is `logback-structured-config` which shows a finished project put together.
 
-The `logback-structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.  
+The `logback-structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.
+
+In all three examples, you'll create a module/subproject called `logging` and add the following to `src/main/resources/logback.xml`:
+
+```xml
+<configuration debug="true">
+  <include resource="terse-logback/default.xml"/>
+</configuration>
+```
+
+Then add a `logback.conf` file that contains the following:
+
+```hocon
+levels {
+  ROOT = DEBUG
+}
+```
+
+That should give you a fairly verbose logging setup and allow you to change the configuration.  See the [reference section](https://github.com/tersesystems/terse-logback#logback-xml-with-custom-actions) for more details.
 
 This is [not intended](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/) to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
+
+### Maven
+
+Add the following repository:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
+          xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+    
+    <profiles>
+        <profile>
+            <repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>bintray-tersesystems-maven</id>
+                    <name>bintray</name>
+                    <url>https://dl.bintray.com/tersesystems/maven</url>
+                </repository>
+            </repositories>
+            <id>bintray</id>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>bintray</activeProfile>
+    </activeProfiles>
+</settings>
+```
+
+Create a subproject `logging` and make your main codebase depend on it, but only provide `slf4j-api` to the main codebase.
+
+```xml
+<dependency>
+  <groupId>com.tersesystems.logback</groupId>
+  <artifactId>logback-structured-config</artifactId>
+  <version>0.13.1</version>
+  <type>pom</type>
+</dependency>
+```
+
+### Gradle
+
+Add the following resolver:
+
+```groovy
+repositories {
+    maven {
+        url  "https://dl.bintray.com/tersesystems/maven" 
+    }
+}
+```
+
+Create a subproject `logging` and make your main codebase depend on it, but only provide `slf4j-api` to the main codebase.  In the logging project, add the following:
+
+```
+implementation 'com.tersesystems.logback:logback-structured-config:0.13.1'
+```
+
+### SBT
+
+Create an SBT subproject and include it with your main build.
+
+```
+lazy val logging = (project in file("logging")).settings(
+    resolvers += Resolver.bintrayRepo("tersesystems", "maven"),
+    libraryDependencies += "com.tersesystems.logback" % "logback-structured-config" % "0.13.1"
+)
+
+lazy val impl = (project in file("impl")).settings(
+  // all your code dependencies + slf4j-api
+  libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.25"
+).dependsOn(logging)
+
+lazy val root = project in file(".").aggregate(logging, impl)
+```
 
 ## What is Structured Logging?
 
