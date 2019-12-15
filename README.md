@@ -26,7 +26,7 @@ I've written about the reasoning and internal architecture in a series of blog p
 
 You want to start up a project immediately and figure things out?  Okay then.
 
-The project is configured into several modules.  The most relevant one to start with is `logback-structured-config` which shows a finished project put together.
+The project is configured into several modules.  The most relevant one to start with is [`logback-structured-config`](https://github.com/tersesystems/terse-logback/tree/master/logback-structured-config/src/main/resources) which shows a finished project put together.  You can see it on [mvnrepository](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-structured-config) but you will need a custom resolver, so better to read through the whole thing.
 
 The `logback-structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.
 
@@ -126,6 +126,8 @@ lazy val impl = (project in file("impl")).settings(
 
 lazy val root = project in file(".").aggregate(logging, impl)
 ```
+
+You may also want to look at https://github.com/wsargent/sbt-with-jdk-13-docker-logging-example which leverages [sbt-native-packager](https://www.scala-sbt.org/sbt-native-packager/index.html) to provide different logging behavior.
 
 ## What is Structured Logging?
 
