@@ -30,6 +30,15 @@ dependencies {
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
+jar {
+    manifest {
+        attributes "Premain-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent"
+        attributes "Agent-Class": "com.tersesystems.logback.bytebuddy.LogbackInstrumentationAgent"
+        attributes "Can-Redefine-Classes": "true"
+        attributes "Can-Retransform-Classes": "true"
+    }
+}
+
 shadowJar {
     archiveName = "$baseName-$version.$extension"
 
