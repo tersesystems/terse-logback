@@ -9,10 +9,10 @@ output = [
 	].join('\n')
 -->
 [![Bintray](https://img.shields.io/badge/bintray-tersesystems%3Aterse--logback-blue.svg)](https://bintray.com/tersesystems/maven/terse-logback/view)
-[![Latest version](https://img.shields.io/badge/latest-0.13.1-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
+[![Latest version](https://img.shields.io/badge/latest-0.13.2-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
 [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
-[![Release Notes](https://img.shields.io/badge/release--notes-0.13.1-brightgreen.svg)](docs/release-notes.md)
+[![Release Notes](https://img.shields.io/badge/release--notes-0.13.2-brightgreen.svg)](docs/release-notes.md)
 [![Travis CI](https://travis-ci.org/tersesystems/terse-logback.svg?branch=master)](https://travis-ci.org/tersesystems/terse-logback)
 <!---freshmark /shields -->
 
@@ -20,7 +20,7 @@ output = [
 
 This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.  It should show how you configure Logback, and how you can reduce the amount of complexity in your end projects by packaging your logging appenders and configurators in a distinct project.
 
-I've written about the reasoning and internal architecture in a series of blog posts.  The [full list](https://tersesystems.com/tags/#logging) is available on [https://tersesystems.com](https://tersesystems.com).
+I've written about the reasoning and internal architecture in a series of blog posts.  The [full list](https://tersesystems.com/category/logging/) is available on [https://tersesystems.com](https://tersesystems.com).
 
 ## Quickstart
 
@@ -298,7 +298,7 @@ The appender is as follows:
               <logstashMarkers/>
               <pattern>
                 <pattern>
-                    { "start_ms": "#asLong(%startTime)" }
+                    { "start_ms": "#asLong{%startTime}" }
                 </pattern>
              </pattern>
               <arguments/>
@@ -453,7 +453,7 @@ Then, add the following `logback.xml`:
                     <logstashMarkers/>
                     <pattern>
                         <pattern>
-                            { "start_ms": "#asLong(%startTime)" }
+                            { "start_ms": "#asLong{%startTime}" }
                         </pattern>
                     </pattern>
                     <arguments/>
