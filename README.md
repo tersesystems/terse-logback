@@ -26,27 +26,11 @@ I've written about the reasoning and internal architecture in a series of blog p
 
 You want to start up a project immediately and figure things out?  Okay then.
 
-The project is configured into several modules.  The most relevant one to start with is [`logback-structured-config`](https://github.com/tersesystems/terse-logback/tree/master/logback-structured-config/src/main/resources) which shows a finished project put together.  You can see it on [mvnrepository](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-structured-config) but you will need a custom resolver, so better to read through the whole thing.
+The project is configured into several modules.  The most relevant one to start with is [`logback-structured-config`](https://github.com/tersesystems/terse-logback/tree/master/logback-structured-config/src/main/resources) which shows a finished project put together.  
 
 The `logback-structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.
 
-In all three examples, you'll create a module/subproject called `logging` and add the following to `src/main/resources/logback.xml`:
-
-```xml
-<configuration debug="true">
-  <include resource="terse-logback/default.xml"/>
-</configuration>
-```
-
-Then add a `logback.conf` file that contains the following:
-
-```hocon
-levels {
-  ROOT = DEBUG
-}
-```
-
-That should give you a fairly verbose logging setup and allow you to change the configuration.  See the [reference section](https://github.com/tersesystems/terse-logback#logback-xml-with-custom-actions) for more details.
+You can see it on [mvnrepository](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-structured-config) but you will need a custom resolver, so better to read through the whole thing.
 
 This is [not intended](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/) to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
 
@@ -86,7 +70,7 @@ Create a subproject `logging` and make your main codebase depend on it, but only
 <dependency>
   <groupId>com.tersesystems.logback</groupId>
   <artifactId>logback-structured-config</artifactId>
-  <version>0.13.1</version>
+  <version>$latestVersion</version>
   <type>pom</type>
 </dependency>
 ```
@@ -106,7 +90,7 @@ repositories {
 Create a subproject `logging` and make your main codebase depend on it, but only provide `slf4j-api` to the main codebase.  In the logging project, add the following:
 
 ```
-implementation 'com.tersesystems.logback:logback-structured-config:0.13.1'
+implementation 'com.tersesystems.logback:logback-structured-config:<latestVersion>'
 ```
 
 ### SBT
@@ -116,7 +100,7 @@ Create an SBT subproject and include it with your main build.
 ```
 lazy val logging = (project in file("logging")).settings(
     resolvers += Resolver.bintrayRepo("tersesystems", "maven"),
-    libraryDependencies += "com.tersesystems.logback" % "logback-structured-config" % "0.13.1"
+    libraryDependencies += "com.tersesystems.logback" % "logback-structured-config" % "<latestVersion>"
 )
 
 lazy val impl = (project in file("impl")).settings(
@@ -126,6 +110,27 @@ lazy val impl = (project in file("impl")).settings(
 
 lazy val root = project in file(".").aggregate(logging, impl)
 ```
+
+### Configuration
+
+After you've set up the resolvers and library dependencies for your build, you'll add the following to `src/main/resources/logback.xml`:
+
+```xml
+<configuration debug="true">
+  <include resource="terse-logback/default.xml"/>
+</configuration>
+```
+
+Then add a `logback.conf` file that contains the following:
+
+```hocon
+levels {
+  ROOT = DEBUG
+}
+```
+
+That should give you a fairly verbose logging setup and allow you to change the configuration.  See the [reference section](https://github.com/tersesystems/terse-logback#logback-xml-with-custom-actions) for more details.
+
 
 You may also want to look at https://github.com/wsargent/sbt-with-jdk-13-docker-logging-example which leverages [sbt-native-packager](https://www.scala-sbt.org/sbt-native-packager/index.html) to provide different logging behavior.
 
