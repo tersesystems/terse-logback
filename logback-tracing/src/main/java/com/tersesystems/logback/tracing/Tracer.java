@@ -32,7 +32,41 @@ public class Tracer {
     return Optional.ofNullable(stack().poll());
   }
 
-  public static SpanInfo pushSpan(String name, String serviceName, Supplier<String> idGenerator) {
+  /**
+   * Pushes the event onto the stack, using a parent id.
+   *
+   * <p>If there is no span or trace, then return empty.
+   *
+   * @param name the name of the span.
+   * @return the event if it was successfully added, otherwise empty.
+   */
+  public static Optional<EventInfo> pushEvent(String name) {
+    Deque<SpanInfo> stack = stack();
+    SpanInfo parent = stack.peek();
+
+    if (parent == null) {
+      return Optional.empty();
+    } else {
+      EventInfo info =
+          EventInfo.builder()
+              .setName(name)
+              .setTraceId(parent.traceId())
+              .setParentId(parent.spanId())
+              .build();
+      return Optional.of(info);
+    }
+  }
+
+  /**
+   * Creates a span, using the parent, and adds it to the stack.
+   *
+   * @param name the name of the span.
+   * @param serviceName the service name, only needed if this is the root span.
+   * @param idGenerator the span's id generator.
+   * @return the span if it was successfully added, otherwise empty.
+   */
+  public static Optional<SpanInfo> pushSpan(
+      String name, String serviceName, Supplier<String> idGenerator) {
     Deque<SpanInfo> stack = stack();
     SpanInfo parent = stack.peek();
 
@@ -43,11 +77,11 @@ public class Tracer {
       span =
           SpanInfo.builder().setRootSpan(idGenerator, name).setServiceName(serviceName).buildNow();
     }
-    if (!stack.offerFirst(span)) {
-      // TODO should log a warning saying the stack is full?
+    if (stack.offerFirst(span)) {
+      return Optional.of(span);
+    } else {
+      return Optional.empty();
     }
-    ;
-    return span;
   }
 
   public static Optional<SpanInfo> activeSpan() {
