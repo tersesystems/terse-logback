@@ -32,11 +32,10 @@ public class Tracer {
     return Optional.ofNullable(stack().poll());
   }
 
-
   /**
    * Pushes the event onto the stack, using a parent id.
    *
-   * If there is no span or trace, then return empty.
+   * <p>If there is no span or trace, then return empty.
    *
    * @param name the name of the span.
    * @return the event if it was successfully added, otherwise empty.
@@ -48,7 +47,8 @@ public class Tracer {
     if (parent == null) {
       return Optional.empty();
     } else {
-      EventInfo info = EventInfo.builder()
+      EventInfo info =
+          EventInfo.builder()
               .setName(name)
               .setTraceId(parent.traceId())
               .setParentId(parent.spanId())

@@ -98,6 +98,7 @@ public abstract class SpanInfo {
     /**
      * Creates a random UUID for the trace id and span id and set the name.
      *
+     * @param idGenerator the id generator for span and trace.
      * @param name the span name
      * @return the configured builder.
      */
@@ -117,6 +118,8 @@ public abstract class SpanInfo {
     /**
      * Builds a span info, setting the duration supplier to be {@code Duration.between(now,
      * Instant.now())}
+     *
+     * @return the span info already started.
      */
     public SpanInfo buildNow() {
       return startNow().build();

@@ -24,12 +24,9 @@ public class EventMarkerFactory {
     LogstashMarker nameMarker = Markers.append("name", eventInfo.name());
     LogstashMarker parentIdMarker = Markers.append("trace.parent_id", eventInfo.parentId());
     LogstashMarker traceIdMarker = Markers.append("trace.trace_id", eventInfo.traceId());
-    LogstashMarker serviceNameMarker = Markers.append("service_name", eventInfo.serviceName());
     LogstashMarker spanTypeMarker = Markers.append("meta.span_type", "span_event");
     // Don't include the timestamp marker, as it'll be handled by Logback
-    LogstashMarker[] markers = {
-      nameMarker, parentIdMarker, traceIdMarker, serviceNameMarker, spanTypeMarker
-    };
+    LogstashMarker[] markers = {nameMarker, parentIdMarker, traceIdMarker, spanTypeMarker};
     return markers;
   }
 }

@@ -42,7 +42,7 @@ public class LoggingInstrumentationByteBuddyBuilder {
    * @param typesMatcher an element matcher for types we should instrument.
    * @param methodsMatcher an element matcher for the methods in the types that should be
    *     instrumented.
-   * @return
+   * @return the agent builder
    */
   public AgentBuilder builderFromConfig(
       ElementMatcher<? super TypeDescription> typesMatcher,
