@@ -406,6 +406,8 @@ class HomeController @Inject()(cc: ControllerComponents, futures: Futures)
 
 This generates a trace with a root span of "index", a child span of "renderPage" each with their own durations.
 
+You can also send [span events](https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#span-events) and [span links](https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#links) using the `LinkMarkerFactory` and `EventMarkerFactory`, similar to the `SpanMarkerFactory`.
+
 ## Rendering to Postgres JSON
 
 You can log JSON to PostgreSQL, using the [built-in JSON datatype](https://www.postgresql.org/docs/current/functions-json.html).
