@@ -16,6 +16,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
+import com.tersesystems.logback.classic.TurboFilterDecider;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
