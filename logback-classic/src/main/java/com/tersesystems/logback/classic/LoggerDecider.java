@@ -8,16 +8,15 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.turbomarker;
+package com.tersesystems.logback.classic;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.spi.FilterReply;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import org.slf4j.Marker;
 
 @FunctionalInterface
-public interface MarkerLoggerDecider
-    extends BiFunction<Marker, Logger, FilterReply>, TurboFilterDecider {
+public interface LoggerDecider extends Function<Logger, FilterReply>, TurboFilterDecider {
   default FilterReply decide(
       Marker marker,
       Logger logger,
@@ -25,6 +24,6 @@ public interface MarkerLoggerDecider
       String format,
       Object[] params,
       Throwable t) {
-    return apply(marker, logger);
+    return apply(logger);
   }
 }

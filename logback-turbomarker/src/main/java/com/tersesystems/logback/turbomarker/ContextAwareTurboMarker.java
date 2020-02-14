@@ -15,6 +15,7 @@ import static java.util.Objects.requireNonNull;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.spi.FilterReply;
+import com.tersesystems.logback.classic.TurboFilterDecider;
 import org.slf4j.Marker;
 
 /**
