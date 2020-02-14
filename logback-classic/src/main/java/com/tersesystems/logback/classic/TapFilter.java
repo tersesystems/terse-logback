@@ -7,9 +7,6 @@ import ch.qos.logback.classic.spi.TurboFilterList;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import ch.qos.logback.core.spi.FilterReply;
-import com.tersesystems.logback.classic.ILoggingEventFactory;
-import com.tersesystems.logback.classic.LoggingEventFactory;
-import com.tersesystems.logback.classic.TurboFilterDecider;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import org.slf4j.Marker;
 
