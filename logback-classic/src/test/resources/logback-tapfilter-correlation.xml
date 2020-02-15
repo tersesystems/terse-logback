@@ -18,7 +18,7 @@
   <appender name="LIST" class="ch.qos.logback.core.read.ListAppender">
   </appender>
 
-  <turboFilter class="com.tersesystems.logback.tapfilter.TapFilter">
+  <turboFilter class="com.tersesystems.logback.classic.TapFilter">
     <!-- only tap if there's a correlation id marker or correlationId is in MDC -->
     <turboFilter class="com.tersesystems.logback.classic.CorrelationIdTurboFilter">
       <mdcKey>correlationId</mdcKey>

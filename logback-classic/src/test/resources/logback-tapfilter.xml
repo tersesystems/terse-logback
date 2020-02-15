@@ -10,7 +10,7 @@
         http://creativecommons.org/publicdomain/zero/1.0/
 
 -->
-<configuration>
+<configuration debug="true">
 
   <newRule pattern="configuration/turboFilter/appender-ref"
            actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
@@ -18,7 +18,7 @@
   <appender name="LIST" class="ch.qos.logback.core.read.ListAppender">
   </appender>
 
-  <turboFilter class="com.tersesystems.logback.tapfilter.TapFilter">
+  <turboFilter class="com.tersesystems.logback.classic.TapFilter">
     <appender-ref ref="LIST"/>
   </turboFilter>
 
