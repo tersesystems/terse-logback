@@ -5,7 +5,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
 import java.util.Optional;
-
 import org.slf4j.Marker;
 
 /** Tells the tap filter to create an event and append it if a correlation id is found. */
