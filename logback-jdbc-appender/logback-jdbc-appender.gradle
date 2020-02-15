@@ -1,0 +1,21 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
+dependencies {
+    compile project(':logback-classic')
+
+    // .200 has the JSON data type
+    implementation "com.zaxxer:HikariCP:3.4.2"
+
+    testImplementation "com.h2database:h2:1.4.200"
+    testCompile project(':logback-typesafe-config')
+    testCompile 'org.apiguardian:apiguardian-api:1.1.0'
+    testCompile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+}
