@@ -1,0 +1,35 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+  <appender name="CORRELATION_LIST" class="ch.qos.logback.core.read.ListAppender">
+    <filter class="com.tersesystems.logback.correlationid.CorrelationIdFilter">
+    </filter>
+  </appender>
+
+  <appender name="TURBOFILTER_LIST" class="ch.qos.logback.core.read.ListAppender">
+  </appender>
+
+  <turboFilter class="com.tersesystems.logback.classic.CorrelationIdTurboFilter">
+    <!-- only tap if there's a correlation id marker or correlationId is in MDC -->
+    <turboFilter class="com.tersesystems.logback.classic.CorrelationIdTurboFilter">
+      <mdcKey>correlationId</mdcKey>
+    </turboFilter>
+    <appender-ref ref="LIST"/>
+  </turboFilter>
+
+
+  <root level="INFO">
+    <appender-ref ref="CORRELATION_LIST" />
+  </root>
+</configuration>
+

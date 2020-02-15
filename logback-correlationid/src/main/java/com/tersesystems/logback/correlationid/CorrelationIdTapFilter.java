@@ -2,13 +2,13 @@ package com.tersesystems.logback.correlationid;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
-import java.util.Optional;
+import com.tersesystems.logback.classic.TapFilter;
+import com.tersesystems.logback.classic.TurboFilterDecider;
 import org.slf4j.Marker;
 
 /** Tells the tap filter to create an event and append it if a correlation id is found. */
-public class CorrelationIdTurboFilter extends TurboFilter {
+public class CorrelationIdTapFilter extends TapFilter {
   private String mdcKey = "correlation_id";
 
   public String getMdcKey() {
@@ -19,18 +19,17 @@ public class CorrelationIdTurboFilter extends TurboFilter {
     this.mdcKey = mdcKey;
   }
 
-  protected CorrelationIdUtils utils;
+  protected TurboFilterDecider decider;
 
   @Override
   public void start() {
     super.start();
-    utils = new CorrelationIdUtils(mdcKey);
+    decider = new CorrelationIdDecider(new CorrelationIdUtils(mdcKey));
   }
 
   @Override
   public FilterReply decide(
       Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
-    Optional<CorrelationIdProvider> maybeCorrelationId = utils.getProvider(marker);
-    return maybeCorrelationId.isPresent() ? FilterReply.ACCEPT : FilterReply.DENY;
+    return decider.decide(marker, logger, level, format, params, t);
   }
 }

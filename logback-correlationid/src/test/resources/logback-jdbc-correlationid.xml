@@ -1,0 +1,46 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+  <appender name="JDBC" class="com.tersesystems.logback.correlation.CorrelationIdJdbcAppender">
+    <driver>org.h2.Driver</driver>
+    <url>jdbc:h2:mem:terse-logback;DB_CLOSE_DELAY=-1</url>
+    <username>sa</username>
+    <password></password>
+
+    <createStatements>
+      CREATE TABLE events (
+      ID NUMERIC NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
+      tse_ms numeric NOT NULL,
+      start_ms numeric NULL,
+      level_value int NOT NULL,
+      level VARCHAR(7) NOT NULL,
+      evt JSON NOT NULL,
+      correlation_id VARCHAR(255) NULL
+      );
+      CREATE INDEX correlation_id_idx ON events(correlation_id);
+    </createStatements>
+    <insertStatement>
+      insert into events(ts, tse_ms, start_ms, level_value, level, evt, correlation_id) values(?, ?, ?, ?, ?, ?, ?)
+    </insertStatement>
+
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="JDBC" />
+  </root>
+</configuration>
+
