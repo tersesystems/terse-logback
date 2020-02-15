@@ -8,7 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.turbomarker;
+package com.tersesystems.logback.classic;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
