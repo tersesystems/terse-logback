@@ -1,0 +1,29 @@
+<configuration debug="true">
+
+    <newRule pattern="configuration/typesafeConfig"
+             actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
+
+    <typesafeConfig>
+    </typesafeConfig>
+
+    <appender name="JDBC" class="com.tersesystems.logback.jdbc.JDBCAppender">
+        <driver>${jdbc.driver}</driver>
+        <url>${jdbc.url}</url>
+        <username>${jdbc.username}</username>
+        <password>${jdbc.password}</password>
+
+        <!-- could also use jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;INIT=runscript from 'classpath:/db.sql' -->
+        <createStatements>${jdbc.createStatements}</createStatements>
+        <insertStatement>${jdbc.insertStatement}</insertStatement>
+        <reaperStatement>${jdbc.reaperStatement}</reaperStatement>
+        <reaperSchedule>${jdbc.reaperSchedule}</reaperSchedule>
+
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+       <appender-ref ref="JDBC"/>
+    </root>
+
+</configuration>
