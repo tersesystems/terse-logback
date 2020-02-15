@@ -9,10 +9,8 @@
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    implementation project(":logback-classic")
+    implementation project(":logback-jdbc-appender")
 
-    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-    implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.3.1'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
 
     // Need to set up a FlywayBaseTest, the gradle plugin won't run a "testFlywayMigrate" task
