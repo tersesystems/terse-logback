@@ -26,7 +26,7 @@
       <password></password>
 
       <createStatements>
-        CREATE TABLE events (
+        CREATE TABLE IF NOT EXISTS events (
         ID NUMERIC NOT NULL PRIMARY KEY AUTO_INCREMENT,
         ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
         tse_ms numeric NOT NULL,

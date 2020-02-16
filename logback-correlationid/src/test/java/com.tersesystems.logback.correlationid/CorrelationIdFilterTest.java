@@ -14,10 +14,17 @@ import com.tersesystems.logback.core.StreamUtils;
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 public class CorrelationIdFilterTest {
+  @Before
+  @After
+  public void clearMDC() {
+    MDC.clear();
+  }
 
   @Test
   public void testFilter() throws JoranException {
