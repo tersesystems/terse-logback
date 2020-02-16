@@ -1,7 +1,9 @@
 package com.tersesystems.logback.jdbc;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -19,23 +21,41 @@ public class JDBCAppenderTest {
 
     // Write something that never gets logged explicitly...
     Logger logger = loggerFactory.getLogger(getClass());
+    await().atMost(5, SECONDS).until(this::assertTablesExist);
+
     logger.info("info one");
+    logger.info("info two");
+    logger.info("info three");
 
-    boolean resultsExist = false;
-    try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:test", "sa", "")) {
-      try (PreparedStatement p = conn.prepareStatement("select ts, evt from events")) {
-        try (ResultSet rs = p.executeQuery()) {
-          while (rs.next()) {
-            resultsExist = true;
-            Timestamp ts = rs.getTimestamp("ts");
-            String json = rs.getString("evt");
+    await().atMost(1, SECONDS).untilAsserted(() -> assertRowsEntered(3));
+  }
 
-            assertThat(json).isNotNull();
-          }
-        }
+  private Boolean assertTablesExist() {
+    try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:terse-logback", "sa", "")) {
+      try (PreparedStatement p = conn.prepareStatement("select count(*) from events")) {
+        return p.execute();
+      }
+    } catch (SQLException e) {
+      return false;
+    }
+  }
+
+  public void assertRowsEntered(Integer expectedCount) throws SQLException {
+    try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:terse-logback", "sa", "")) {
+      try (PreparedStatement p = conn.prepareStatement("select count(*) from events")) {
+        assertThat(getCount(p)).isEqualTo(expectedCount);
       }
     }
-    assertThat(resultsExist).isTrue();
+  }
+
+  public int getCount(PreparedStatement p) throws SQLException {
+    try (ResultSet rs = p.executeQuery()) {
+      if (rs.next()) {
+        return rs.getInt(1);
+      } else {
+        return 0;
+      }
+    }
   }
 
   LoggerContext createLoggerFactory(String resourceName) throws JoranException {

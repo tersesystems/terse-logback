@@ -17,15 +17,24 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 public class CorrelationIdJdbcTest {
 
+  @Before
+  @After
+  public void clearMDC() {
+    MDC.clear();
+  }
+
   @Test
   public void testJdbcAppender() throws JoranException, SQLException, InterruptedException {
     LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-jdbc.xml");
     Logger logger = loggerFactory.getLogger("com.example.ExampleClass");
+    await().atMost(5, SECONDS).until(this::assertTablesExist);
 
     String cid1 = "12345";
     String key = "correlationId";
@@ -33,7 +42,6 @@ public class CorrelationIdJdbcTest {
 
     logger.info(marker, "info one");
     logger.info(marker, "info two");
-    await().atMost(5, SECONDS).until(this::assertTablesExist);
 
     String cid2 = "32411";
     MDC.put(key, cid2);

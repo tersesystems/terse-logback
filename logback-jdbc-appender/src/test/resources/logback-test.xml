@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration>
 
     <newRule pattern="configuration/typesafeConfig"
              actionClass="com.tersesystems.logback.typesafeconfig.TypesafeConfigAction"/>
