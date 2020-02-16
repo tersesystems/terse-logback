@@ -1,0 +1,19 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2019 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *     http://creativecommons.org/publicdomain/zero/1.0/
+ */
+dependencies {
+    implementation project(":logback-classic")
+    implementation project(":logback-jdbc-appender")
+
+    testImplementation "com.h2database:h2:1.4.200"
+    testImplementation 'org.awaitility:awaitility:4.0.2'
+    testImplementation 'p6spy:p6spy:3.8.7'
+    testImplementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+}
