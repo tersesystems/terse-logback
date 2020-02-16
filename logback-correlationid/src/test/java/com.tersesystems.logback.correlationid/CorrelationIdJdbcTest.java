@@ -1,5 +1,10 @@
 package com.tersesystems.logback.correlationid;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -8,21 +13,12 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import com.tersesystems.logback.core.StreamUtils;
 import com.tersesystems.logback.jdbc.JDBCAppender;
-import org.h2.jdbc.JdbcSQLSyntaxErrorException;
-import org.junit.jupiter.api.Test;
-import org.slf4j.MDC;
-
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 
 public class CorrelationIdJdbcTest {
 
@@ -61,7 +57,8 @@ public class CorrelationIdJdbcTest {
 
   public void assertRowsEntered(String cid1, String cid2) throws SQLException {
     try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:terse-logback", "sa", "")) {
-      try (PreparedStatement p = conn.prepareStatement("select count(*) from events where correlation_id = ?")) {
+      try (PreparedStatement p =
+          conn.prepareStatement("select count(*) from events where correlation_id = ?")) {
         p.setString(1, cid1);
         assertThat(getCount(p)).isEqualTo(2);
         p.setString(1, cid2);
@@ -91,11 +88,12 @@ public class CorrelationIdJdbcTest {
 
   JDBCAppender getJDBCAppender(LoggerContext context) {
     return (JDBCAppender)
-            requireNonNull(context.getLogger(Logger.ROOT_LOGGER_NAME).getAppender("ASYNC_JDBC"));
+        requireNonNull(context.getLogger(Logger.ROOT_LOGGER_NAME).getAppender("ASYNC_JDBC"));
   }
 
   private Optional<Appender<ILoggingEvent>> getFirstAppender(Logger logger) {
-    Stream<Appender<ILoggingEvent>> appenderStream = StreamUtils.fromIterator(logger.iteratorForAppenders());
+    Stream<Appender<ILoggingEvent>> appenderStream =
+        StreamUtils.fromIterator(logger.iteratorForAppenders());
     return appenderStream.findFirst();
   }
 }

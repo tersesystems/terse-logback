@@ -7,16 +7,13 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.TurboFilterList;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
-import ch.qos.logback.core.spi.AppenderAttachable;
+import com.tersesystems.logback.core.StreamUtils;
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import com.tersesystems.logback.core.StreamUtils;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
@@ -42,7 +39,7 @@ public class CorrelationIdFilterTest {
     logger.info(correlationIdMarker, "info four");
 
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
-    assertThat(listAppender.list.size()).isEqualTo(2);
+    assertThat(listAppender.list.size()).isEqualTo(3);
   }
 
   LoggerContext createLoggerFactory(String resourceName) throws JoranException {
@@ -65,7 +62,8 @@ public class CorrelationIdFilterTest {
   }
 
   private Optional<Appender<ILoggingEvent>> getFirstAppender(Logger logger) {
-    Stream<Appender<ILoggingEvent>> appenderStream = StreamUtils.fromIterator(logger.iteratorForAppenders());
+    Stream<Appender<ILoggingEvent>> appenderStream =
+        StreamUtils.fromIterator(logger.iteratorForAppenders());
     return appenderStream.findFirst();
   }
 }

@@ -285,7 +285,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       if (!initialized.get()) {
         initialize();
       }
-      
+
       try (Connection conn = dataSource.getConnection()) {
         String insertStatement = requireNonNull(getInsertStatement());
         try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {

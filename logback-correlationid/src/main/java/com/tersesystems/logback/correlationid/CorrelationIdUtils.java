@@ -2,14 +2,13 @@ package com.tersesystems.logback.correlationid;
 
 import ch.qos.logback.classic.util.LogbackMDCAdapter;
 import com.tersesystems.logback.core.StreamUtils;
-import org.slf4j.MDC;
-import org.slf4j.Marker;
-import org.slf4j.spi.MDCAdapter;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.slf4j.MDC;
+import org.slf4j.Marker;
+import org.slf4j.spi.MDCAdapter;
 
 public class CorrelationIdUtils {
 
@@ -31,7 +30,8 @@ public class CorrelationIdUtils {
     return getProvider(mdcPropertyMap).map(CorrelationIdProvider::getCorrelationId);
   };
 
-  public Optional<CorrelationIdProvider> getProvider(Map<String, String> mdcPropertyMap, Marker marker) {
+  public Optional<CorrelationIdProvider> getProvider(
+      Map<String, String> mdcPropertyMap, Marker marker) {
     Stream<Marker> markerStream = StreamUtils.fromMarker(marker);
     Optional<CorrelationIdProvider> first =
         markerStream
@@ -70,5 +70,4 @@ public class CorrelationIdUtils {
 
     return mdcPropertyMap;
   }
-
 }
