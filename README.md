@@ -12,7 +12,7 @@ output = [
 [![Latest version](https://img.shields.io/badge/latest-0.13.3-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
 [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
-[![Release Notes](https://img.shields.io/badge/release--notes-0.13.2-brightgreen.svg)](docs/release-notes.md)
+[![Release Notes](https://img.shields.io/badge/release--notes-0.13.3-brightgreen.svg)](docs/release-notes.md)
 [![Travis CI](https://travis-ci.org/tersesystems/terse-logback.svg?branch=master)](https://travis-ci.org/tersesystems/terse-logback)
 <!---freshmark /shields -->
 
@@ -414,11 +414,13 @@ You can also send [span events](https://docs.honeycomb.io/working-with-your-data
 
 There is a JDBC appender included which can be subclassed and extended as necessary in the `logback-jdbc-appender` module.  Using a database for logging can be a big help when you just want to get at the logs of the last 30 seconds from inside the application.  Because JDBC is both accessible and understandable, there's very little work required for querying.
 
-Logback **does** have a native JDBC appender, but unfortunately it requires three tables and is not set up for easy subclassing.  This implementation assumes a single table, with a user defined extensible schema.
+Logback **does** have a native JDBC appender, but unfortunately it requires three tables and is not set up for easy subclassing.  This one is better.
+ 
+This implementation assumes a single table, with a user defined extensible schema, and is set up with [HikariCP](https://github.com/brettwooldridge/HikariCP)  and a thread pool executor to serve JDBC with minimal blocking.  Note that you should **always** use a JDBC appender behind an `LoggingEventAsyncDisruptorAppender` and you should have an [appropriately sized connection pool](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing) for your database traffic.
 
 Database timestamps record time with microsecond resolution, whereas millisecond resolution is commonplace for logging, so for convenience both the timestamp with time zone and the time since epoch are recorded.  For span information, the start time must also be recorded as TSE.  Likewise, the level is recorded as both a text string for visual reference, and a level value so that you can order and filter database queries.
 
-The appender uses [HikariCP](https://github.com/brettwooldridge/HikariCP) under the hood for connection pooling, with a maxPoolSize of 2.
+Querying a database can be particuarly helpful when errors occur, because you can pull out all logs with a correlation id.  See the `logback-correlationid` module for an example.
 
 ### Logging using in-memory H2 Database
 
@@ -432,7 +434,7 @@ Using an in memory H2 database is a cheap and easy way to expose logs from insid
     <password></password>
     
     <createStatements>
-      CREATE TABLE events (
+      CREATE TABLE IF NOT EXISTS events (
          ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
          ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
          tse_ms numeric NOT NULL,
@@ -487,7 +489,6 @@ public class PostgresJsonAppender extends JDBCAppender {
 }
 ```
 
-
 First, install PostgreSQL, create a database `logback`, a role `logback` and a password `logback` and add the following table:
 
 ```sql
@@ -518,7 +519,7 @@ Then, add the following `logback.xml`:
     <appender name="ASYNC_POSTGRES" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
         <appender class="com.tersesystems.logback.postgresjson.PostgresJsonAppender">
             <createStatements>
-                CREATE TABLE logging_table (
+                CREATE TABLE IF NOT EXISTS logging_table (
                 ID serial NOT NULL PRIMARY KEY,
                 ts TIMESTAMPTZ(6) NOT NULL,
                 tse_ms bigint NOT NULL,
@@ -638,7 +639,7 @@ public class CorrelationIdJdbcAppender extends JDBCAppender {
 Then set up the table and add an index on the correlation id:
 
 ```sql
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
    ID NUMERIC NOT NULL PRIMARY KEY AUTO_INCREMENT,
    ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
    tse_ms numeric NOT NULL,
@@ -651,7 +652,7 @@ CREATE TABLE events (
 CREATE INDEX correlation_id_idx ON events(correlation_id);
 ```
 
-And then cheaply query from there.
+And then you can query from there.
 
 ## Selectively Logging with TurboMarkers
 
@@ -659,7 +660,7 @@ And then cheaply query from there.
 
 What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.
 
-We start by pulling the `decide` method to an interface, [`TurboFilterDecider`](https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/TurboFilterDecider.java):
+We start by pulling the `decide` method to an interface, [`TurboFilterDecider`](https://github.com/tersesystems/terse-logback/blob/master/logback-classic/src/main/java/com/tersesystems/logback/classic/TurboFilterDecider.java):
 
 ```java
 public interface TurboFilterDecider {
@@ -871,6 +872,44 @@ public class LDMarkerTest {
 ```
 
 This is also a reason why [diagnostic logging is better than a debugger](https://lemire.me/blog/2016/06/21/i-do-not-use-a-debugger/).  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.
+
+## Tap Filters
+
+A tap filter is used to tap some amount of incoming process and pass them to a specially configured appender even if they do not qualify as a logging event under normal circumstances.
+ 
+This is a <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/WireTap.html">wiretap</a> pattern from Enterprise Integration Patterns.
+ 
+Tap Filters are very useful as a way to send data to an appender.  They completely bypass any kind of logging level configured on the front end, so you can set a logger to INFO level but still have access to all TRACE events when an error occurs, through the tap filter's appenders.
+
+For example, a tap filter can automatically log everything with a correlation id at a TRACE level, without requiring filters or altering the log level as a whole.
+
+```xml
+<configuration>
+
+  <newRule pattern="configuration/turboFilter/appender-ref"
+           actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
+
+  <appender name="TAP_LIST" class="ch.qos.logback.core.read.ListAppender">
+  </appender>
+
+  <turboFilter class="com.tersesystems.logback.correlationid.CorrelationIdTapFilter">
+    <mdcKey>correlationId</mdcKey>
+    <appender-ref ref="TAP_LIST"/>
+  </turboFilter>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE" />
+  </root>
+</configuration>
+```
+
+This is only one approach to storing diagnostic information -- the other approach is to use turbo filters and markers based on ring buffers.
 
 ## Triggering Diagnostic Logging on Exception
 

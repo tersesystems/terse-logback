@@ -24,8 +24,12 @@ import javax.sql.DataSource;
 /**
  * This appender writes out to a single table through JDBC.
  *
- * <p>It's similar to the Postgres JSON appender, but does not use any Postgres specific objects,
- * and has the ability to reap old events.
+ * It uses HikariCP and a thread pool executor to set up
+ * the <a href="https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing">appropriate thread pool size</a>.
+ *
+ * Note that despite using a thread pool sized to the database connection pool, you should always use the JDBC appender
+ * behind an async appender of some sort, as you'll want to ensure that there's a queue feeding into the workers if
+ * they're all busy.
  */
 public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private final AtomicBoolean initialized = new AtomicBoolean(false);
