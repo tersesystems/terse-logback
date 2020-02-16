@@ -15,7 +15,9 @@ dependencies {
     implementation "com.zaxxer:HikariCP:3.4.2"
 
     testImplementation "com.h2database:h2:1.4.200"
-    testCompile project(':logback-typesafe-config')
-    testCompile 'org.apiguardian:apiguardian-api:1.1.0'
-    testCompile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    testImplementation project(':logback-typesafe-config')
+    testImplementation 'org.awaitility:awaitility:4.0.2'
+
+    testImplementation 'org.apiguardian:apiguardian-api:1.1.0'
+    testImplementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
 }

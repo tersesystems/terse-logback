@@ -1,20 +1,29 @@
 package com.tersesystems.logback.jdbc;
 
+import static ch.qos.logback.core.CoreConstants.SAFE_JORAN_CONFIGURATION;
 import static java.util.Objects.requireNonNull;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import com.tersesystems.logback.classic.StartTime;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Consumer;
 
 /**
  * This appender writes out to a single table through JDBC.
@@ -27,7 +36,6 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   private Encoder<ILoggingEvent> encoder;
   private HikariDataSource dataSource;
-  private Timer reaperTimer;
   private Duration reaperDuration;
 
   private String driver;
@@ -41,10 +49,13 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   private String reaperSchedule;
   private String poolName = "jdbc-appender-pool-" + System.currentTimeMillis();
-  private int maxPoolSize = 2;
+  private int poolSize = 2;
+
+  private ExecutorService executorService;
 
   // Debug flag for checking that a row was inserted.
   protected boolean loggingInsert = false;
+  private InsertConsumer insertConsumer;
 
   public String getUrl() {
     return url;
@@ -78,8 +89,8 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     this.password = password;
   }
 
-  public void setMaxPoolSize(int maxPoolSize) {
-    this.maxPoolSize = maxPoolSize;
+  public void setPoolSize(int poolSize) {
+    this.poolSize = poolSize;
   }
 
   public String getPoolName() {
@@ -133,12 +144,38 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   @Override
   public void start() {
     super.start();
+    afterContextStarted();
+    executorService = Executors.newFixedThreadPool(poolSize);
+  }
+
+  protected void afterContextStarted() {
+    // We need initialization to happen AFTER logback is started, because otherwise
+    // Hikari will start logging as it starts up, and cause NPE.
+    // So we run this until it works and then chuck it.
+    ScheduledExecutorService ses = context.getScheduledExecutorService();
+    AtomicReference<ScheduledFuture<?>> self = new AtomicReference<>();
+    ScheduledFuture<?> future = ses.scheduleAtFixedRate(() -> {
+      if (context.getObject(SAFE_JORAN_CONFIGURATION) != null) {
+        initialize();
+        if (initialized.get()) {
+          self.get().cancel(true);
+        }
+      }
+    }, 5, 5, TimeUnit.MILLISECONDS);
+    self.set(future);
   }
 
   @Override
   public void stop() {
     closeConnection();
-    stopReaper();
+    if (executorService != null) {
+      try {
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    insertConsumer = null;
     initialized.set(false);
     super.stop();
   }
@@ -158,6 +195,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         // Initialize with DDL
         // XXX should really check if the table exists already
         createTable();
+        insertConsumer = new InsertConsumer(dataSource);
         scheduleReaper();
         initialized.set(true);
       } catch (Exception e) {
@@ -212,22 +250,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     }
 
     reaperDuration = Duration.parse(reaperSchedule);
-    TimerTask reaperTask =
-        new TimerTask() {
-          @Override
-          public void run() {
-            reapOldEvents();
-          }
-        };
-
-    // Clear up if an exception caused the timer not to set up previously.
-    if (reaperTimer != null) {
-      reaperTimer.cancel();
-    }
-    reaperTimer = new Timer("jdbc-appender-reaper-" + System.currentTimeMillis());
-
-    reaperTimer.scheduleAtFixedRate(
-        reaperTask, reaperDuration.toMillis(), reaperDuration.toMillis());
+    ScheduledExecutorService ses = context.getScheduledExecutorService();
+    ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(this::reapOldEvents, reaperDuration.toMillis(), reaperDuration.toMillis(), TimeUnit.MILLISECONDS);
+    context.addScheduledFuture(scheduledFuture);
   }
 
   protected void reapOldEvents() {
@@ -241,14 +266,6 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       }
     } catch (SQLException e) {
       addWarn("Cannot create table, assuming it exists already", e);
-    }
-  }
-
-  protected void stopReaper() {
-    addInfo("stopReaper: ");
-    reaperDuration = null;
-    if (reaperTimer != null) {
-      reaperTimer.cancel();
     }
   }
 
@@ -266,13 +283,14 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   protected HikariDataSource createDataSource(
       String driver, String url, String username, String password) {
     HikariConfig config = new HikariConfig();
-    config.setDriverClassName(driver);
-    config.setJdbcUrl(url);
+    config.setDriverClassName(Objects.requireNonNull(driver));
+    config.setJdbcUrl(requireNonNull(url));
     config.setUsername(username);
     config.setPassword(password);
     config.setPoolName(poolName);
     config.setAutoCommit(true); // always use autocommit mode here.
-    config.setMaximumPoolSize(maxPoolSize);
+    config.setMinimumIdle(poolSize);
+    config.setMaximumPoolSize(poolSize);
     Properties props = new Properties();
     // props.put("dataSource.logWriter", new PrintWriter(System.out));
     config.setDataSourceProperties(props);
@@ -281,12 +299,18 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   protected void append(ILoggingEvent event) {
-    try {
-      if (!initialized.get()) {
-        initialize();
-      }
+    executorService.submit(() -> insertConsumer.accept(event));
+  }
 
-      try (Connection conn = dataSource.getConnection()) {
+  class InsertConsumer implements Consumer<ILoggingEvent> {
+    private final DataSource dataSource;
+
+    InsertConsumer(DataSource dataSource) {
+      this.dataSource = requireNonNull(dataSource);
+    }
+
+    public void accept(ILoggingEvent event) {
+      try (Connection conn = this.dataSource.getConnection()) {
         String insertStatement = requireNonNull(getInsertStatement());
         try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
           LongAdder adder = new LongAdder();
@@ -297,9 +321,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
             addInfo(msg);
           }
         }
+      } catch (Exception e) {
+        addError("Cannot insert event, please check you are using a valid encoder!", e);
       }
-    } catch (Exception e) {
-      addError("Cannot insert event, please check you are using a valid encoder!", e);
     }
   }
 
