@@ -11,4 +11,9 @@
 dependencies {
     implementation project(":logback-classic")
     implementation project(":logback-jdbc-appender")
+
+    testImplementation "com.h2database:h2:1.4.200"
+    testImplementation 'org.awaitility:awaitility:4.0.2'
+    testImplementation 'p6spy:p6spy:3.8.7'
+    testImplementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
 }

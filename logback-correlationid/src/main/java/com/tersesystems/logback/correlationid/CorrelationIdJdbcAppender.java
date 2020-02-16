@@ -36,7 +36,7 @@ public class CorrelationIdJdbcAppender extends JDBCAppender {
 
   private void insertCorrelationId(
       ILoggingEvent event, LongAdder adder, PreparedStatement statement) throws SQLException {
-    Optional<String> maybeCorrelationId = utils.get(event.getMarker());
+    Optional<String> maybeCorrelationId = utils.get(event.getMDCPropertyMap(), event.getMarker());
     if (maybeCorrelationId.isPresent()) {
       statement.setString(adder.intValue(), maybeCorrelationId.get());
     } else {

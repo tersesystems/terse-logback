@@ -28,7 +28,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private Encoder<ILoggingEvent> encoder;
   private HikariDataSource dataSource;
   private Timer reaperTimer;
-  private java.time.Duration reaperDuration;
+  private Duration reaperDuration;
 
   private String driver;
   private String url;
@@ -42,6 +42,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private String reaperSchedule;
   private String poolName = "jdbc-appender-pool-" + System.currentTimeMillis();
   private int maxPoolSize = 2;
+
+  // Debug flag for checking that a row was inserted.
+  protected boolean loggingInsert = false;
 
   public String getUrl() {
     return url;
@@ -268,6 +271,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     config.setUsername(username);
     config.setPassword(password);
     config.setPoolName(poolName);
+    config.setAutoCommit(true); // always use autocommit mode here.
     config.setMaximumPoolSize(maxPoolSize);
     Properties props = new Properties();
     // props.put("dataSource.logWriter", new PrintWriter(System.out));
@@ -281,15 +285,17 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       if (!initialized.get()) {
         initialize();
       }
-
+      
       try (Connection conn = dataSource.getConnection()) {
         String insertStatement = requireNonNull(getInsertStatement());
         try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
           LongAdder adder = new LongAdder();
           adder.increment();
           int result = insertStatement(event, adder, statement);
-          String msg = String.format("Inserted resulted in %d rows added", result);
-          addInfo(msg);
+          if (isLoggingInsert()) {
+            String msg = String.format("Inserted resulted in %d rows added", result);
+            addInfo(msg);
+          }
         }
       }
     } catch (Exception e) {
@@ -366,5 +372,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     long eventMillis = event.getTimeStamp();
     statement.setTimestamp(adder.intValue(), new Timestamp(eventMillis));
     adder.increment();
+  }
+
+  public boolean isLoggingInsert() {
+    return loggingInsert;
   }
 }

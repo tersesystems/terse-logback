@@ -14,26 +14,35 @@ import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.AppenderAttachable;
 import java.net.URL;
 import java.util.Optional;
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
 
-public class CorrelationIdSimpleTest {
+import com.tersesystems.logback.core.StreamUtils;
+import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
+
+public class CorrelationIdFilterTest {
 
   @Test
-  public void testSimple() throws JoranException {
-    LoggerContext loggerFactory = createLoggerFactory("/logback-correlation.xml");
+  public void testFilter() throws JoranException {
+    LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid.xml");
 
     // Write something that never gets logged explicitly...
-    Logger debugLogger = loggerFactory.getLogger("com.example.Debug");
-    debugLogger.debug("debug one");
-    debugLogger.debug("debug two");
-    debugLogger.debug("debug three");
-    debugLogger.debug("debug four");
+    Logger logger = loggerFactory.getLogger("com.example.Debug");
+    String correlationId = "12345";
+    CorrelationIdMarker correlationIdMarker = CorrelationIdMarker.create(correlationId);
 
-    Logger logger = loggerFactory.getLogger("com.example.Test");
-    logger.error("Write out error message to console");
+    // should be logged because marker
+    logger.info(correlationIdMarker, "info one");
+
+    logger.info("info two"); // should not be logged
+
+    // Everything below this point should be logged.
+    MDC.put("correlationId", correlationId);
+    logger.info("info three"); // should not be logged
+    logger.info(correlationIdMarker, "info four");
 
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
-    assertThat(listAppender.list.size()).isEqualTo(5);
+    assertThat(listAppender.list.size()).isEqualTo(2);
   }
 
   LoggerContext createLoggerFactory(String resourceName) throws JoranException {
@@ -45,20 +54,18 @@ public class CorrelationIdSimpleTest {
     return context;
   }
 
-  Optional<Appender<ILoggingEvent>> getFilterAppender(TurboFilterList turboFilterList) {
-    return turboFilterList.stream()
-        .filter(f -> f instanceof AppenderAttachable<?>)
-        .map(f -> ((AppenderAttachable<ILoggingEvent>) f).iteratorForAppenders().next())
-        .findFirst();
-  }
-
   ListAppender<ILoggingEvent> getListAppender(LoggerContext context) {
     Optional<Appender<ILoggingEvent>> maybeAppender =
-        getFilterAppender(context.getTurboFilterList());
+        getFirstAppender(context.getLogger(Logger.ROOT_LOGGER_NAME));
     if (maybeAppender.isPresent()) {
       return (ListAppender<ILoggingEvent>) requireNonNull(maybeAppender.get());
     } else {
       throw new IllegalStateException("Cannot find appender");
     }
+  }
+
+  private Optional<Appender<ILoggingEvent>> getFirstAppender(Logger logger) {
+    Stream<Appender<ILoggingEvent>> appenderStream = StreamUtils.fromIterator(logger.iteratorForAppenders());
+    return appenderStream.findFirst();
   }
 }

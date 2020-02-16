@@ -2,13 +2,14 @@ package com.tersesystems.logback.correlationid;
 
 import ch.qos.logback.classic.util.LogbackMDCAdapter;
 import com.tersesystems.logback.core.StreamUtils;
+import org.slf4j.MDC;
+import org.slf4j.Marker;
+import org.slf4j.spi.MDCAdapter;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.slf4j.MDC;
-import org.slf4j.Marker;
-import org.slf4j.spi.MDCAdapter;
 
 public class CorrelationIdUtils {
 
@@ -22,15 +23,15 @@ public class CorrelationIdUtils {
     this.mdcKey = mdcKey;
   }
 
-  public Optional<String> get(Marker marker) {
-    return getProvider(marker).map(CorrelationIdProvider::getCorrelationId);
+  public Optional<String> get(Map<String, String> mdcPropertyMap, Marker marker) {
+    return getProvider(mdcPropertyMap, marker).map(CorrelationIdProvider::getCorrelationId);
   };
 
-  public Optional<String> get() {
-    return getProvider().map(CorrelationIdProvider::getCorrelationId);
+  public Optional<String> get(Map<String, String> mdcPropertyMap) {
+    return getProvider(mdcPropertyMap).map(CorrelationIdProvider::getCorrelationId);
   };
 
-  public Optional<CorrelationIdProvider> getProvider(Marker marker) {
+  public Optional<CorrelationIdProvider> getProvider(Map<String, String> mdcPropertyMap, Marker marker) {
     Stream<Marker> markerStream = StreamUtils.fromMarker(marker);
     Optional<CorrelationIdProvider> first =
         markerStream
@@ -41,14 +42,13 @@ public class CorrelationIdUtils {
     if (first.isPresent()) {
       return first;
     } else {
-      return getProvider();
+      return getProvider(mdcPropertyMap);
     }
   }
 
-  public Optional<CorrelationIdProvider> getProvider() {
+  public Optional<CorrelationIdProvider> getProvider(Map<String, String> mdcPropertyMap) {
     // Look in MDC for a correlation id as well...
     if (mdcKey != null) {
-      Map<String, String> mdcPropertyMap = getMDCPropertyMap();
       String s = mdcPropertyMap.get(mdcKey);
       if (s != null) {
         return Optional.of(() -> s);
@@ -70,4 +70,5 @@ public class CorrelationIdUtils {
 
     return mdcPropertyMap;
   }
+
 }
