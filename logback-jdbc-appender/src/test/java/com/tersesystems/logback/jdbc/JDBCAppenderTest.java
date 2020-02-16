@@ -40,11 +40,9 @@ public class JDBCAppenderTest {
     }
   }
 
-
   public void assertRowsEntered(Integer expectedCount) throws SQLException {
     try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:terse-logback", "sa", "")) {
-      try (PreparedStatement p =
-                   conn.prepareStatement("select count(*) from events")) {
+      try (PreparedStatement p = conn.prepareStatement("select count(*) from events")) {
         assertThat(getCount(p)).isEqualTo(expectedCount);
       }
     }
@@ -59,7 +57,6 @@ public class JDBCAppenderTest {
       }
     }
   }
-
 
   LoggerContext createLoggerFactory(String resourceName) throws JoranException {
     LoggerContext context = new LoggerContext();

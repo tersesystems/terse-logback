@@ -4,17 +4,12 @@ import static ch.qos.logback.core.CoreConstants.SAFE_JORAN_CONFIGURATION;
 import static java.util.Objects.requireNonNull;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import com.tersesystems.logback.classic.StartTime;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
-import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -24,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
+import javax.sql.DataSource;
 
 /**
  * This appender writes out to a single table through JDBC.
@@ -154,14 +150,19 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     // So we run this until it works and then chuck it.
     ScheduledExecutorService ses = context.getScheduledExecutorService();
     AtomicReference<ScheduledFuture<?>> self = new AtomicReference<>();
-    ScheduledFuture<?> future = ses.scheduleAtFixedRate(() -> {
-      if (context.getObject(SAFE_JORAN_CONFIGURATION) != null) {
-        initialize();
-        if (initialized.get()) {
-          self.get().cancel(true);
-        }
-      }
-    }, 5, 5, TimeUnit.MILLISECONDS);
+    ScheduledFuture<?> future =
+        ses.scheduleAtFixedRate(
+            () -> {
+              if (context.getObject(SAFE_JORAN_CONFIGURATION) != null) {
+                initialize();
+                if (initialized.get()) {
+                  self.get().cancel(true);
+                }
+              }
+            },
+            5,
+            5,
+            TimeUnit.MILLISECONDS);
     self.set(future);
   }
 
@@ -251,7 +252,12 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     reaperDuration = Duration.parse(reaperSchedule);
     ScheduledExecutorService ses = context.getScheduledExecutorService();
-    ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(this::reapOldEvents, reaperDuration.toMillis(), reaperDuration.toMillis(), TimeUnit.MILLISECONDS);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            this::reapOldEvents,
+            reaperDuration.toMillis(),
+            reaperDuration.toMillis(),
+            TimeUnit.MILLISECONDS);
     context.addScheduledFuture(scheduledFuture);
   }
 
