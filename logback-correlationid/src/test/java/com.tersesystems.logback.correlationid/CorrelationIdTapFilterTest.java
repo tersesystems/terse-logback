@@ -28,25 +28,8 @@ public class CorrelationIdTapFilterTest {
   }
 
   @Test
-  public void testSimple() throws JoranException {
-    LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
-
-    // Write something that never gets logged explicitly...
-    Logger debugLogger = loggerFactory.getLogger("com.example.Debug");
-    debugLogger.debug("debug one");
-    debugLogger.debug("debug two");
-    debugLogger.debug("debug three");
-    debugLogger.debug("debug four");
-
-    Logger logger = loggerFactory.getLogger("com.example.Test");
-    logger.error("Write out error message to console");
-
-    ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
-    assertThat(listAppender.list.size()).isEqualTo(5);
-  }
-
-  @Test
   public void testCorrelationWithNoMarker() throws JoranException {
+    MDC.clear();
     LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
 
     // Because there's no correlation id, it should never make it past the filter here.
@@ -65,6 +48,7 @@ public class CorrelationIdTapFilterTest {
 
   @Test
   public void testCorrelationWithMarker() throws JoranException {
+    MDC.clear();
     LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
 
     CorrelationIdMarker correlationIdMarker = CorrelationIdMarker.create("12345");
@@ -85,6 +69,7 @@ public class CorrelationIdTapFilterTest {
 
   @Test
   public void testCorrelationWithMDC() throws JoranException {
+    MDC.clear();
     LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
 
     MDC.put("correlationId", "12345");
