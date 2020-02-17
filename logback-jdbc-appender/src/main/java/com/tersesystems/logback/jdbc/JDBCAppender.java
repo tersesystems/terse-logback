@@ -53,8 +53,13 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private ExecutorService executorService;
 
   // Debug flag for checking that a row was inserted.
-  protected boolean loggingInsert = false;
   private InsertConsumer insertConsumer;
+
+  protected boolean loggingInsert = false;
+
+  public boolean isLoggingInsert() {
+    return loggingInsert;
+  }
 
   public String getUrl() {
     return url;
@@ -284,7 +289,11 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   @Override
   protected void append(ILoggingEvent event) {
     initialize();
-    executorService.submit(() -> insertConsumer.accept(event));
+    if (dataSource != null) {
+      executorService.submit(() -> insertConsumer.accept(event));
+    } else {
+      addWarn("Database connection not established, cannot log event!");
+    }
   }
 
   class InsertConsumer implements Consumer<ILoggingEvent> {
@@ -381,9 +390,5 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     long eventMillis = event.getTimeStamp();
     statement.setTimestamp(adder.intValue(), new Timestamp(eventMillis));
     adder.increment();
-  }
-
-  public boolean isLoggingInsert() {
-    return loggingInsert;
   }
 }
