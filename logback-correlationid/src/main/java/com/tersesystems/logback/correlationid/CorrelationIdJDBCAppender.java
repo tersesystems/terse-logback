@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.LongAdder;
 
 /** Writes out log entry with a correlation id explicitly. */
-public class CorrelationIdJdbcAppender extends JDBCAppender {
+public class CorrelationIdJDBCAppender extends JDBCAppender {
   private String mdcKey = "correlation_id";
 
   public String getMdcKey() {
