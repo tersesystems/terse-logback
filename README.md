@@ -1022,7 +1022,7 @@ The configuration here uses a tap filter with a correlation id match up, and wri
   </typesafeConfig>
 
   <appender name="ASYNC_JDBC" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-    <appender class="com.tersesystems.logback.correlationid.CorrelationIdJdbcAppender">
+    <appender class="com.tersesystems.logback.correlationid.CorrelationIdJDBCAppender">
       <mdcKey>correlationId</mdcKey>
       
       <driver>${jdbc.driver}</driver>

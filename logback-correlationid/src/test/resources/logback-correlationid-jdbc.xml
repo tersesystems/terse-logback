@@ -15,7 +15,7 @@
   <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
   <appender name="ASYNC_JDBC" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-    <appender class="com.tersesystems.logback.correlationid.CorrelationIdJdbcAppender">
+    <appender class="com.tersesystems.logback.correlationid.CorrelationIdJDBCAppender">
       <mdcKey>correlationId</mdcKey>
 
 <!--          <driver>com.p6spy.engine.spy.P6SpyDriver</driver>-->
