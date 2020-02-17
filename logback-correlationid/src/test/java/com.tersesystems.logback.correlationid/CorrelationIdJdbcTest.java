@@ -34,13 +34,14 @@ public class CorrelationIdJdbcTest {
   public void testJdbcAppender() throws JoranException, SQLException, InterruptedException {
     LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-jdbc.xml");
     Logger logger = loggerFactory.getLogger("com.example.ExampleClass");
-    await().atMost(5, SECONDS).until(this::assertTablesExist);
 
     String cid1 = "12345";
     String key = "correlationId";
     CorrelationIdMarker marker = CorrelationIdMarker.create(cid1);
 
     logger.info(marker, "info one");
+    await().atMost(5, SECONDS).until(this::assertTablesExist);
+
     logger.info(marker, "info two");
 
     String cid2 = "32411";
