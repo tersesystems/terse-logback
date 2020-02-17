@@ -153,17 +153,20 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   public void stop() {
+    super.stop();
     closeConnection();
+    shutdownThreadPool();
+    initialized.set(false);
+  }
+
+  protected void shutdownThreadPool() {
     if (executorService != null) {
       try {
         executorService.awaitTermination(1, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        // This isn't worth reporting.
       }
     }
-    insertConsumer = null;
-    initialized.set(false);
-    super.stop();
   }
 
   // When the appender is starting, then Logback hasn't started up yet and so
@@ -175,12 +178,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       addInfo("initialize: ");
       try {
         dataSource = createDataSource(driver, url, username, password);
-        checkConnection();
-
-        // Initialize with DDL
-        // XXX should really check if the table exists already
-        createTable();
         insertConsumer = new InsertConsumer(dataSource);
+        checkConnection();
+        createTableIfNecessary();
         scheduleReaper();
       } catch (Exception e) {
         addError("Cannot configure database connection", e);
@@ -201,7 +201,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     }
   }
 
-  protected void createTable() {
+  protected void createTableIfNecessary() {
+    // Initialize with DDL
+    // XXX should really check if the table exists already
     String createStatements = getCreateStatements();
     if (createStatements == null || createStatements.trim().isEmpty()) {
       return;
@@ -259,9 +261,12 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   }
 
   protected void closeConnection() {
+    insertConsumer = null;
     if (dataSource != null) {
       try {
-        dataSource.close();
+        if (dataSource.isRunning()) {
+          dataSource.close();
+        }
         dataSource = null;
       } catch (Exception e) {
         addError("Exception closing datasource", e);
@@ -272,8 +277,8 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   protected HikariDataSource createDataSource(
       String driver, String url, String username, String password) {
     HikariConfig config = new HikariConfig();
-    config.setDriverClassName(Objects.requireNonNull(driver));
-    config.setJdbcUrl(requireNonNull(url));
+    config.setDriverClassName(Objects.requireNonNull(driver, "Null driver"));
+    config.setJdbcUrl(requireNonNull(url, "Null url"));
     config.setUsername(username);
     config.setPassword(password);
     config.setPoolName(poolName);
@@ -288,11 +293,15 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   protected void append(ILoggingEvent event) {
-    initialize();
-    if (dataSource != null) {
-      executorService.submit(() -> insertConsumer.accept(event));
+    if (isStarted()) {
+      initialize();
+      if (dataSource != null) {
+        executorService.submit(() -> insertConsumer.accept(event));
+      } else {
+        addWarn("Database connection not established, cannot log event!");
+      }
     } else {
-      addWarn("Database connection not established, cannot log event!");
+      addWarn("Appender not started!");
     }
   }
 
