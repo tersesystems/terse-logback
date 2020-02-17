@@ -10,7 +10,7 @@
         http://creativecommons.org/publicdomain/zero/1.0/
 
 -->
-<configuration debug="true">
+<configuration>
 
   <newRule pattern="configuration/turboFilter/appender-ref"
            actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
