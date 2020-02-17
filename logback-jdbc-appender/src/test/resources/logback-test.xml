@@ -22,7 +22,9 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="some.example.ExampleClass" level="INFO"/>
+
+    <root level="ERROR">
        <appender-ref ref="JDBC"/>
     </root>
 

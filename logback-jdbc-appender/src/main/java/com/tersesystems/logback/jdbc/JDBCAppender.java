@@ -1,6 +1,5 @@
 package com.tersesystems.logback.jdbc;
 
-import static ch.qos.logback.core.CoreConstants.SAFE_JORAN_CONFIGURATION;
 import static java.util.Objects.requireNonNull;
 
 import ch.qos.logback.classic.Level;
@@ -16,7 +15,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 import javax.sql.DataSource;
@@ -55,8 +53,13 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private ExecutorService executorService;
 
   // Debug flag for checking that a row was inserted.
-  protected boolean loggingInsert = false;
   private InsertConsumer insertConsumer;
+
+  protected boolean loggingInsert = false;
+
+  public boolean isLoggingInsert() {
+    return loggingInsert;
+  }
 
   public String getUrl() {
     return url;
@@ -145,30 +148,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   @Override
   public void start() {
     super.start();
-    afterContextStarted();
     executorService = Executors.newFixedThreadPool(poolSize);
-  }
-
-  protected void afterContextStarted() {
-    // We need initialization to happen AFTER logback is started, because otherwise
-    // Hikari will start logging as it starts up, and cause NPE.
-    // So we run this until it works and then chuck it.
-    ScheduledExecutorService ses = context.getScheduledExecutorService();
-    AtomicReference<ScheduledFuture<?>> self = new AtomicReference<>();
-    ScheduledFuture<?> future =
-        ses.scheduleAtFixedRate(
-            () -> {
-              if (context.getObject(SAFE_JORAN_CONFIGURATION) != null) {
-                initialize();
-                if (initialized.get()) {
-                  self.get().cancel(true);
-                }
-              }
-            },
-            5,
-            5,
-            TimeUnit.MILLISECONDS);
-    self.set(future);
   }
 
   @Override
@@ -190,9 +170,8 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   // we'll get very odd errors if the driver starts trying to log things itself.
   // Instead, we're going to register something that will start a datasource
   // when something comes through the pipeline.
-  // Make this synchronized so that it blocks until we have the table created.
-  protected synchronized void initialize() {
-    if (!initialized.get()) {
+  protected void initialize() {
+    if (!initialized.getAndSet(true)) {
       addInfo("initialize: ");
       try {
         dataSource = createDataSource(driver, url, username, password);
@@ -203,7 +182,6 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         createTable();
         insertConsumer = new InsertConsumer(dataSource);
         scheduleReaper();
-        initialized.set(true);
       } catch (Exception e) {
         addError("Cannot configure database connection", e);
       }
@@ -310,7 +288,12 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   protected void append(ILoggingEvent event) {
-    executorService.submit(() -> insertConsumer.accept(event));
+    initialize();
+    if (dataSource != null) {
+      executorService.submit(() -> insertConsumer.accept(event));
+    } else {
+      addWarn("Database connection not established, cannot log event!");
+    }
   }
 
   class InsertConsumer implements Consumer<ILoggingEvent> {
@@ -407,9 +390,5 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     long eventMillis = event.getTimeStamp();
     statement.setTimestamp(adder.intValue(), new Timestamp(eventMillis));
     adder.increment();
-  }
-
-  public boolean isLoggingInsert() {
-    return loggingInsert;
   }
 }

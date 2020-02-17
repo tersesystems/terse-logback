@@ -1,14 +1,4 @@
-/*
- * SPDX-License-Identifier: CC0-1.0
- *
- * Copyright 2018-2019 Will Sargent.
- *
- * Licensed under the CC0 Public Domain Dedication;
- * You may obtain a copy of the License at
- *
- *     http://creativecommons.org/publicdomain/zero/1.0/
- */
-package com.tersesystems.logback.classic;
+package com.tersesystems.logback.correlationid;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +19,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
-public class TapFilterTest {
+public class CorrelationIdTapFilterTest {
 
   @Before
   @After
@@ -38,26 +28,9 @@ public class TapFilterTest {
   }
 
   @Test
-  public void testSimple() throws JoranException {
-    LoggerContext loggerFactory = createLoggerFactory("/logback-tapfilter.xml");
-
-    // Write something that never gets logged explicitly...
-    Logger debugLogger = loggerFactory.getLogger("com.example.Debug");
-    debugLogger.debug("debug one");
-    debugLogger.debug("debug two");
-    debugLogger.debug("debug three");
-    debugLogger.debug("debug four");
-
-    Logger logger = loggerFactory.getLogger("com.example.Test");
-    logger.error("Write out error message to console");
-
-    ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
-    assertThat(listAppender.list.size()).isEqualTo(5);
-  }
-
-  @Test
   public void testCorrelationWithNoMarker() throws JoranException {
-    LoggerContext loggerFactory = createLoggerFactory("/logback-tapfilter-correlation.xml");
+    MDC.clear();
+    LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
 
     // Because there's no correlation id, it should never make it past the filter here.
     Logger debugLogger = loggerFactory.getLogger("com.example.Debug");
@@ -75,7 +48,8 @@ public class TapFilterTest {
 
   @Test
   public void testCorrelationWithMarker() throws JoranException {
-    LoggerContext loggerFactory = createLoggerFactory("/logback-tapfilter-correlation.xml");
+    MDC.clear();
+    LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
 
     CorrelationIdMarker correlationIdMarker = CorrelationIdMarker.create("12345");
 
@@ -95,7 +69,8 @@ public class TapFilterTest {
 
   @Test
   public void testCorrelationWithMDC() throws JoranException {
-    LoggerContext loggerFactory = createLoggerFactory("/logback-tapfilter-correlation.xml");
+    MDC.clear();
+    LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid-tapfilter.xml");
 
     MDC.put("correlationId", "12345");
     CorrelationIdMarker correlationIdMarker = CorrelationIdMarker.create("12345");

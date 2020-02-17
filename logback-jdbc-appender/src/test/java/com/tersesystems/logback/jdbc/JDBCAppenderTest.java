@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.fail;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -11,19 +12,34 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import java.net.URL;
 import java.sql.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 public class JDBCAppenderTest {
+
+  @Before
+  @After
+  public void clear() {
+    try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:terse-logback", "sa", "")) {
+      try (Statement s = conn.createStatement()) {
+        s.execute("truncate table events");
+      }
+    } catch (SQLException e) {
+      fail(e.getMessage());
+    }
+  }
 
   @Test
   public void testSimple() throws JoranException, SQLException {
     LoggerContext loggerFactory = createLoggerFactory("/logback-test.xml");
 
     // Write something that never gets logged explicitly...
-    Logger logger = loggerFactory.getLogger(getClass());
-    await().atMost(5, SECONDS).until(this::assertTablesExist);
+    Logger logger = loggerFactory.getLogger("some.example.ExampleClass");
 
     logger.info("info one");
+    await().atMost(5, SECONDS).until(this::assertTablesExist);
+
     logger.info("info two");
     logger.info("info three");
 

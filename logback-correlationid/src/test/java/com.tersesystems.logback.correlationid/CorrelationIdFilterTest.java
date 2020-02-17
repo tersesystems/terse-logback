@@ -28,6 +28,7 @@ public class CorrelationIdFilterTest {
 
   @Test
   public void testFilter() throws JoranException {
+    MDC.clear();
     LoggerContext loggerFactory = createLoggerFactory("/logback-correlationid.xml");
 
     // Write something that never gets logged explicitly...
