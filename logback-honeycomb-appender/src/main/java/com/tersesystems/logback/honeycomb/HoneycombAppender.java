@@ -35,7 +35,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
   private boolean batch = true;
   private boolean includeCallerData = false;
 
-  private HoneycombClient honeycombClient;
+  private HoneycombClient<ILoggingEvent> honeycombClient;
 
   public Encoder<ILoggingEvent> getEncoder() {
     return encoder;
@@ -104,7 +104,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     try {
       HoneycombClientService honeycombClientService = clientService();
-      honeycombClient = honeycombClientService.newClient(apiKey, dataSet);
+      honeycombClient = honeycombClientService.newClient(apiKey, dataSet, this::serialize);
       if (batch) {
         eventQueue = new ArrayBlockingQueue<>(queueSize);
       }
@@ -175,11 +175,12 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
   }
 
   private CompletionStage<Void> postEvent(HoneycombRequest<ILoggingEvent> honeycombRequest) {
-    return honeycombClient.postEvent(honeycombRequest, this::serialize).thenAccept(this::accept);
+    return honeycombClient.postEvent(honeycombRequest).thenAccept(this::accept);
   }
 
-  private CompletionStage<Void> postBatch(List<HoneycombRequest<ILoggingEvent>> list) {
-    return honeycombClient.postBatch(list, this::serialize).thenAccept(this::accept);
+  private CompletionStage<Void> postBatch(
+      Iterable<HoneycombRequest<ILoggingEvent>> honeycombRequests) {
+    return honeycombClient.postBatch(honeycombRequests).thenAccept(this::accept);
   }
 
   private byte[] serialize(HoneycombRequest<ILoggingEvent> honeycombRequest) {

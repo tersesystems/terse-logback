@@ -1,5 +1,8 @@
 package com.tersesystems.logback.honeycomb.client;
 
+import java.util.function.Function;
+
 public interface HoneycombClientService {
-  HoneycombClient newClient(String apiKey, String dataset);
+  <E> HoneycombClient<E> newClient(
+      String apiKey, String dataset, Function<HoneycombRequest<E>, byte[]> encodeFunction);
 }

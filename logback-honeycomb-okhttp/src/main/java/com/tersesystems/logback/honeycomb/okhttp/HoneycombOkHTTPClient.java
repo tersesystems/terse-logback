@@ -27,26 +27,31 @@ import java.util.function.Function;
 import okhttp3.*;
 
 /** This class implements a honeycomb client using OK HTTP. */
-public class HoneycombOkHTTPClient implements HoneycombClient {
+public class HoneycombOkHTTPClient<E> implements HoneycombClient<E> {
   private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
   private final JsonFactory jsonFactory;
   private final OkHttpClient client;
   private final String apiKey;
   private final String dataset;
+  private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
 
   public HoneycombOkHTTPClient(
-      OkHttpClient client, JsonFactory jsonFactory, String apiKey, String dataset) {
+      OkHttpClient client,
+      JsonFactory jsonFactory,
+      String apiKey,
+      String dataset,
+      Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     this.client = client;
     this.jsonFactory = jsonFactory;
     this.dataset = dataset;
     this.apiKey = apiKey;
+    this.encodeFunction = encodeFunction;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
-  public <E> CompletionStage<HoneycombResponse> postEvent(
-      HoneycombRequest<E> honeycombRequest, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+  public CompletionStage<HoneycombResponse> postEvent(HoneycombRequest<E> honeycombRequest) {
     String honeycombURL = eventURL(dataset);
     byte[] bytes = encodeFunction.apply(honeycombRequest);
 
@@ -68,11 +73,11 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
   }
 
   @Override
-  public <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+  public CompletionStage<List<HoneycombResponse>> postBatch(
+      Iterable<HoneycombRequest<E>> requests) {
     String honeycombURL = batchURL(dataset);
     try {
-      byte[] batchedJson = generateBatchJson(requests, encodeFunction);
+      byte[] batchedJson = generateBatchJson(requests);
       RequestBody body = RequestBody.create(batchedJson, JSON);
       Request request =
           new Request.Builder()
@@ -104,13 +109,10 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     client.dispatcher().executorService().shutdown();
   }
 
-  private <E> byte[] generateBatchJson(
-      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction)
-      throws IOException {
+  private byte[] generateBatchJson(Iterable<HoneycombRequest<E>> requests) throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     JsonGenerator generator = jsonFactory.createGenerator(stream);
-    HoneycombRequestFormatter<E> formatter =
-        new HoneycombRequestFormatter<E>(generator, encodeFunction);
+    HoneycombRequestFormatter formatter = new HoneycombRequestFormatter(generator);
 
     formatter.start();
     for (HoneycombRequest<E> request : requests) {
@@ -126,14 +128,11 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     return DateTimeFormatter.ISO_INSTANT.format(eventTime);
   }
 
-  class HoneycombRequestFormatter<E> {
+  class HoneycombRequestFormatter {
     private final JsonGenerator generator;
-    private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
 
-    HoneycombRequestFormatter(
-        JsonGenerator generator, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+    HoneycombRequestFormatter(JsonGenerator generator) {
       this.generator = generator;
-      this.encodeFunction = encodeFunction;
     }
 
     void start() throws IOException {
@@ -144,7 +143,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
       this.generator.writeEndArray();
     }
 
-    void format(HoneycombRequest request) throws IOException {
+    void format(HoneycombRequest<E> request) throws IOException {
       byte[] bytes = encodeFunction.apply(request);
 
       generator.writeStartObject();
@@ -157,7 +156,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     }
   }
 
-  class OkHttpResponseFuture implements Callback {
+  static class OkHttpResponseFuture implements Callback {
     private final CompletableFuture<HoneycombResponse> future = new CompletableFuture<>();
 
     OkHttpResponseFuture() {}

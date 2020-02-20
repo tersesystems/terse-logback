@@ -27,14 +27,15 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import play.libs.ws.*;
 
-public class HoneycombPlayWSClient
-    implements HoneycombClient, DefaultBodyWritables, DefaultBodyReadables {
+public class HoneycombPlayWSClient<E>
+    implements HoneycombClient<E>, DefaultBodyWritables, DefaultBodyReadables {
 
   private final StandaloneWSClient client;
   private final JsonFactory factory = new JsonFactory();
   private final ActorSystem actorSystem;
   private final String apiKey;
   private final String dataset;
+  private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
   private final boolean terminateOnClose;
 
   public HoneycombPlayWSClient(
@@ -42,18 +43,19 @@ public class HoneycombPlayWSClient
       ActorSystem actorSystem,
       String apiKey,
       String dataset,
+      Function<HoneycombRequest<E>, byte[]> encodeFunction,
       boolean terminateOnClose) {
     this.client = client;
     this.actorSystem = actorSystem;
     this.apiKey = apiKey;
     this.dataset = dataset;
+    this.encodeFunction = encodeFunction;
     this.terminateOnClose = terminateOnClose;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
-  public <E> CompletionStage<HoneycombResponse> postEvent(
-      HoneycombRequest<E> request, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+  public CompletionStage<HoneycombResponse> postEvent(HoneycombRequest<E> request) {
     String honeycombURL = eventURL(dataset);
     StandaloneWSRequest wsRequest = client.url(honeycombURL);
     byte[] bytes = encodeFunction.apply(request);
@@ -69,8 +71,8 @@ public class HoneycombPlayWSClient
   }
 
   @Override
-  public <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+  public CompletionStage<List<HoneycombResponse>> postBatch(
+      Iterable<HoneycombRequest<E>> requests) {
     String honeycombURL = batchURL(dataset);
     try {
       StandaloneWSRequest wsRequest = client.url(honeycombURL);
@@ -132,15 +134,16 @@ public class HoneycombPlayWSClient
     }
   }
 
-  private <E> byte[] generateBatchJson(
-      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction)
+  private byte[] generateBatchJson(
+      Iterable<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction)
       throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     JsonGenerator generator = factory.createGenerator(stream);
-    HoneycombRequestFormatter formatter = new HoneycombRequestFormatter(generator, encodeFunction);
+    HoneycombRequestFormatter<E> formatter =
+        new HoneycombRequestFormatter<>(generator, encodeFunction);
 
     formatter.start();
-    for (HoneycombRequest request : requests) {
+    for (HoneycombRequest<E> request : requests) {
       formatter.format(request);
     }
     formatter.end();

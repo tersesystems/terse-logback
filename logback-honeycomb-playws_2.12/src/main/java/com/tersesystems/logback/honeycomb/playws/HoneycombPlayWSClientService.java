@@ -5,10 +5,12 @@ import akka.stream.ActorMaterializer;
 import akka.stream.ActorMaterializerSettings;
 import com.tersesystems.logback.honeycomb.client.HoneycombClient;
 import com.tersesystems.logback.honeycomb.client.HoneycombClientService;
+import com.tersesystems.logback.honeycomb.client.HoneycombRequest;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import play.api.libs.ws.ahc.AhcWSClientConfig;
 import play.api.libs.ws.ahc.AhcWSClientConfigFactory;
 import play.libs.ws.ahc.StandaloneAhcWSClient;
@@ -19,7 +21,8 @@ public class HoneycombPlayWSClientService implements HoneycombClientService {
   private static final String AKKA_MAX_THREADS_KEY =
       "akka.actor.default-dispatcher.fork-join-executor.parallelism-max";
 
-  public HoneycombClient newClient(String apiKey, String dataset) {
+  public <E> HoneycombClient<E> newClient(
+      String apiKey, String dataset, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     Map<String, Object> clientMap = new HashMap<>();
     clientMap.put("play.ws.compressionEnabled", Boolean.TRUE);
     clientMap.put("play.ws.useragent", "Logback Honeycomb Client");
@@ -31,7 +34,8 @@ public class HoneycombPlayWSClientService implements HoneycombClientService {
         AhcWSClientConfigFactory.forConfig(config, config.getClass().getClassLoader());
     StandaloneAhcWSClient standaloneAhcWSClient =
         StandaloneAhcWSClient.create(ahcWsClientConfig, createMaterializer(actorSystem));
-    return new HoneycombPlayWSClient(standaloneAhcWSClient, actorSystem, apiKey, dataset, true);
+    return new HoneycombPlayWSClient<E>(
+        standaloneAhcWSClient, actorSystem, apiKey, dataset, encodeFunction, true);
   }
 
   private static ActorMaterializer createMaterializer(ActorSystem system) {

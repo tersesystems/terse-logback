@@ -13,15 +13,12 @@ package com.tersesystems.logback.honeycomb.client;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
-public interface HoneycombClient {
+public interface HoneycombClient<E> {
 
-  <E> CompletionStage<HoneycombResponse> postEvent(
-      HoneycombRequest<E> request, Function<HoneycombRequest<E>, byte[]> encodeFunction);
+  CompletionStage<HoneycombResponse> postEvent(HoneycombRequest<E> request);
 
-  <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction);
+  CompletionStage<List<HoneycombResponse>> postBatch(Iterable<HoneycombRequest<E>> requests);
 
   void close() throws IOException;
 }
