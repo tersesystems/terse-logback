@@ -46,7 +46,9 @@ public class HoneycombClientTest {
       CompletionStage<HoneycombResponse> completionStage =
           honeycombClient.postEvent(
               new HoneycombRequest<>(1, Instant.now(), loggingEvent),
-              e -> encoder.encode(loggingEvent));
+              (HoneycombRequest<ILoggingEvent> e) -> {
+                return encoder.encode(loggingEvent);
+              });
       HoneycombResponse honeycombResponse = completionStage.toCompletableFuture().get();
       assertThat(honeycombResponse.isSuccess());
     } finally {
