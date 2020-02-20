@@ -103,7 +103,8 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     }
 
     try {
-      honeycombClient = createClient();
+      HoneycombClientService honeycombClientService = clientService();
+      honeycombClient = honeycombClientService.newClient();
       if (batch) {
         eventQueue = new ArrayBlockingQueue<>(queueSize);
       }
@@ -189,8 +190,8 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     return encoder.encode(honeycombRequest.getEvent());
   }
 
-  private HoneycombClient createClient() {
-    ServiceLoader<HoneycombClient> loader = ServiceLoader.load(HoneycombClient.class);
+  private HoneycombClientService clientService() {
+    ServiceLoader<HoneycombClientService> loader = ServiceLoader.load(HoneycombClientService.class);
     return StreamSupport.stream(loader.spliterator(), false).findFirst().get();
   }
 

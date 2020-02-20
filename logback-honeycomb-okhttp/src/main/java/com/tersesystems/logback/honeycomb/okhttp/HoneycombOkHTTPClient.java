@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.google.auto.service.AutoService;
 import com.tersesystems.logback.honeycomb.client.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,80 +27,18 @@ import java.util.function.Function;
 import okhttp3.*;
 
 /** This class implements a honeycomb client using OK HTTP. */
-@AutoService(HoneycombClient.class)
 public class HoneycombOkHTTPClient implements HoneycombClient {
   private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-  private final JsonFactory factory = new JsonFactory();
+  private final JsonFactory jsonFactory;
   private final OkHttpClient client;
 
-  class OkHttpResponseFuture implements Callback {
-    private final CompletableFuture<HoneycombResponse> future = new CompletableFuture<>();
-
-    OkHttpResponseFuture() {}
-
-    @Override
-    public void onFailure(Call call, IOException e) {
-      future.completeExceptionally(e);
-    }
-
-    @Override
-    public void onResponse(Call call, Response response) throws IOException {
-      HoneycombResponse honeycombResponse =
-          new HoneycombResponse(response.code(), response.body().string());
-      future.complete(honeycombResponse);
-    }
-  }
-
-  class OkHttpBatchedResponseFuture implements Callback {
-    private final CompletableFuture<List<HoneycombResponse>> future = new CompletableFuture<>();
-
-    OkHttpBatchedResponseFuture() {}
-
-    @Override
-    public void onFailure(Call call, IOException e) {
-      future.completeExceptionally(e);
-    }
-
-    @Override
-    public void onResponse(Call call, Response response) throws IOException {
-      List<HoneycombResponse> honeycombResponses = parseResponse(response);
-      future.complete(honeycombResponses);
-    }
-
-    private List<HoneycombResponse> parseResponse(Response wsResponse) throws IOException {
-      String body = wsResponse.body().string();
-      List<HoneycombResponse> list = new ArrayList<>();
-
-      JsonParser parser = factory.createParser(body);
-      while (!parser.isClosed()) {
-        JsonToken jsonToken = parser.nextToken();
-
-        if (JsonToken.FIELD_NAME.equals(jsonToken)) {
-          String fieldName = parser.getCurrentName();
-          jsonToken = parser.nextToken();
-
-          String reason = "";
-          int status = 0;
-          if ("error".equals(fieldName)) {
-            reason = parser.getValueAsString();
-          } else if ("status".equals(fieldName)) {
-            status = parser.getValueAsInt();
-          }
-          HoneycombResponse response = new HoneycombResponse(status, reason);
-          list.add(response);
-        }
-      }
-
-      return list;
-    }
-  }
-
-  public HoneycombOkHTTPClient() {
+  public HoneycombOkHTTPClient(OkHttpClient client, JsonFactory jsonFactory) {
     // clientMap.put("play.ws.compressionEnabled", Boolean.TRUE);
     // clientMap.put("play.ws.useragent", "Logback Honeycomb Client");
 
-    client = new OkHttpClient();
+    this.client = client;
+    this.jsonFactory = jsonFactory;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
@@ -175,7 +112,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
       List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction)
       throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    JsonGenerator generator = factory.createGenerator(stream);
+    JsonGenerator generator = jsonFactory.createGenerator(stream);
     HoneycombRequestFormatter formatter = new HoneycombRequestFormatter(generator, encodeFunction);
 
     formatter.start();
@@ -188,12 +125,16 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     return stream.toByteArray();
   }
 
+  private String isoTime(Instant eventTime) {
+    return DateTimeFormatter.ISO_INSTANT.format(eventTime);
+  }
+
   class HoneycombRequestFormatter<E> {
     private final JsonGenerator generator;
     private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
 
     HoneycombRequestFormatter(
-        JsonGenerator generator, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+            JsonGenerator generator, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
       this.generator = generator;
       this.encodeFunction = encodeFunction;
     }
@@ -219,7 +160,66 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     }
   }
 
-  private String isoTime(Instant eventTime) {
-    return DateTimeFormatter.ISO_INSTANT.format(eventTime);
+  class OkHttpResponseFuture implements Callback {
+    private final CompletableFuture<HoneycombResponse> future = new CompletableFuture<>();
+
+    OkHttpResponseFuture() {}
+
+    @Override
+    public void onFailure(Call call, IOException e) {
+      future.completeExceptionally(e);
+    }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+      HoneycombResponse honeycombResponse =
+              new HoneycombResponse(response.code(), response.body().string());
+      future.complete(honeycombResponse);
+    }
   }
+
+  class OkHttpBatchedResponseFuture implements Callback {
+    private final CompletableFuture<List<HoneycombResponse>> future = new CompletableFuture<>();
+
+    OkHttpBatchedResponseFuture() {}
+
+    @Override
+    public void onFailure(Call call, IOException e) {
+      future.completeExceptionally(e);
+    }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+      List<HoneycombResponse> honeycombResponses = parseResponse(response);
+      future.complete(honeycombResponses);
+    }
+
+    private List<HoneycombResponse> parseResponse(Response wsResponse) throws IOException {
+      String body = wsResponse.body().string();
+      List<HoneycombResponse> list = new ArrayList<>();
+
+      JsonParser parser = jsonFactory.createParser(body);
+      while (!parser.isClosed()) {
+        JsonToken jsonToken = parser.nextToken();
+
+        if (JsonToken.FIELD_NAME.equals(jsonToken)) {
+          String fieldName = parser.getCurrentName();
+          jsonToken = parser.nextToken();
+
+          String reason = "";
+          int status = 0;
+          if ("error".equals(fieldName)) {
+            reason = parser.getValueAsString();
+          } else if ("status".equals(fieldName)) {
+            status = parser.getValueAsInt();
+          }
+          HoneycombResponse response = new HoneycombResponse(status, reason);
+          list.add(response);
+        }
+      }
+
+      return list;
+    }
+  }
+
 }
