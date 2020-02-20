@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.google.auto.service.AutoService;
+
 import com.tersesystems.logback.honeycomb.client.HoneycombClient;
 import com.tersesystems.logback.honeycomb.client.HoneycombHeaders;
 import com.tersesystems.logback.honeycomb.client.HoneycombRequest;
@@ -35,19 +35,25 @@ public class HoneycombPlayWSClient
   private final StandaloneWSClient client;
   private final JsonFactory factory = new JsonFactory();
   private final ActorSystem actorSystem;
+  private final String apiKey;
+  private final String dataset;
   private final boolean terminateOnClose;
 
-  public HoneycombPlayWSClient(StandaloneWSClient client, ActorSystem actorSystem, boolean terminateOnClose) {
+  public HoneycombPlayWSClient(StandaloneWSClient client,
+                               ActorSystem actorSystem,
+                               String apiKey,
+                               String dataset,
+                               boolean terminateOnClose) {
     this.client = client;
     this.actorSystem = actorSystem;
+    this.apiKey = apiKey;
+    this.dataset = dataset;
     this.terminateOnClose = terminateOnClose;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
   public <E> CompletionStage<HoneycombResponse> postEvent(
-      String apiKey,
-      String dataset,
       HoneycombRequest<E> request,
       Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = eventURL(dataset);
@@ -64,8 +70,6 @@ public class HoneycombPlayWSClient
 
   @Override
   public <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      String apiKey,
-      String dataset,
       List<HoneycombRequest<E>> requests,
       Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = batchURL(dataset);

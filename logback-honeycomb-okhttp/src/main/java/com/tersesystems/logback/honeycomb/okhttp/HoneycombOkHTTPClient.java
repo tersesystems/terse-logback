@@ -32,26 +32,25 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
 
   private final JsonFactory jsonFactory;
   private final OkHttpClient client;
+  private final String apiKey;
+  private final String dataset;
 
-  public HoneycombOkHTTPClient(OkHttpClient client, JsonFactory jsonFactory) {
-    // clientMap.put("play.ws.compressionEnabled", Boolean.TRUE);
-    // clientMap.put("play.ws.useragent", "Logback Honeycomb Client");
-
+  public HoneycombOkHTTPClient(OkHttpClient client, JsonFactory jsonFactory,  String apiKey, String dataset) {
     this.client = client;
     this.jsonFactory = jsonFactory;
+    this.dataset = dataset;
+    this.apiKey = apiKey;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
   public <E> CompletionStage<HoneycombResponse> postEvent(
-      String apiKey,
-      String dataset,
       HoneycombRequest<E> honeycombRequest,
       Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = eventURL(dataset);
     byte[] bytes = encodeFunction.apply(honeycombRequest);
 
-    RequestBody body = RequestBody.create(JSON, bytes);
+    RequestBody body = RequestBody.create(bytes, JSON);
     Request request =
         new Request.Builder()
             .url(honeycombURL)
@@ -70,14 +69,12 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
 
   @Override
   public <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      String apiKey,
-      String dataset,
       List<HoneycombRequest<E>> requests,
       Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = batchURL(dataset);
     try {
       byte[] batchedJson = generateBatchJson(requests, encodeFunction);
-      RequestBody body = RequestBody.create(JSON, batchedJson);
+      RequestBody body = RequestBody.create(batchedJson, JSON);
       Request request =
           new Request.Builder()
               .url(honeycombURL)
@@ -113,10 +110,10 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
       throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     JsonGenerator generator = jsonFactory.createGenerator(stream);
-    HoneycombRequestFormatter formatter = new HoneycombRequestFormatter(generator, encodeFunction);
+    HoneycombRequestFormatter<E> formatter = new HoneycombRequestFormatter<E>(generator, encodeFunction);
 
     formatter.start();
-    for (HoneycombRequest request : requests) {
+    for (HoneycombRequest<E> request : requests) {
       formatter.format(request);
     }
     formatter.end();
