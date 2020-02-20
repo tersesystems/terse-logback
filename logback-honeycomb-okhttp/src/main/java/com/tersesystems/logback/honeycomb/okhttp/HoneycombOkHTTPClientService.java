@@ -6,8 +6,8 @@ import com.tersesystems.logback.honeycomb.client.HoneycombClientService;
 import okhttp3.OkHttpClient;
 
 public class HoneycombOkHTTPClientService implements HoneycombClientService {
-    @Override
-    public HoneycombClient newClient() {
-        return new HoneycombOkHTTPClient(new OkHttpClient(), new JsonFactory());
-    }
+  @Override
+  public HoneycombClient newClient(String apiKey, String dataset) {
+    return new HoneycombOkHTTPClient(new OkHttpClient(), new JsonFactory(), apiKey, dataset);
+  }
 }

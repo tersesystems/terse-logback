@@ -21,7 +21,7 @@ import com.tersesystems.logback.classic.Utils;
 import com.tersesystems.logback.honeycomb.client.HoneycombClient;
 import com.tersesystems.logback.honeycomb.client.HoneycombRequest;
 import com.tersesystems.logback.honeycomb.client.HoneycombResponse;
-import com.tersesystems.logback.honeycomb.playws.HoneycombPlayWSClient;
+import com.tersesystems.logback.honeycomb.playws.HoneycombPlayWSClientService;
 import java.time.Instant;
 import java.util.concurrent.CompletionStage;
 
@@ -40,13 +40,11 @@ public class HoneycombClientTest {
     Encoder<ILoggingEvent> encoder = appender.getEncoder();
 
     String honeycombApiKey = System.getenv("HONEYCOMB_API_KEY");
-    HoneycombClient honeycombClient = createClient();
+    String dataSet = "terse-logback";
+    HoneycombClient honeycombClient = createClient(honeycombApiKey, dataSet);
     try {
-      String dataSet = "terse-logback";
       CompletionStage<HoneycombResponse> completionStage =
           honeycombClient.postEvent(
-              honeycombApiKey,
-              dataSet,
               new HoneycombRequest<>(1, Instant.now(), loggingEvent),
               e -> encoder.encode(loggingEvent));
       HoneycombResponse honeycombResponse = completionStage.toCompletableFuture().get();
@@ -56,7 +54,9 @@ public class HoneycombClientTest {
     }
   }
 
-  private HoneycombClient createClient() {
-    return new HoneycombPlayWSClient();
+  private HoneycombClient createClient(String honeycombApiKey, String dataSet) {
+    HoneycombPlayWSClientService service = new HoneycombPlayWSClientService();
+    HoneycombClient honeycombClient = service.newClient(honeycombApiKey, dataSet);
+    return honeycombClient;
   }
 }

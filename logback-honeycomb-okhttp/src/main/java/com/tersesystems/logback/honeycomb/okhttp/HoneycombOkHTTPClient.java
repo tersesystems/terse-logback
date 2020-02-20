@@ -35,7 +35,8 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
   private final String apiKey;
   private final String dataset;
 
-  public HoneycombOkHTTPClient(OkHttpClient client, JsonFactory jsonFactory,  String apiKey, String dataset) {
+  public HoneycombOkHTTPClient(
+      OkHttpClient client, JsonFactory jsonFactory, String apiKey, String dataset) {
     this.client = client;
     this.jsonFactory = jsonFactory;
     this.dataset = dataset;
@@ -45,8 +46,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
   public <E> CompletionStage<HoneycombResponse> postEvent(
-      HoneycombRequest<E> honeycombRequest,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+      HoneycombRequest<E> honeycombRequest, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = eventURL(dataset);
     byte[] bytes = encodeFunction.apply(honeycombRequest);
 
@@ -69,8 +69,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
 
   @Override
   public <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      List<HoneycombRequest<E>> requests,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = batchURL(dataset);
     try {
       byte[] batchedJson = generateBatchJson(requests, encodeFunction);
@@ -110,7 +109,8 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
       throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     JsonGenerator generator = jsonFactory.createGenerator(stream);
-    HoneycombRequestFormatter<E> formatter = new HoneycombRequestFormatter<E>(generator, encodeFunction);
+    HoneycombRequestFormatter<E> formatter =
+        new HoneycombRequestFormatter<E>(generator, encodeFunction);
 
     formatter.start();
     for (HoneycombRequest<E> request : requests) {
@@ -131,7 +131,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
 
     HoneycombRequestFormatter(
-            JsonGenerator generator, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+        JsonGenerator generator, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
       this.generator = generator;
       this.encodeFunction = encodeFunction;
     }
@@ -170,7 +170,7 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
     @Override
     public void onResponse(Call call, Response response) throws IOException {
       HoneycombResponse honeycombResponse =
-              new HoneycombResponse(response.code(), response.body().string());
+          new HoneycombResponse(response.code(), response.body().string());
       future.complete(honeycombResponse);
     }
   }
@@ -218,5 +218,4 @@ public class HoneycombOkHTTPClient implements HoneycombClient {
       return list;
     }
   }
-
 }

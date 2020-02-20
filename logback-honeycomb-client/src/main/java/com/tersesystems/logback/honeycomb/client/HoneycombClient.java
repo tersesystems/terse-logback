@@ -18,12 +18,10 @@ import java.util.function.Function;
 public interface HoneycombClient {
 
   <E> CompletionStage<HoneycombResponse> postEvent(
-      HoneycombRequest<E> request,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction);
+      HoneycombRequest<E> request, Function<HoneycombRequest<E>, byte[]> encodeFunction);
 
   <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      List<HoneycombRequest<E>> requests,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction);
+      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction);
 
   void close() throws IOException;
 }

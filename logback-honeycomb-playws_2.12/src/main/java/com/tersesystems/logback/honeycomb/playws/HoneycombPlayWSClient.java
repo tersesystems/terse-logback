@@ -15,19 +15,17 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-
 import com.tersesystems.logback.honeycomb.client.HoneycombClient;
 import com.tersesystems.logback.honeycomb.client.HoneycombHeaders;
 import com.tersesystems.logback.honeycomb.client.HoneycombRequest;
 import com.tersesystems.logback.honeycomb.client.HoneycombResponse;
-import play.libs.ws.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
+import play.libs.ws.*;
 
 public class HoneycombPlayWSClient
     implements HoneycombClient, DefaultBodyWritables, DefaultBodyReadables {
@@ -39,11 +37,12 @@ public class HoneycombPlayWSClient
   private final String dataset;
   private final boolean terminateOnClose;
 
-  public HoneycombPlayWSClient(StandaloneWSClient client,
-                               ActorSystem actorSystem,
-                               String apiKey,
-                               String dataset,
-                               boolean terminateOnClose) {
+  public HoneycombPlayWSClient(
+      StandaloneWSClient client,
+      ActorSystem actorSystem,
+      String apiKey,
+      String dataset,
+      boolean terminateOnClose) {
     this.client = client;
     this.actorSystem = actorSystem;
     this.apiKey = apiKey;
@@ -54,14 +53,15 @@ public class HoneycombPlayWSClient
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
   public <E> CompletionStage<HoneycombResponse> postEvent(
-      HoneycombRequest<E> request,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+      HoneycombRequest<E> request, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = eventURL(dataset);
     StandaloneWSRequest wsRequest = client.url(honeycombURL);
     byte[] bytes = encodeFunction.apply(request);
     return wsRequest
         .addHeader(HoneycombHeaders.teamHeader(), apiKey)
-        .addHeader(HoneycombHeaders.eventTimeHeader(), HoneycombRequestFormatter.isoTime(request.getTimestamp()))
+        .addHeader(
+            HoneycombHeaders.eventTimeHeader(),
+            HoneycombRequestFormatter.isoTime(request.getTimestamp()))
         .addHeader(HoneycombHeaders.sampleRateHeader(), request.getSampleRate().toString())
         .addHeader("Content-Type", "application/json")
         .post(body(bytes))
@@ -70,8 +70,7 @@ public class HoneycombPlayWSClient
 
   @Override
   public <E> CompletionStage<List<HoneycombResponse>> postBatch(
-      List<HoneycombRequest<E>> requests,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+      List<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction) {
     String honeycombURL = batchURL(dataset);
     try {
       StandaloneWSRequest wsRequest = client.url(honeycombURL);
@@ -149,5 +148,4 @@ public class HoneycombPlayWSClient
 
     return stream.toByteArray();
   }
-
 }
