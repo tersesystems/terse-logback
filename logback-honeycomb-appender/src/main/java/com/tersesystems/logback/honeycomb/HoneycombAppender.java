@@ -15,7 +15,6 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import com.tersesystems.logback.classic.StartTime;
 import com.tersesystems.logback.honeycomb.client.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -35,7 +34,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
   private boolean batch = true;
   private boolean includeCallerData = false;
 
-  private HoneycombClient honeycombClient;
+  private HoneycombClient<ILoggingEvent> honeycombClient;
 
   public Encoder<ILoggingEvent> getEncoder() {
     return encoder;
@@ -103,7 +102,8 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     }
 
     try {
-      honeycombClient = createClient();
+      HoneycombClientService honeycombClientService = clientService();
+      honeycombClient = honeycombClientService.newClient(apiKey, dataSet, this::serialize);
       if (batch) {
         eventQueue = new ArrayBlockingQueue<>(queueSize);
       }
@@ -122,8 +122,6 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     if (honeycombClient != null) {
       try {
         honeycombClient.close();
-      } catch (IOException e) {
-        addError("Cannot close client cleanly", e);
       } finally {
         honeycombClient = null;
       }
@@ -174,24 +172,26 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
   }
 
   private CompletionStage<Void> postEvent(HoneycombRequest<ILoggingEvent> honeycombRequest) {
-    return honeycombClient
-        .postEvent(apiKey, dataSet, honeycombRequest, this::serialize)
-        .thenAccept((HoneycombResponse response) -> accept(response));
+    return honeycombClient.post(honeycombRequest).thenAccept(this::accept);
   }
 
-  private CompletionStage<Void> postBatch(List<HoneycombRequest<ILoggingEvent>> list) {
-    return honeycombClient
-        .postBatch(apiKey, dataSet, list, this::serialize)
-        .thenAccept((List<HoneycombResponse> responses) -> accept(responses));
+  private CompletionStage<Void> postBatch(
+      Iterable<HoneycombRequest<ILoggingEvent>> honeycombRequests) {
+    return honeycombClient.postBatch(honeycombRequests).thenAccept(this::accept);
   }
 
   private byte[] serialize(HoneycombRequest<ILoggingEvent> honeycombRequest) {
     return encoder.encode(honeycombRequest.getEvent());
   }
 
-  private HoneycombClient createClient() {
-    ServiceLoader<HoneycombClient> loader = ServiceLoader.load(HoneycombClient.class);
-    return StreamSupport.stream(loader.spliterator(), false).findFirst().get();
+  private HoneycombClientService clientService() {
+    ServiceLoader<HoneycombClientService> loader = ServiceLoader.load(HoneycombClientService.class);
+    Optional<HoneycombClientService> first =
+        StreamSupport.stream(loader.spliterator(), false).findFirst();
+    if (first.isPresent()) {
+      return first.get();
+    }
+    throw new IllegalStateException("No service found -- do you have a library loaded?");
   }
 
   private void accept(HoneycombResponse response) {
