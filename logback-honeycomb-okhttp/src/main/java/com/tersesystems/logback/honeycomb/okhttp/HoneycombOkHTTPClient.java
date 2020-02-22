@@ -34,24 +34,30 @@ public class HoneycombOkHTTPClient<E> implements HoneycombClient<E> {
   private final OkHttpClient client;
   private final String apiKey;
   private final String dataset;
-  private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
+  private final Function<HoneycombRequest<E>, byte[]> defaultEncodeFunction;
 
   public HoneycombOkHTTPClient(
       OkHttpClient client,
       JsonFactory jsonFactory,
       String apiKey,
       String dataset,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction) {
+      Function<HoneycombRequest<E>, byte[]> defaultEncodeFunction) {
     this.client = client;
     this.jsonFactory = jsonFactory;
     this.dataset = dataset;
     this.apiKey = apiKey;
-    this.encodeFunction = encodeFunction;
+    this.defaultEncodeFunction = defaultEncodeFunction;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
-  public CompletionStage<HoneycombResponse> postEvent(HoneycombRequest<E> honeycombRequest) {
+  public CompletionStage<HoneycombResponse> post(HoneycombRequest<E> honeycombRequest) {
+    return post(honeycombRequest, this.defaultEncodeFunction);
+  }
+
+  @Override
+  public <F> CompletionStage<HoneycombResponse> post(
+      HoneycombRequest<F> honeycombRequest, Function<HoneycombRequest<F>, byte[]> encodeFunction) {
     String honeycombURL = eventURL(dataset);
     byte[] bytes = encodeFunction.apply(honeycombRequest);
 
@@ -75,9 +81,16 @@ public class HoneycombOkHTTPClient<E> implements HoneycombClient<E> {
   @Override
   public CompletionStage<List<HoneycombResponse>> postBatch(
       Iterable<HoneycombRequest<E>> requests) {
+    return postBatch(requests, this.defaultEncodeFunction);
+  }
+
+  @Override
+  public <F> CompletionStage<List<HoneycombResponse>> postBatch(
+      Iterable<HoneycombRequest<F>> honeycombRequests,
+      Function<HoneycombRequest<F>, byte[]> encodeFunction) {
     String honeycombURL = batchURL(dataset);
     try {
-      byte[] batchedJson = generateBatchJson(requests);
+      byte[] batchedJson = generateBatchJson(honeycombRequests, encodeFunction);
       RequestBody body = RequestBody.create(batchedJson, JSON);
       Request request =
           new Request.Builder()
@@ -105,18 +118,23 @@ public class HoneycombOkHTTPClient<E> implements HoneycombClient<E> {
     return batchURL + dataset;
   }
 
-  public void close() throws IOException {
-    client.dispatcher().executorService().shutdown();
+  public CompletionStage<Void> close() {
+    return CompletableFuture.runAsync(
+        () -> {
+          client.dispatcher().executorService().shutdown();
+        });
   }
 
-  private byte[] generateBatchJson(Iterable<HoneycombRequest<E>> requests) throws IOException {
+  private <F> byte[] generateBatchJson(
+      Iterable<HoneycombRequest<F>> requests, Function<HoneycombRequest<F>, byte[]> encodeFunction)
+      throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     JsonGenerator generator = jsonFactory.createGenerator(stream);
     HoneycombRequestFormatter formatter = new HoneycombRequestFormatter(generator);
 
     formatter.start();
-    for (HoneycombRequest<E> request : requests) {
-      formatter.format(request);
+    for (HoneycombRequest<F> request : requests) {
+      formatter.format(request, encodeFunction);
     }
     formatter.end();
     generator.close();
@@ -128,7 +146,7 @@ public class HoneycombOkHTTPClient<E> implements HoneycombClient<E> {
     return DateTimeFormatter.ISO_INSTANT.format(eventTime);
   }
 
-  class HoneycombRequestFormatter {
+  class HoneycombRequestFormatter<F> {
     private final JsonGenerator generator;
 
     HoneycombRequestFormatter(JsonGenerator generator) {
@@ -143,7 +161,8 @@ public class HoneycombOkHTTPClient<E> implements HoneycombClient<E> {
       this.generator.writeEndArray();
     }
 
-    void format(HoneycombRequest<E> request) throws IOException {
+    void format(HoneycombRequest<F> request, Function<HoneycombRequest<F>, byte[]> encodeFunction)
+        throws IOException {
       byte[] bytes = encodeFunction.apply(request);
 
       generator.writeStartObject();

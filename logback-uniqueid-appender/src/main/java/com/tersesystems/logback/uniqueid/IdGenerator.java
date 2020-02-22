@@ -10,6 +10,6 @@
  */
 package com.tersesystems.logback.uniqueid;
 
-interface IdGenerator {
+public interface IdGenerator {
   String generateId();
 }

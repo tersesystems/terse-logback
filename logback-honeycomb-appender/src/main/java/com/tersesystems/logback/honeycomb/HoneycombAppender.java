@@ -15,7 +15,6 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import com.tersesystems.logback.classic.StartTime;
 import com.tersesystems.logback.honeycomb.client.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -123,8 +122,6 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     if (honeycombClient != null) {
       try {
         honeycombClient.close();
-      } catch (IOException e) {
-        addError("Cannot close client cleanly", e);
       } finally {
         honeycombClient = null;
       }
@@ -175,7 +172,7 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
   }
 
   private CompletionStage<Void> postEvent(HoneycombRequest<ILoggingEvent> honeycombRequest) {
-    return honeycombClient.postEvent(honeycombRequest).thenAccept(this::accept);
+    return honeycombClient.post(honeycombRequest).thenAccept(this::accept);
   }
 
   private CompletionStage<Void> postBatch(
@@ -189,7 +186,12 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
 
   private HoneycombClientService clientService() {
     ServiceLoader<HoneycombClientService> loader = ServiceLoader.load(HoneycombClientService.class);
-    return StreamSupport.stream(loader.spliterator(), false).findFirst().get();
+    Optional<HoneycombClientService> first =
+        StreamSupport.stream(loader.spliterator(), false).findFirst();
+    if (first.isPresent()) {
+      return first.get();
+    }
+    throw new IllegalStateException("No service found -- do you have a library loaded?");
   }
 
   private void accept(HoneycombResponse response) {

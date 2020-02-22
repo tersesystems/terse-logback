@@ -11,6 +11,7 @@
 package com.tersesystems.logback.honeycomb.playws;
 
 import akka.actor.ActorSystem;
+import akka.actor.Terminated;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -23,9 +24,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import play.libs.ws.*;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.FiniteDuration;
 
 public class HoneycombPlayWSClient<E>
     implements HoneycombClient<E>, DefaultBodyWritables, DefaultBodyReadables {
@@ -35,7 +40,7 @@ public class HoneycombPlayWSClient<E>
   private final ActorSystem actorSystem;
   private final String apiKey;
   private final String dataset;
-  private final Function<HoneycombRequest<E>, byte[]> encodeFunction;
+  private final Function<HoneycombRequest<E>, byte[]> defaultEncodeFunction;
   private final boolean terminateOnClose;
 
   public HoneycombPlayWSClient(
@@ -43,19 +48,25 @@ public class HoneycombPlayWSClient<E>
       ActorSystem actorSystem,
       String apiKey,
       String dataset,
-      Function<HoneycombRequest<E>, byte[]> encodeFunction,
+      Function<HoneycombRequest<E>, byte[]> defaultEncodeFunction,
       boolean terminateOnClose) {
     this.client = client;
     this.actorSystem = actorSystem;
     this.apiKey = apiKey;
     this.dataset = dataset;
-    this.encodeFunction = encodeFunction;
+    this.defaultEncodeFunction = defaultEncodeFunction;
     this.terminateOnClose = terminateOnClose;
   }
 
   /** Posts a single event to honeycomb, using the "1/events" endpoint. */
   @Override
-  public CompletionStage<HoneycombResponse> postEvent(HoneycombRequest<E> request) {
+  public CompletionStage<HoneycombResponse> post(HoneycombRequest<E> request) {
+    return post(request, this.defaultEncodeFunction);
+  };
+
+  @Override
+  public <F> CompletionStage<HoneycombResponse> post(
+      HoneycombRequest<F> request, Function<HoneycombRequest<F>, byte[]> encodeFunction) {
     String honeycombURL = eventURL(dataset);
     StandaloneWSRequest wsRequest = client.url(honeycombURL);
     byte[] bytes = encodeFunction.apply(request);
@@ -73,10 +84,17 @@ public class HoneycombPlayWSClient<E>
   @Override
   public CompletionStage<List<HoneycombResponse>> postBatch(
       Iterable<HoneycombRequest<E>> requests) {
+    return postBatch(requests, this.defaultEncodeFunction);
+  }
+
+  @Override
+  public <F> CompletionStage<List<HoneycombResponse>> postBatch(
+      Iterable<HoneycombRequest<F>> honeycombRequests,
+      Function<HoneycombRequest<F>, byte[]> encodeFunction) {
     String honeycombURL = batchURL(dataset);
     try {
       StandaloneWSRequest wsRequest = client.url(honeycombURL);
-      byte[] batchedJson = generateBatchJson(requests, encodeFunction);
+      byte[] batchedJson = generateBatchJson(honeycombRequests, encodeFunction);
       return wsRequest
           .addHeader(HoneycombHeaders.teamHeader(), apiKey)
           .addHeader("Content-Type", "application/json")
@@ -127,23 +145,38 @@ public class HoneycombPlayWSClient<E>
     return batchURL + dataset;
   }
 
-  public void close() throws IOException {
-    client.close();
-    if (terminateOnClose) {
-      actorSystem.terminate();
-    }
+  public CompletionStage<Void> close() {
+    return CompletableFuture.runAsync(
+            () -> {
+              try {
+                client.close();
+              } catch (IOException e) {
+                throw new IllegalStateException(e);
+              }
+            })
+        .thenRun(
+            () -> {
+              try {
+                if (terminateOnClose) {
+                  Future<Terminated> terminate = actorSystem.terminate();
+                  Await.result(terminate, FiniteDuration.Inf());
+                }
+              } catch (Exception e) {
+                throw new IllegalStateException(e);
+              }
+            });
   }
 
-  private byte[] generateBatchJson(
-      Iterable<HoneycombRequest<E>> requests, Function<HoneycombRequest<E>, byte[]> encodeFunction)
+  private <F> byte[] generateBatchJson(
+      Iterable<HoneycombRequest<F>> requests, Function<HoneycombRequest<F>, byte[]> encodeFunction)
       throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     JsonGenerator generator = factory.createGenerator(stream);
-    HoneycombRequestFormatter<E> formatter =
+    HoneycombRequestFormatter<F> formatter =
         new HoneycombRequestFormatter<>(generator, encodeFunction);
 
     formatter.start();
-    for (HoneycombRequest<E> request : requests) {
+    for (HoneycombRequest<F> request : requests) {
       formatter.format(request);
     }
     formatter.end();
