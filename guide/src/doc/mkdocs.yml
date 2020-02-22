@@ -54,20 +54,24 @@ nav:
   - User guide:
       - Quickstart: guide/quickstart.md
       - Installation: guide/installation.md
+      - Core (General Use): guide/core.md
+      - Classic (General Use): guide/classic.md
       - Audio: guide/audio.md
       - Budgeting: guide/budget.md
       - Censors: guide/censor.md
+      - Compression: guide/compression.md
       - Correlation Id: guide/correlationid.md
       - Exception Mapping: guide/exception-mapping.md
       - Honeycomb: guide/honeycomb.md
       - Bytecode Instrumentation: guide/instrumentation.md
       - JDBC: guide/jdbc.md
-      - Appenders: guide/appenders.md
       - Ring Buffers: guide/ringbuffer.md
       - System Info: guide/systeminfo.md
       - Tap Filters: guide/tapfilter.md
+      - Tracing: guide/tracing.md
       - Typesafe Config: guide/config.md
       - Turbo Marker: guide/turbomarker.md
+      - Unique ID Appenders: guide/uniqueid.md
   - Examples:
       - Structured Logging: guide/structured-logging.md
       - Structured Config: guide/structured-config.md
