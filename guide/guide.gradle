@@ -8,37 +8,7 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-plugins {
-    id 'org.kordamp.gradle.guide'   version '0.14.0'
+plugins {    
+    id 'ru.vyarus.mkdocs'              version '1.1.0'
     id 'org.ajoberstar.git-publish' version '0.3.2'
-}
-
-dependencies {
-    asciidoctor 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.2'
-}
-
-guide {
-    groovydocApiDir = 'api'
-}
-
-asciidoctor {
-    attributes = [
-            'gradle-version': project.gradle.gradleVersion,
-            'source-highlighter': 'prettify'
-    ]
-}
-
-afterEvaluate {
-    project.tasks.findByName('createGuide')
-
-    gitPublish {
-        repoUri = rootProject.extensions.findByName('config').info.links.scm
-        branch  = 'gh-pages'
-        contents {
-            from project.tasks.findByName('createGuide').outputs.files
-        }
-        commitMessage = "Publish guide for $version"
-    }
-
-    gitPublishCommit.dependsOn(project.tasks.findByName('createGuide'))
 }

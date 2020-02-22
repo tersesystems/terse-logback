@@ -1,7 +1,17 @@
-sudo: false
 language: java
 jdk:
 - openjdk8
+
+sudo: required
+
+addons:
+  apt:
+    packages:
+    - "python3"
+    - "python3-pip"
+    
+before_install:
+  - sudo pip3 install -U pip
 
 #don't build tags
 branches:

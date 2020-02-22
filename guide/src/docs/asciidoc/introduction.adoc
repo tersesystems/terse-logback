@@ -1,5 +1,0 @@
-
-[[_introduction]]
-= Introduction
-
-introduction
