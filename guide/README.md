@@ -8,7 +8,7 @@
 * `mkdocsInit` - Create new mkdocs site (like this).
 * `mkdocsBuild` - Build the documentation site.
 * `mkdocsServe` - Start the live-reloading docs server.
-* `mkdocsPublish` - Publish generated site version to github pages.
+* `mkdocsPublish` - [Publish generated site version to github pages.](https://xvik.github.io/gradle-mkdocs-plugin/1.1.0/guide/publication/)
 
 ## Mkdocs native Commands
 
