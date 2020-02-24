@@ -36,7 +36,7 @@
         evt JSON NOT NULL,
         correlation_id VARCHAR(255) NOT NULL
         );
-        CREATE INDEX correlation_id_idx ON events(correlation_id);
+        CREATE INDEX correlation_id_idx IF NOT EXISTS ON events(correlation_id);
       </createStatements>
       <insertStatement>
         insert into events(ts, tse_ms, start_ms, level_value, level, evt, correlation_id) values(?, ?, ?, ?, ?, ?, ?)
