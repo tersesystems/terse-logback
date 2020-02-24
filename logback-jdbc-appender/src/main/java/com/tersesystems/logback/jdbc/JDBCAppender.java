@@ -24,6 +24,10 @@ import java.util.function.Consumer;
  * <p>It uses HikariCP and a thread pool executor to set up the <a
  * href="https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing">appropriate thread pool
  * size</a>.
+ *
+ * <p>Note that despite using a thread pool sized to the database connection pool, you should always
+ * use the JDBC appender behind an async appender of some sort, as you'll want to ensure that
+ * there's a queue feeding into the workers if they're all busy.
  */
 public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private final AtomicBoolean initialized = new AtomicBoolean(false);
