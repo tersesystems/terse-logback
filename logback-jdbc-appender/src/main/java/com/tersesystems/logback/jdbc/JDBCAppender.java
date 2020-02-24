@@ -17,7 +17,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
-import javax.sql.DataSource;
 
 /**
  * This appender writes out to a single table through JDBC.
@@ -49,6 +48,8 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private String reaperSchedule;
   private String poolName = "jdbc-appender-pool-" + System.currentTimeMillis();
   private int poolSize = 2;
+
+  private final BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(1024);
 
   private ExecutorService executorService;
 
@@ -147,8 +148,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   public void start() {
+    executorService =
+        new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
     super.start();
-    executorService = Executors.newFixedThreadPool(poolSize);
   }
 
   @Override
@@ -159,14 +161,12 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     initialized.set(false);
   }
 
-  protected void shutdownThreadPool() {
-    if (executorService != null) {
-      try {
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        // This isn't worth reporting.
-      }
+  @Override
+  protected void append(ILoggingEvent event) {
+    if (!initialized.get()) {
+      initialize();
     }
+    executorService.submit(() -> insertConsumer.accept(event));
   }
 
   // When the appender is starting, then Logback hasn't started up yet and so
@@ -178,13 +178,43 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       addInfo("initialize: ");
       try {
         dataSource = createDataSource(driver, url, username, password);
-        insertConsumer = new InsertConsumer(dataSource);
+        insertConsumer = new InsertConsumer();
         checkConnection();
         createTableIfNecessary();
         scheduleReaper();
       } catch (Exception e) {
         addError("Cannot configure database connection", e);
       }
+    }
+  }
+
+  protected HikariDataSource createDataSource(
+      String driver, String url, String username, String password) {
+    HikariConfig config = new HikariConfig();
+    config.setDriverClassName(Objects.requireNonNull(driver, "Null driver"));
+    config.setJdbcUrl(requireNonNull(url, "Null url"));
+    config.setUsername(username);
+    config.setPassword(password);
+    config.setPoolName(poolName);
+    config.setAutoCommit(true); // always use autocommit mode here.
+    config.setMinimumIdle(poolSize);
+    config.setMaximumPoolSize(poolSize);
+    Properties props = new Properties();
+    // props.put("dataSource.logWriter", new PrintWriter(System.out));
+    config.setDataSourceProperties(props);
+    return new HikariDataSource(config);
+  }
+
+  protected void shutdownThreadPool() {
+    if (executorService == null || executorService.isTerminated()) {
+      return;
+    }
+    try {
+      workQueue.clear();
+      executorService.awaitTermination(1, TimeUnit.SECONDS);
+      executorService = null;
+    } catch (InterruptedException e) {
+      // This isn't worth reporting.
     }
   }
 
@@ -256,7 +286,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         }
       }
     } catch (SQLException e) {
-      addWarn("Cannot create table, assuming it exists already", e);
+      addWarn("Cannot reap old events!", e);
     }
   }
 
@@ -264,68 +294,12 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     insertConsumer = null;
     if (dataSource != null) {
       try {
-        if (dataSource.isRunning()) {
+        if (!dataSource.isClosed()) {
           dataSource.close();
         }
         dataSource = null;
       } catch (Exception e) {
         addError("Exception closing datasource", e);
-      }
-    }
-  }
-
-  protected HikariDataSource createDataSource(
-      String driver, String url, String username, String password) {
-    HikariConfig config = new HikariConfig();
-    config.setDriverClassName(Objects.requireNonNull(driver, "Null driver"));
-    config.setJdbcUrl(requireNonNull(url, "Null url"));
-    config.setUsername(username);
-    config.setPassword(password);
-    config.setPoolName(poolName);
-    config.setAutoCommit(true); // always use autocommit mode here.
-    config.setMinimumIdle(poolSize);
-    config.setMaximumPoolSize(poolSize);
-    Properties props = new Properties();
-    // props.put("dataSource.logWriter", new PrintWriter(System.out));
-    config.setDataSourceProperties(props);
-    return new HikariDataSource(config);
-  }
-
-  @Override
-  protected void append(ILoggingEvent event) {
-    if (isStarted()) {
-      initialize();
-      if (dataSource != null) {
-        executorService.submit(() -> insertConsumer.accept(event));
-      } else {
-        addWarn("Database connection not established, cannot log event!");
-      }
-    } else {
-      addWarn("Appender not started!");
-    }
-  }
-
-  class InsertConsumer implements Consumer<ILoggingEvent> {
-    private final DataSource dataSource;
-
-    InsertConsumer(DataSource dataSource) {
-      this.dataSource = requireNonNull(dataSource);
-    }
-
-    public void accept(ILoggingEvent event) {
-      try (Connection conn = this.dataSource.getConnection()) {
-        String insertStatement = requireNonNull(getInsertStatement());
-        try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
-          LongAdder adder = new LongAdder();
-          adder.increment();
-          int result = insertStatement(event, adder, statement);
-          if (isLoggingInsert()) {
-            String msg = String.format("Inserted resulted in %d rows added", result);
-            addInfo(msg);
-          }
-        }
-      } catch (Exception e) {
-        addError("Cannot insert event, please check you are using a valid encoder!", e);
       }
     }
   }
@@ -352,6 +326,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
    * @param event logging event
    * @param adder adder
    * @param statement prepared statement
+   * @throws SQLException if something goes wrong
    */
   protected void insertAdditionalData(
       ILoggingEvent event, LongAdder adder, PreparedStatement statement) throws SQLException {
@@ -399,5 +374,29 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     long eventMillis = event.getTimeStamp();
     statement.setTimestamp(adder.intValue(), new Timestamp(eventMillis));
     adder.increment();
+  }
+
+  class InsertConsumer implements Consumer<ILoggingEvent> {
+    public void accept(ILoggingEvent event) {
+      // Will need to check state here because executor service runs in a different thread.
+      if (isStarted()) {
+        try (Connection conn = dataSource.getConnection()) {
+          String insertStatement = requireNonNull(getInsertStatement());
+          try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
+            LongAdder adder = new LongAdder();
+            adder.increment();
+            int result = insertStatement(event, adder, statement);
+            if (isLoggingInsert()) {
+              String msg = String.format("Inserted resulted in %d rows added", result);
+              addInfo(msg);
+            }
+          }
+        } catch (Exception e) {
+          addError("Cannot insert event, please check you are using a valid encoder!", e);
+        }
+      } else {
+        addError("Not started yet, returning to queue!");
+      }
+    }
   }
 }
