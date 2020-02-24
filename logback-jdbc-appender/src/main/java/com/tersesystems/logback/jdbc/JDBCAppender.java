@@ -49,8 +49,6 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private String poolName = "jdbc-appender-pool-" + System.currentTimeMillis();
   private int poolSize = 2;
 
-  private final BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(1024);
-
   private ExecutorService executorService;
 
   // Debug flag for checking that a row was inserted.
@@ -118,7 +116,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     return reaperSchedule;
   }
 
-  public void setReaperSchedule(String schedule) {
+  public void setReaperSchedule(String reaperSchedule) {
     this.reaperSchedule = reaperSchedule;
   }
 
@@ -148,9 +146,8 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   public void start() {
-    executorService =
-        new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
     super.start();
+    executorService = Executors.newFixedThreadPool(poolSize);
   }
 
   @Override
@@ -210,7 +207,6 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       return;
     }
     try {
-      workQueue.clear();
       executorService.awaitTermination(1, TimeUnit.SECONDS);
       executorService = null;
     } catch (InterruptedException e) {
@@ -253,7 +249,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   protected void scheduleReaper() {
     String reaperSchedule = getReaperSchedule();
-    if (reaperSchedule == null || reaperSchedule.trim().isEmpty() || reaperDuration != null) {
+    if (reaperSchedule == null || reaperSchedule.trim().isEmpty()) {
       return;
     }
     addInfo("scheduleReaper: " + reaperSchedule);
@@ -281,13 +277,19 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     try {
       try (Connection conn = dataSource.getConnection()) {
         try (PreparedStatement stmt = conn.prepareStatement(getReaperStatement())) {
+          Instant reapAtInstant = now().minus(reaperDuration);
+          stmt.setTimestamp(1, new java.sql.Timestamp(reapAtInstant.toEpochMilli()));
           int results = stmt.executeUpdate();
-          addInfo(String.format("Reaped %d statements", results));
+          addInfo(String.format("Reaped %d statements older than %s", results, reapAtInstant));
         }
       }
     } catch (SQLException e) {
       addWarn("Cannot reap old events!", e);
     }
+  }
+
+  protected Instant now() {
+    return Instant.now();
   }
 
   protected void closeConnection() {
@@ -382,14 +384,18 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
       if (isStarted()) {
         try (Connection conn = dataSource.getConnection()) {
           String insertStatement = requireNonNull(getInsertStatement());
-          try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
-            LongAdder adder = new LongAdder();
-            adder.increment();
-            int result = insertStatement(event, adder, statement);
-            if (isLoggingInsert()) {
-              String msg = String.format("Inserted resulted in %d rows added", result);
-              addInfo(msg);
+          if (conn.isValid(100)) {
+            try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
+              LongAdder adder = new LongAdder();
+              adder.increment();
+              int result = insertStatement(event, adder, statement);
+              if (isLoggingInsert()) {
+                String msg = String.format("Inserted resulted in %d rows added", result);
+                addInfo(msg);
+              }
             }
+          } else {
+            addError("Connection is not valid!");
           }
         } catch (Exception e) {
           addError("Cannot insert event, please check you are using a valid encoder!", e);
