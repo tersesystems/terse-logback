@@ -144,7 +144,8 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   public void start() {
-    executorService = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
+    executorService =
+        new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
     super.start();
   }
 
@@ -158,11 +159,10 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   @Override
   protected void append(ILoggingEvent event) {
-    if (initialized.get()) {
-      workQueue.add(() -> insertConsumer.accept(event));
-    } else {
+    if (!initialized.get()) {
       initialize();
     }
+    executorService.submit(() -> insertConsumer.accept(event));
   }
 
   // When the appender is starting, then Logback hasn't started up yet and so
@@ -185,7 +185,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   }
 
   protected HikariDataSource createDataSource(
-          String driver, String url, String username, String password) {
+      String driver, String url, String username, String password) {
     HikariConfig config = new HikariConfig();
     config.setDriverClassName(Objects.requireNonNull(driver, "Null driver"));
     config.setJdbcUrl(requireNonNull(url, "Null url"));
@@ -257,18 +257,18 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     String reaperStatement = getReaperStatement();
     if (reaperStatement == null || reaperStatement.trim().isEmpty()) {
       addError(
-              "scheduleReaper: reaperSchedule exists, but there is no reaperStatement to execute!");
+          "scheduleReaper: reaperSchedule exists, but there is no reaperStatement to execute!");
       return;
     }
 
     reaperDuration = Duration.parse(reaperSchedule);
     ScheduledExecutorService ses = context.getScheduledExecutorService();
     ScheduledFuture<?> scheduledFuture =
-            ses.scheduleAtFixedRate(
-                    this::reapOldEvents,
-                    reaperDuration.toMillis(),
-                    reaperDuration.toMillis(),
-                    TimeUnit.MILLISECONDS);
+        ses.scheduleAtFixedRate(
+            this::reapOldEvents,
+            reaperDuration.toMillis(),
+            reaperDuration.toMillis(),
+            TimeUnit.MILLISECONDS);
     context.addScheduledFuture(scheduledFuture);
   }
 
@@ -290,7 +290,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     insertConsumer = null;
     if (dataSource != null) {
       try {
-        if (! dataSource.isClosed()) {
+        if (!dataSource.isClosed()) {
           dataSource.close();
         }
         dataSource = null;
@@ -322,6 +322,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
    * @param event logging event
    * @param adder adder
    * @param statement prepared statement
+   * @throws SQLException if something goes wrong
    */
   protected void insertAdditionalData(
       ILoggingEvent event, LongAdder adder, PreparedStatement statement) throws SQLException {
@@ -389,8 +390,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         } catch (Exception e) {
           addError("Cannot insert event, please check you are using a valid encoder!", e);
         }
+      } else {
+        addError("Not started yet, returning to queue!");
       }
     }
   }
-
 }
