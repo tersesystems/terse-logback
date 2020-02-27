@@ -13,10 +13,12 @@ package com.tersesystems.logback.ringbuffer.event;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
-import com.tersesystems.logback.ringbuffer.MarkerRingBufferTurboFilter;
+import com.tersesystems.logback.ringbuffer.BufferedLoggingEventFactory;
 import com.tersesystems.logback.ringbuffer.RingBuffer;
 import com.tersesystems.logback.ringbuffer.RingBufferAware;
 import com.tersesystems.logback.ringbuffer.RingBufferMarkerFactory;
@@ -32,13 +34,15 @@ import org.slf4j.Marker;
  *
  * <p>Intended for use with LogstashEncoder, will not show anything on console.
  */
-public class MarkerEventRingBufferTurboFilter extends MarkerRingBufferTurboFilter {
+public class MarkerEventRingBufferTurboFilter extends TurboFilter {
 
   private ILoggingEventFactory<ILoggingEvent> loggingEventFactory;
 
   private CompositeJsonEncoder<ILoggingEvent> encoder;
 
   private String fieldName;
+
+  private BufferedLoggingEventFactory bufferedLoggingEventFactory;
 
   public CompositeJsonEncoder<ILoggingEvent> getEncoder() {
     return encoder;
@@ -69,6 +73,8 @@ public class MarkerEventRingBufferTurboFilter extends MarkerRingBufferTurboFilte
     if (this.loggingEventFactory == null) {
       this.loggingEventFactory = new LoggingEventFactory();
     }
+
+    bufferedLoggingEventFactory = new BufferedLoggingEventFactory();
     if (fieldName == null) {
       fieldName = "diagnosticEvents";
     }
@@ -90,7 +96,7 @@ public class MarkerEventRingBufferTurboFilter extends MarkerRingBufferTurboFilte
       Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t) {
     if (isDumpTriggered(marker)) {
       // If triggered, log the event ourselves and pass down a deny.
-      RingBuffer<ILoggingEvent> ringBuffer = getRingBuffer(marker);
+      RingBuffer ringBuffer = getRingBuffer(marker);
       try {
         // Defer so it happens behind an async appender if possible
         Marker joinedMarker =
@@ -134,13 +140,15 @@ public class MarkerEventRingBufferTurboFilter extends MarkerRingBufferTurboFilte
 
   protected void record(
       Marker marker, Logger logger, Level level, String msg, Object[] params, Throwable t) {
-    ILoggingEvent le = loggingEventFactory.create(marker, logger, level, msg, params, t);
-    RingBuffer<ILoggingEvent> ringBuffer = getRingBuffer(marker);
-    ringBuffer.append(le);
+    LoggingEvent le =
+        (LoggingEvent) loggingEventFactory.create(marker, logger, level, msg, params, t);
+    RingBuffer ringBuffer = getRingBuffer(marker);
+    byte[] encodedData = encoder.encode(le);
+    ringBuffer.add(bufferedLoggingEventFactory.create(le, encodedData));
   }
 
   @SuppressWarnings("unchecked")
-  protected RingBuffer<ILoggingEvent> getRingBuffer(Marker marker) {
-    return ((RingBufferAware<ILoggingEvent>) marker).getRingBuffer();
+  protected RingBuffer getRingBuffer(Marker marker) {
+    return ((RingBufferAware) marker).getRingBuffer();
   }
 }

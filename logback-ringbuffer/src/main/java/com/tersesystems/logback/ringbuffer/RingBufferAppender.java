@@ -8,10 +8,13 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.classic.ringbuffer;
+package com.tersesystems.logback.ringbuffer;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 
-public interface RingBufferAppender<E extends ILoggingEvent, EncodingT>
-    extends Appender<E>, Iterable<EncodingT>, HasRingBuffer<EncodingT> {}
+/**
+ * Indicates that this appender appends to a ring buffer.
+ *
+ * @param <E>
+ */
+public interface RingBufferAppender<E> extends Appender<E>, RingBufferAware {}

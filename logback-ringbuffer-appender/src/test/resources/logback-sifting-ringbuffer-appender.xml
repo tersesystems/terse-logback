@@ -17,7 +17,7 @@
             <defaultValue>default</defaultValue>
         </discriminator>
         <sift>
-            <appender name="DEBUG-${key}" class="com.tersesystems.logback.classic.ringbuffer.IdentityRingBufferAppender">
+            <appender name="DEBUG-${key}" class="com.tersesystems.logback.ringbuffer.LoggingEventRingBufferAppender">
                 <maxSize>100</maxSize>
                 <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
                     <level>DEBUG</level>

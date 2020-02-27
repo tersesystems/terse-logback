@@ -16,7 +16,7 @@
              actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
 
     <!-- must be defined above appender-ref -->
-    <appender name="DEBUG-CYCLIC" class="com.tersesystems.logback.classic.ringbuffer.EncodingRingBufferAppender">
+    <appender name="DEBUG-CYCLIC" class="com.tersesystems.logback.ringbuffer.EncodingRingBufferAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>DEBUG</level>
             <onMatch>ACCEPT</onMatch>

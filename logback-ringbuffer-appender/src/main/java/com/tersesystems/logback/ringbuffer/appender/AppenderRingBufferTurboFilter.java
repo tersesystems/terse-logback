@@ -19,8 +19,10 @@ import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import ch.qos.logback.core.spi.FilterReply;
 import com.tersesystems.logback.classic.ILoggingEventFactory;
 import com.tersesystems.logback.classic.LoggingEventFactory;
-import com.tersesystems.logback.classic.ringbuffer.EncodingRingBufferAppender;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
+import com.tersesystems.logback.ringbuffer.BufferedLoggingEvent;
+import com.tersesystems.logback.ringbuffer.EncodingRingBufferAppender;
+import com.tersesystems.logback.ringbuffer.RingBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.stream.Collectors;
@@ -123,18 +125,9 @@ public class AppenderRingBufferTurboFilter extends TurboFilter
         return FilterReply.NEUTRAL;
       }
 
+      RingBuffer ringBuffer = ringBufferAppender.getRingBuffer();
       LogstashMarker diagnosticEventMarker =
-          Markers.defer(
-              () -> {
-                try {
-                  Stream<byte[]> stream = ringBufferAppender.getRingBuffer().stream();
-                  String eventJson =
-                      stream.map(this::encodeEventToJson).collect(Collectors.joining(","));
-                  return Markers.appendRaw(getFieldName(), "[" + eventJson + "]");
-                } finally {
-                  ringBufferAppender.reset();
-                }
-              });
+          createBacktraceMarker(ringBuffer, ringBufferAppender::reset);
       Marker joinedMarker = joinMarkers(diagnosticEventMarker, marker);
       ILoggingEventFactory<ILoggingEvent> loggingEventFactory = getLoggingEventFactory();
       ILoggingEvent event =
@@ -146,6 +139,19 @@ public class AppenderRingBufferTurboFilter extends TurboFilter
     return FilterReply.NEUTRAL;
   }
 
+  public LogstashMarker createBacktraceMarker(RingBuffer ringBuffer, Runnable afterHook) {
+    return Markers.defer(
+        () -> {
+          try {
+            Stream<BufferedLoggingEvent> stream = ringBuffer.stream();
+            String eventJson = stream.map(this::encodeEventToJson).collect(Collectors.joining(","));
+            return Markers.appendRaw(getFieldName(), "[" + eventJson + "]");
+          } finally {
+            afterHook.run();
+          }
+        });
+  }
+
   private Marker joinMarkers(LogstashMarker diagnosticEventMarker, Marker marker) {
     if (marker == null) {
       return diagnosticEventMarker;
@@ -153,8 +159,8 @@ public class AppenderRingBufferTurboFilter extends TurboFilter
     return Markers.aggregate(diagnosticEventMarker, marker);
   }
 
-  protected String encodeEventToJson(byte[] bytes) {
-    return new String(bytes, StandardCharsets.UTF_8);
+  protected String encodeEventToJson(BufferedLoggingEvent event) {
+    return new String(event.getEncodedData(), StandardCharsets.UTF_8);
   }
 
   @Override

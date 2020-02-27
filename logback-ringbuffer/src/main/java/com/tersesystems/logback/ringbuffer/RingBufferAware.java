@@ -10,11 +10,7 @@
  */
 package com.tersesystems.logback.ringbuffer;
 
-/**
- * An interface that has access to a ring buffer.
- *
- * @param <ElementT> the element type.
- */
-public interface RingBufferAware<ElementT> {
-  RingBuffer<ElementT> getRingBuffer();
+/** An interface that has access to a ring buffer. */
+public interface RingBufferAware {
+  RingBuffer getRingBuffer();
 }
