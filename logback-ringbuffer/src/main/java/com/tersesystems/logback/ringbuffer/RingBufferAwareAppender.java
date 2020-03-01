@@ -1,7 +1,6 @@
 package com.tersesystems.logback.ringbuffer;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.filter.Filter;
@@ -31,7 +30,7 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
   protected String name;
 
   private final FilterAttachableImpl<ILoggingEvent> fai = new FilterAttachableImpl<ILoggingEvent>();
-  private BufferedLoggingEventFactory eventFactory;
+  private final BufferedLoggingEventFactory eventFactory = new BufferedLoggingEventFactory();
 
   public String getName() {
     return name;
@@ -76,8 +75,6 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
       addError("Null encoder!");
       return;
     }
-
-    this.eventFactory = new BufferedLoggingEventFactory();
     started = true;
   }
 
@@ -96,7 +93,7 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
 
   protected void appendToRingBuffer(ILoggingEvent e) {
     byte[] encodedData = this.encoder.encode(e);
-    BufferedLoggingEvent bufferedLoggingEvent = eventFactory.create((LoggingEvent) e, encodedData);
+    BufferedLoggingEvent bufferedLoggingEvent = eventFactory.create(e, encodedData);
     this.ringBuffer.add(bufferedLoggingEvent);
   }
 

@@ -9,10 +9,10 @@ output = [
 	].join('\n')
 -->
 [![Bintray](https://img.shields.io/badge/bintray-tersesystems%3Aterse--logback-blue.svg)](https://bintray.com/tersesystems/maven/terse-logback/view)
-[![Latest version](https://img.shields.io/badge/latest-0.15.0-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
+[![Latest version](https://img.shields.io/badge/latest-0.15.1-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
 [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
-[![Release Notes](https://img.shields.io/badge/release--notes-0.15.0-brightgreen.svg)](docs/release-notes.md)
+[![Release Notes](https://img.shields.io/badge/release--notes-0.15.1-brightgreen.svg)](docs/release-notes.md)
 [![Travis CI](https://travis-ci.org/tersesystems/terse-logback.svg?branch=master)](https://travis-ci.org/tersesystems/terse-logback)
 <!---freshmark /shields -->
 
