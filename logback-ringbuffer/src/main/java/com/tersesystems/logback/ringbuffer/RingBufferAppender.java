@@ -17,4 +17,4 @@ import ch.qos.logback.core.Appender;
  *
  * @param <E>
  */
-public interface RingBufferAppender<E> extends Appender<E>, RingBufferAware {}
+public interface RingBufferAppender<E> extends Appender<E>, RingBufferAware, RingBufferAttachable {}

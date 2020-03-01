@@ -11,15 +11,17 @@
 package com.tersesystems.logback.ringbuffer;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
+import ch.qos.logback.core.UnsynchronizedAppenderBase;
 
 /**
  * An abstract appender that keeps an in-memory ring buffer of a given type.
  *
+ * <p>Note that this is unsynchronized, not that it should matter here.
+ *
  * @param <EventT> the type of logging event
  */
 public abstract class AbstractRingBufferAppender<EventT extends ILoggingEvent>
-    extends AppenderBase<EventT> implements RingBufferAppender<EventT> {
+    extends UnsynchronizedAppenderBase<EventT> implements RingBufferAppender<EventT> {
 
   protected RingBuffer ringBuffer;
 

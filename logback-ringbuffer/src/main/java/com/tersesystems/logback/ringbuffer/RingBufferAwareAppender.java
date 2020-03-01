@@ -30,7 +30,7 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
   /** Appenders are named. */
   protected String name;
 
-  private FilterAttachableImpl<ILoggingEvent> fai = new FilterAttachableImpl<ILoggingEvent>();
+  private final FilterAttachableImpl<ILoggingEvent> fai = new FilterAttachableImpl<ILoggingEvent>();
   private BufferedLoggingEventFactory eventFactory;
 
   public String getName() {
