@@ -17,9 +17,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.joran.spi.JoranException;
-import com.tersesystems.logback.classic.Utils;
 import com.tersesystems.logback.classic.sift.DiscriminatingMarkerFactory;
-import com.tersesystems.logback.core.RingBuffer;
+import com.tersesystems.logback.ringbuffer.RingBuffer;
 import java.net.URL;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
@@ -37,16 +36,15 @@ public class SiftingRingBufferTest {
     logger.info(marker, "this is pretty ordinary");
     logger.info(marker, "this is SPECIAL");
 
-    RingBuffer<ILoggingEvent> defaultRingBuffer = getRingBuffer(loggerContext, "SIFT", "default");
+    RingBuffer defaultRingBuffer = getRingBuffer(loggerContext, "SIFT", "default");
     assertThat(defaultRingBuffer.size()).isEqualTo(1);
 
-    RingBuffer<ILoggingEvent> specialRingBuffer = getRingBuffer(loggerContext, "SIFT", "SPECIAL");
+    RingBuffer specialRingBuffer = getRingBuffer(loggerContext, "SIFT", "SPECIAL");
     assertThat(specialRingBuffer.size()).isEqualTo(1);
   }
 
-  private RingBuffer<ILoggingEvent> getRingBuffer(
-      LoggerContext context, String appenderName, String key) {
-    return Utils.create(context).<ILoggingEvent>getRingBuffer(appenderName, key).get();
+  private RingBuffer getRingBuffer(LoggerContext context, String appenderName, String key) {
+    return null;
   }
 
   String discriminate(ILoggingEvent event) {

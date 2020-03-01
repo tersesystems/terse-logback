@@ -36,7 +36,9 @@ public class MarkerEventRingBufferTurboFilterTest {
   public void testWithDump() throws JoranException {
     LoggerContext loggerFactory = createLoggerFactory();
 
-    RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(10);
+    RingBuffer ringBuffer = getRingBuffer(loggerFactory);
+
+    RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(ringBuffer);
     Marker recordMarker = markerFactory.createRecordMarker();
     Marker dumpMarker = markerFactory.createTriggerMarker();
 
@@ -74,8 +76,15 @@ public class MarkerEventRingBufferTurboFilterTest {
     return (ListAppender<ILoggingEvent>) requireNonNull(root.getAppender("LIST"));
   }
 
-  @SuppressWarnings("unchecked")
-  RingBuffer<LoggingEvent> getRingBuffer(Marker marker) {
-    return ((RingBufferAware<LoggingEvent>) marker).getRingBuffer();
+  RingBuffer getRingBuffer(Marker marker) {
+    return ((RingBufferAware) marker).getRingBuffer();
+  }
+
+  RingBuffer getRingBuffer(LoggerContext loggerFactory) {
+    return getRingBuffer(loggerFactory, "RINGBUFFER");
+  }
+
+  RingBuffer getRingBuffer(LoggerContext loggerFactory, String name) {
+    return RingBufferUtils.getRingBuffer(loggerFactory, name);
   }
 }

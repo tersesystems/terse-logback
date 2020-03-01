@@ -1,0 +1,91 @@
+<!--
+
+    SPDX-License-Identifier: CC0-1.0
+
+    Copyright 2018-2019 Will Sargent.
+
+    Licensed under the CC0 Public Domain Dedication;
+    You may obtain a copy of the License at
+
+        http://creativecommons.org/publicdomain/zero/1.0/
+
+-->
+<configuration>
+
+    <!-- loosen the rule on appender refs so appenders can reference them -->
+    <newRule pattern="*/appender/appender-ref"
+             actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
+
+    <newRule pattern="*/ringBuffer"
+             actionClass="com.tersesystems.logback.ringbuffer.RingBufferAction"/>
+
+    <newRule pattern="*/ringBuffer-ref"
+             actionClass="com.tersesystems.logback.ringbuffer.RingBufferRefAction"/>
+
+    <ringBuffer name="RINGBUFFER" class="com.tersesystems.logback.ringbuffer.ArrayBasedRingBuffer">
+        <capacity>10</capacity>
+    </ringBuffer>
+
+    <!-- normal encoder goes inside the buffered event encoder -->
+    <appender name="LIST" class="ch.qos.logback.core.read.ListAppender">
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- anything that could take a dump from ringbuffer must have an encoder which is buffered event aware -->
+        <encoder class="com.tersesystems.logback.ringbuffer.BufferedEventEncoder">
+            <!-- This is the encoder for events that are NOT BufferedLoggingEvent. -->
+            <!-- Note com.tersesystems PatternLayoutEncoder, because logback's requires an appender be the parent  -->
+            <encoder class="com.tersesystems.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>[%-5level] %logger{15} - NOT BUFFERED %msg%n%xException{10}</pattern>
+            </encoder>
+        </encoder>
+    </appender>
+
+    <!--
+      A ring buffer aware appender may send events to a ring buffer or through to another appender.
+    -->
+    <appender name="LIST_WITH_RINGBUFFER" class="com.tersesystems.logback.ringbuffer.RingBufferAwareAppender">
+        <!-- log to console if INFO or above, otherwise log to ring buffer -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
+        <!-- encoders cannot be shared between appenders, so must specify here and in console -->
+        <encoder>
+            <pattern>[%-5level] %logger{15} - BUFFERED %msg%n%xException{10}</pattern>
+        </encoder>
+
+        <!-- anything denied goes to the ring buffer -->
+        <ringBuffer-ref ref="RINGBUFFER"/>
+
+        <!-- anything accepted goes to the appender, which has a wrapper for dealing with dumps -->
+        <appender-ref ref="LIST"/>
+    </appender>
+
+    <!-- define a list logger here so we can get at the list from the test -->
+    <logger name="LIST_LOGGER" additivity="false">
+        <appender-ref ref="LIST"/>
+    </logger>
+
+    <logger name="DUMP_LOGGER" level="TRACE" additivity="false">
+        <!-- This appender dumps contents of the ring buffer when an event is received. -->
+        <appender class="com.tersesystems.logback.ringbuffer.DumpRingBufferAppender">
+            <!-- Event source, produces BufferedLoggingEvent -->
+            <ringBuffer-ref ref="RINGBUFFER"/>
+
+            <!-- Event sink, must use BufferedEventEncoder (or ListAppender, which doesn't process anything) -->
+            <!--<appender-ref ref="CONSOLE"/>-->
+            <appender-ref ref="LIST"/>
+        </appender>
+    </logger>
+
+    <!-- Turn up tracing on this logger -->
+    <logger name="com.example.Test" level="TRACE"/>
+
+    <!-- must be TRACE so that events are generated -->
+    <root level="INFO">
+        <appender-ref ref="LIST_WITH_RINGBUFFER"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
+

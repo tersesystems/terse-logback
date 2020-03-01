@@ -10,20 +10,34 @@
  */
 package com.tersesystems.logback.ringbuffer;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import java.util.function.Supplier;
 import org.slf4j.Marker;
 
 /**
  * A marker factory that contains a ringbuffer and two inner classes, RecordMarker and DumpMarker.
  *
- * <p>A logging statement that has record marker added will be appended to the
+ * <p>Using a ring buffer marker factory means that you can build up a thread of messages and dump
+ * the ring buffer at a later point, for example:
+ *
+ * <pre>{@code
+ * RingBuffer ringBuffer = getRingBuffer();
+ * RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(ringBuffer);
+ * Marker recordMarker = markerFactory.createRecordMarker();
+ * Marker dumpMarker = markerFactory.createTriggerMarker();
+ *
+ * Logger logger = loggerFactory.getLogger("com.example.Test");
+ * logger.debug(recordMarker, "debug one");
+ * logger.debug(recordMarker, "debug two");
+ * logger.debug(recordMarker, "debug three");
+ * logger.debug(recordMarker, "debug four");
+ * logger.error(dumpMarker, "Dump all the messages");
+ * }</pre>
  */
 public class RingBufferMarkerFactory {
-  private final RingBuffer<ILoggingEvent> ringBuffer;
+  private final RingBuffer ringBuffer;
 
-  public RingBufferMarkerFactory(int capacity) {
-    this.ringBuffer = new RingBuffer<>(capacity);
+  public RingBufferMarkerFactory(RingBuffer ringBuffer) {
+    this.ringBuffer = ringBuffer;
   }
 
   public Marker createTriggerMarker() {
@@ -34,18 +48,18 @@ public class RingBufferMarkerFactory {
     return new RecordMarker(() -> ringBuffer);
   }
 
-  public static class RecordMarker extends AbstractRingBufferMarker<ILoggingEvent> {
+  public class RecordMarker extends AbstractRingBufferMarker {
     static final String TS_RECORD_MARKER = "TS_RECORD_MARKER";
 
-    RecordMarker(Supplier<RingBuffer<ILoggingEvent>> supplier) {
+    RecordMarker(Supplier<RingBuffer> supplier) {
       super(TS_RECORD_MARKER, supplier);
     }
   }
 
-  public static class TriggerMarker extends AbstractRingBufferMarker<ILoggingEvent> {
+  public class TriggerMarker extends AbstractRingBufferMarker {
     static final String TS_RECORD_MARKER = "TS_DUMP_MARKER";
 
-    TriggerMarker(Supplier<RingBuffer<ILoggingEvent>> supplier) {
+    TriggerMarker(Supplier<RingBuffer> supplier) {
       super(TS_RECORD_MARKER, supplier);
     }
   }

@@ -8,11 +8,8 @@
  *
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
-package com.tersesystems.logback.classic.ringbuffer;
+package com.tersesystems.logback.ringbuffer;
 
-import com.tersesystems.logback.core.RingBuffer;
-
-public interface HasRingBuffer<I> {
-
-  public RingBuffer<I> getRingBuffer();
+public interface RingBufferAttachable {
+  void setRingBuffer(RingBuffer ringBuffer);
 }

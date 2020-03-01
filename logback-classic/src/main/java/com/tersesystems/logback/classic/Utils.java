@@ -18,20 +18,22 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextSelectorStaticBinder;
+import ch.qos.logback.classic.util.LogbackMDCAdapter;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusManager;
 import com.tersesystems.logback.classic.functional.GetAppenderFunction;
-import com.tersesystems.logback.classic.functional.RingBufferFunction;
 import com.tersesystems.logback.classic.functional.RootLoggerSupplier;
-import com.tersesystems.logback.classic.functional.SiftingRingBufferFunction;
-import com.tersesystems.logback.core.RingBuffer;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.slf4j.spi.MDCAdapter;
 
 public class Utils {
   private final LoggerContext loggerContext;
@@ -80,29 +82,6 @@ public class Utils {
     return loggerContext;
   }
 
-  /**
-   * Gets ringbuffer from sifting appender
-   *
-   * @param siftingAppenderName the name of the sifting appender
-   * @param key the key in the sifting appender
-   * @param <E> the type of encoded content in the ring buffer.
-   * @return the ringbuffer
-   */
-  public <E> Optional<RingBuffer<E>> getRingBuffer(String siftingAppenderName, String key) {
-    return SiftingRingBufferFunction.<E>create(loggerContext).apply(siftingAppenderName, key);
-  }
-
-  /**
-   * Gets ringbuffer from regular appender.
-   *
-   * @param appenderName the name of the ring buffer appender.
-   * @param <E> contents of the ring buffer.
-   * @return the ring buffer.
-   */
-  public <E> Optional<RingBuffer<E>> getRingBuffer(String appenderName) {
-    return RingBufferFunction.<E>create(loggerContext).apply(appenderName);
-  }
-
   public Logger getRootLogger() {
     return RootLoggerSupplier.create(loggerContext).get();
   }
@@ -132,6 +111,20 @@ public class Utils {
 
   public <E extends Appender<ILoggingEvent>> Optional<E> getAppender(String appenderName) {
     return GetAppenderFunction.<E>create(loggerContext).apply(appenderName);
+  }
+
+  public Map<String, String> getMDCPropertyMap() {
+    MDCAdapter mdc = MDC.getMDCAdapter();
+
+    Map<String, String> mdcPropertyMap;
+    if (mdc instanceof LogbackMDCAdapter)
+      mdcPropertyMap = ((LogbackMDCAdapter) mdc).getPropertyMap();
+    else mdcPropertyMap = mdc.getCopyOfContextMap();
+
+    // mdcPropertyMap still null, use emptyMap()
+    if (mdcPropertyMap == null) mdcPropertyMap = Collections.emptyMap();
+
+    return mdcPropertyMap;
   }
 
   public LoggingEventFactory getLoggingEventFactory() {

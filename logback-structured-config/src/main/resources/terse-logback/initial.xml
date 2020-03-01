@@ -62,7 +62,4 @@
     <turboFilter class="com.tersesystems.logback.turbomarker.TurboMarkerTurboFilter">
     </turboFilter>
 
-    <turboFilter class="com.tersesystems.logback.ringbuffer.event.MarkerEventRingBufferTurboFilter">
-    </turboFilter>
-
 </included>
