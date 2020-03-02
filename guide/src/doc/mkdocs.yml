@@ -6,9 +6,10 @@ site_name: terse-logback
 #  site_url: "https://tersesystems.github.io/terse-logback"
 
 # Repository (add link to repository on each page)
-#repo_name: terse-logback
-#  repo_url: "http://github.com/tersesystems/terse-logback"
-#  edit_uri: "edit/master/guide/src/doc/docs/"
+repo_name: terse-logback
+
+repo_url: "https://github.com/tersesystems/terse-logback"
+edit_uri: "edit/master/guide/src/doc/docs/"
 
 #Copyright (shown at the footer)
 #copyright: 'Copyright &copy; 2017 Your Name'
