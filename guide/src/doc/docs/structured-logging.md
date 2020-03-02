@@ -1,11 +1,25 @@
 
 ## What is Structured Logging?
 
-It's logging data in a structure, so everything has a specific key and a value and can be parsed and processed by tools.  Technically, you could be logging in another structure like XML or YAML, but almost everyone uses JSON.  It's been around for [a while](https://www.kartar.net/2015/12/structured-logging/).  Technically, since there are several JSON objects all in one file / stream, this is called "newline delimited JSON" or [NDJSON](http://ndjson.org/) or [jsonlines](http://jsonlines.org/).  In this project, both text and JSON formats are rendered independently, but if you only output JSON it's not a huge deal, because you can read JSON logs as text with a special log viewer such as [jl](https://github.com/koenbollen/jl/blob/master/README.md).
+Structured logging is logging data in a structure, so everything has a specific key and a value and can be parsed and processed by tools. 
+ 
+Technically, you could be logging in another structure like XML or YAML, but almost everyone uses JSON.  
+
+Technically, since there are several JSON objects all in one file / stream, this is called "newline delimited JSON" or [NDJSON](http://ndjson.org/) or [jsonlines](http://jsonlines.org/).  
+
+If you only output JSON it's not a huge deal, because you can read JSON logs as text with a special log viewer such as [jl](https://github.com/koenbollen/jl/blob/master/README.md).
 
 Semantically, a log entry typically has multiple pieces of information associated with it, described as "high cardinality" by observability geeks.  Structured logging means that the cardinality goes from "closed" -- you can only log things that you have defined fields for -- to "open", where you can add arbitrary fields and objects to your log entry as long as it's JSON.
 
 Structured logging means that you can add more context to logs and do more with them without having to do regexes.  
+
+## History
+
+Structured logging has been around for a while.  Using JSON for structured logging is a little more recent.
+
+The earliest reference I can find to JSON logging is [Logging in JSON](http://www.asynchronous.org/blog/archives/2006/01/25/logging-in-json) in 2006, followed by [Write Logs for Machines, use JSON](https://paul.querna.org/articles/2011/12/26/log-for-machines-in-json/) in 2011, both referencing Node.js.
+
+[Structured Logging](https://www.kartar.net/2015/12/structured-logging/) in 2015 discusses JSON based logging in Ruby.
 
 ## Adding Context
 

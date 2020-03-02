@@ -1,5 +1,4 @@
-
-## Tap Filters
+# Tap Filters
 
 A tap filter is used to tap some amount of incoming process and pass them to a specially configured appender even if they do not qualify as a logging event under normal circumstances.
  

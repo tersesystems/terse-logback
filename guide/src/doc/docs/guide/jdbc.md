@@ -1,5 +1,4 @@
-
-## Logging to Database
+# JDBC
 
 There is a JDBC appender included which can be subclassed and extended as necessary in the `logback-jdbc-appender` module.  Using a database for logging can be a big help when you just want to get at the logs of the last 30 seconds from inside the application.  Because JDBC is both accessible and understandable, there's very little work required for querying.
 
@@ -244,3 +243,5 @@ CREATE INDEX correlation_id_idx ON events(correlation_id);
 ```
 
 And then you can query from there.
+
+See [Logging Structured Data to Database](https://tersesystems.com/blog/2019/09/18/logging-structured-data-to-database/) for more details.

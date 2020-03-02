@@ -1,5 +1,4 @@
-
-## Exposing System Information with Sigar
+# System Information
 
 In [What is Happening: Attempting to Understand Our Systems](https://www.youtube.com/watch?v=xy3w2hGijhE), there's [a slide](https://speakerdeck.com/lyddonb/what-is-happening-attempting-to-understand-our-systems?slide=133) that suggests the following information should always be available as telemetry data:
 
@@ -40,3 +39,4 @@ And then render the CPU, memory and load average as follows:
 ```
 
 Note that if you want to integrate this with Logstash `StructuredArgument` or `Markers` then you'll want to make your component implement `SigarContextAware` and then query appropriately.  There are some very fun things you can do with Sigar like add [Process Table Query Language](https://shervinasgari.blogspot.com/2011/03/api-helper-wrapper-for-processfinder-in.html) together with some feature flag stuff to do dynamic queries into the machine.
+

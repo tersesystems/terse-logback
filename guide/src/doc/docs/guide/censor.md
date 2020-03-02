@@ -1,5 +1,4 @@
-
-## Censoring Sensitive Information
+# Censors
 
 There may be sensitive information that you don't want to show up in the logs.  You can get around this by passing your information through a censor.  This is a custom bit of code written for Logback, but it's not too complex.
 
@@ -71,3 +70,5 @@ If you are working with a componentized framework, you'll want to use the `censo
 ```
 
 In this case, `CensoringJsonGeneratorDecorator` implements the `CensorAttachable` interface and so will run message text through the censor if it exists.
+
+See [Application Logging in Java: Converters](https://tersesystems.com/blog/2019/05/11/application-logging-in-java-part-3/) for more details.

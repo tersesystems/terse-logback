@@ -216,3 +216,5 @@ public class LDMarkerTest {
 ```
 
 This is also a reason why [diagnostic logging is better than a debugger](https://lemire.me/blog/2016/06/21/i-do-not-use-a-debugger/).  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.
+
+See [Targeted Diagnostic Logging in Production](https://tersesystems.com/blog/2019/07/22/targeted-diagnostic-logging-in-production/) for more details.

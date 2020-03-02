@@ -1,3 +1,8 @@
+# Further Reading
+
+Everything I write on logging is going to be here:
+
+* [Terse Systems](https://tersesystems.com/category/logging/)
 
 ### Best Practices
 
@@ -78,6 +83,8 @@ Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
 * [Treelog](https://github.com/lancewalton/treelog)
 
 ### Bunyan
+
+Bunyan stands out for a number of innovations: ring buffers and JSON specifically.
 
 * [Bunyan](https://timboudreau.com/blog/bunyan/read)
 * [Comparison of Winston and Bunyan](https://strongloop.com/strongblog/compare-node-js-logging-winston-bunyan/)

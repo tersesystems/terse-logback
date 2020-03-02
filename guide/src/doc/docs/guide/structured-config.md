@@ -1,5 +1,4 @@
-
-## Logback Specific Things
+# Structured Config
 
 This section deals with the specific configuration in `terse-logback/logback-structured-config`.
 
@@ -16,106 +15,6 @@ Logback doesn't come with a default `logback.xml` file, and the [configuration p
 The entry point of the system is a `logback.xml` file which has custom actions added to it to do additional configuration, `TypesafeConfigAction` and `SetLoggerLevelsAction`.
 
 This approach is not as fancy as using a service loader pattern, but there are issues integrating into web frameworks, as those frameworks may look directly for XML files and skip service loader patterns.  Using a `logback.xml` file is the most well known pattern, and Joran makes adding custom actions fairly easy.
-
-### Loading Typesafe Config
-
-The `TypesafeConfigAction` will search in a variety of places for configuration using [standard fallback behavior](https://github.com/lightbend/config#standard-behavior) for Typesafe Config, which gives a richer experience to end users.
-
-```java
-Config config = systemProperties        // Look for a property from system properties first...
-        .withFallback(file)          // if we don't find it, then look in an explicitly defined file...
-        .withFallback(testResources) // if not, then if logback-test.conf exists, look for it there...
-        .withFallback(resources)     // then look in logback.conf...
-        .withFallback(reference)     // and then finally in logback-reference.conf.
-        .resolve();                  // Tell config that we want to use ${?ENV_VAR} type stuff.
-```
-
-The configuration is then placed in the `LoggerContext` which is available to all of Logback.
-
-```java
-lc.putObject(ConfigConstants.TYPESAFE_CONFIG_CTX_KEY, config);
-```
-
-And then all properties are made available to Logback, either at the `local` scope or at the `context` scope.
-
-Properties must be strings, but you can also provide Maps and Lists to the Logback Context, through `context.getObject`.
-
-### Log Levels and Properties through Typesafe Config
-
-Configuration of properties and setting log levels is done through [Typesafe Config](https://github.com/lightbend/config#overview), using `TypesafeConfigAction`
-
-Here's the `logback.conf` from the example application.  It's in Human-Optimized Config Object Notation or [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md).
-
-```hocon
-# Set logger levels here.
-levels = {
-    # Override the default root log level with ROOT_LOG_LEVEL environment variable, if defined...
-    ROOT = ${?ROOT_LOG_LEVEL}
-
-    # You can set a logger with a simple package name.
-    example = DEBUG
-
-    # You can also do nested overrides here.
-    deeply.nested {
-        package = TRACE
-    }
-}
-
-# Overrides the properties from logback-reference.conf
-local {
-
-    logback.environment=production
-
-    censor {
-        regex = """hunter2""" // http://bash.org/?244321
-        replacementText = "*******"
-        json.keys += "password" // adding password key will remove the key/value pair entirely
-    }
-
-    # Overwrite text file on every run.
-    textfile {
-        append = false
-    }
-
-    # Override the color code in console for info statements
-    highlight {
-        info = "black"
-    }
-}
-
-# You can also include settings from other places
-include "myothersettings"
-```
-
-For tests, there's a `logback-test.conf` that will override (rather than completely replace) any settings that you have in `logback.conf`:
-
-```hocon
-include "logback-reference"
-
-levels {
-  example = TRACE
-}
-
-local {
-  logback.environment=test
-
-  textfile {
-    location = "log/test/application-test.log"
-    append = false
-  }
-
-  jsonfile {
-    location = "log/test/application-test.json"
-    prettyprint = true
-  }
-}
-```
-
-There is also a `logback-reference.conf` file that handles the default configuration for the appenders, and those settings can be overridden.  They are written out individually in the encoder configuration so I won't go over it here.
-
-Note that appender logic is not available here -- it's all defined through the `structured-config` in `logback.xml`.
-
-Using Typesafe Config is not a requirement -- the point here is to show that there are more options to configuring Logback than using a straight XML file.
 
 ### High Performance Async Appenders
 
@@ -285,7 +184,7 @@ Colored logging is not used in the file-based appender, because some editors ten
 
 #### JSON
 
-The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#encoders--layouts) with pretty print options.
+The JSON encoder uses [`net.logstash.logback.encoder.LogstashEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-6.3#encoders--layouts) with pretty print options.
 
 The XML is as follows:
 
@@ -406,48 +305,4 @@ with the following HOCON configuration:
 
 If you want to modify the format of the JSON encoder, you should use [`LoggingEventCompositeJsonEncoder`](https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#composite-encoderlayout).  The level of detail in `LoggingEventCompositeJsonEncoder` is truly astounding and it's a powerful piece of work in its own right.
 
-## Audio
-
-The audio appender uses a system beep configured through `SystemPlayer` to notify on warnings and errors, and limits excessive beeps with a budget evaluator.
-
-The XML is as follows:
-
-```xml
-<included>
-
-    <appender name="AUDIO-WARN" class="com.tersesystems.logback.audio.AudioAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>NEUTRAL</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-
-        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
-    </appender>
-
-    <appender name="AUDIO-ERROR" class="com.tersesystems.logback.audio.AudioAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-
-        <player class="com.tersesystems.logback.audio.SystemPlayer"/>
-    </appender>
-
-    <appender name="AUDIO" class="com.tersesystems.logback.core.CompositeAppender">
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator class="com.tersesystems.logback.budget.BudgetEvaluator">
-                <budgetRule name="WARN" threshold="1" interval="5" timeUnit="seconds"/>
-                <budgetRule name="ERROR" threshold="1" interval="5" timeUnit="seconds"/>
-            </evaluator>
-            <OnMismatch>DENY</OnMismatch>
-            <OnMatch>NEUTRAL</OnMatch>
-        </filter>
-
-        <appender-ref ref="AUDIO-WARN"/>
-        <appender-ref ref="AUDIO-ERROR"/>
-    </appender>
-
-</included>
-```
+See [Application Logging in Java: Putting it all together](https://tersesystems.com/blog/2019/06/23/application-logging-in-java-part-10/) for more details.

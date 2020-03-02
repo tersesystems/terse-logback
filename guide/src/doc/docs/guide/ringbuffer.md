@@ -11,3 +11,5 @@ This is also a pattern used by [restify](http://restify.com/) as RequestCaptureS
 There are two implementations of ring buffer logging, in the `logback-ringbuffer` module: one that is threshold based, and another which is marker based.
 
 TODO Finish this
+
+See [Triggering Diagnostic Logging on Exception](https://tersesystems.com/blog/2019/07/28/triggering-diagnostic-logging-on-exception/) and [Diagnostic Logging: Citations and Sources](https://tersesystems.com/blog/2019/10/05/diagnostic-logging-citations-and-sources/) for more details.

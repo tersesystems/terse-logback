@@ -1,5 +1,4 @@
-
-## Budget Aware Logging
+# Budget Aware Logging
 
 There are instances where loggers may be overly chatty, and will log more than necessary.  Rather than hunt down all the individual loggers and whitelist or blacklist the lot of them, you may want to assign a budget that will budget INFO messages to 5 statements a second.
 
@@ -32,3 +31,5 @@ This is easy to do with the `logback-budget` module, which uses an internal [cir
 
 </configuration>
 ```
+
+See [Application Logging in Java: Filters](https://tersesystems.com/blog/2019/06/15/application-logging-in-java-part-9/) for more details.

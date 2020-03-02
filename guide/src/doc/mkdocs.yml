@@ -56,24 +56,21 @@ nav:
   - Installation: installation.md
   - Structured Logging: structured-logging.md
   - User guide:
-      - Core (General Use): guide/core.md
-      - Classic (General Use): guide/classic.md
       - Audio: guide/audio.md
       - Budgeting: guide/budget.md
       - Censors: guide/censor.md
       - Compression: guide/compression.md
       - Correlation Id: guide/correlationid.md
       - Exception Mapping: guide/exception-mapping.md
-      - Honeycomb: guide/honeycomb.md
       - Bytecode Instrumentation: guide/instrumentation.md
       - JDBC: guide/jdbc.md
       - Ring Buffers: guide/ringbuffer.md
       - System Info: guide/systeminfo.md
       - Tap Filters: guide/tapfilter.md
-      - Tracing: guide/tracing.md
+      - Tracing with Honeycomb: guide/tracing.md
       - Typesafe Config: guide/config.md
-      - Turbo Marker: guide/turbomarker.md
+      - Targeted Logging with Turbo Marker: guide/turbomarker.md
       - Unique ID Appenders: guide/uniqueid.md
       - Structured Config: guide/structured-config.md
-  - Release notes: about/history.md
+  - Release notes: https://github.com/tersesystems/terse-logback/blob/master/docs/release-notes.md
   - Further Reading: reading/index.md

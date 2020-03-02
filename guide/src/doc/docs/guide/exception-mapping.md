@@ -1,5 +1,4 @@
-
-## Exception Mapping
+# Exception Mapping
 
 Exception Mapping is done to show the important details of an exception, including the root cause in a summary format.  This is especially useful in line oriented formats, because rendering a stacktrace can take up screen real estate without providing much value.
 
@@ -179,3 +178,5 @@ and get the following `exception` that contains an array of exceptions and the a
 ```
 
 This is a lot easier for structured logging parsers to grok than the associated stacktrace.
+
+See [How to Log an Exception](https://tersesystems.com/blog/2019/06/29/how-to-log-an-exception/) and [How to Log an Exception, Part 2](https://tersesystems.com/blog/2019/07/06/how-to-log-an-exception-part-2/) for more details.

@@ -1,5 +1,4 @@
-
-## Instrumenting Compiled Code with Logging using Byte Buddy
+# Instrumentation
 
 If you have library code that doesn't pass around `ILoggerFactory` and doesn't let you add information to logging, then you can get around this by instrumenting the code with [Byte Buddy](https://bytebuddy.net/).  Using Byte Buddy, you can do fun things like override `Security.setSystemManager` with [your own implementation](https://tersesystems.com/blog/2016/01/19/redefining-java-dot-lang-dot-system/), so using Byte Buddy to decorate code with `enter` and `exit` logging statements is relatively straightforward.
 
@@ -231,3 +230,5 @@ FcJ3XfsdKnk6O0Qbm7EAAA 12:31:55.504 [TRACE] j.n.s.SSLContext -  exiting: javax.n
 ```
 
 Be warned that JSSE can be extremely verbose in its `toString` output.
+
+See [Application Logging in Java: Tracing 3rd Party Code](https://tersesystems.com/blog/2019/06/11/application-logging-in-java-part-8/) and [Hierarchical Instrumented Tracing with Logback](https://tersesystems.com/blog/2019/09/15/hierarchical-instrumented-tracing-with-logback/) for more details.
