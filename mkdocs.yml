@@ -1,9 +1,10 @@
-site_name: terse-logback
+site_name: Terse Logback
 
 # Meta tags (placed in header)
-#site_description:
-#  site_author: "Will Sargent"
-#  site_url: "https://tersesystems.github.io/terse-logback"
+site_description: "Terse Logback Documentation Site"
+
+site_author: "Will Sargent"
+site_url: "https://tersesystems.github.io/terse-logback"
 
 # Repository (add link to repository on each page)
 repo_name: terse-logback
@@ -18,16 +19,15 @@ edit_uri: "edit/master/guide/src/doc/docs/"
 # https://github.com/squidfunk/mkdocs-material
 # pip install mkdocs-material
 theme: 'material'
+
 extra:
   palette:
     primary: 'indigo'
     accent: 'indigo'
 
-# social:
-#   - type: 'github'
-#     link: 'https://github.com/tersesystems'
-#   - type: 'twitter'
-#     link: 'https://twitter.com/will_sargent'
+  social:
+    - type: 'twitter'
+      link: 'https://twitter.com/will_sargent'
 
 
 # Google Analytics
@@ -59,21 +59,22 @@ nav:
   - User guide:
       - Audio: guide/audio.md
       - Budgeting: guide/budget.md
-      - Censors: guide/censor.md
+      - Censors: guide/censor.md    
       - Composite: guide/composite.md
       - Compression: guide/compression.md
       - Correlation Id: guide/correlationid.md
       - Exception Mapping: guide/exception-mapping.md
-      - Bytecode Instrumentation: guide/instrumentation.md
+      - Instrumentation: guide/instrumentation.md
       - JDBC: guide/jdbc.md
       - Ring Buffers: guide/ringbuffer.md
+      - Select Appender: guide/select.md
+      - Structured Config: guide/structured-config.md
       - System Info: guide/systeminfo.md
       - Tap Filters: guide/tapfilter.md
       - Tracing with Honeycomb: guide/tracing.md
-      - Typesafe Config: guide/config.md
-      - Targeted Logging with Turbo Marker: guide/turbomarker.md
-      - Select Appender: guide/select.md
-      - Structured Config: guide/structured-config.md
+      - Typesafe Config: guide/typesafeconfig.md
+      - Turbo Markers: guide/turbomarker.md
+      - Tap Filter: guide/tapfilter.md
       - Unique ID Appender: guide/uniqueid.md      
   - Release notes: release-notes.md
   - Further Reading: reading/index.md
