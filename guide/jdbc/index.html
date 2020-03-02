@@ -1,0 +1,897 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>JDBC - terse-logback</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#jdbc" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../.." title="terse-logback" aria-label="terse-logback" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              terse-logback
+            </span>
+            <span class="md-header-nav__topic">
+              
+                JDBC
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../.." title="terse-logback" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    terse-logback
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../structured-logging/" title="Structured Logging" class="md-nav__link">
+      Structured Logging
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      User guide
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        User guide
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../audio/" title="Audio" class="md-nav__link">
+      Audio
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../budget/" title="Budgeting" class="md-nav__link">
+      Budgeting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../censor/" title="Censors" class="md-nav__link">
+      Censors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../compression/" title="Compression" class="md-nav__link">
+      Compression
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../correlationid/" title="Correlation Id" class="md-nav__link">
+      Correlation Id
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exception-mapping/" title="Exception Mapping" class="md-nav__link">
+      Exception Mapping
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../instrumentation/" title="Bytecode Instrumentation" class="md-nav__link">
+      Bytecode Instrumentation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        JDBC
+      </label>
+    
+    <a href="./" title="JDBC" class="md-nav__link md-nav__link--active">
+      JDBC
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#logging-using-in-memory-h2-database" class="md-nav__link">
+    Logging using in-memory H2 Database
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging-using-postgressql" class="md-nav__link">
+    Logging using PostgresSQL
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extending-jdbc-appender-with-extra-fields" class="md-nav__link">
+    Extending JDBC Appender with extra fields
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ringbuffer/" title="Ring Buffers" class="md-nav__link">
+      Ring Buffers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../systeminfo/" title="System Info" class="md-nav__link">
+      System Info
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tapfilter/" title="Tap Filters" class="md-nav__link">
+      Tap Filters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tracing/" title="Tracing with Honeycomb" class="md-nav__link">
+      Tracing with Honeycomb
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../config/" title="Typesafe Config" class="md-nav__link">
+      Typesafe Config
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../turbomarker/" title="Targeted Logging with Turbo Marker" class="md-nav__link">
+      Targeted Logging with Turbo Marker
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../uniqueid/" title="Unique ID Appenders" class="md-nav__link">
+      Unique ID Appenders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../structured-config/" title="Structured Config" class="md-nav__link">
+      Structured Config
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../release-notes/" title="Release notes" class="md-nav__link">
+      Release notes
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../reading/" title="Further Reading" class="md-nav__link">
+      Further Reading
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#logging-using-in-memory-h2-database" class="md-nav__link">
+    Logging using in-memory H2 Database
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging-using-postgressql" class="md-nav__link">
+    Logging using PostgresSQL
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extending-jdbc-appender-with-extra-fields" class="md-nav__link">
+    Extending JDBC Appender with extra fields
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/jdbc.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="jdbc">JDBC<a class="headerlink" href="#jdbc" title="Permanent link">&para;</a></h1>
+<p>There is a JDBC appender included which can be subclassed and extended as necessary in the <code>logback-jdbc-appender</code> module.  Using a database for logging can be a big help when you just want to get at the logs of the last 30 seconds from inside the application.  Because JDBC is both accessible and understandable, there's very little work required for querying.</p>
+<p>Logback <strong>does</strong> have a native JDBC appender, but unfortunately it requires three tables and is not set up for easy subclassing.  This one is better.</p>
+<p>This implementation assumes a single table, with a user defined extensible schema, and is set up with <a href="https://github.com/brettwooldridge/HikariCP">HikariCP</a>  and a thread pool executor to serve JDBC with minimal blocking.  Note that you should <strong>always</strong> use a JDBC appender behind an <code>LoggingEventAsyncDisruptorAppender</code> and you should have an <a href="https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing">appropriately sized connection pool</a> for your database traffic.</p>
+<p>Database timestamps record time with microsecond resolution, whereas millisecond resolution is commonplace for logging, so for convenience both the timestamp with time zone and the time since epoch are recorded.  For span information, the start time must also be recorded as TSE.  Likewise, the level is recorded as both a text string for visual reference, and a level value so that you can order and filter database queries.</p>
+<p>Querying a database can be particuarly helpful when errors occur, because you can pull out all logs with a correlation id.  See the <code>logback-correlationid</code> module for an example.</p>
+<h3 id="logging-using-in-memory-h2-database">Logging using in-memory H2 Database<a class="headerlink" href="#logging-using-in-memory-h2-database" title="Permanent link">&para;</a></h3>
+<p>Using an in memory H2 database is a cheap and easy way to expose logs from inside the application without having to parse files.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;H2_JDBC&quot;</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.jdbc.JDBCAppender&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;driver&gt;</span>jdbc:h2:mem:logback<span class="nt">&lt;/driver&gt;</span>
+    <span class="nt">&lt;url&gt;</span>org.h2.Driver<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;username&gt;</span>sa<span class="nt">&lt;/username&gt;</span>
+    <span class="nt">&lt;password&gt;&lt;/password&gt;</span>
+
+    <span class="nt">&lt;createStatements&gt;</span>
+      CREATE TABLE IF NOT EXISTS events (
+         ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+         ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
+         tse_ms numeric NOT NULL,
+         start_ms numeric NULL,
+         level_value int NOT NULL,
+         level VARCHAR(7) NOT NULL,
+         evt JSON NOT NULL
+      );
+    <span class="nt">&lt;/createStatements&gt;</span>
+    <span class="nt">&lt;insertStatement&gt;</span>insert into events(ts, tse_ms, start_ms, level_value, level, evt) values(?, ?, ?, ?, ?, ?)<span class="nt">&lt;/insertStatement&gt;</span>
+    <span class="nt">&lt;reaperStatement&gt;</span>delete from events where ts <span class="ni">&amp;lt;</span> ?<span class="nt">&lt;/reaperStatement&gt;</span>
+    <span class="nt">&lt;reaperSchedule&gt;</span>PT30<span class="nt">&lt;/reaperSchedule&gt;</span>
+
+    <span class="nt">&lt;encoder</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.encoder.LogstashEncoder&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/encoder&gt;</span>
+<span class="nt">&lt;/appender&gt;</span>
+</code></pre></div>
+
+<h3 id="logging-using-postgressql">Logging using PostgresSQL<a class="headerlink" href="#logging-using-postgressql" title="Permanent link">&para;</a></h3>
+<p>If you want something larger scale, you'll probably be using Postgres instead of H2.  You can log JSON to PostgreSQL, using the <a href="https://www.postgresql.org/docs/current/functions-json.html">built-in JSON datatype</a>.  Postgres uses a custom JDBC type of <code>PGObject</code>, so the <code>insertEvent</code> method must be subclassed.  This is what's in the <code>logback-postgresjson-appender</code> module:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PostgresJsonAppender</span> <span class="kd">extends</span> <span class="n">JDBCAppender</span> <span class="p">{</span>
+
+  <span class="kd">private</span> <span class="n">String</span> <span class="n">objectType</span> <span class="o">=</span> <span class="s">&quot;json&quot;</span><span class="p">;</span>
+
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getObjectType</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">objectType</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setObjectType</span><span class="p">(</span><span class="n">String</span> <span class="n">objectType</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="na">objectType</span> <span class="o">=</span> <span class="n">objectType</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">super</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
+    <span class="n">setDriver</span><span class="p">(</span><span class="s">&quot;org.postgresql.Driver&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">insertEvent</span><span class="p">(</span><span class="n">ILoggingEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">LongAdder</span> <span class="n">adder</span><span class="p">,</span> <span class="n">PreparedStatement</span> <span class="n">statement</span><span class="p">)</span>
+      <span class="kd">throws</span> <span class="n">SQLException</span> <span class="p">{</span>
+    <span class="n">PGobject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PGobject</span><span class="p">();</span>
+    <span class="n">jsonObject</span><span class="p">.</span><span class="na">setType</span><span class="p">(</span><span class="n">getObjectType</span><span class="p">());</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">getEncoder</span><span class="p">().</span><span class="na">encode</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+    <span class="n">jsonObject</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="k">new</span> <span class="n">String</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span> <span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">));</span>
+    <span class="n">statement</span><span class="p">.</span><span class="na">setObject</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span> <span class="n">jsonObject</span><span class="p">);</span>
+    <span class="n">adder</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>First, install PostgreSQL, create a database <code>logback</code>, a role <code>logback</code> and a password <code>logback</code> and add the following table:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">logging_table</span> <span class="p">(</span>
+   <span class="n">ID</span> <span class="nb">serial</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+   <span class="n">ts</span> <span class="n">TIMESTAMPTZ</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">tse_ms</span> <span class="nb">numeric</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">start_ms</span> <span class="nb">numeric</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">level_value</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="k">level</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">evt</span> <span class="n">jsonb</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idxgin</span> <span class="k">ON</span> <span class="n">logging_table</span> <span class="k">USING</span> <span class="n">gin</span> <span class="p">(</span><span class="n">evt</span><span class="p">);</span>
+</code></pre></div>
+
+<p>Because logs are inherently time-series data, you can use the <a href="https://docs.timescale.com/latest/introduction">timescaleDB postgresql extension</a> as described in <a href="https://www.komu.engineer/blogs/timescaledb/timescaledb-for-logs">Store application logs in timescaleDB/postgres</a>, but that's not required.</p>
+<p>Then, add the following <code>logback.xml</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;configuration&gt;</span>
+    <span class="c">&lt;!-- async appender needs a shutdown hook to make sure this clears --&gt;</span>
+    <span class="nt">&lt;shutdownHook</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.hook.DelayingShutdownHook&quot;</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">&quot;startTime&quot;</span> <span class="na">converterClass=</span><span class="s">&quot;com.tersesystems.logback.classic.StartTimeConverter&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="c">&lt;!-- SQL is blocking, so use an async lmax appender here --&gt;</span>
+    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;ASYNC_POSTGRES&quot;</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;appender</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.postgresjson.PostgresJsonAppender&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;createStatements&gt;</span>
+                CREATE TABLE IF NOT EXISTS logging_table (
+                ID serial NOT NULL PRIMARY KEY,
+                ts TIMESTAMPTZ(6) NOT NULL,
+                tse_ms bigint NOT NULL,
+                start_ms bigint NULL,
+                level_value int NOT NULL,
+                level VARCHAR(7) NOT NULL,
+                evt jsonb NOT NULL
+                );
+                CREATE INDEX idxgin ON logging_table USING gin (evt);
+           <span class="nt">&lt;/createStatements&gt;</span>
+
+           <span class="c">&lt;!-- SQL statement takes a TIMESTAMP, LONG, INT, VARCHAR, PGObject --&gt;</span>
+           <span class="nt">&lt;insertStatement&gt;</span>insert into logging_table(ts, tse_ms, start_ms, level_value, level, evt) values(?, ?, ?, ?, ?, ?)<span class="nt">&lt;/insertStatement&gt;</span>
+
+            <span class="nt">&lt;url&gt;</span>jdbc:postgresql://localhost:5432/logback<span class="nt">&lt;/url&gt;</span>
+            <span class="nt">&lt;username&gt;</span>logback<span class="nt">&lt;/username&gt;</span>
+            <span class="nt">&lt;password&gt;</span>logback<span class="nt">&lt;/password&gt;</span>
+
+            <span class="nt">&lt;encoder</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;providers&gt;</span>
+                    <span class="nt">&lt;message/&gt;</span>
+                    <span class="nt">&lt;loggerName/&gt;</span>
+                    <span class="nt">&lt;threadName/&gt;</span>
+                    <span class="nt">&lt;logLevel/&gt;</span>
+                    <span class="nt">&lt;stackHash/&gt;</span>
+                    <span class="nt">&lt;mdc/&gt;</span>
+                    <span class="nt">&lt;logstashMarkers/&gt;</span>
+                    <span class="nt">&lt;pattern&gt;</span>
+                        <span class="nt">&lt;pattern&gt;</span>
+                            { &quot;start_ms&quot;: &quot;#asLong{%startTime}&quot; }
+                        <span class="nt">&lt;/pattern&gt;</span>
+                    <span class="nt">&lt;/pattern&gt;</span>
+                    <span class="nt">&lt;arguments/&gt;</span>
+                    <span class="nt">&lt;stackTrace&gt;</span>
+                        <span class="nt">&lt;throwableConverter</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.stacktrace.ShortenedThrowableConverter&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;rootCauseFirst&gt;</span>true<span class="nt">&lt;/rootCauseFirst&gt;</span>
+                        <span class="nt">&lt;/throwableConverter&gt;</span>
+                    <span class="nt">&lt;/stackTrace&gt;</span>
+                <span class="nt">&lt;/providers&gt;</span>
+            <span class="nt">&lt;/encoder&gt;</span>
+        <span class="nt">&lt;/appender&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+
+    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;STDOUT&quot;</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;encoder&gt;</span>
+            <span class="nt">&lt;pattern&gt;</span>%-5relative %-5level %logger{35} - %msg%n<span class="nt">&lt;/pattern&gt;</span>
+        <span class="nt">&lt;/encoder&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+
+    <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&quot;INFO&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;ASYNC_POSTGRES&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;STDOUT&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/root&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+
+<p><a href="http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/">Querying</a> requires a little bit of extra syntax, using <code>evt-&gt;'myfield'</code> to select:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">select</span> 
+  <span class="n">ts</span> <span class="k">as</span> <span class="n">end_date</span><span class="p">,</span> 
+  <span class="n">start_ms</span> <span class="k">as</span> <span class="n">epoch_start</span><span class="p">,</span> 
+  <span class="n">tse_ms</span> <span class="k">as</span> <span class="n">epoch_end</span><span class="p">,</span> 
+  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.span_id&#39;</span> <span class="k">as</span> <span class="n">span_id</span><span class="p">,</span> 
+  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;name&#39;</span> <span class="k">as</span> <span class="n">name</span><span class="p">,</span> 
+  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;message&#39;</span> <span class="k">as</span> <span class="n">message</span><span class="p">,</span>  
+  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.parent_id&#39;</span> <span class="k">as</span> <span class="n">parent</span><span class="p">,</span>
+  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;duration_ms&#39;</span> <span class="k">as</span> <span class="n">duration_ms</span> 
+<span class="k">from</span> <span class="n">logging_table</span> <span class="k">where</span> <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.trace_id&#39;</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">order</span> <span class="k">by</span> <span class="n">ts</span> <span class="k">desc</span> <span class="k">limit</span> <span class="mi">5</span>
+</code></pre></div>
+
+<p>If you have extra logs that you want to import into PostgreSQL, you can <a href="https://stackoverflow.com/questions/39224382/how-can-i-import-a-json-file-into-postgresql/57445995#57445995">use PSQL to do that</a>.</p>
+<h3 id="extending-jdbc-appender-with-extra-fields">Extending JDBC Appender with extra fields<a class="headerlink" href="#extending-jdbc-appender-with-extra-fields" title="Permanent link">&para;</a></h3>
+<p>The JDBC appender can be extended so you can add extra information to the table. </p>
+<p>In the <code>logback-correlationid</code> module, there's a <code>CorrelationIdJdbcAppender</code> that adds extra information into the event so you can query by the correlation id specifically, by using the <code>insertAdditionalData</code> hook:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CorrelationIdJdbcAppender</span> <span class="kd">extends</span> <span class="n">JDBCAppender</span> <span class="p">{</span>
+  <span class="kd">private</span> <span class="n">String</span> <span class="n">mdcKey</span> <span class="o">=</span> <span class="s">&quot;correlation_id&quot;</span><span class="p">;</span>
+
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getMdcKey</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">mdcKey</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMdcKey</span><span class="p">(</span><span class="n">String</span> <span class="n">mdcKey</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="na">mdcKey</span> <span class="o">=</span> <span class="n">mdcKey</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">protected</span> <span class="n">CorrelationIdUtils</span> <span class="n">utils</span><span class="p">;</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">super</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
+    <span class="n">utils</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CorrelationIdUtils</span><span class="p">(</span><span class="n">mdcKey</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">insertAdditionalData</span><span class="p">(</span>
+      <span class="n">ILoggingEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">LongAdder</span> <span class="n">adder</span><span class="p">,</span> <span class="n">PreparedStatement</span> <span class="n">statement</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="p">{</span>
+    <span class="n">insertCorrelationId</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">adder</span><span class="p">,</span> <span class="n">statement</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">insertCorrelationId</span><span class="p">(</span>
+      <span class="n">ILoggingEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">LongAdder</span> <span class="n">adder</span><span class="p">,</span> <span class="n">PreparedStatement</span> <span class="n">statement</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="p">{</span>
+    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">maybeCorrelationId</span> <span class="o">=</span> <span class="n">utils</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">getMarker</span><span class="p">());</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">maybeCorrelationId</span><span class="p">.</span><span class="na">isPresent</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">statement</span><span class="p">.</span><span class="na">setString</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span> <span class="n">maybeCorrelationId</span><span class="p">.</span><span class="na">get</span><span class="p">());</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">statement</span><span class="p">.</span><span class="na">setNull</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span> <span class="n">Types</span><span class="p">.</span><span class="na">VARCHAR</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">adder</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Then set up the table and add an index on the correlation id:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">events</span> <span class="p">(</span>
+   <span class="n">ID</span> <span class="nb">NUMERIC</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+   <span class="n">ts</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">TIME</span> <span class="k">ZONE</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">tse_ms</span> <span class="nb">numeric</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">start_ms</span> <span class="nb">numeric</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">level_value</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="k">level</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">evt</span> <span class="n">JSON</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+   <span class="n">correlation_id</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NULL</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">correlation_id_idx</span> <span class="k">ON</span> <span class="n">events</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">);</span>
+</code></pre></div>
+
+<p>And then you can query from there.</p>
+<p>See <a href="https://tersesystems.com/blog/2019/09/18/logging-structured-data-to-database/">Logging Structured Data to Database</a> for more details.</p>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../instrumentation/" title="Bytecode Instrumentation" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Bytecode Instrumentation
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../ringbuffer/" title="Ring Buffers" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Ring Buffers
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>

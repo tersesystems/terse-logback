@@ -1,0 +1,834 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>Structured Logging - terse-logback</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.adb8469c.css">
+      
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#what-is-structured-logging" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="terse-logback" aria-label="terse-logback" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              terse-logback
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Structured Logging
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href=".." title="terse-logback" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    terse-logback
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Structured Logging
+      </label>
+    
+    <a href="./" title="Structured Logging" class="md-nav__link md-nav__link--active">
+      Structured Logging
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-structured-logging" class="md-nav__link">
+    What is Structured Logging?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    History
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-context" class="md-nav__link">
+    Adding Context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-structure-to-logging" class="md-nav__link">
+    Adding Structure to Logging
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structuredarguments" class="md-nav__link">
+    StructuredArguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#markers" class="md-nav__link">
+    Markers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      User guide
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        User guide
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/audio/" title="Audio" class="md-nav__link">
+      Audio
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/budget/" title="Budgeting" class="md-nav__link">
+      Budgeting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/censor/" title="Censors" class="md-nav__link">
+      Censors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/compression/" title="Compression" class="md-nav__link">
+      Compression
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/correlationid/" title="Correlation Id" class="md-nav__link">
+      Correlation Id
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/exception-mapping/" title="Exception Mapping" class="md-nav__link">
+      Exception Mapping
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/instrumentation/" title="Bytecode Instrumentation" class="md-nav__link">
+      Bytecode Instrumentation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/jdbc/" title="JDBC" class="md-nav__link">
+      JDBC
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/ringbuffer/" title="Ring Buffers" class="md-nav__link">
+      Ring Buffers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/systeminfo/" title="System Info" class="md-nav__link">
+      System Info
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/tapfilter/" title="Tap Filters" class="md-nav__link">
+      Tap Filters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/tracing/" title="Tracing with Honeycomb" class="md-nav__link">
+      Tracing with Honeycomb
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/config/" title="Typesafe Config" class="md-nav__link">
+      Typesafe Config
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/turbomarker/" title="Targeted Logging with Turbo Marker" class="md-nav__link">
+      Targeted Logging with Turbo Marker
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/uniqueid/" title="Unique ID Appenders" class="md-nav__link">
+      Unique ID Appenders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../guide/structured-config/" title="Structured Config" class="md-nav__link">
+      Structured Config
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../release-notes/" title="Release notes" class="md-nav__link">
+      Release notes
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../reading/" title="Further Reading" class="md-nav__link">
+      Further Reading
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-structured-logging" class="md-nav__link">
+    What is Structured Logging?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    History
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-context" class="md-nav__link">
+    Adding Context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-structure-to-logging" class="md-nav__link">
+    Adding Structure to Logging
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structuredarguments" class="md-nav__link">
+    StructuredArguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#markers" class="md-nav__link">
+    Markers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/structured-logging.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                  <h1>Structured Logging</h1>
+                
+                <h2 id="what-is-structured-logging">What is Structured Logging?<a class="headerlink" href="#what-is-structured-logging" title="Permanent link">&para;</a></h2>
+<p>Structured logging is logging data in a structure, so everything has a specific key and a value and can be parsed and processed by tools. </p>
+<p>Technically, you could be logging in another structure like XML or YAML, but almost everyone uses JSON.  </p>
+<p>Technically, since there are several JSON objects all in one file / stream, this is called "newline delimited JSON" or <a href="http://ndjson.org/">NDJSON</a> or <a href="http://jsonlines.org/">jsonlines</a>.  </p>
+<p>If you only output JSON it's not a huge deal, because you can read JSON logs as text with a special log viewer such as <a href="https://github.com/koenbollen/jl/blob/master/README.md">jl</a>.</p>
+<p>Semantically, a log entry typically has multiple pieces of information associated with it, described as "high cardinality" by observability geeks.  Structured logging means that the cardinality goes from "closed" -- you can only log things that you have defined fields for -- to "open", where you can add arbitrary fields and objects to your log entry as long as it's JSON.</p>
+<p>Structured logging means that you can add more context to logs and do more with them without having to do regexes.  </p>
+<h2 id="history">History<a class="headerlink" href="#history" title="Permanent link">&para;</a></h2>
+<p>Structured logging has been around for a while.  Using JSON for structured logging is a little more recent.</p>
+<p>The earliest reference I can find to JSON logging is <a href="http://www.asynchronous.org/blog/archives/2006/01/25/logging-in-json">Logging in JSON</a> in 2006, followed by <a href="https://paul.querna.org/articles/2011/12/26/log-for-machines-in-json/">Write Logs for Machines, use JSON</a> in 2011, both referencing Node.js.</p>
+<p><a href="https://www.kartar.net/2015/12/structured-logging/">Structured Logging</a> in 2015 discusses JSON based logging in Ruby.</p>
+<h2 id="adding-context">Adding Context<a class="headerlink" href="#adding-context" title="Permanent link">&para;</a></h2>
+<p>There is a question of what you want to add when you log.  This is a matter of taste, but in general you should log so that you <a href="https://www.honeycomb.io/blog/event-foo-constructing-a-coherent-narrative/">create a consistent narrative</a>.  As previously mentioned, a log may indicate a portion of an event, so you want to log where doing so would help tell a story of what happened afterwards.</p>
+<p>There are some things you should <a href="https://www.honeycomb.io/blog/event-foo-what-should-i-add-to-an-event/">always add to an event</a>, such as who is talking to your service, what they're asking, business relevant fields, additional context around your service / environment, response time and particulars. You should add units to your field names when you measure a quantity, i.e. <code>response_time_ms</code>, and add a "human readable" version of internal information if available.</p>
+<p>You should add <a href="https://www.honeycomb.io/blog/event-foo-moar-context-better-events/">context to your logs</a> that helps differentiate it from its peers, so you never have to guess where the source of a log is coming from.</p>
+<p>Adding a <a href="https://blog.rapid7.com/2016/12/23/the-value-of-correlation-ids/">correlation id</a> helps you <a href="https://www.honeycomb.io/blog/event-foo-designing-for-results/">design for results</a> and tie your logs into a coherent event.  You don't need to use a UUID: a <a href="https://github.com/boundary/flake">flake id</a> will probably be better for you.  I'm using <a href="https://github.com/mguenther/idem/">idem</a> here, but most things will work.</p>
+<p>So, we know what structured logging is now.  What does it look like in SLF4J?</p>
+<h2 id="adding-structure-to-logging">Adding Structure to Logging<a class="headerlink" href="#adding-structure-to-logging" title="Permanent link">&para;</a></h2>
+<p>SLF4J doesn't have specific support for structured logging, but <a href="https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#logback-json-encoder">logstash-logback-encoder</a> does.  It's complete and comprehensive, but buried in a section called <a href="https://github.com/logstash/logstash-logback-encoder/tree/logstash-logback-encoder-5.2#event-specific-custom-fields">Event specific custom fields</a>.</p>
+<p>Event specific custom fields are implemented in two ways: through <a href="https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/argument/StructuredArguments.java"><code>net.logstash.logback.argument.StructuredArguments</code></a>, which adds structured information through parameters, and <a href="https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java"><code>net.logstash.logback.marker.Markers</code></a>, which adds structured information through the <code>org.slf4j.Marker</code> API.</p>
+<h3 id="structuredarguments">StructuredArguments<a class="headerlink" href="#structuredarguments" title="Permanent link">&para;</a></h3>
+<p><code>StructuredArguments</code> write out both to the text appenders and to the JSON appenders.  There is extra "key information" added to the JSON, and you see the value show up in the message.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span> <span class="nn">example</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="p">;</span>
+
+<span class="kn">import static</span> <span class="nn">net.logstash.logback.argument.StructuredArguments.*</span><span class="p">;</span>
+<span class="kn">import static</span> <span class="nn">org.slf4j.LoggerFactory.*</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassWithStructuredArguments</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="n">getClass</span><span class="p">());</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">logValue</span><span class="p">(</span><span class="n">String</span> <span class="n">correlationId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">logger</span><span class="p">.</span><span class="na">isInfoEnabled</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;id is {}&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">(</span><span class="s">&quot;correlationId&quot;</span><span class="p">,</span> <span class="n">correlationId</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">logNameAndValue</span><span class="p">(</span><span class="n">String</span> <span class="n">correlationId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;id is {}&quot;</span><span class="p">,</span> <span class="n">keyValue</span><span class="p">(</span><span class="s">&quot;correlationId&quot;</span><span class="p">,</span> <span class="n">correlationId</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">logNameAndValueWithFormat</span><span class="p">(</span><span class="n">String</span> <span class="n">correlationId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;id is {}&quot;</span><span class="p">,</span> <span class="n">keyValue</span><span class="p">(</span><span class="s">&quot;correlationId&quot;</span><span class="p">,</span> <span class="n">correlationId</span><span class="p">,</span> <span class="s">&quot;{0}=[{1}]&quot;</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doThings</span><span class="p">(</span><span class="n">String</span> <span class="n">correlationId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">logValue</span><span class="p">(</span><span class="n">correlationId</span><span class="p">);</span>
+        <span class="n">logNameAndValue</span><span class="p">(</span><span class="n">correlationId</span><span class="p">);</span>
+        <span class="n">logNameAndValueWithFormat</span><span class="p">(</span><span class="n">correlationId</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">String</span> <span class="n">correlationId</span> <span class="o">=</span> <span class="n">IdGenerator</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">generateCorrelationId</span><span class="p">();</span>
+        <span class="n">ClassWithStructuredArguments</span> <span class="n">classWithStructuredArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWithStructuredArguments</span><span class="p">();</span>
+        <span class="n">classWithStructuredArguments</span><span class="p">.</span><span class="na">doThings</span><span class="p">(</span><span class="n">correlationId</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This produces the following output in text:</p>
+<div class="codehilite"><pre><span></span><code>2019-01-20T23:24:40.004+0000 [INFO ] example.ClassWithStructuredArguments in main - id is FXtylIyzDbj9rfs7BRCAAA
+2019-01-20T23:24:40.006+0000 [INFO ] example.ClassWithStructuredArguments in main - id is correlationId=FXtylIyzDbj9rfs7BRCAAA
+2019-01-20T23:24:40.006+0000 [INFO ] example.ClassWithStructuredArguments in main - id is correlationId=[FXtylIyzDbj9rfs7BRCAAA]
+</code></pre></div>
+
+<p>and in JSON:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;@timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-01-20T23:24:40.004+00:00&quot;</span><span class="p">,</span><span class="nt">&quot;@version&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;id is FXtylIyzDbj9rfs7BRCAAA&quot;</span><span class="p">,</span><span class="nt">&quot;logger_name&quot;</span><span class="p">:</span><span class="s2">&quot;example.ClassWithStructuredArguments&quot;</span><span class="p">,</span><span class="nt">&quot;thread_name&quot;</span><span class="p">:</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="nt">&quot;level_value&quot;</span><span class="p">:</span><span class="mi">20000</span><span class="p">,</span><span class="nt">&quot;correlationId&quot;</span><span class="p">:</span><span class="s2">&quot;FXtylIyzDbj9rfs7BRCAAA&quot;</span><span class="p">}</span>
+<span class="p">{</span><span class="nt">&quot;@timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-01-20T23:24:40.006+00:00&quot;</span><span class="p">,</span><span class="nt">&quot;@version&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;id is correlationId=FXtylIyzDbj9rfs7BRCAAA&quot;</span><span class="p">,</span><span class="nt">&quot;logger_name&quot;</span><span class="p">:</span><span class="s2">&quot;example.ClassWithStructuredArguments&quot;</span><span class="p">,</span><span class="nt">&quot;thread_name&quot;</span><span class="p">:</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="nt">&quot;level_value&quot;</span><span class="p">:</span><span class="mi">20000</span><span class="p">,</span><span class="nt">&quot;correlationId&quot;</span><span class="p">:</span><span class="s2">&quot;FXtylIyzDbj9rfs7BRCAAA&quot;</span><span class="p">}</span>
+<span class="p">{</span><span class="nt">&quot;@timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-01-20T23:24:40.006+00:00&quot;</span><span class="p">,</span><span class="nt">&quot;@version&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;id is correlationId=[FXtylIyzDbj9rfs7BRCAAA]&quot;</span><span class="p">,</span><span class="nt">&quot;logger_name&quot;</span><span class="p">:</span><span class="s2">&quot;example.ClassWithStructuredArguments&quot;</span><span class="p">,</span><span class="nt">&quot;thread_name&quot;</span><span class="p">:</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="nt">&quot;level_value&quot;</span><span class="p">:</span><span class="mi">20000</span><span class="p">,</span><span class="nt">&quot;correlationId&quot;</span><span class="p">:</span><span class="s2">&quot;FXtylIyzDbj9rfs7BRCAAA&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="markers">Markers<a class="headerlink" href="#markers" title="Permanent link">&para;</a></h3>
+<p>If you want to add more context and don't want it to show up in the message, you can use <a href="https://github.com/logstash/logstash-logback-encoder/blob/logstash-logback-encoder-5.2/src/main/java/net/logstash/logback/marker/Markers.java"><code>net.logstash.logback.marker.Markers</code></a> instead.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span> <span class="nn">example</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">net.logstash.logback.marker.LogstashMarker</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">net.logstash.logback.marker.Markers</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="p">;</span>
+
+<span class="kn">import static</span> <span class="nn">org.slf4j.LoggerFactory.getLogger</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassWithMarkers</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="n">getClass</span><span class="p">());</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doThingsWithMarker</span><span class="p">(</span><span class="n">String</span> <span class="n">correlationId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">LogstashMarker</span> <span class="n">logstashMarker</span> <span class="o">=</span> <span class="n">Markers</span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="s">&quot;correlationId&quot;</span><span class="p">,</span> <span class="n">correlationId</span><span class="p">);</span>
+        <span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">logstashMarker</span><span class="p">,</span> <span class="s">&quot;log with marker explicitly&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">String</span> <span class="n">correlationId</span> <span class="o">=</span> <span class="n">IdGenerator</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">generateCorrelationId</span><span class="p">();</span>
+        <span class="n">ClassWithMarkers</span> <span class="n">classWithMarkers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWithMarkers</span><span class="p">();</span>
+        <span class="n">classWithMarkers</span><span class="p">.</span><span class="na">doThingsWithMarker</span><span class="p">(</span><span class="n">correlationId</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This produces the following text:</p>
+<div class="codehilite"><pre><span></span><code>2019-01-20T23:26:50.351+0000 [INFO ] example.ClassWithMarkers in main - log with marker explicitly
+</code></pre></div>
+
+<p>and the following JSON:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;@timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-01-20T23:26:50.351+00:00&quot;</span><span class="p">,</span><span class="nt">&quot;@version&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;log with marker explicitly&quot;</span><span class="p">,</span><span class="nt">&quot;logger_name&quot;</span><span class="p">:</span><span class="s2">&quot;example.ClassWithMarkers&quot;</span><span class="p">,</span><span class="nt">&quot;thread_name&quot;</span><span class="p">:</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="nt">&quot;level_value&quot;</span><span class="p">:</span><span class="mi">20000</span><span class="p">,</span><span class="nt">&quot;correlationId&quot;</span><span class="p">:</span><span class="s2">&quot;FXtylIy0T878gCNIdfWAAA&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<p>When you're using structured logging, you'll inevitably have to pass around the <code>LogstashMarker</code> or <code>StructuredArgument</code> with it so that you can add context to your logging.  In the past, the recommended way to do this was MDC.</p>
+<p>Avoid <a href="https://logback.qos.ch/manual/mdc.html">Mapped Diagnostic Context</a>.  MDC is a well known way of adding context to logging, but there are several things that make it problematic.</p>
+<p>MDC does not deal well with multi-threaded applications which may pass execution between several threads.  Code that uses <code>CompletableFuture</code> and <code>ExecutorService</code> may not work reliably with MDC.  A child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.  MDC also breaks silently: when MDC assumptions are violated, there is no indication that the wrong contextual information is being displayed.</p>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../installation/" title="Installation" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Installation
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../guide/audio/" title="Audio" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Audio
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+    
+  </body>
+</html>
