@@ -10,7 +10,13 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
+        <meta name="description" content="Terse Logback Documentation Site">
       
+      
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/guide/turbomarker/">
+      
+      
+        <meta name="author" content="Will Sargent">
       
       
         <meta name="lang:clipboard.copy" content="Copy to clipboard">
@@ -36,7 +42,7 @@
     
     
       
-        <title>Targeted Logging with Turbo Marker - terse-logback</title>
+        <title>Turbo Markers - Terse Logback</title>
       
     
     
@@ -77,7 +83,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#selectively-logging-with-turbomarkers" tabindex="0" class="md-skip">
+      <a href="#turbo-markers" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -86,7 +92,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../.." title="terse-logback" aria-label="terse-logback" class="md-header-nav__button md-logo">
+        <a href="https://tersesystems.github.io/terse-logback" title="Terse Logback" aria-label="Terse Logback" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -99,11 +105,11 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             <span class="md-header-nav__topic">
-              terse-logback
+              Terse Logback
             </span>
             <span class="md-header-nav__topic">
               
-                Targeted Logging with Turbo Marker
+                Turbo Markers
               
             </span>
           
@@ -178,12 +184,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../.." title="terse-logback" class="md-nav__button md-logo">
+    <a href="https://tersesystems.github.io/terse-logback" title="Terse Logback" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
     </a>
-    terse-logback
+    Terse Logback
   </label>
   
     <div class="md-nav__source">
@@ -307,6 +313,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../composite/" title="Composite" class="md-nav__link">
+      Composite
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../compression/" title="Compression" class="md-nav__link">
       Compression
     </a>
@@ -343,8 +361,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../instrumentation/" title="Bytecode Instrumentation" class="md-nav__link">
-      Bytecode Instrumentation
+    <a href="../instrumentation/" title="Instrumentation" class="md-nav__link">
+      Instrumentation
     </a>
   </li>
 
@@ -369,6 +387,30 @@
   <li class="md-nav__item">
     <a href="../ringbuffer/" title="Ring Buffers" class="md-nav__link">
       Ring Buffers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../select/" title="Select Appender" class="md-nav__link">
+      Select Appender
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../structured-config/" title="Structured Config" class="md-nav__link">
+      Structured Config
     </a>
   </li>
 
@@ -415,7 +457,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../config/" title="Typesafe Config" class="md-nav__link">
+    <a href="../typesafeconfig/" title="Typesafe Config" class="md-nav__link">
       Typesafe Config
     </a>
   </li>
@@ -432,37 +474,12 @@
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
+      
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Targeted Logging with Turbo Marker
-      </label>
     
-    <a href="./" title="Targeted Logging with Turbo Marker" class="md-nav__link md-nav__link--active">
-      Targeted Logging with Turbo Marker
+    <a href="./" title="Turbo Markers" class="md-nav__link md-nav__link--active">
+      Turbo Markers
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#selectively-logging-with-turbomarkers" class="md-nav__link">
-    Selectively Logging with TurboMarkers
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -473,8 +490,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../uniqueid/" title="Unique ID Appenders" class="md-nav__link">
-      Unique ID Appenders
+    <a href="../tapfilter/" title="Tap Filter" class="md-nav__link">
+      Tap Filter
     </a>
   </li>
 
@@ -485,8 +502,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../structured-config/" title="Structured Config" class="md-nav__link">
-      Structured Config
+    <a href="../uniqueid/" title="Unique ID Appender" class="md-nav__link">
+      Unique ID Appender
     </a>
   </li>
 
@@ -534,22 +551,8 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#selectively-logging-with-turbomarkers" class="md-nav__link">
-    Selectively Logging with TurboMarkers
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
   
 </nav>
                   </div>
@@ -564,9 +567,7 @@
                   <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/turbomarker.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Targeted Logging with Turbo Marker</h1>
-                
-                <h2 id="selectively-logging-with-turbomarkers">Selectively Logging with TurboMarkers<a class="headerlink" href="#selectively-logging-with-turbomarkers" title="Permanent link">&para;</a></h2>
+                <h1 id="turbo-markers">Turbo Markers<a class="headerlink" href="#turbo-markers" title="Permanent link">&para;</a></h1>
 <p><a href="https://logback.qos.ch/manual/filters.html#TurboFilter">Turbo filters</a> are filters that decide whether a logging event should be created or not.  They are are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are <code>ch.qos.logback.classic.turbo.MarkerFilter</code> and <code>ch.qos.logback.classic.turbo.MDCFilter</code>.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.</p>
 <p>What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.</p>
 <p>We start by pulling the <code>decide</code> method to an interface, <a href="https://github.com/tersesystems/terse-logback/blob/master/logback-classic/src/main/java/com/tersesystems/logback/classic/TurboFilterDecider.java"><code>TurboFilterDecider</code></a>:</p>
@@ -782,7 +783,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../config/" title="Typesafe Config" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../typesafeconfig/" title="Typesafe Config" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -797,13 +798,13 @@
           </a>
         
         
-          <a href="../uniqueid/" title="Unique ID Appenders" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../tapfilter/" title="Tap Filter" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Unique ID Appenders
+                Tap Filter
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -825,6 +826,13 @@
           Material for MkDocs</a>
       </div>
       
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
     </div>
   </div>
 </footer>

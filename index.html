@@ -10,7 +10,13 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
+        <meta name="description" content="Terse Logback Documentation Site">
       
+      
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/">
+      
+      
+        <meta name="author" content="Will Sargent">
       
       
         <meta name="lang:clipboard.copy" content="Copy to clipboard">
@@ -36,7 +42,7 @@
     
     
       
-        <title>terse-logback</title>
+        <title>Terse Logback</title>
       
     
     
@@ -86,7 +92,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="." title="terse-logback" aria-label="terse-logback" class="md-header-nav__button md-logo">
+        <a href="https://tersesystems.github.io/terse-logback" title="Terse Logback" aria-label="Terse Logback" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -99,7 +105,7 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             <span class="md-header-nav__topic">
-              terse-logback
+              Terse Logback
             </span>
             <span class="md-header-nav__topic">
               
@@ -178,12 +184,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="." title="terse-logback" class="md-nav__button md-logo">
+    <a href="https://tersesystems.github.io/terse-logback" title="Terse Logback" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
     </a>
-    terse-logback
+    Terse Logback
   </label>
   
     <div class="md-nav__source">
@@ -370,6 +376,18 @@
 
 
   <li class="md-nav__item">
+    <a href="guide/composite/" title="Composite" class="md-nav__link">
+      Composite
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="guide/compression/" title="Compression" class="md-nav__link">
       Compression
     </a>
@@ -406,8 +424,8 @@
 
 
   <li class="md-nav__item">
-    <a href="guide/instrumentation/" title="Bytecode Instrumentation" class="md-nav__link">
-      Bytecode Instrumentation
+    <a href="guide/instrumentation/" title="Instrumentation" class="md-nav__link">
+      Instrumentation
     </a>
   </li>
 
@@ -432,6 +450,30 @@
   <li class="md-nav__item">
     <a href="guide/ringbuffer/" title="Ring Buffers" class="md-nav__link">
       Ring Buffers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="guide/select/" title="Select Appender" class="md-nav__link">
+      Select Appender
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="guide/structured-config/" title="Structured Config" class="md-nav__link">
+      Structured Config
     </a>
   </li>
 
@@ -478,7 +520,7 @@
 
 
   <li class="md-nav__item">
-    <a href="guide/config/" title="Typesafe Config" class="md-nav__link">
+    <a href="guide/typesafeconfig/" title="Typesafe Config" class="md-nav__link">
       Typesafe Config
     </a>
   </li>
@@ -490,8 +532,8 @@
 
 
   <li class="md-nav__item">
-    <a href="guide/turbomarker/" title="Targeted Logging with Turbo Marker" class="md-nav__link">
-      Targeted Logging with Turbo Marker
+    <a href="guide/turbomarker/" title="Turbo Markers" class="md-nav__link">
+      Turbo Markers
     </a>
   </li>
 
@@ -502,8 +544,8 @@
 
 
   <li class="md-nav__item">
-    <a href="guide/uniqueid/" title="Unique ID Appenders" class="md-nav__link">
-      Unique ID Appenders
+    <a href="guide/tapfilter/" title="Tap Filter" class="md-nav__link">
+      Tap Filter
     </a>
   </li>
 
@@ -514,8 +556,8 @@
 
 
   <li class="md-nav__item">
-    <a href="guide/structured-config/" title="Structured Config" class="md-nav__link">
-      Structured Config
+    <a href="guide/uniqueid/" title="Unique ID Appender" class="md-nav__link">
+      Unique ID Appender
     </a>
   </li>
 
@@ -623,10 +665,10 @@
                 
                 
                 <h1 id="terse-logback">Terse Logback<a class="headerlink" href="#terse-logback" title="Permanent link">&para;</a></h1>
-<p>terse-logback is a series of libraries -- appenders, encoders, and filters -- that shows how to use <a href="https://logback.qos.ch/manual/index.html">Logback</a> effectively for <a href="structured-logging/">structured logging</a>, <a href="guide/ringbuffer/">ringbuffer logging</a>, <a href="guide/instrumentation/">system instrumentation</a>, and <a href="guide/jdbc/">JDBC</a>.</p>
+<p>Terse Logback is a series of libraries -- appenders, encoders, and filters -- that shows how to use <a href="https://logback.qos.ch/manual/index.html">Logback</a> effectively for <a href="structured-logging/">structured logging</a>, <a href="guide/ringbuffer/">ringbuffer logging</a>, <a href="guide/instrumentation/">system instrumentation</a>, and <a href="guide/jdbc/">JDBC</a>.</p>
 <p>I've written about the reasoning and internal architecture in a series of blog posts.  The <a href="https://tersesystems.com/category/logging/">full list</a> is available on <a href="https://tersesystems.com">https://tersesystems.com</a>.</p>
 <h2 id="showcase">Showcase<a class="headerlink" href="#showcase" title="Permanent link">&para;</a></h2>
-<p>There is a <a href="https://github.com/tersesystems/terse-logback-showcase">showcase web application</a> that run out of the box that demonstrates some of the more advanced features, and shows you can integrate terse-logback with <a href="https://sentry.io">Sentry</a> and <a href="https://www.honeycomb.io">Honeycomb</a>.   </p>
+<p>If you want to see a running application, there is a <a href="https://github.com/tersesystems/terse-logback-showcase">showcase web application</a> that run out of the box that demonstrates some of the more advanced features, and shows you can integrate terse-logback with <a href="https://sentry.io">Sentry</a> and <a href="https://www.honeycomb.io">Honeycomb</a>.</p>
 <h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
 <p>You want to start up a project immediately and figure things out?  Okay then.</p>
 <p>The project is configured into several modules.  The most relevant one to start with is <a href="https://github.com/tersesystems/terse-logback/tree/master/logback-structured-config/src/main/resources"><code>logback-structured-config</code></a> which gives you a starting point.</p>
@@ -699,6 +741,13 @@
           Material for MkDocs</a>
       </div>
       
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.css">
+    
+      <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
     </div>
   </div>
 </footer>

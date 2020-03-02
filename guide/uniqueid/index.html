@@ -10,7 +10,13 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
+        <meta name="description" content="Terse Logback Documentation Site">
       
+      
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/guide/uniqueid/">
+      
+      
+        <meta name="author" content="Will Sargent">
       
       
         <meta name="lang:clipboard.copy" content="Copy to clipboard">
@@ -36,7 +42,7 @@
     
     
       
-        <title>Unique ID Appenders - terse-logback</title>
+        <title>Unique ID Appender - Terse Logback</title>
       
     
     
@@ -86,7 +92,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../.." title="terse-logback" aria-label="terse-logback" class="md-header-nav__button md-logo">
+        <a href="https://tersesystems.github.io/terse-logback" title="Terse Logback" aria-label="Terse Logback" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -99,11 +105,11 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             <span class="md-header-nav__topic">
-              terse-logback
+              Terse Logback
             </span>
             <span class="md-header-nav__topic">
               
-                Unique ID Appenders
+                Unique ID Appender
               
             </span>
           
@@ -178,12 +184,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../.." title="terse-logback" class="md-nav__button md-logo">
+    <a href="https://tersesystems.github.io/terse-logback" title="Terse Logback" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
     </a>
-    terse-logback
+    Terse Logback
   </label>
   
     <div class="md-nav__source">
@@ -307,6 +313,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../composite/" title="Composite" class="md-nav__link">
+      Composite
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../compression/" title="Compression" class="md-nav__link">
       Compression
     </a>
@@ -343,8 +361,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../instrumentation/" title="Bytecode Instrumentation" class="md-nav__link">
-      Bytecode Instrumentation
+    <a href="../instrumentation/" title="Instrumentation" class="md-nav__link">
+      Instrumentation
     </a>
   </li>
 
@@ -369,6 +387,30 @@
   <li class="md-nav__item">
     <a href="../ringbuffer/" title="Ring Buffers" class="md-nav__link">
       Ring Buffers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../select/" title="Select Appender" class="md-nav__link">
+      Select Appender
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../structured-config/" title="Structured Config" class="md-nav__link">
+      Structured Config
     </a>
   </li>
 
@@ -415,7 +457,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../config/" title="Typesafe Config" class="md-nav__link">
+    <a href="../typesafeconfig/" title="Typesafe Config" class="md-nav__link">
       Typesafe Config
     </a>
   </li>
@@ -427,8 +469,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../turbomarker/" title="Targeted Logging with Turbo Marker" class="md-nav__link">
-      Targeted Logging with Turbo Marker
+    <a href="../turbomarker/" title="Turbo Markers" class="md-nav__link">
+      Turbo Markers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tapfilter/" title="Tap Filter" class="md-nav__link">
+      Tap Filter
     </a>
   </li>
 
@@ -447,22 +501,10 @@
       
     
     
-    <a href="./" title="Unique ID Appenders" class="md-nav__link md-nav__link--active">
-      Unique ID Appenders
+    <a href="./" title="Unique ID Appender" class="md-nav__link md-nav__link--active">
+      Unique ID Appender
     </a>
     
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../structured-config/" title="Structured Config" class="md-nav__link">
-      Structured Config
-    </a>
   </li>
 
         
@@ -526,6 +568,28 @@
                 
                 
                 <h1 id="unique-id-appenders">Unique ID Appenders<a class="headerlink" href="#unique-id-appenders" title="Permanent link">&para;</a></h1>
+<p>Not only can we compose appenders together, but we can also decorate the logging event at the same time. This involves using the decorator pattern to add extra information to data.</p>
+<p>So, imagine that we want to extend ILoggingEvent so that we can include a unique id along with it.</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IUniqueIdLoggingEvent</span> <span class="kd">extends</span> <span class="n">ILoggingEvent</span> <span class="p">{</span>
+    <span class="n">String</span> <span class="nf">uniqueId</span><span class="p">();</span>
+<span class="p">}</span>
+
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UniqueIdLoggingEvent</span> <span class="kd">extends</span> <span class="n">ProxyLoggingEvent</span> <span class="kd">implements</span> <span class="n">IUniqueIdLoggingEvent</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">uniqueId</span><span class="p">;</span>
+    <span class="n">UniqueIdLoggingEvent</span><span class="p">(</span><span class="n">ILoggingEvent</span> <span class="n">delegate</span><span class="p">,</span> <span class="n">String</span> <span class="n">uniqueId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">super</span><span class="p">(</span><span class="n">delegate</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">uniqueId</span> <span class="o">=</span> <span class="n">uniqueId</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">uniqueId</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="na">uniqueId</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>We can then use it as follows:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&lt;configuration&gt;</span>
 
     <span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">&quot;uniqueId&quot;</span> <span class="na">converterClass=</span><span class="s">&quot;com.tersesystems.logback.uniqueid.UniqueIdConverter&quot;</span> <span class="nt">/&gt;</span>
@@ -564,7 +628,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../turbomarker/" title="Targeted Logging with Turbo Marker" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../tapfilter/" title="Tap Filter" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -573,19 +637,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Targeted Logging with Turbo Marker
+                Tap Filter
               </span>
             </div>
           </a>
         
         
-          <a href="../structured-config/" title="Structured Config" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../release-notes/" title="Release notes" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Structured Config
+                Release notes
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -607,6 +671,13 @@
           Material for MkDocs</a>
       </div>
       
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
     </div>
   </div>
 </footer>

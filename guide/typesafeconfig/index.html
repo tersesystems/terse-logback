@@ -13,7 +13,7 @@
         <meta name="description" content="Terse Logback Documentation Site">
       
       
-        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/guide/correlationid/">
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/guide/typesafeconfig/">
       
       
         <meta name="author" content="Will Sargent">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Correlation Id - Terse Logback</title>
+        <title>Typesafe Config - Terse Logback</title>
       
     
     
@@ -83,7 +83,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#correlation-id" tabindex="0" class="md-skip">
+      <a href="#typesafe-config" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -109,7 +109,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Correlation Id
+                Typesafe Config
               
             </span>
           
@@ -335,20 +335,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-    <a href="./" title="Correlation Id" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../correlationid/" title="Correlation Id" class="md-nav__link">
       Correlation Id
     </a>
-    
   </li>
 
         
@@ -464,11 +455,49 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../typesafeconfig/" title="Typesafe Config" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Typesafe Config
+      </label>
+    
+    <a href="./" title="Typesafe Config" class="md-nav__link md-nav__link--active">
       Typesafe Config
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#log-levels-and-properties-through-typesafe-config" class="md-nav__link">
+    Log Levels and Properties through Typesafe Config
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -554,6 +583,22 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#log-levels-and-properties-through-typesafe-config" class="md-nav__link">
+    Log Levels and Properties through Typesafe Config
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -564,12 +609,94 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/correlationid.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/typesafeconfig.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="correlation-id">Correlation ID<a class="headerlink" href="#correlation-id" title="Permanent link">&para;</a></h1>
-<p>The logback-correlationid modules is a set of classes designed to encompass the idea of a correlation id in events.</p>
-<p>It consists of a correlation id filter, a JDBC appender that writes correlation id to a column in a database schema, a correlation id marker, a tap filter, and a correlation id decider. </p>
+                <h1 id="typesafe-config">Typesafe Config<a class="headerlink" href="#typesafe-config" title="Permanent link">&para;</a></h1>
+<p>The <code>TypesafeConfigAction</code> will search in a variety of places for configuration using <a href="https://github.com/lightbend/config#standard-behavior">standard fallback behavior</a> for Typesafe Config, which gives a richer experience to end users.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Config</span> <span class="n">config</span> <span class="o">=</span> <span class="n">systemProperties</span>        <span class="c1">// Look for a property from system properties first...</span>
+        <span class="p">.</span><span class="na">withFallback</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>          <span class="c1">// if we don&#39;t find it, then look in an explicitly defined file...</span>
+        <span class="p">.</span><span class="na">withFallback</span><span class="p">(</span><span class="n">testResources</span><span class="p">)</span> <span class="c1">// if not, then if logback-test.conf exists, look for it there...</span>
+        <span class="p">.</span><span class="na">withFallback</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span>     <span class="c1">// then look in logback.conf...</span>
+        <span class="p">.</span><span class="na">withFallback</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>     <span class="c1">// and then finally in logback-reference.conf.</span>
+        <span class="p">.</span><span class="na">resolve</span><span class="p">();</span>                  <span class="c1">// Tell config that we want to use ${?ENV_VAR} type stuff.</span>
+</code></pre></div>
+
+<p>The configuration is then placed in the <code>LoggerContext</code> which is available to all of Logback.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">lc</span><span class="p">.</span><span class="na">putObject</span><span class="p">(</span><span class="n">ConfigConstants</span><span class="p">.</span><span class="na">TYPESAFE_CONFIG_CTX_KEY</span><span class="p">,</span> <span class="n">config</span><span class="p">);</span>
+</code></pre></div>
+
+<p>And then all properties are made available to Logback, either at the <code>local</code> scope or at the <code>context</code> scope.</p>
+<p>Properties must be strings, but you can also provide Maps and Lists to the Logback Context, through <code>context.getObject</code>.</p>
+<h3 id="log-levels-and-properties-through-typesafe-config">Log Levels and Properties through Typesafe Config<a class="headerlink" href="#log-levels-and-properties-through-typesafe-config" title="Permanent link">&para;</a></h3>
+<p>Configuration of properties and setting log levels is done through <a href="https://github.com/lightbend/config#overview">Typesafe Config</a>, using <code>TypesafeConfigAction</code></p>
+<p>Here's the <code>logback.conf</code> from the example application.  It's in Human-Optimized Config Object Notation or <a href="https://github.com/lightbend/config/blob/master/HOCON.md">HOCON</a>.</p>
+<div class="codehilite"><pre><span></span><code># Set logger levels here.
+levels = {
+    # Override the default root log level with ROOT_LOG_LEVEL environment variable, if defined...
+    ROOT = ${?ROOT_LOG_LEVEL}
+
+    # You can set a logger with a simple package name.
+    example = DEBUG
+
+    # You can also do nested overrides here.
+    deeply.nested {
+        package = TRACE
+    }
+}
+
+# Overrides the properties from logback-reference.conf
+local {
+
+    logback.environment=production
+
+    censor {
+        regex = &quot;&quot;&quot;hunter2&quot;&quot;&quot; // http://bash.org/?244321
+        replacementText = &quot;*******&quot;
+        json.keys += &quot;password&quot; // adding password key will remove the key/value pair entirely
+    }
+
+    # Overwrite text file on every run.
+    textfile {
+        append = false
+    }
+
+    # Override the color code in console for info statements
+    highlight {
+        info = &quot;black&quot;
+    }
+}
+
+# You can also include settings from other places
+include &quot;myothersettings&quot;
+</code></pre></div>
+
+<p>For tests, there's a <code>logback-test.conf</code> that will override (rather than completely replace) any settings that you have in <code>logback.conf</code>:</p>
+<div class="codehilite"><pre><span></span><code>include &quot;logback-reference&quot;
+
+levels {
+  example = TRACE
+}
+
+local {
+  logback.environment=test
+
+  textfile {
+    location = &quot;log/test/application-test.log&quot;
+    append = false
+  }
+
+  jsonfile {
+    location = &quot;log/test/application-test.json&quot;
+    prettyprint = true
+  }
+}
+</code></pre></div>
+
+<p>There is also a <code>logback-reference.conf</code> file that handles the default configuration for the appenders, and those settings can be overridden.  They are written out individually in the encoder configuration so I won't go over it here.</p>
+<p>Note that appender logic is not available here -- it's all defined through the <code>structured-config</code> in <code>logback.xml</code>.</p>
+<p>Using Typesafe Config is not a requirement -- the point here is to show that there are more options to configuring Logback than using a straight XML file.</p>
+<p>See <a href="https://tersesystems.com/blog/2019/05/05/application-logging-in-java-part-2/">Application Logging in Java: Adding Configuration</a> for more details.</p>
                 
                   
                 
@@ -591,7 +718,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../compression/" title="Compression" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../tracing/" title="Tracing with Honeycomb" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -600,19 +727,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Compression
+                Tracing with Honeycomb
               </span>
             </div>
           </a>
         
         
-          <a href="../exception-mapping/" title="Exception Mapping" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../turbomarker/" title="Turbo Markers" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Exception Mapping
+                Turbo Markers
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
