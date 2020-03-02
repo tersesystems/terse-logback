@@ -29,6 +29,7 @@ def includeProject = { String projectName ->
     project(":${projectName}").buildFileName = buildFileName
 }
 
+includeProject 'guide'
 includeProject 'logback-bytebuddy'
 includeProject 'logback-censor'
 includeProject 'logback-core'

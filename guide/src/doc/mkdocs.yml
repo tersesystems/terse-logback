@@ -1,0 +1,76 @@
+site_name: terse-logback
+
+# Meta tags (placed in header)
+#site_description:
+#  site_author: "Will Sargent"
+#  site_url: "https://tersesystems.github.io/terse-logback"
+
+# Repository (add link to repository on each page)
+#repo_name: terse-logback
+#  repo_url: "http://github.com/tersesystems/terse-logback"
+#  edit_uri: "edit/master/guide/src/doc/docs/"
+
+#Copyright (shown at the footer)
+#copyright: 'Copyright &copy; 2017 Your Name'
+
+# Meterial theme
+# https://github.com/squidfunk/mkdocs-material
+# pip install mkdocs-material
+theme: 'material'
+extra:
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+
+# social:
+#   - type: 'github'
+#     link: 'https://github.com/tersesystems'
+#   - type: 'twitter'
+#     link: 'https://twitter.com/will_sargent'
+
+
+# Google Analytics
+#google_analytics:
+#  - 'UA-111111111-1'
+#  - 'auto'
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Structured Logging: structured-logging.md
+  - User guide:
+      - Audio: guide/audio.md
+      - Budgeting: guide/budget.md
+      - Censors: guide/censor.md
+      - Compression: guide/compression.md
+      - Correlation Id: guide/correlationid.md
+      - Exception Mapping: guide/exception-mapping.md
+      - Bytecode Instrumentation: guide/instrumentation.md
+      - JDBC: guide/jdbc.md
+      - Ring Buffers: guide/ringbuffer.md
+      - System Info: guide/systeminfo.md
+      - Tap Filters: guide/tapfilter.md
+      - Tracing with Honeycomb: guide/tracing.md
+      - Typesafe Config: guide/config.md
+      - Targeted Logging with Turbo Marker: guide/turbomarker.md
+      - Unique ID Appenders: guide/uniqueid.md
+      - Structured Config: guide/structured-config.md
+  - Release notes: https://github.com/tersesystems/terse-logback/blob/master/docs/release-notes.md
+  - Further Reading: reading/index.md
