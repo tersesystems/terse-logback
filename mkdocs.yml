@@ -73,5 +73,5 @@ nav:
       - Targeted Logging with Turbo Marker: guide/turbomarker.md
       - Unique ID Appenders: guide/uniqueid.md
       - Structured Config: guide/structured-config.md
-  - Release notes: https://github.com/tersesystems/terse-logback/blob/master/docs/release-notes.md
+  - Release notes: release-notes.md
   - Further Reading: reading/index.md
