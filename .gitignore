@@ -7,6 +7,8 @@ logback-sigar/native/
 build
 target/
 
+site/
+
 .idea
 log/
 
