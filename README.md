@@ -18,9 +18,11 @@ output = [
 
 # Terse Logback
 
-This is a Java project that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for structured logging.  
+Terse Logback is a collection of [Logback](https://logback.qos.ch/) extensions that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for [structured logging](structured-logging.md), [ringbuffer logging](guide/ringbuffer.md), [system instrumentation](guide/instrumentation.md), and [JDBC](guide/jdbc.md).  
 
-It shows how you configure Logback, and how you can reduce the amount of complexity in your end projects by packaging your logging appenders and configurators in a distinct project.
+Using Terse Logback increases the observability of your application.  Or as [@mipsytipsy](https://twitter.com/mipsytipsy) puts it:
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">HOLY ROYAL SHITBALLS. To all of you who have been asking (for YEARS) if there are any alternatives to honeycomb for observability: yes, finally YES! <a href="https://twitter.com/will_sargent?ref_src=twsrc%5Etfw">@will_sargent</a> has hacked together the most ingenious little solution using only logs and feature flags:<a href="https://t.co/xwdHWMlcEl">https://t.co/xwdHWMlcEl</a></p>&mdash; Charity Majors (@mipsytipsy) <a href="https://twitter.com/mipsytipsy/status/1153889935536975872?ref_src=twsrc%5Etfw">July 24, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
 
 ## Documentation
 
