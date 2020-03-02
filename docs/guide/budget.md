@@ -6,7 +6,6 @@ This is easy to do with the `logback-budget` module, which uses an internal [cir
 
 ```xml
 <configuration>
-    <!-- <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
 
     <newRule pattern="*/budget-rule"
              actionClass="com.tersesystems.logback.budget.BudgetRuleAction"/>

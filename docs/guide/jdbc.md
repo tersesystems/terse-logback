@@ -137,7 +137,7 @@ Then, add the following `logback.xml`:
                     <logstashMarkers/>
                     <pattern>
                         <pattern>
-                            { "start_ms": "#asLong{%startTime}" }
+                            { "start_ms": "#asLong{%%startTime}" }
                         </pattern>
                     </pattern>
                     <arguments/>

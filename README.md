@@ -24,10 +24,10 @@ It shows how you configure Logback, and how you can reduce the amount of complex
 
 ## Documentation
 
-Documentation is available at [https://tersesystems.github.io/terse-logback](https://tersesystems.github.io/terse-logback].
+Documentation is available at [https://tersesystems.github.io/terse-logback](https://tersesystems.github.io/terse-logback).
 
 ## Showcase 
 
-There is a showcase project at [https://github.com/tersesystems/terse-logback-showcase](https://github.com/tersesystems/terse-logback-showcase].
+There is a showcase project at [https://github.com/tersesystems/terse-logback-showcase](https://github.com/tersesystems/terse-logback-showcase).
 
 
