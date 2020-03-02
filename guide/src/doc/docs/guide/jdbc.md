@@ -184,7 +184,9 @@ If you have extra logs that you want to import into PostgreSQL, you can [use PSQ
 
 ### Extending JDBC Appender with extra fields
 
-The JDBC appender can be extended so you can add extra information to the table.  In the `logback-correlationid` module, there's a `CorrelationIdJdbcAppender` that adds extra information into the event so you can query by the correlation id specifically, by using the `insertAdditionalData` hook:
+The JDBC appender can be extended so you can add extra information to the table. 
+  
+In the `logback-correlationid` module, there's a `CorrelationIdJdbcAppender` that adds extra information into the event so you can query by the correlation id specifically, by using the `insertAdditionalData` hook:
 
 ```java
 public class CorrelationIdJdbcAppender extends JDBCAppender {

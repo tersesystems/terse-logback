@@ -14,17 +14,19 @@ site_name: terse-logback
 #copyright: 'Copyright &copy; 2017 Your Name'
 
 # Meterial theme
-theme: 'mkdocs'
-#extra:
-#  palette:
-#    primary: 'indigo'
-#    accent: 'indigo'
+# https://github.com/squidfunk/mkdocs-material
+# pip install mkdocs-material
+theme: 'material'
+extra:
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
 
-#social:
-#  - type: 'github'
-#    link: 'https://github.com/tersesystems'
-#  - type: 'twitter'
-#    link: 'https://twitter.com/will_sargent'
+# social:
+#   - type: 'github'
+#     link: 'https://github.com/tersesystems'
+#   - type: 'twitter'
+#     link: 'https://twitter.com/will_sargent'
 
 
 # Google Analytics
@@ -41,19 +43,19 @@ markdown_extensions:
   - meta
   - toc:
       permalink: true
-#  - pymdownx.betterem:
-#      smart_enable: all
-#  - pymdownx.caret
-#  - pymdownx.inlinehilite
-#  - pymdownx.magiclink
-#  - pymdownx.smartsymbols
-#  - pymdownx.superfences
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
 
 nav:
   - Home: index.md
+  - Installation: installation.md
+  - Structured Logging: structured-logging.md
   - User guide:
-      - Quickstart: guide/quickstart.md
-      - Installation: guide/installation.md
       - Core (General Use): guide/core.md
       - Classic (General Use): guide/classic.md
       - Audio: guide/audio.md
@@ -72,11 +74,6 @@ nav:
       - Typesafe Config: guide/config.md
       - Turbo Marker: guide/turbomarker.md
       - Unique ID Appenders: guide/uniqueid.md
-  - Examples:
-      - Structured Logging: guide/structured-logging.md
       - Structured Config: guide/structured-config.md
-  - About:
-      - Release notes: about/history.md
-  - Further Reading:
-      - Other Libraries: reading/other.md
-      - Best Practices: reading/best-practices.md
+  - Release notes: about/history.md
+  - Further Reading: reading/index.md

@@ -8,6 +8,7 @@ Many of these are logback specific, but still good overall.
 * [A whole product concern logging implementation](http://stevetarver.github.io/2016/04/20/whole-product-logging.html)
 * [There is more to logging than meets the eye](https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html)
 * [Monitoring demystified: A guide for logging, tracing, metrics](https://techbeacon.com/enterprise-it/monitoring-demystified-guide-logging-tracing-metrics)
+* [Application-Level Logging Best Practices](https://news.ycombinator.com/item?id=19497788)
 
 Stack Overflow has a couple of good tips on SLF4J and Logging:
 
@@ -57,3 +58,43 @@ Logging Anti-Patterns by [Rolf Engelhard](https://rolf-engelhard.de/):
 * [Clean code, clean logs: log exceptions properly (9/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-log-exceptions.html)
 * [Clean code, clean logs: easy to read, easy to parse (10/10)](https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-easy-to-read-easy.html)
 * [Condensed 10 Tips on javacodegeeks](https://www.javacodegeeks.com/2011/01/10-tips-proper-application-logging.html)
+
+### JSON Logging
+
+* [Logging in JSON](http://www.asynchronous.org/blog/archives/2006/01/25/logging-in-json)
+* [Write Logs for Machines, not Humans](https://paul.querna.org/articles/2011/12/26/log-for-machines-in-json/)
+
+### Maple
+
+* [Maple](https://github.com/Randgalt/maple)
+
+### Eliot
+
+* [Eliot](https://eliot.readthedocs.io/en/stable/quickstart.html)
+* [Eliot Tree](https://github.com/jonathanj/eliottree)
+
+### TreeLog
+
+* [Treelog](https://github.com/lancewalton/treelog)
+
+### Bunyan
+
+* [Bunyan](https://timboudreau.com/blog/bunyan/read)
+* [Comparison of Winston and Bunyan](https://strongloop.com/strongblog/compare-node-js-logging-winston-bunyan/)
+* [Service logging in JSON with Bunyan](https://trentm.com/2012/03/service-logging-in-json-with-bunyan.html)
+* [Bunyan Logging in Production at Joyent](https://trentm.com/talk-bunyan-in-prod/#/8)
+
+### Timbre
+
+* [Timbre](https://github.com/ptaoussanis/timbre/blob/master/README.md)
+
+### Logback Encoders and Appenders
+
+* [concurrent-build-logger](https://github.com/takari/concurrent-build-logger) (encoders and appenders both)
+* [logzio-logback-appender](https://github.com/logzio/logzio-logback-appender)
+* [logback-elasticsearch-appender](https://github.com/internetitem/logback-elasticsearch-appender)
+* [logback-more-appenders](https://github.com/sndyuk/logback-more-appenders)
+* [logback-steno](https://github.com/ArpNetworking/logback-steno)
+* [logslack](https://github.com/gmethvin/logslack)
+* [Lessons Learned Writing New Logback Appender](https://logz.io/blog/lessons-learned-writing-new-logback-appender/)
+* [Extending logstash-logback-encoder](https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/)
