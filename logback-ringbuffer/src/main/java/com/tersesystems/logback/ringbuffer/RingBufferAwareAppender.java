@@ -10,6 +10,7 @@ import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.WarnStatus;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * A ringbuffer aware appender that will append to ringbuffer on a FilterReply DENY.
@@ -29,8 +30,15 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
   /** Appenders are named. */
   protected String name;
 
+  protected final BufferedLoggingEventFactory eventFactory = new BufferedLoggingEventFactory();
+
+  // Provide a transform function we can override in subclasses
+  protected Function<ILoggingEvent, ILoggingEvent> transformFunction = e -> {
+    byte[] encodedData = getEncoder().encode(e);
+    return eventFactory.create(e, encodedData);
+  };
+
   private final FilterAttachableImpl<ILoggingEvent> fai = new FilterAttachableImpl<ILoggingEvent>();
-  private final BufferedLoggingEventFactory eventFactory = new BufferedLoggingEventFactory();
 
   public String getName() {
     return name;
@@ -92,9 +100,9 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
   }
 
   protected void appendToRingBuffer(ILoggingEvent e) {
-    byte[] encodedData = this.encoder.encode(e);
-    BufferedLoggingEvent bufferedLoggingEvent = eventFactory.create(e, encodedData);
-    this.ringBuffer.add(bufferedLoggingEvent);
+    Function<ILoggingEvent, ILoggingEvent> tf = getTransformFunction();
+    ILoggingEvent bufferEvent = tf.apply(e);
+    this.ringBuffer.add(bufferEvent);
   }
 
   public synchronized void doAppend(ILoggingEvent eventObject) {
@@ -156,5 +164,13 @@ public class RingBufferAwareAppender extends AppenderBase<ILoggingEvent>
 
   public FilterReply getFilterChainDecision(ILoggingEvent event) {
     return fai.getFilterChainDecision(event);
+  }
+
+  public Function<ILoggingEvent, ILoggingEvent> getTransformFunction() {
+    return transformFunction;
+  }
+
+  public void setTransformFunction(Function<ILoggingEvent, ILoggingEvent> transformFunction) {
+    this.transformFunction = transformFunction;
   }
 }

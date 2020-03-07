@@ -47,7 +47,7 @@ public class RingBufferAction extends Action {
               + localName
               + "] line "
               + getLineNumber(ic));
-      className = ArrayBasedRingBuffer.class.getName();
+      className = ArrayBlockingQueueRingBuffer.class.getName();
     }
 
     try {
