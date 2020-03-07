@@ -7,11 +7,13 @@ import org.jctools.queues.MessagePassingQueue;
 
 public interface RingBuffer extends ContextAware, LifeCycle, MessagePassingQueue<ILoggingEvent> {
 
-  /** Get the name of this appender. The name uniquely identifies the appender. */
+  /** @return Get the name of this appender. The name uniquely identifies the appender. */
   String getName();
 
   /**
    * Set the name of this appender. The name is used by other components to identify this appender.
+   *
+   * @param name the name.
    */
   void setName(String name);
 }

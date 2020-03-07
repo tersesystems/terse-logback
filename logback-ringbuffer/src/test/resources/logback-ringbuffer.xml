@@ -10,7 +10,7 @@
         http://creativecommons.org/publicdomain/zero/1.0/
 
 -->
-<configuration debug="true">
+<configuration>
 
     <!-- loosen the rule on appender refs so appenders can reference them -->
     <newRule pattern="*/appender/appender-ref"

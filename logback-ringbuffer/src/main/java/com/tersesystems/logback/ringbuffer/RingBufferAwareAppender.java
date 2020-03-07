@@ -11,8 +11,6 @@ import java.util.function.Function;
 public class RingBufferAwareAppender extends AbstractRingBufferAppender<ILoggingEvent>
     implements DefaultAppenderAttachable<ILoggingEvent> {
 
-  protected volatile boolean started = false;
-
   protected final BufferedLoggingEventFactory eventFactory = new BufferedLoggingEventFactory();
 
   private Encoder<ILoggingEvent> encoder;
@@ -53,11 +51,7 @@ public class RingBufferAwareAppender extends AbstractRingBufferAppender<ILogging
       addError("Null encoder!");
       return;
     }
-    started = true;
-  }
-
-  public void stop() {
-    started = false;
+    super.start();
   }
 
   protected void append(ILoggingEvent event) {

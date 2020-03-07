@@ -12,7 +12,7 @@ public class MessagePassingQueueRingBuffer extends RingBufferBase {
 
   @Override
   public void start() {
-    queue = new MpmcArrayQueue<>(getCapacity());
+    queue = new MpmcArrayQueue<ILoggingEvent>(getCapacity());
     this.started = true;
   }
 
