@@ -1,7 +1,6 @@
 package com.tersesystems.logback.ringbuffer;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import ch.qos.logback.core.spi.FilterReply;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
@@ -11,26 +10,12 @@ import java.util.function.Function;
 public class RingBufferAwareAppender extends AbstractRingBufferAppender<ILoggingEvent>
     implements DefaultAppenderAttachable<ILoggingEvent> {
 
-  protected final BufferedLoggingEventFactory eventFactory = new BufferedLoggingEventFactory();
-
-  private Encoder<ILoggingEvent> encoder;
-
   private final AppenderAttachableImpl<ILoggingEvent> aai = new AppenderAttachableImpl<>();
 
   // Provide a transform function we can override in subclasses
-  protected Function<ILoggingEvent, ILoggingEvent> transformFunction =
-      e -> {
-        byte[] encodedData = getEncoder().encode(e);
-        return eventFactory.create(e, encodedData);
-      };
-
-  public Encoder<ILoggingEvent> getEncoder() {
-    return encoder;
-  }
-
-  public void setEncoder(Encoder<ILoggingEvent> encoder) {
-    this.encoder = encoder;
-  }
+  // This gives us the option of doing encoding or isolating event logic without requiring
+  // anything at base level
+  protected Function<ILoggingEvent, ILoggingEvent> transformFunction = Function.identity();
 
   @Override
   public AppenderAttachableImpl<ILoggingEvent> appenderAttachableImpl() {
@@ -47,10 +32,6 @@ public class RingBufferAwareAppender extends AbstractRingBufferAppender<ILogging
 
   @Override
   public void start() {
-    if (this.encoder == null) {
-      addError("Null encoder!");
-      return;
-    }
     super.start();
   }
 

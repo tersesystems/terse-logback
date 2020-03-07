@@ -4,6 +4,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.jctools.queues.MessagePassingQueue;
 import org.jctools.queues.MpmcArrayQueue;
 
+/** An implementation of ring buffer using a multi-producer/multi-consumer array queue. */
 public class MessagePassingQueueRingBuffer extends RingBufferBase {
 
   // https://psy-lob-saw.blogspot.com/2015/01/mpmc-multi-multi-queue-vs-clq.html
