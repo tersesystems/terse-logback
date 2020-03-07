@@ -11,7 +11,6 @@
 dependencies {
     implementation project(':logback-classic')
     implementation "org.jctools:jctools-core:3.0.0"
-    implementation "uk.co.real-logic:jctools-core:3.0.0"
 
     testCompile project(':logback-typesafe-config')
     testCompile 'org.apiguardian:apiguardian-api:1.1.0'

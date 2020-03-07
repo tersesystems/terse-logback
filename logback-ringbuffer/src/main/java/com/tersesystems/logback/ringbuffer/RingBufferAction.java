@@ -32,7 +32,7 @@ public class RingBufferAction extends Action {
     ringBuffer = null;
     inError = false;
 
-    // Ensure idempotency of a CENSOR_BAG
+    // Ensure idempotency of a ring buffer bag
     Map<String, Object> omap = ic.getObjectMap();
     if (!omap.containsKey(RINGBUFFER_BAG)) {
       omap.put(RINGBUFFER_BAG, new HashMap<String, RingBuffer>());
@@ -43,11 +43,11 @@ public class RingBufferAction extends Action {
       addInfo(
           "Missing class name for ringbuffer. Near [" + localName + "] line " + getLineNumber(ic));
       addInfo(
-          "Defaulting to array based ring buffer, near ["
+          "Defaulting to message passing ring buffer, near ["
               + localName
               + "] line "
               + getLineNumber(ic));
-      className = ArrayBlockingQueueRingBuffer.class.getName();
+      className = MessagePassingQueueRingBuffer.class.getName();
     }
 
     try {

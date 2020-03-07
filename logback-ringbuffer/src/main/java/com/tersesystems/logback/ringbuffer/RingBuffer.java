@@ -3,9 +3,9 @@ package com.tersesystems.logback.ringbuffer;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.LifeCycle;
-import java.util.Queue;
+import org.jctools.queues.MessagePassingQueue;
 
-public interface RingBuffer extends ContextAware, LifeCycle, Queue<ILoggingEvent> {
+public interface RingBuffer extends ContextAware, LifeCycle, MessagePassingQueue<ILoggingEvent> {
 
   /** Get the name of this appender. The name uniquely identifies the appender. */
   String getName();

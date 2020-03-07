@@ -10,7 +10,7 @@
         http://creativecommons.org/publicdomain/zero/1.0/
 
 -->
-<configuration>
+<configuration debug="true">
 
     <!-- loosen the rule on appender refs so appenders can reference them -->
     <newRule pattern="*/appender/appender-ref"
@@ -22,7 +22,7 @@
     <newRule pattern="*/ringBuffer-ref"
              actionClass="com.tersesystems.logback.ringbuffer.RingBufferRefAction"/>
 
-    <ringBuffer name="RINGBUFFER" class="com.tersesystems.logback.ringbuffer.ArrayBlockingQueueRingBuffer">
+    <ringBuffer name="RINGBUFFER">
         <capacity>10</capacity>
     </ringBuffer>
 
