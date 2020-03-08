@@ -15,7 +15,11 @@ public class RingBufferAwareAppender extends AbstractRingBufferAppender<ILogging
   // Provide a transform function we can override in subclasses
   // This gives us the option of doing encoding or isolating event logic without requiring
   // anything at base level
-  protected Function<ILoggingEvent, ILoggingEvent> transformFunction = Function.identity();
+  protected Function<ILoggingEvent, ILoggingEvent> transformFunction =
+      e -> {
+        e.prepareForDeferredProcessing();
+        return e;
+      };
 
   @Override
   public AppenderAttachableImpl<ILoggingEvent> appenderAttachableImpl() {

@@ -9,8 +9,8 @@
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    implementation project(':logback-classic')
-    implementation "org.jctools:jctools-core:3.0.0"
+    compile project(':logback-classic')
+    compile "org.jctools:jctools-core:3.0.0"
 
     testCompile project(':logback-typesafe-config')
     testCompile 'org.apiguardian:apiguardian-api:1.1.0'
