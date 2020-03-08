@@ -4,23 +4,21 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import com.tersesystems.logback.core.DefaultAppenderAttachable;
+import java.util.concurrent.locks.LockSupport;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import org.jctools.queues.MessagePassingQueue;
 
+/** This class dumps the ring buffer when called. */
 public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     implements RingBufferAttachable, DefaultAppenderAttachable<ILoggingEvent> {
 
   private final AppenderAttachableImpl<ILoggingEvent> aai = new AppenderAttachableImpl<>();
+
   private RingBuffer ringBuffer;
 
-  // If poll is set, remove each element from the ring buffer as it's sent.
-  private boolean poll = true;
-
-  public boolean isPoll() {
-    return poll;
-  }
-
-  public void setPoll(boolean poll) {
-    this.poll = poll;
-  }
+  // Provide a transform function that you can override.
+  protected Function<ILoggingEvent, ILoggingEvent> transformFunction = Function.identity();
 
   public RingBuffer getRingBuffer() {
     return ringBuffer;
@@ -30,11 +28,40 @@ public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingE
     this.ringBuffer = ringBuffer;
   }
 
+  public Function<ILoggingEvent, ILoggingEvent> getTransformFunction() {
+    return transformFunction;
+  }
+
+  public void setTransformFunction(Function<ILoggingEvent, ILoggingEvent> transformFunction) {
+    this.transformFunction = transformFunction;
+  }
+
+  protected Supplier<MessagePassingQueue.ExitCondition> exitConditionSupplier;
+
+  protected Supplier<MessagePassingQueue.WaitStrategy> waitStrategySupplier;
+
   @Override
   public void start() {
     if (this.ringBuffer == null) {
       addError("Null ring buffer!");
       return;
+    }
+
+    if (this.exitConditionSupplier == null) {
+      exitConditionSupplier = () -> () -> !ringBuffer.isEmpty();
+    }
+
+    if (this.waitStrategySupplier == null) {
+      waitStrategySupplier =
+          () ->
+              idleCounter -> {
+                if (idleCounter > 200) {
+                  LockSupport.parkNanos(1L);
+                } else if (idleCounter > 100) {
+                  Thread.yield();
+                }
+                return idleCounter + 1;
+              };
     }
     super.start();
   }
@@ -44,16 +71,11 @@ public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingE
     // Ignore the incoming event, and dump the ring buffer contents out to the
     // given appenders.
     RingBuffer ringBuffer = getRingBuffer();
-    if (this.poll) {
-      ILoggingEvent e;
-      while ((e = ringBuffer.poll()) != null) {
-        this.aai.appendLoopOnAppenders(e);
-      }
-    } else {
-      for (ILoggingEvent e : ringBuffer) {
-        this.aai.appendLoopOnAppenders(e);
-      }
-    }
+    Function<ILoggingEvent, ILoggingEvent> f = getTransformFunction();
+    ringBuffer.drain(
+        e -> this.aai.appendLoopOnAppenders(f.apply(e)),
+        waitStrategySupplier.get(),
+        exitConditionSupplier.get());
   }
 
   @Override

@@ -15,6 +15,6 @@ import ch.qos.logback.core.Appender;
 /**
  * Indicates that this appender appends to a ring buffer.
  *
- * @param <E>
+ * @param <E> Type of element to append.
  */
 public interface RingBufferAppender<E> extends Appender<E>, RingBufferAware, RingBufferAttachable {}

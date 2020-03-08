@@ -22,7 +22,7 @@
     <newRule pattern="*/ringBuffer-ref"
              actionClass="com.tersesystems.logback.ringbuffer.RingBufferRefAction"/>
 
-    <ringBuffer name="RINGBUFFER" class="com.tersesystems.logback.ringbuffer.ArrayBasedRingBuffer">
+    <ringBuffer name="RINGBUFFER">
         <capacity>10</capacity>
     </ringBuffer>
 
