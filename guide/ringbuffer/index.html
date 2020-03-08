@@ -393,9 +393,66 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Ring Buffers
+      </label>
+    
     <a href="./" title="Ring Buffers" class="md-nav__link md-nav__link--active">
       Ring Buffers
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-ring-buffers" class="md-nav__link">
+    Using Ring Buffers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-to-ring-buffer" class="md-nav__link">
+    Adding to Ring Buffer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dumping-ring-buffers" class="md-nav__link">
+    Dumping Ring Buffers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ringbuffer-markers" class="md-nav__link">
+    RingBuffer Markers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    Further Reading
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -554,6 +611,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-ring-buffers" class="md-nav__link">
+    Using Ring Buffers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-to-ring-buffer" class="md-nav__link">
+    Adding to Ring Buffer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dumping-ring-buffers" class="md-nav__link">
+    Dumping Ring Buffers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ringbuffer-markers" class="md-nav__link">
+    RingBuffer Markers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    Further Reading
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -571,9 +672,110 @@
 <p>There may be situations where there is no visible target for diagnostic logging, for example in the case where there is a race condition or a subtle data corruption that only shows up every so often.  In this case, the ideal workflow would be to keep the most recent diagnostic information available, but only see it when the appropriate condition is triggered.</p>
 <p>This is a pattern called ring buffer logging, described in <a href="http://www.exampler.com/writing/ring-buffer.pdf">Using Ring Buffer Logging to Help Find Bugs</a> by <a href="https://twitter.com/marick">Brian Marick</a>.  </p>
 <p>In ring buffer logging, all debug events related to the logger are stored, but are stored in a <a href="https://en.wikipedia.org/wiki/Circular_buffer">circular buffer</a> that is overwritten by the latest logs.  When triggered, the entire buffer is flushed to appenders.  This is in contrast to tap filters, which will immediately create events and then flush them to appenders, and do not keep them in memory.</p>
-<p>This is also a pattern used by <a href="http://restify.com/">restify</a> as RequestCaptureStream.</p>
-<p>There are two implementations of ring buffer logging, in the <code>logback-ringbuffer</code> module: one that is threshold based, and another which is marker based.</p>
-<p>TODO Finish this</p>
+<h2 id="using-ring-buffers">Using Ring Buffers<a class="headerlink" href="#using-ring-buffers" title="Permanent link">&para;</a></h2>
+<p>Ring Buffers are first class objects that must be referenced at several points.  You need to set up an appender that can add logging events to a ring buffer, and another that can dump elements.  </p>
+<blockquote>
+<p><strong>NOTE</strong>: Measuring time is a real concern with ring buffer logging.  When you dump the ring buffer contents, unless you are dumping into a JDBC database, the elements will be out of sequence to the logs as a whole.  Also, because logging to an in-memory ringbuffer is extremely fast and involves no processing, multiple events can be logged in the same millisecond.</p>
+</blockquote>
+<p>The <a href="https://github.com/tersesystems/terse-logback-showcase">showcase</a> contains an example of ringbuffer logging that we'll describe in more detail here.</p>
+<p>To create a ring buffer, add the following actions:</p>
+<div class="codehilite"><pre><span></span><code><span class="c">&lt;!-- loosen rule to include for encoders as well as just top level --&gt;</span>
+<span class="nt">&lt;newRule</span> <span class="na">pattern=</span><span class="s">&quot;*/include&quot;</span>
+         <span class="na">actionClass=</span><span class="s">&quot;ch.qos.logback.core.joran.action.IncludeAction&quot;</span><span class="nt">/&gt;</span>
+
+<span class="c">&lt;!-- loosen the rule on appender refs so appenders can reference them --&gt;</span>
+<span class="nt">&lt;newRule</span> <span class="na">pattern=</span><span class="s">&quot;*/appender/appender-ref&quot;</span>
+         <span class="na">actionClass=</span><span class="s">&quot;ch.qos.logback.core.joran.action.AppenderRefAction&quot;</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;newRule</span> <span class="na">pattern=</span><span class="s">&quot;*/ringBuffer&quot;</span>
+         <span class="na">actionClass=</span><span class="s">&quot;com.tersesystems.logback.ringbuffer.RingBufferAction&quot;</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;newRule</span> <span class="na">pattern=</span><span class="s">&quot;*/ringBuffer-ref&quot;</span>
+         <span class="na">actionClass=</span><span class="s">&quot;com.tersesystems.logback.ringbuffer.RingBufferRefAction&quot;</span><span class="nt">/&gt;</span>
+</code></pre></div>
+
+<p>and then define the ring buffer itself:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;ringBuffer</span> <span class="na">name=</span><span class="s">&quot;JDBC_RINGBUFFER&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;capacity&gt;</span>${jdbc.ringBuffer.capacity}<span class="nt">&lt;/capacity&gt;</span>
+<span class="nt">&lt;/ringBuffer&gt;</span>
+</code></pre></div>
+
+<p>The ring buffer uses a multi-producer/multi-consumer array queue from <a href="https://github.com/JCTools/JCTools">JCTools</a>, which has <a href="https://psy-lob-saw.blogspot.com/2015/01/mpmc-multi-multi-queue-vs-clq.html">better performance than <code>java.util.concurrent.ArrayBlockingQueue</code></a>.</p>
+<h2 id="adding-to-ring-buffer">Adding to Ring Buffer<a class="headerlink" href="#adding-to-ring-buffer" title="Permanent link">&para;</a></h2>
+<p>This works well with a JDBC appender.  </p>
+<blockquote>
+<p><strong>NOTE</strong>: The <code>CorrelationIdJDBCAppender</code> is used here so that the <code>correlation_id</code> and <code>event_id</code> fields are available, where the <code>event_id</code> is specified using a <code>UniqueIdEventAppender</code>.  The <code>UniqueIdEventAppender</code> decorates logging events to have a <a href="http://yellerapp.com/posts/2015-02-09-flake-ids.html">flake id</a> using <a href="https://github.com/mguenther/idem">idem</a>.  Because inserts into a database can happen out of order and the timestamp does not have enough resolution, a flake id is the only sure way to keep ordering consistent.</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;</span><span class="n">appender</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;ASYNC_JDBC&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;!--</span>
+      <span class="n">A</span> <span class="nc">JDBC</span> <span class="n">appender</span> <span class="n">that</span> <span class="n">adds</span> <span class="n">the</span> <span class="n">correlation</span> <span class="n">id</span> <span class="n">as</span> <span class="n">a</span> <span class="n">field</span><span class="o">.</span>
+    <span class="o">--&gt;</span>
+    <span class="o">&lt;</span><span class="n">appender</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;com.tersesystems.logback.correlationid.CorrelationIdJDBCAppender&quot;</span><span class="o">&gt;</span>
+       <span class="o">&lt;!--</span> <span class="o">...</span> <span class="o">--&gt;</span>
+    <span class="o">&lt;/</span><span class="n">appender</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">appender</span><span class="o">&gt;</span>
+
+<span class="o">&lt;!--</span> <span class="n">assume</span> <span class="n">something</span> <span class="n">like</span> <span class="k">this</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">event</span> <span class="n">id</span> <span class="n">appender</span> <span class="o">--&gt;</span>
+<span class="o">&lt;</span><span class="n">root</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">appender</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;com.tersesystems.logback.uniqueid.UniqueIdEventAppender&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">appender</span><span class="o">-</span><span class="n">ref</span> <span class="n">ref</span><span class="o">=</span><span class="s">&quot;ASYNC_JDBC&quot;</span><span class="o">/&gt;</span>
+    <span class="o">&lt;/</span><span class="n">appender</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">root</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<p>Appending to a ring buffer is done with <code>com.tersesystems.logback.ringbuffer.RingBufferAwareAppender</code>.  The logic on <code>RingBufferAwareAppender</code> is different from most other appenders in that any logging events that are rejected by the filter will be logged to the ringbuffer without further processing.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;ASYNC_JDBC_WITH_RINGBUFFER&quot;</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.ringbuffer.RingBufferAwareAppender&quot;</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- log to jdbc if INFO or above, otherwise log to ring buffer --&gt;</span>
+    <span class="nt">&lt;filter</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;level&gt;</span>${jdbc.threshold}<span class="nt">&lt;/level&gt;</span>
+    <span class="nt">&lt;/filter&gt;</span>
+
+    <span class="c">&lt;!-- anything denied goes to the ring buffer --&gt;</span>
+    <span class="nt">&lt;ringBuffer-ref</span> <span class="na">ref=</span><span class="s">&quot;JDBC_RINGBUFFER&quot;</span><span class="nt">/&gt;</span>
+
+    <span class="c">&lt;!-- anything accepted goes to the JDBC appender --&gt;</span>
+    <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;ASYNC_JDBC&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/appender&gt;</span>
+</code></pre></div>
+
+<h2 id="dumping-ring-buffers">Dumping Ring Buffers<a class="headerlink" href="#dumping-ring-buffers" title="Permanent link">&para;</a></h2>
+<p>Finally, there needs to be a way to dump the contents of a ring buffer.  This is done from a targetted logger that contains an instance of <code>com.tersesystems.logback.ringbuffer.DumpRingBufferAppender</code>.  The entire contents of the ring buffer is drained to the appender.  </p>
+<blockquote>
+<p><strong>NOTE</strong>: If you are draining to an asynchronous logger, you should ensure that the queue is large enough to accommodate the contents of the entire ring buffer <strong>in addition to normal traffic.</strong>  This is because many asynchronous loggers such as <a href="http://logback.qos.ch/manual/appenders.html#AsyncAppender">AsyncAppender</a> are lossy and will drop events if the queue fills up passes a comfortable threshold.</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;JDBC_RINGBUFFER_LOGGER&quot;</span> <span class="na">level=</span><span class="s">&quot;TRACE&quot;</span> <span class="na">additivity=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- This appender dumps contents of the ring buffer when an event is received. --&gt;</span>
+    <span class="nt">&lt;appender</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.ringbuffer.DumpRingBufferAppender&quot;</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- Event source --&gt;</span>
+        <span class="nt">&lt;ringBuffer-ref</span> <span class="na">ref=</span><span class="s">&quot;JDBC_RINGBUFFER&quot;</span><span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- Event source --&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;ASYNC_JDBC&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+<span class="nt">&lt;/logger&gt;</span>
+</code></pre></div>
+
+<p>Once you've defined a logger, you can trigger a dump just by logging to that specific appender:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Logger</span> <span class="n">bufferControl</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="s">&quot;JDBC_RINGBUFFER_LOGGER&quot;</span><span class="p">);</span>
+<span class="n">bufferControl</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">&quot;Dump the ringbuffer to JDBC here!&quot;</span><span class="p">);</span>
+</code></pre></div>
+
+<h2 id="ringbuffer-markers">RingBuffer Markers<a class="headerlink" href="#ringbuffer-markers" title="Permanent link">&para;</a></h2>
+<p>A marker factory that contains a ringbuffer and two inner classes, RecordMarker and DumpMarker.</p>
+<p>Using a ring buffer marker factory means that you can build up a thread of messages and dump the ring buffer at a later point, for example:</p>
+<p>```java
+RingBuffer ringBuffer = getRingBuffer();
+RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(ringBuffer);
+Marker recordMarker = markerFactory.createRecordMarker();
+Marker dumpMarker = markerFactory.createTriggerMarker();</p>
+<p>Logger logger = loggerFactory.getLogger("com.example.Test");
+logger.debug(recordMarker, "debug one");
+logger.debug(recordMarker, "debug two");
+logger.debug(recordMarker, "debug three");
+logger.debug(recordMarker, "debug four");
+logger.error(dumpMarker, "Dump all the messages"); 
+```</p>
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
 <p>See <a href="https://tersesystems.com/blog/2019/07/28/triggering-diagnostic-logging-on-exception/">Triggering Diagnostic Logging on Exception</a> and <a href="https://tersesystems.com/blog/2019/10/05/diagnostic-logging-citations-and-sources/">Diagnostic Logging: Citations and Sources</a> for more details.</p>
                 
                   
