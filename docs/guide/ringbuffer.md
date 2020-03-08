@@ -115,19 +115,22 @@ A marker factory that contains a ringbuffer and two inner classes, RecordMarker 
 
 Using a ring buffer marker factory means that you can build up a thread of messages and dump the ring buffer at a later point, for example:
 
- 
- ```java
-RingBuffer ringBuffer = getRingBuffer();
-RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(ringBuffer);
-Marker recordMarker = markerFactory.createRecordMarker();
-Marker dumpMarker = markerFactory.createTriggerMarker();
- 
-Logger logger = loggerFactory.getLogger("com.example.Test");
-logger.debug(recordMarker, "debug one");
-logger.debug(recordMarker, "debug two");
-logger.debug(recordMarker, "debug three");
-logger.debug(recordMarker, "debug four");
-logger.error(dumpMarker, "Dump all the messages"); 
+```java
+public class Foo {
+  public void logAndDump() {   
+    RingBuffer ringBuffer = getRingBuffer();
+    RingBufferMarkerFactory markerFactory = new RingBufferMarkerFactory(ringBuffer);
+    Marker recordMarker = markerFactory.createRecordMarker();
+    Marker dumpMarker = markerFactory.createTriggerMarker();
+     
+    Logger logger = loggerFactory.getLogger("com.example.Test");
+    logger.debug(recordMarker, "debug one");
+    logger.debug(recordMarker, "debug two");
+    logger.debug(recordMarker, "debug three");
+    logger.debug(recordMarker, "debug four");
+    logger.error(dumpMarker, "Dump all the messages"); 
+  }
+}
 ```
 
 ## Further Reading
