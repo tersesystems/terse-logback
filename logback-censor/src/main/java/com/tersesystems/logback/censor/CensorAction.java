@@ -23,7 +23,7 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 
 public class CensorAction extends Action {
-  Censor censor;
+  CensorContextAware censor;
   private boolean inError = false;
 
   @SuppressWarnings("unchecked")
@@ -36,7 +36,7 @@ public class CensorAction extends Action {
     // Ensure idempotency of a CENSOR_BAG
     Map<String, Object> omap = ic.getObjectMap();
     if (!omap.containsKey(CENSOR_BAG)) {
-      omap.put(CENSOR_BAG, new HashMap<String, Censor>());
+      omap.put(CENSOR_BAG, new HashMap<String, CensorContextAware>());
     }
 
     String className = attributes.getValue(CLASS_ATTRIBUTE);
@@ -48,7 +48,7 @@ public class CensorAction extends Action {
 
     try {
       addInfo("About to instantiate censor of type [" + className + "]");
-      censor = (Censor) OptionHelper.instantiateByClassName(className, Censor.class, context);
+      censor = (CensorContextAware) OptionHelper.instantiateByClassName(className, CensorContextAware.class, context);
 
       // XXX we can get the censor here but it still doesn't have the parameters we need.
       // OptionHelper.substVars()
@@ -69,8 +69,8 @@ public class CensorAction extends Action {
 
       // The execution context contains a bag which contains the censors
       // created thus far.
-      HashMap<String, Censor> censorBag =
-          (HashMap<String, Censor>) ic.getObjectMap().get(CENSOR_BAG);
+      HashMap<String, CensorContextAware> censorBag =
+          (HashMap<String, CensorContextAware>) ic.getObjectMap().get(CENSOR_BAG);
       getContext().putObject(CENSOR_BAG, censorBag);
 
       // add the censorText just created to the censorText bag.

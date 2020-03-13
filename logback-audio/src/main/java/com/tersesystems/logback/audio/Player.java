@@ -10,6 +10,7 @@
  */
 package com.tersesystems.logback.audio;
 
+/** This can play audio sounds. */
 public interface Player {
   void play();
 }

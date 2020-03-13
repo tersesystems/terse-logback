@@ -11,5 +11,5 @@
 package com.tersesystems.logback.censor;
 
 public interface CensorAttachable {
-  void setCensor(Censor censor);
+  void setCensor(CensorContextAware censor);
 }

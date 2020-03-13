@@ -30,14 +30,14 @@ import java.util.Map;
  */
 public class CensorConverter extends CompositeConverter<ILoggingEvent> {
 
-  private Censor censor;
+  private CensorContextAware censor;
 
   @Override
   public void start() {
     super.start();
     // There isn't a good way of referring to other objects without going through
     // the context here, as the IC is not available to converters.
-    Map<String, Censor> censorBag = (Map<String, Censor>) getContext().getObject(CENSOR_BAG);
+    Map<String, CensorContextAware> censorBag = (Map<String, CensorContextAware>) getContext().getObject(CENSOR_BAG);
     if (censorBag == null || censorBag.isEmpty()) {
       addError("Null or empty censor bag found in context!");
     }

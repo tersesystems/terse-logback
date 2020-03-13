@@ -14,7 +14,7 @@ import ch.qos.logback.core.spi.ContextAwareBase;
 import ch.qos.logback.core.spi.LifeCycle;
 import java.util.regex.Pattern;
 
-public class RegexCensor extends ContextAwareBase implements Censor, LifeCycle {
+public class RegexCensor extends ContextAwareBase implements CensorContextAware, LifeCycle {
 
   protected volatile boolean started = false;
 

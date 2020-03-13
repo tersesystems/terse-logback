@@ -13,5 +13,5 @@ package com.tersesystems.logback.classic;
 import java.time.Instant;
 
 public interface StartTimeSupplier {
-  public Instant getStartTime();
+  Instant getStartTime();
 }

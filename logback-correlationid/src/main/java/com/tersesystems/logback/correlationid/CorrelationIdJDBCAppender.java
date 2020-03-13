@@ -12,8 +12,9 @@
 package com.tersesystems.logback.correlationid;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.tersesystems.logback.core.ComponentContainer;
 import com.tersesystems.logback.jdbc.JDBCAppender;
-import com.tersesystems.logback.uniqueid.IUniqueIdLoggingEvent;
+import com.tersesystems.logback.uniqueid.UniqueIdProvider;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -49,9 +50,14 @@ public class CorrelationIdJDBCAppender extends JDBCAppender {
 
   private void insertEventId(ILoggingEvent event, LongAdder adder, PreparedStatement statement)
       throws SQLException {
-    if (event instanceof IUniqueIdLoggingEvent) {
-      IUniqueIdLoggingEvent eventWithId = (IUniqueIdLoggingEvent) event;
-      statement.setString(adder.intValue(), eventWithId.uniqueId());
+    if (event instanceof ComponentContainer) {
+      ComponentContainer container = ((ComponentContainer) event);
+      if (container.hasComponent(UniqueIdProvider.class)) {
+        UniqueIdProvider uniqueIdProvider = container.getComponent(UniqueIdProvider.class);
+        statement.setString(adder.intValue(), uniqueIdProvider.uniqueId());
+      } else {
+        statement.setNull(adder.intValue(), Types.VARCHAR);
+      }
     } else {
       statement.setNull(adder.intValue(), Types.VARCHAR);
     }

@@ -10,11 +10,17 @@
  */
 package com.tersesystems.logback.uniqueid;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.DynamicConverter;
+import com.tersesystems.logback.core.ComponentContainer;
 
-public class UniqueIdConverter extends DynamicConverter<IUniqueIdLoggingEvent> {
+public class UniqueIdConverter extends DynamicConverter<ILoggingEvent> {
   @Override
-  public String convert(IUniqueIdLoggingEvent event) {
-    return event.uniqueId();
+  public String convert(ILoggingEvent event) {
+    if (event instanceof ComponentContainer) {
+      return ((ComponentContainer) event).getComponent(UniqueIdProvider.class).uniqueId();
+    } else {
+      return null;
+    }
   }
 }

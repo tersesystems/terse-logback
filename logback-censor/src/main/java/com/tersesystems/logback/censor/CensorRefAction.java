@@ -51,9 +51,9 @@ public class CensorRefAction extends Action {
       return;
     }
 
-    Map<String, Censor> censorBag =
-        (Map<String, Censor>) ec.getObjectMap().get(CensorConstants.CENSOR_BAG);
-    Censor censor = censorBag.get(censorName);
+    Map<String, CensorContextAware> censorBag =
+        (Map<String, CensorContextAware>) ec.getObjectMap().get(CensorConstants.CENSOR_BAG);
+    CensorContextAware censor = censorBag.get(censorName);
 
     if (censor == null) {
       String msg =
