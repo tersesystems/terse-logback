@@ -6,6 +6,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
+import com.tersesystems.logback.classic.NanoTime;
 import com.tersesystems.logback.classic.StartTime;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -309,7 +310,7 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   protected int insertStatement(ILoggingEvent event, LongAdder adder, PreparedStatement statement)
       throws SQLException {
     insertTimestamp(event, adder, statement);
-    insertTimestampMillis(event, adder, statement);
+    insertRelativeTime(event, adder, statement);
     insertStartTime(event, adder, statement);
     insertIntLevel(event, adder, statement);
     insertStringLevel(event, adder, statement);
@@ -365,9 +366,9 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     adder.increment();
   }
 
-  protected void insertTimestampMillis(
+  protected void insertRelativeTime(
       ILoggingEvent event, LongAdder adder, PreparedStatement statement) throws SQLException {
-    statement.setLong(adder.intValue(), event.getTimeStamp());
+    statement.setLong(adder.intValue(), System.nanoTime() - NanoTime.start);
     adder.increment();
   }
 
