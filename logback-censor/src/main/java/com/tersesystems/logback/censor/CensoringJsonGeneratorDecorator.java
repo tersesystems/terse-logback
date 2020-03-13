@@ -27,7 +27,7 @@ import net.logstash.logback.decorate.JsonGeneratorDecorator;
 public class CensoringJsonGeneratorDecorator extends ContextAwareBase
     implements CensorAttachable, JsonGeneratorDecorator, LifeCycle {
 
-  private Censor censor;
+  private CensorContextAware censor;
   private boolean started;
 
   @Override
@@ -38,12 +38,12 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase
         substitutionDelegate, new CensoringTokenFilter(), true, true);
   }
 
-  public Censor getCensor() {
+  public CensorContextAware getCensor() {
     return censor;
   }
 
   @Override
-  public void setCensor(Censor censor) {
+  public void setCensor(CensorContextAware censor) {
     this.censor = censor;
   }
 

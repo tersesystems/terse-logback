@@ -10,18 +10,9 @@
  */
 package com.tersesystems.logback.censor;
 
-import ch.qos.logback.core.spi.ContextAware;
-import ch.qos.logback.core.spi.LifeCycle;
+import com.tersesystems.logback.core.Component;
 
-public interface Censor extends ContextAware, LifeCycle {
-
-  /** Get the name of this appender. The name uniquely identifies the appender. */
-  String getName();
-
+/** Basic censor functionality. */
+public interface Censor extends Component {
   CharSequence censorText(CharSequence input);
-
-  /**
-   * Set the name of this appender. The name is used by other components to identify this appender.
-   */
-  void setName(String name);
 }

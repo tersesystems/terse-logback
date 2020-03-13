@@ -19,7 +19,7 @@ import java.util.Optional;
 /**
  * A discriminator that looks for a marker containing discriminating logic.
  *
- * @param <LoggingEventT>
+ * @param <LoggingEventT> the logging event type
  */
 public class MarkerBasedDiscriminator<LoggingEventT extends ILoggingEvent>
     extends AbstractDiscriminator<LoggingEventT> {

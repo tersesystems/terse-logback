@@ -9,6 +9,8 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
+    implementation project(":logback-core")
+
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
     compile "ch.qos.logback:logback-classic:$logbackVersion"

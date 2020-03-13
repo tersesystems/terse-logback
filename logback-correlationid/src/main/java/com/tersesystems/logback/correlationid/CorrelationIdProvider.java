@@ -11,7 +11,9 @@
 
 package com.tersesystems.logback.correlationid;
 
-/** Provides a correlation id. */
-public interface CorrelationIdProvider {
+import com.tersesystems.logback.core.Component;
+
+/** A correlation id component. */
+public interface CorrelationIdProvider extends Component {
   String getCorrelationId();
 }
