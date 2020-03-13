@@ -12,9 +12,7 @@ package com.tersesystems.logback.censor;
 
 import com.tersesystems.logback.core.Component;
 
-/**
- * Basic censor functionality.
- */
+/** Basic censor functionality. */
 public interface Censor extends Component {
   CharSequence censorText(CharSequence input);
 }

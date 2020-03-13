@@ -48,7 +48,9 @@ public class CensorAction extends Action {
 
     try {
       addInfo("About to instantiate censor of type [" + className + "]");
-      censor = (CensorContextAware) OptionHelper.instantiateByClassName(className, CensorContextAware.class, context);
+      censor =
+          (CensorContextAware)
+              OptionHelper.instantiateByClassName(className, CensorContextAware.class, context);
 
       // XXX we can get the censor here but it still doesn't have the parameters we need.
       // OptionHelper.substVars()

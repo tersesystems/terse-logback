@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * A logging event that implements a container and proxies another logging event.
- */
+/** A logging event that implements a container and proxies another logging event. */
 public class ContainerProxyLoggingEvent extends ProxyLoggingEvent
     implements IContainerLoggingEvent {
   private Map<Class<?>, Object> components = new HashMap<>();
