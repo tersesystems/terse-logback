@@ -379,7 +379,13 @@ public class JDBCAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
   protected void insertRelativeTime(
       ILoggingEvent event, LongAdder adder, PreparedStatement statement) throws SQLException {
-    statement.setLong(adder.intValue(), System.nanoTime() - NanoTime.start);
+    Optional<Long> aLong = NanoTime.fromOptional(context, event);
+    if (aLong.isPresent()) {
+      statement.setLong(adder.intValue(), aLong.get());
+    } else {
+      statement.setNull(adder.intValue(), Types.BIGINT);
+    }
+
     adder.increment();
   }
 
