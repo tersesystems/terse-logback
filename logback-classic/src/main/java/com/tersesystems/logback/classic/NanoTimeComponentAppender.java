@@ -15,7 +15,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.tersesystems.logback.core.DecoratingAppender;
 
 /** This appender adds a relative nanotime component to the logging event. */
-public class NanoTimeComponentAppender extends DecoratingAppender<ILoggingEvent, IContainerLoggingEvent> {
+public class NanoTimeComponentAppender
+    extends DecoratingAppender<ILoggingEvent, IContainerLoggingEvent> {
   @Override
   protected IContainerLoggingEvent decorateEvent(ILoggingEvent eventObject) {
     IContainerLoggingEvent containerEvent;
