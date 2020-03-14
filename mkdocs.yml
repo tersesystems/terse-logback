@@ -67,6 +67,7 @@ nav:
       - Instrumentation: guide/instrumentation.md
       - JDBC: guide/jdbc.md
       - Ring Buffers: guide/ringbuffer.md
+      - Relative Nanos: guide/relativens.md
       - Select Appender: guide/select.md
       - Structured Config: guide/structured-config.md
       - System Info: guide/systeminfo.md

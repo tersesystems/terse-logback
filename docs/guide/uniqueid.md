@@ -1,47 +1,48 @@
 # Unique ID Appenders
 
-Not only can we compose appenders together, but we can also decorate the logging event at the same time. This involves using the decorator pattern to add extra information to data.
+The unique id appender allows the logging event to carry a unique id.  When used in conjunction with `SelectAppender` or `CompositeAppender`, this allows for a log record to use the same id across different logs.
 
-So, imagine that we want to extend ILoggingEvent so that we can include a unique id along with it.
+For example, in `application.log`, you'll see a single line that starts with `FfwJtsNHYSw6O0Qbm7EAAA`:
 
-```java
-public interface IUniqueIdLoggingEvent extends ILoggingEvent {
-    String uniqueId();
-}
- 
- 
-public class UniqueIdLoggingEvent extends ProxyLoggingEvent implements IUniqueIdLoggingEvent {
-    private final String uniqueId;
-    UniqueIdLoggingEvent(ILoggingEvent delegate, String uniqueId) {
-        super(delegate);
-        this.uniqueId = uniqueId;
-    }
- 
-    @Override
-    public String uniqueId() {
-        return this.uniqueId;
-    }
-}
+```text
+FfwJtsNHYSw6O0Qbm7EAAA 2020-03-14T05:30:14.965+0000 [INFO ] play.api.db.HikariCPConnectionPool in play-dev-mode-akka.actor.default-dispatcher-7 - Creating Pool for datasource 'logging'
 ```
 
-We can then use it as follows:
+You can search for this string in `application.json` and see more detail on the log record:
+
+```json
+{"id":"FfwJtsNHYSw6O0Qbm7EAAA","relative_ns":20921024,"tse_ms":1584163814965,"start_ms":null,"@timestamp":"2020-03-14T05:30:14.965Z","@version":"1","message":"Creating Pool for datasource 'logging'","logger_name":"play.api.db.HikariCPConnectionPool","thread_name":"play-dev-mode-akka.actor.default-dispatcher-7","level":"INFO","level_value":20000}
+```
+
+See the [showcase](https://github.com/tersesystems/terse-logback-showcase) for an example.
+
+## Usage
 
 ```xml
-<configuration>
+<appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+  <appender ...>
 
-    <conversionRule conversionWord="uniqueId" converterClass="com.tersesystems.logback.uniqueid.UniqueIdConverter" />
-
-    <appender name="DECORATE_WITH_UNIQUEID" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
-        <appender class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>%-5relative %-5level %uniqueId %logger{35} - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </appender>
-
-    <root level="TRACE">
-        <appender-ref ref="DECORATE_WITH_UNIQUEID"/>
-    </root>
-</configuration>
+  </appender>
+</appender>
 ```
 
+To extract the unique ID, register a converter:
+
+```xml
+<!-- available as "%uniqueId" in a pattern layout -->
+<conversionRule conversionWord="uniqueId" converterClass="com.tersesystems.logback.uniqueid.UniqueIdConverter" />
+```
+
+## ID Generators
+
+Unique IDs come with two different options.  Flake ID is the default.
+
+### Random UUID
+
+This implementation uses `RandomBasedGenerator` from [Java UUID Generator](https://github.com/cowtowncoder/java-uuid-generator/).  This is faster than using `java.util.UUID.randomUUID`, because it avoids the [synchronization lock](https://braveo.blogspot.com/2013/05/uuidrandomuuid-is-slow.html).
+
+### Flake ID
+
+Flake IDs are decentralized and k-ordered, meaning that they are "roughly time-ordered when sorted lexicographically."
+
+This implementation uses [idem](https://github.com/mguenther/idem) with `Flake128S`.
