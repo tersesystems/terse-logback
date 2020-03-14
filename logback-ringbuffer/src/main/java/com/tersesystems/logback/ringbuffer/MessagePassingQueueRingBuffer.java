@@ -61,32 +61,32 @@ public class MessagePassingQueueRingBuffer extends RingBufferBase {
 
   @Override
   public int drain(Consumer<ILoggingEvent> c, int limit) {
-    return queue.drain(c, limit);
+    return queue.drain(c::accept, limit);
   }
 
   @Override
   public int fill(Supplier<ILoggingEvent> s, int limit) {
-    return queue.fill(s, limit);
+    return queue.fill(s::get, limit);
   }
 
   @Override
   public int drain(Consumer<ILoggingEvent> c) {
-    return queue.drain(c);
+    return queue.drain(c::accept);
   }
 
   @Override
   public int fill(Supplier<ILoggingEvent> s) {
-    return queue.fill(s);
+    return queue.fill(s::get);
   }
 
   @Override
   public void drain(Consumer<ILoggingEvent> c, WaitStrategy wait, ExitCondition exit) {
-    queue.drain(c, wait, exit);
+    queue.drain(c::accept, wait::idle, exit::keepRunning);
   }
 
   @Override
   public void fill(Supplier<ILoggingEvent> s, WaitStrategy wait, ExitCondition exit) {
-    queue.fill(s, wait, exit);
+    queue.fill(s::get, wait::idle, exit::keepRunning);
   }
 
   @Override

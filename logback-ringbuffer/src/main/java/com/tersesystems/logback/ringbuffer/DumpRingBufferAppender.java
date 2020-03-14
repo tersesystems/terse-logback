@@ -18,7 +18,6 @@ import com.tersesystems.logback.core.DefaultAppenderAttachable;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.jctools.queues.MessagePassingQueue;
 
 /** This class dumps the ring buffer when called. */
 public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
@@ -26,16 +25,16 @@ public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingE
 
   private final AppenderAttachableImpl<ILoggingEvent> aai = new AppenderAttachableImpl<>();
 
-  private RingBuffer ringBuffer;
+  private RingBufferContextAware ringBuffer;
 
   // Provide a transform function that you can override.
   protected Function<ILoggingEvent, ILoggingEvent> transformFunction = Function.identity();
 
-  public RingBuffer getRingBuffer() {
+  public RingBufferContextAware getRingBuffer() {
     return ringBuffer;
   }
 
-  public void setRingBuffer(RingBuffer ringBuffer) {
+  public void setRingBuffer(RingBufferContextAware ringBuffer) {
     this.ringBuffer = ringBuffer;
   }
 
@@ -47,9 +46,9 @@ public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingE
     this.transformFunction = transformFunction;
   }
 
-  protected Supplier<MessagePassingQueue.ExitCondition> exitConditionSupplier;
+  protected Supplier<RingBuffer.ExitCondition> exitConditionSupplier;
 
-  protected Supplier<MessagePassingQueue.WaitStrategy> waitStrategySupplier;
+  protected Supplier<RingBuffer.WaitStrategy> waitStrategySupplier;
 
   @Override
   public void start() {
@@ -81,7 +80,7 @@ public class DumpRingBufferAppender extends UnsynchronizedAppenderBase<ILoggingE
   protected void append(ILoggingEvent event) {
     // Ignore the incoming event, and dump the ring buffer contents out to the
     // given appenders.
-    RingBuffer ringBuffer = getRingBuffer();
+    RingBufferContextAware ringBuffer = getRingBuffer();
     Function<ILoggingEvent, ILoggingEvent> f = getTransformFunction();
     ringBuffer.drain(
         e -> this.aai.appendLoopOnAppenders(f.apply(e)),

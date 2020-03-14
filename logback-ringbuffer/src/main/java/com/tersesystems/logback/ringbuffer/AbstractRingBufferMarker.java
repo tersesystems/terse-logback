@@ -17,15 +17,15 @@ import java.util.function.Supplier;
 public abstract class AbstractRingBufferMarker extends TerseBasicMarker implements RingBufferAware {
 
   // Use a supplier here so we have more flexibility when accessing the ring buffer.
-  private final Supplier<RingBuffer> supplier;
+  private final Supplier<RingBufferContextAware> supplier;
 
-  AbstractRingBufferMarker(String name, Supplier<RingBuffer> supplier) {
+  AbstractRingBufferMarker(String name, Supplier<RingBufferContextAware> supplier) {
     super(name);
     this.supplier = supplier;
   }
 
   @Override
-  public RingBuffer getRingBuffer() {
+  public RingBufferContextAware getRingBuffer() {
     return supplier.get();
   }
 }

@@ -11,5 +11,5 @@
 package com.tersesystems.logback.ringbuffer;
 
 public interface RingBufferAttachable {
-  void setRingBuffer(RingBuffer ringBuffer);
+  void setRingBuffer(RingBufferContextAware ringBuffer);
 }

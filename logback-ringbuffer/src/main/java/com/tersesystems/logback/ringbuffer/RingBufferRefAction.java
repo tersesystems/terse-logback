@@ -54,9 +54,9 @@ public class RingBufferRefAction extends Action {
       return;
     }
 
-    Map<String, RingBuffer> ringBufferMap =
-        (Map<String, RingBuffer>) ec.getObjectMap().get(RINGBUFFER_BAG);
-    RingBuffer ringBuffer = ringBufferMap.get(ringbufferName);
+    Map<String, RingBufferContextAware> ringBufferMap =
+        (Map<String, RingBufferContextAware>) ec.getObjectMap().get(RINGBUFFER_BAG);
+    RingBufferContextAware ringBuffer = ringBufferMap.get(ringbufferName);
 
     if (ringBuffer == null) {
       String msg =

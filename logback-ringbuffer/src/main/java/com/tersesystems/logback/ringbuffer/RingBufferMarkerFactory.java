@@ -34,9 +34,9 @@ import org.slf4j.Marker;
  * }</pre>
  */
 public class RingBufferMarkerFactory {
-  private final RingBuffer ringBuffer;
+  private final RingBufferContextAware ringBuffer;
 
-  public RingBufferMarkerFactory(RingBuffer ringBuffer) {
+  public RingBufferMarkerFactory(RingBufferContextAware ringBuffer) {
     this.ringBuffer = ringBuffer;
   }
 
@@ -51,7 +51,7 @@ public class RingBufferMarkerFactory {
   public class RecordMarker extends AbstractRingBufferMarker {
     static final String TS_RECORD_MARKER = "TS_RECORD_MARKER";
 
-    RecordMarker(Supplier<RingBuffer> supplier) {
+    RecordMarker(Supplier<RingBufferContextAware> supplier) {
       super(TS_RECORD_MARKER, supplier);
     }
   }
@@ -59,7 +59,7 @@ public class RingBufferMarkerFactory {
   public class TriggerMarker extends AbstractRingBufferMarker {
     static final String TS_RECORD_MARKER = "TS_DUMP_MARKER";
 
-    TriggerMarker(Supplier<RingBuffer> supplier) {
+    TriggerMarker(Supplier<RingBufferContextAware> supplier) {
       super(TS_RECORD_MARKER, supplier);
     }
   }

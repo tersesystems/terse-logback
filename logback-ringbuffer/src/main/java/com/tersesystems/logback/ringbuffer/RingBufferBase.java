@@ -13,7 +13,7 @@ package com.tersesystems.logback.ringbuffer;
 
 import ch.qos.logback.core.spi.ContextAwareBase;
 
-public abstract class RingBufferBase extends ContextAwareBase implements RingBuffer {
+public abstract class RingBufferBase extends ContextAwareBase implements RingBufferContextAware {
   private int capacity = 100;
 
   private String name;

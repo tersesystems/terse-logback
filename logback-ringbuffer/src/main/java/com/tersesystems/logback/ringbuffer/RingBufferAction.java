@@ -22,7 +22,7 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 
 public class RingBufferAction extends Action {
-  RingBuffer ringBuffer;
+  RingBufferContextAware ringBuffer;
   private boolean inError = false;
 
   @SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public class RingBufferAction extends Action {
     // Ensure idempotency of a ring buffer bag
     Map<String, Object> omap = ic.getObjectMap();
     if (!omap.containsKey(RINGBUFFER_BAG)) {
-      omap.put(RINGBUFFER_BAG, new HashMap<String, RingBuffer>());
+      omap.put(RINGBUFFER_BAG, new HashMap<String, RingBufferContextAware>());
     }
 
     String className = attributes.getValue(CLASS_ATTRIBUTE);
@@ -53,7 +53,8 @@ public class RingBufferAction extends Action {
     try {
       addInfo("About to instantiate ringbuffer of type [" + className + "]");
       ringBuffer =
-          (RingBuffer) OptionHelper.instantiateByClassName(className, RingBuffer.class, context);
+          (RingBufferContextAware)
+              OptionHelper.instantiateByClassName(className, RingBufferContextAware.class, context);
 
       Context icContext = ic.getContext();
       if (ringBuffer != null) {
@@ -71,8 +72,8 @@ public class RingBufferAction extends Action {
 
       // The execution context contains a bag which contains the ringbuffer
       // created thus far.
-      HashMap<String, RingBuffer> bag =
-          (HashMap<String, RingBuffer>) ic.getObjectMap().get(RINGBUFFER_BAG);
+      HashMap<String, RingBufferContextAware> bag =
+          (HashMap<String, RingBufferContextAware>) ic.getObjectMap().get(RINGBUFFER_BAG);
       getContext().putObject(RINGBUFFER_BAG, bag);
 
       // add the ringbuffer just created to the bag.
