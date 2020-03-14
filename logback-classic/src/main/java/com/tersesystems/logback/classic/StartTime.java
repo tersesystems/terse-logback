@@ -21,7 +21,10 @@ public class StartTime {
 
   public static Optional<Instant> fromOptional(Context context, ILoggingEvent event) {
     if (event instanceof ComponentContainer) {
-      return fromContainer((ComponentContainer) event);
+      ComponentContainer container = (ComponentContainer) event;
+      if (container.hasComponent(StartTimeSupplier.class)) {
+        return fromContainer(container);
+      }
     }
 
     return StreamUtils.fromMarker(context, event.getMarker())

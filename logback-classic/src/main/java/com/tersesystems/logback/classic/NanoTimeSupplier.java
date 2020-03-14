@@ -9,11 +9,10 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package com.tersesystems.logback.uniqueid;
+package com.tersesystems.logback.classic;
 
 import com.tersesystems.logback.core.Component;
 
-/** This interface returns a unique id identifying the entity. */
-public interface UniqueIdProvider extends Component {
-  String uniqueId();
+public interface NanoTimeSupplier extends Component {
+  long getNanoTime();
 }

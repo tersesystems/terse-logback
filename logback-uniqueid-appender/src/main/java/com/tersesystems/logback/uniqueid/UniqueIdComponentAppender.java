@@ -12,10 +12,11 @@ package com.tersesystems.logback.uniqueid;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.tersesystems.logback.classic.ContainerProxyLoggingEvent;
-import com.tersesystems.logback.core.ComponentContainer;
+import com.tersesystems.logback.classic.IContainerLoggingEvent;
 import com.tersesystems.logback.core.DecoratingAppender;
 
-public class UniqueIdEventAppender extends DecoratingAppender<ILoggingEvent, ILoggingEvent> {
+public class UniqueIdComponentAppender
+    extends DecoratingAppender<ILoggingEvent, IContainerLoggingEvent> {
 
   private IdGenerator idGenerator = new FlakeIdGenerator();
 
@@ -28,17 +29,15 @@ public class UniqueIdEventAppender extends DecoratingAppender<ILoggingEvent, ILo
   }
 
   @Override
-  protected ILoggingEvent decorateEvent(ILoggingEvent eventObject) {
-    ComponentContainer c = null;
-    if (eventObject instanceof ComponentContainer) {
-      c = (ComponentContainer) eventObject;
+  protected IContainerLoggingEvent decorateEvent(ILoggingEvent eventObject) {
+    IContainerLoggingEvent containerEvent;
+    if (eventObject instanceof IContainerLoggingEvent) {
+      containerEvent = (IContainerLoggingEvent) eventObject;
     } else {
-      ContainerProxyLoggingEvent newEvent = new ContainerProxyLoggingEvent(eventObject);
-      c = newEvent;
-      eventObject = newEvent;
+      containerEvent = new ContainerProxyLoggingEvent(eventObject);
     }
     String uniqueId = idGenerator.generateId();
-    c.putComponent(UniqueIdProvider.class, () -> uniqueId);
-    return eventObject;
+    containerEvent.putComponent(UniqueIdProvider.class, () -> uniqueId);
+    return containerEvent;
   }
 }

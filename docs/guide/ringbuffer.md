@@ -60,7 +60,7 @@ This works well with a JDBC appender.
 
 <!-- assume something like this for unique event id appender -->
 <root>
-    <appender class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+    <appender class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
         <appender-ref ref="ASYNC_JDBC"/>
     </appender>
 </root>

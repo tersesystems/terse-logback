@@ -27,8 +27,8 @@
         CREATE TABLE IF NOT EXISTS events (
         ID NUMERIC NOT NULL PRIMARY KEY AUTO_INCREMENT,
         ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
-        tse_ms numeric NOT NULL,
-        start_ms numeric NULL,
+        relative_ns BIGINT NULL,
+        start_ms BIGINT NULL,
         level_value int NOT NULL,
         level VARCHAR(7) NOT NULL,
         evt JSON NOT NULL,
@@ -39,7 +39,7 @@
         CREATE INDEX IF NOT EXISTS correlation_id_idx ON events(correlation_id);
       </createStatements>
       <insertStatement>
-        insert into events(ts, tse_ms, start_ms, level_value, level, evt, correlation_id, event_id) values(?, ?, ?, ?, ?, ?, ?, ?)
+        insert into events(ts, relative_ns, start_ms, level_value, level, evt, correlation_id, event_id) values(?, ?, ?, ?, ?, ?, ?, ?)
       </insertStatement>
 
       <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -47,7 +47,7 @@
     </appender>
   </appender>
 
-  <appender name="CONSOLE" class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+  <appender name="CONSOLE" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
     <appender class="ch.qos.logback.core.ConsoleAppender">
       <encoder>
         <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>

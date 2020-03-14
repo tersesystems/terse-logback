@@ -32,8 +32,10 @@
                 <providers>
                     <pattern>
                         <pattern>
-                            { "id": "%uniqueId" }
-                            { "start_ms": "#asLong{%startTime}" }
+                            {
+                              "id": "%uniqueId",
+                              "start_ms": "#asLong{%startTime}"
+                            }
                         </pattern>
                     </pattern>
                     <sequence/>
