@@ -12,5 +12,5 @@ package com.tersesystems.logback.ringbuffer;
 
 /** An interface that has access to a ring buffer. */
 public interface RingBufferAware {
-  RingBuffer getRingBuffer();
+  RingBufferContextAware getRingBuffer();
 }

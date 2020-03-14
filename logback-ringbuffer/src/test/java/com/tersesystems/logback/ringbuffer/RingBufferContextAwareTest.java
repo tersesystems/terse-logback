@@ -22,7 +22,7 @@ import ch.qos.logback.core.read.ListAppender;
 import java.net.URL;
 import org.junit.jupiter.api.Test;
 
-public class RingBufferTest {
+public class RingBufferContextAwareTest {
   @Test
   public void testWithDebug() throws JoranException {
     LoggerContext loggerContext = createLoggerContext();
@@ -33,7 +33,7 @@ public class RingBufferTest {
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerContext);
     assertThat(listAppender.list.size()).isEqualTo(0);
 
-    RingBuffer ringBuffer = getRingBuffer(loggerContext);
+    RingBufferContextAware ringBuffer = getRingBuffer(loggerContext);
     assertThat(ringBuffer.size()).isEqualTo(1);
   }
 
@@ -48,7 +48,7 @@ public class RingBufferTest {
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerContext);
     assertThat(listAppender.list.size()).isEqualTo(1);
 
-    RingBuffer ringBuffer = getRingBuffer(loggerContext);
+    RingBufferContextAware ringBuffer = getRingBuffer(loggerContext);
     assertThat(ringBuffer.size()).isEqualTo(1);
   }
 
@@ -65,7 +65,7 @@ public class RingBufferTest {
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerContext);
     assertThat(listAppender.list.size()).isEqualTo(1); // contains debug message
 
-    RingBuffer ringBuffer = getRingBuffer(loggerContext);
+    RingBufferContextAware ringBuffer = getRingBuffer(loggerContext);
     assertThat(ringBuffer.size()).isEqualTo(0);
   }
 
@@ -78,14 +78,14 @@ public class RingBufferTest {
     logger.info("info stuff");
     logger.error("error stuff");
 
-    RingBuffer ringBuffer = getRingBuffer(loggerContext);
+    RingBufferContextAware ringBuffer = getRingBuffer(loggerContext);
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerContext);
     assertThat(listAppender.list.size()).isEqualTo(2);
     assertThat(ringBuffer.size()).isEqualTo(1);
   }
 
   @SuppressWarnings("unchecked")
-  private RingBuffer getRingBuffer(LoggerContext loggerContext) {
+  private RingBufferContextAware getRingBuffer(LoggerContext loggerContext) {
     return RingBufferUtils.getRingBuffer(loggerContext, "RINGBUFFER");
   }
 

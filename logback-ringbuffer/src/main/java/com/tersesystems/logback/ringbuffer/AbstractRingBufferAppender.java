@@ -30,7 +30,7 @@ import java.util.List;
 public abstract class AbstractRingBufferAppender<E> extends UnsynchronizedAppenderBase<E>
     implements RingBufferAppender<E> {
 
-  private RingBuffer ringBuffer;
+  private RingBufferContextAware ringBuffer;
 
   protected boolean started = false;
 
@@ -131,12 +131,12 @@ public abstract class AbstractRingBufferAppender<E> extends UnsynchronizedAppend
   }
 
   @Override
-  public RingBuffer getRingBuffer() {
+  public RingBufferContextAware getRingBuffer() {
     return ringBuffer;
   }
 
   @Override
-  public void setRingBuffer(RingBuffer ringBuffer) {
+  public void setRingBuffer(RingBufferContextAware ringBuffer) {
     this.ringBuffer = ringBuffer;
   }
 }
