@@ -1,5 +1,7 @@
 package com.tersesystems.logback.classic;
 
-public interface NanoTimeSupplier {
+import com.tersesystems.logback.core.Component;
+
+public interface NanoTimeSupplier extends Component {
   long getNanoTime();
 }

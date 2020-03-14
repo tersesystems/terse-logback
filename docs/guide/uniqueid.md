@@ -31,7 +31,7 @@ We can then use it as follows:
 
     <conversionRule conversionWord="uniqueId" converterClass="com.tersesystems.logback.uniqueid.UniqueIdConverter" />
 
-    <appender name="DECORATE_WITH_UNIQUEID" class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+    <appender name="DECORATE_WITH_UNIQUEID" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
         <appender class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>%-5relative %-5level %uniqueId %logger{35} - %msg%n</pattern>

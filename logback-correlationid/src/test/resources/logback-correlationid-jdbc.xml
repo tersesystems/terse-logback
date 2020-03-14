@@ -47,7 +47,7 @@
     </appender>
   </appender>
 
-  <appender name="CONSOLE" class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+  <appender name="CONSOLE" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
     <appender class="ch.qos.logback.core.ConsoleAppender">
       <encoder>
         <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>

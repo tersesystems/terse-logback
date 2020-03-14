@@ -68,7 +68,7 @@ The `UniqueIdEventAppender` is an appender that decorates `ILoggingEvent` with a
         <appender-ref ref="test"/>
     </appender>
 
-    <appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdEventAppender">
+    <appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
         <appender-ref ref="selector"/>
     </appender>
 
