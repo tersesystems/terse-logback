@@ -397,6 +397,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../relativens/" title="Relative Nanos" class="md-nav__link">
+      Relative Nanos
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../select/" title="Select Appender" class="md-nav__link">
       Select Appender
     </a>
@@ -501,9 +513,65 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Unique ID Appender
+      </label>
+    
     <a href="./" title="Unique ID Appender" class="md-nav__link md-nav__link--active">
       Unique ID Appender
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#id-generators" class="md-nav__link">
+    ID Generators
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-uuid" class="md-nav__link">
+    Random UUID
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flake-id" class="md-nav__link">
+    Flake ID
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -554,6 +622,49 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#id-generators" class="md-nav__link">
+    ID Generators
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-uuid" class="md-nav__link">
+    Random UUID
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flake-id" class="md-nav__link">
+    Flake ID
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -568,45 +679,36 @@
                 
                 
                 <h1 id="unique-id-appenders">Unique ID Appenders<a class="headerlink" href="#unique-id-appenders" title="Permanent link">&para;</a></h1>
-<p>Not only can we compose appenders together, but we can also decorate the logging event at the same time. This involves using the decorator pattern to add extra information to data.</p>
-<p>So, imagine that we want to extend ILoggingEvent so that we can include a unique id along with it.</p>
-<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IUniqueIdLoggingEvent</span> <span class="kd">extends</span> <span class="n">ILoggingEvent</span> <span class="p">{</span>
-    <span class="n">String</span> <span class="nf">uniqueId</span><span class="p">();</span>
-<span class="p">}</span>
-
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UniqueIdLoggingEvent</span> <span class="kd">extends</span> <span class="n">ProxyLoggingEvent</span> <span class="kd">implements</span> <span class="n">IUniqueIdLoggingEvent</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">uniqueId</span><span class="p">;</span>
-    <span class="n">UniqueIdLoggingEvent</span><span class="p">(</span><span class="n">ILoggingEvent</span> <span class="n">delegate</span><span class="p">,</span> <span class="n">String</span> <span class="n">uniqueId</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">super</span><span class="p">(</span><span class="n">delegate</span><span class="p">);</span>
-        <span class="k">this</span><span class="p">.</span><span class="na">uniqueId</span> <span class="o">=</span> <span class="n">uniqueId</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">uniqueId</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="na">uniqueId</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<p>The unique id appender allows the logging event to carry a unique id.  When used in conjunction with <code>SelectAppender</code> or <code>CompositeAppender</code>, this allows for a log record to use the same id across different logs.</p>
+<p>For example, in <code>application.log</code>, you'll see a single line that starts with <code>FfwJtsNHYSw6O0Qbm7EAAA</code>:</p>
+<div class="codehilite"><pre><span></span><code>FfwJtsNHYSw6O0Qbm7EAAA 2020-03-14T05:30:14.965+0000 [INFO ] play.api.db.HikariCPConnectionPool in play-dev-mode-akka.actor.default-dispatcher-7 - Creating Pool for datasource &#39;logging&#39;
 </code></pre></div>
 
-<p>We can then use it as follows:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&lt;configuration&gt;</span>
-
-    <span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">&quot;uniqueId&quot;</span> <span class="na">converterClass=</span><span class="s">&quot;com.tersesystems.logback.uniqueid.UniqueIdConverter&quot;</span> <span class="nt">/&gt;</span>
-
-    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;DECORATE_WITH_UNIQUEID&quot;</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.uniqueid.UniqueIdEventAppender&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;appender</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;encoder&gt;</span>
-                <span class="nt">&lt;pattern&gt;</span>%-5relative %-5level %uniqueId %logger{35} - %msg%n<span class="nt">&lt;/pattern&gt;</span>
-            <span class="nt">&lt;/encoder&gt;</span>
-        <span class="nt">&lt;/appender&gt;</span>
-    <span class="nt">&lt;/appender&gt;</span>
-
-    <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&quot;TRACE&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;DECORATE_WITH_UNIQUEID&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;/root&gt;</span>
-<span class="nt">&lt;/configuration&gt;</span>
+<p>You can search for this string in <code>application.json</code> and see more detail on the log record:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;FfwJtsNHYSw6O0Qbm7EAAA&quot;</span><span class="p">,</span><span class="nt">&quot;relative_ns&quot;</span><span class="p">:</span><span class="mi">20921024</span><span class="p">,</span><span class="nt">&quot;tse_ms&quot;</span><span class="p">:</span><span class="mi">1584163814965</span><span class="p">,</span><span class="nt">&quot;start_ms&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;@timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2020-03-14T05:30:14.965Z&quot;</span><span class="p">,</span><span class="nt">&quot;@version&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;Creating Pool for datasource &#39;logging&#39;&quot;</span><span class="p">,</span><span class="nt">&quot;logger_name&quot;</span><span class="p">:</span><span class="s2">&quot;play.api.db.HikariCPConnectionPool&quot;</span><span class="p">,</span><span class="nt">&quot;thread_name&quot;</span><span class="p">:</span><span class="s2">&quot;play-dev-mode-akka.actor.default-dispatcher-7&quot;</span><span class="p">,</span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="nt">&quot;level_value&quot;</span><span class="p">:</span><span class="mi">20000</span><span class="p">}</span>
 </code></pre></div>
+
+<p>See the <a href="https://github.com/tersesystems/terse-logback-showcase">showcase</a> for an example.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;selector-with-unique-id&quot;</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.uniqueid.UniqueIdComponentAppender&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;appender</span> <span class="err">...</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;/appender&gt;</span>
+<span class="nt">&lt;/appender&gt;</span>
+</code></pre></div>
+
+<p>To extract the unique ID, register a converter:</p>
+<div class="codehilite"><pre><span></span><code><span class="c">&lt;!-- available as &quot;%uniqueId&quot; in a pattern layout --&gt;</span>
+<span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">&quot;uniqueId&quot;</span> <span class="na">converterClass=</span><span class="s">&quot;com.tersesystems.logback.uniqueid.UniqueIdConverter&quot;</span> <span class="nt">/&gt;</span>
+</code></pre></div>
+
+<h2 id="id-generators">ID Generators<a class="headerlink" href="#id-generators" title="Permanent link">&para;</a></h2>
+<p>Unique IDs come with two different options.  Flake ID is the default.</p>
+<h3 id="random-uuid">Random UUID<a class="headerlink" href="#random-uuid" title="Permanent link">&para;</a></h3>
+<p>This implementation uses <code>RandomBasedGenerator</code> from <a href="https://github.com/cowtowncoder/java-uuid-generator/">Java UUID Generator</a>.  This is faster than using <code>java.util.UUID.randomUUID</code>, because it avoids the <a href="https://braveo.blogspot.com/2013/05/uuidrandomuuid-is-slow.html">synchronization lock</a>.</p>
+<h3 id="flake-id">Flake ID<a class="headerlink" href="#flake-id" title="Permanent link">&para;</a></h3>
+<p>Flake IDs are decentralized and k-ordered, meaning that they are "roughly time-ordered when sorted lexicographically."</p>
+<p>This implementation uses <a href="https://github.com/mguenther/idem">idem</a> with <code>Flake128S</code>.</p>
                 
                   
                 
