@@ -44,13 +44,15 @@ public class CorrelationIdTurboFilter extends TurboFilter {
     if (predicate.test(m)) {
       return true;
     }
-    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
-      Marker child = iter.next();
-      if (predicate.test(child)) {
-        return true;
-      }
-      if (child.hasReferences()) {
-        return doMarker(child, predicate);
+    if (m != null && m.hasReferences()) {
+      for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+        Marker child = iter.next();
+        if (predicate.test(child)) {
+          return true;
+        }
+        if (child.hasReferences()) {
+          return doMarker(child, predicate);
+        }
       }
     }
     return false;

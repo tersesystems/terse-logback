@@ -55,14 +55,16 @@ public class CorrelationIdUtils {
       CorrelationIdProvider value = ((CorrelationIdProvider) m);
       return Optional.of(value);
     }
-    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
-      Marker child = iter.next();
-      if (child instanceof CorrelationIdProvider) {
-        CorrelationIdProvider value = ((CorrelationIdProvider) child);
-        return Optional.of(value);
-      }
-      if (child.hasReferences()) {
-        return fromMarker(child);
+    if (m != null && m.hasReferences()) {
+      for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+        Marker child = iter.next();
+        if (child instanceof CorrelationIdProvider) {
+          CorrelationIdProvider value = ((CorrelationIdProvider) child);
+          return Optional.of(value);
+        }
+        if (child.hasReferences()) {
+          return fromMarker(child);
+        }
       }
     }
     return Optional.empty();

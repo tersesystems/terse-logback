@@ -38,17 +38,19 @@ public final class NanoTime {
       NanoTimeSupplier supplier = ((NanoTimeSupplier) m);
       return Optional.of(supplier.getNanoTime());
     }
-    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
-      Marker child = iter.next();
-      if (child instanceof ContextAware) {
-        ((ContextAware) child).setContext(context);
-      }
-      if (child instanceof NanoTimeSupplier) {
-        NanoTimeSupplier supplier = ((NanoTimeSupplier) child);
-        return Optional.of(supplier.getNanoTime());
-      }
-      if (child.hasReferences()) {
-        return fromMarker(context, child);
+    if (m != null && m.hasReferences()) {
+      for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+        Marker child = iter.next();
+        if (child instanceof ContextAware) {
+          ((ContextAware) child).setContext(context);
+        }
+        if (child instanceof NanoTimeSupplier) {
+          NanoTimeSupplier supplier = ((NanoTimeSupplier) child);
+          return Optional.of(supplier.getNanoTime());
+        }
+        if (child.hasReferences()) {
+          return fromMarker(context, child);
+        }
       }
     }
     return Optional.empty();
