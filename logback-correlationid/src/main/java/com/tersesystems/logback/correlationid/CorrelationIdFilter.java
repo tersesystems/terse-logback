@@ -37,8 +37,7 @@ public class CorrelationIdFilter extends Filter<ILoggingEvent> {
 
   @Override
   public FilterReply decide(ILoggingEvent event) {
-    Optional<CorrelationIdProvider> maybeCorrelationId =
-        utils.getProvider(event.getMDCPropertyMap(), event.getMarker());
+    Optional<String> maybeCorrelationId = utils.get(event.getMDCPropertyMap(), event.getMarker());
     return maybeCorrelationId.isPresent() ? FilterReply.ACCEPT : FilterReply.DENY;
   }
 }

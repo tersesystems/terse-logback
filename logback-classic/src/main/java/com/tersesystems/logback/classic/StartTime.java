@@ -19,8 +19,25 @@ import java.util.Iterator;
 import java.util.Optional;
 import org.slf4j.Marker;
 
-public class StartTime {
+/** This class pulls an Instant from a StartTimeSupplier. */
+public final class StartTime {
 
+  /**
+   * Returns an start time from the event, then marker, then finally if not found will use the
+   * event's timestamp as the marker.
+   *
+   * @param context the logging context
+   * @param event the logging event event
+   * @return an instant representing the start time.
+   */
+  public static Instant from(Context context, ILoggingEvent event) {
+    return fromOptional(context, event).orElse(Instant.ofEpochMilli(event.getTimeStamp()));
+  }
+
+  /**
+   * Pulls a start time from the logging event, looking for the supplier on the event first, and
+   * then looking for a StartTimeMarker.
+   */
   public static Optional<Instant> fromOptional(Context context, ILoggingEvent event) {
     if (event instanceof ComponentContainer) {
       ComponentContainer container = (ComponentContainer) event;
@@ -31,7 +48,8 @@ public class StartTime {
     return fromMarker(context, event.getMarker());
   }
 
-  static Optional<Instant> fromMarker(Context context, Marker m) {
+  /** Looks for a StartTimeMarker in the marker and in all of the children of the marker. */
+  public static Optional<Instant> fromMarker(Context context, Marker m) {
     if (m instanceof StartTimeSupplier) {
       StartTimeSupplier supplier = ((StartTimeSupplier) m);
       return Optional.of(supplier.getStartTime());
@@ -57,10 +75,5 @@ public class StartTime {
   public static Optional<Instant> fromContainer(ComponentContainer container) {
     StartTimeSupplier supplier = container.getComponent(StartTimeSupplier.class);
     return Optional.ofNullable(supplier.getStartTime());
-  }
-
-  public static Instant from(Context context, ILoggingEvent eventObject) {
-    return fromOptional(context, eventObject)
-        .orElse(Instant.ofEpochMilli(eventObject.getTimeStamp()));
   }
 }

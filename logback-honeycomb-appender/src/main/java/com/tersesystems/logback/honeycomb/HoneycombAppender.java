@@ -15,6 +15,7 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import com.tersesystems.logback.classic.StartTime;
 import com.tersesystems.logback.honeycomb.client.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -154,19 +155,25 @@ public class HoneycombAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
           e);
     }
 
+    Instant startTime = StartTime.from(context, eventObject);
+    HoneycombRequest<ILoggingEvent> request =
+        new HoneycombRequest<>(sampleRate, startTime, eventObject);
+
     if (batch) {
       // If queue is full, then drain and post it.
-      HoneycombRequest<ILoggingEvent> request =
-          new HoneycombRequest<>(sampleRate, StartTime.from(context, eventObject), eventObject);
       if (!eventQueue.offer(request)) {
         List<HoneycombRequest<ILoggingEvent>> list = new ArrayList<>();
+
+        // empty the queue
         eventQueue.drainTo(list);
+
+        // put one back...
         eventQueue.offer(request);
+
+        // post the contents.
         postBatch(list);
       }
     } else {
-      HoneycombRequest<ILoggingEvent> request =
-          new HoneycombRequest<>(sampleRate, StartTime.from(context, eventObject), eventObject);
       postEvent(request);
     }
   }

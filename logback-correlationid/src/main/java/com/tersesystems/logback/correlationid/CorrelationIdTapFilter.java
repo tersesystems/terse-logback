@@ -47,7 +47,7 @@ public class CorrelationIdTapFilter extends TapFilter {
     }
 
     Map<String, String> mdcPropertyMap = utils.getMDCPropertyMap();
-    if (utils.getProvider(mdcPropertyMap, marker).isPresent()) {
+    if (utils.get(mdcPropertyMap, marker).isPresent()) {
       ILoggingEvent loggingEvent =
           getLoggingEventFactory().create(marker, logger, level, format, params, t);
       // initialize the mdc in the logging event...

@@ -25,8 +25,8 @@ import org.junit.Test;
 
 public class TypesafeConfigMappingsActionTest {
 
-  private JoranConfigurator jc = new JoranConfigurator();
-  private LoggerContext loggerContext = new LoggerContext();
+  private final JoranConfigurator jc = new JoranConfigurator();
+  private final LoggerContext loggerContext = new LoggerContext();
 
   @Before
   public void setUp() {

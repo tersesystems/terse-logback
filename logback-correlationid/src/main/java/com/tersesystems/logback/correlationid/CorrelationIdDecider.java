@@ -28,8 +28,7 @@ public class CorrelationIdDecider implements TurboFilterDecider {
   @Override
   public FilterReply decide(
       Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
-    Optional<CorrelationIdProvider> maybeCorrelationId =
-        utils.getProvider(utils.getMDCPropertyMap(), marker);
+    Optional<String> maybeCorrelationId = utils.get(utils.getMDCPropertyMap(), marker);
     return maybeCorrelationId.isPresent() ? FilterReply.ACCEPT : FilterReply.NEUTRAL;
   }
 }
