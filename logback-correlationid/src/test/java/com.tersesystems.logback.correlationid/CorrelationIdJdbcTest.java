@@ -22,12 +22,11 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
-import com.tersesystems.logback.core.StreamUtils;
 import com.tersesystems.logback.jdbc.JDBCAppender;
 import java.net.URL;
 import java.sql.*;
+import java.util.Iterator;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -112,8 +111,10 @@ public class CorrelationIdJdbcTest {
   }
 
   private Optional<Appender<ILoggingEvent>> getFirstAppender(Logger logger) {
-    Stream<Appender<ILoggingEvent>> appenderStream =
-        StreamUtils.fromIterator(logger.iteratorForAppenders());
-    return appenderStream.findFirst();
+    for (Iterator<Appender<ILoggingEvent>> iter = logger.iteratorForAppenders(); iter.hasNext(); ) {
+      Appender<ILoggingEvent> next = logger.iteratorForAppenders().next();
+      return Optional.of(next);
+    }
+    return Optional.empty();
   }
 }

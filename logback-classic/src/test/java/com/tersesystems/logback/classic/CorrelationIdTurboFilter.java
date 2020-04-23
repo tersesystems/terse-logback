@@ -16,9 +16,9 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
-import com.tersesystems.logback.core.StreamUtils;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 import org.slf4j.Marker;
 
 /** Tells the tap filter to create an event and append it if a correlation id is found. */
@@ -40,12 +40,27 @@ public class CorrelationIdTurboFilter extends TurboFilter {
     utils = Utils.create((LoggerContext) getContext());
   }
 
+  boolean doMarker(Marker m, Predicate<Marker> predicate) {
+    if (predicate.test(m)) {
+      return true;
+    }
+    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+      Marker child = iter.next();
+      if (predicate.test(child)) {
+        return true;
+      }
+      if (child.hasReferences()) {
+        return doMarker(child, predicate);
+      }
+    }
+    return false;
+  }
+
   @Override
   public FilterReply decide(
       Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
     // If there's a correlation id marker somewhere in the hierarchy, then good.
-    Stream<Marker> markerStream = StreamUtils.fromMarker(marker);
-    if (markerStream.anyMatch(m -> m instanceof CorrelationIdMarker)) {
+    if (doMarker(marker, m -> m instanceof CorrelationIdMarker)) {
       return FilterReply.ACCEPT;
     }
 

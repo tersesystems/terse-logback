@@ -37,6 +37,7 @@ public class HoneycombPlayWSClientService implements HoneycombClientService {
     Map<String, Object> clientMap = new HashMap<>();
     clientMap.put("play.ws.compressionEnabled", Boolean.TRUE);
     clientMap.put("play.ws.useragent", "Logback Honeycomb Client");
+    clientMap.put("akka.daemonic", "on");
     clientMap.put(AKKA_MAX_THREADS_KEY, 2);
     Config config = ConfigFactory.parseMap(clientMap).withFallback(ConfigFactory.load());
 

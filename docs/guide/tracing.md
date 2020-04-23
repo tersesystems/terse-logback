@@ -10,10 +10,22 @@ compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
 compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
 ```
 
+The appender is of type `com.tersesystems.logback.honeycomb.HoneycombAppender`, and makes use of the client under the hood.  Because the honeycomb appender uses an HTTP client under the hood, there are a couple of important notes.
+
+> **NOTE**: Because the HTTP client runs on a different thread, you **must** have a [shutdown hook](http://logback.qos.ch/manual/configuration.html#shutdownHook) configured so that shutting down can be delayed until the events are posted. 
+
+and
+
+> **NOTE**: Because the HTTP client may have non-daemon threads running, you **should** call System.exit explicitly to stop the application if you are not in a long-running service.  
+
 The appender is as follows:
 
 ```xml
 <configuration>
+  <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
+    <delay>1000</delay>
+  </shutdownHook>
+
   <conversionRule conversionWord="startTime" converterClass="com.tersesystems.logback.classic.StartTimeConverter" />
 
   <appender name="HONEYCOMB" class="com.tersesystems.logback.honeycomb.HoneycombAppender">
@@ -85,7 +97,7 @@ or asking for a child builder that you can build yourself:
 SpanInfo childInfo = spanInfo.childBuilder().setSpanName("doSomething").buildNow();
 ```
 
-The start time information is captured in a `StartTimeMarker` which can be extracted by `StartTime.from`.  The event timestamp serves as the span's end time.
+The start time information is captured in a `StartTimeMarker` which can be extracted by `StartTime.from` and is used in building the Honeycomb Request.  The event timestamp serves as the span's end time.  This is useful in Honeycomb Tracing, as the timestamp is the start time, not the time that the log entry was posted.
 
 For example, in Play you might run a controller as follows:
 

@@ -12,10 +12,12 @@ package com.tersesystems.logback.classic;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
+import ch.qos.logback.core.spi.ContextAware;
 import com.tersesystems.logback.core.ComponentContainer;
-import com.tersesystems.logback.core.StreamUtils;
 import java.time.Instant;
+import java.util.Iterator;
 import java.util.Optional;
+import org.slf4j.Marker;
 
 public class StartTime {
 
@@ -26,12 +28,28 @@ public class StartTime {
         return fromContainer(container);
       }
     }
+    return fromMarker(context, event.getMarker());
+  }
 
-    return StreamUtils.fromMarker(context, event.getMarker())
-        .filter(marker -> marker instanceof StartTimeSupplier)
-        .map(marker -> (StartTimeSupplier) marker)
-        .map(StartTimeSupplier::getStartTime)
-        .findFirst();
+  static Optional<Instant> fromMarker(Context context, Marker m) {
+    if (m instanceof StartTimeSupplier) {
+      StartTimeSupplier supplier = ((StartTimeSupplier) m);
+      return Optional.of(supplier.getStartTime());
+    }
+    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+      Marker child = iter.next();
+      if (child instanceof ContextAware) {
+        ((ContextAware) child).setContext(context);
+      }
+      if (child instanceof StartTimeSupplier) {
+        StartTimeSupplier supplier = ((StartTimeSupplier) child);
+        return Optional.of(supplier.getStartTime());
+      }
+      if (child.hasReferences()) {
+        return fromMarker(context, child);
+      }
+    }
+    return Optional.empty();
   }
 
   public static Optional<Instant> fromContainer(ComponentContainer container) {

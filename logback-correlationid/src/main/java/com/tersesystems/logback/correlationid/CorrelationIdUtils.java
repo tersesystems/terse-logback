@@ -12,11 +12,10 @@
 package com.tersesystems.logback.correlationid;
 
 import ch.qos.logback.classic.util.LogbackMDCAdapter;
-import com.tersesystems.logback.core.StreamUtils;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.spi.MDCAdapter;
@@ -43,18 +42,30 @@ public class CorrelationIdUtils {
 
   public Optional<CorrelationIdProvider> getProvider(
       Map<String, String> mdcPropertyMap, Marker marker) {
-    Stream<Marker> markerStream = StreamUtils.fromMarker(marker);
-    Optional<CorrelationIdProvider> first =
-        markerStream
-            .filter(m -> m instanceof CorrelationIdMarker)
-            .map(m -> (CorrelationIdProvider) m)
-            .findFirst();
-
+    Optional<CorrelationIdProvider> first = fromMarker(marker);
     if (first.isPresent()) {
       return first;
     } else {
       return getProvider(mdcPropertyMap);
     }
+  }
+
+  Optional<CorrelationIdProvider> fromMarker(Marker m) {
+    if (m instanceof CorrelationIdMarker) {
+      CorrelationIdProvider value = ((CorrelationIdProvider) m);
+      return Optional.of(value);
+    }
+    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+      Marker child = iter.next();
+      if (child instanceof CorrelationIdProvider) {
+        CorrelationIdProvider value = ((CorrelationIdProvider) child);
+        return Optional.of(value);
+      }
+      if (child.hasReferences()) {
+        return fromMarker(child);
+      }
+    }
+    return Optional.empty();
   }
 
   public Optional<CorrelationIdProvider> getProvider(Map<String, String> mdcPropertyMap) {

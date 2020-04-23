@@ -13,8 +13,9 @@ package com.tersesystems.logback.classic.sift;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.sift.AbstractDiscriminator;
 import ch.qos.logback.core.sift.DefaultDiscriminator;
-import com.tersesystems.logback.core.StreamUtils;
+import java.util.Iterator;
 import java.util.Optional;
+import org.slf4j.Marker;
 
 /**
  * A discriminator that looks for a marker containing discriminating logic.
@@ -34,10 +35,25 @@ public class MarkerBasedDiscriminator<LoggingEventT extends ILoggingEvent>
   }
 
   public Optional<DiscriminatingValue> getDiscriminatorMarker(ILoggingEvent loggingEvent) {
-    return StreamUtils.fromMarker(context, loggingEvent.getMarker())
-        .filter(marker -> marker instanceof DiscriminatingValue)
-        .map(m -> (DiscriminatingValue) m)
-        .findFirst();
+    return fromMarker(loggingEvent.getMarker());
+  }
+
+  static Optional<DiscriminatingValue> fromMarker(Marker m) {
+    if (m instanceof DiscriminatingValue) {
+      DiscriminatingValue value = ((DiscriminatingValue) m);
+      return Optional.of(value);
+    }
+    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+      Marker child = iter.next();
+      if (child instanceof DiscriminatingValue) {
+        DiscriminatingValue value = ((DiscriminatingValue) child);
+        return Optional.of(value);
+      }
+      if (child.hasReferences()) {
+        return fromMarker(child);
+      }
+    }
+    return Optional.empty();
   }
 
   @Override

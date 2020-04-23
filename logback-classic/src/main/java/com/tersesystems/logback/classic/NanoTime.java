@@ -13,9 +13,11 @@ package com.tersesystems.logback.classic;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
+import ch.qos.logback.core.spi.ContextAware;
 import com.tersesystems.logback.core.ComponentContainer;
-import com.tersesystems.logback.core.StreamUtils;
+import java.util.Iterator;
 import java.util.Optional;
+import org.slf4j.Marker;
 
 public final class NanoTime {
   public static final long start = System.nanoTime();
@@ -28,11 +30,28 @@ public final class NanoTime {
       }
     }
 
-    return StreamUtils.fromMarker(context, event.getMarker())
-        .filter(marker -> marker instanceof NanoTimeSupplier)
-        .map(marker -> (NanoTimeSupplier) marker)
-        .map(NanoTimeSupplier::getNanoTime)
-        .findFirst();
+    return fromMarker(context, event.getMarker());
+  }
+
+  static Optional<Long> fromMarker(Context context, Marker m) {
+    if (m instanceof NanoTimeSupplier) {
+      NanoTimeSupplier supplier = ((NanoTimeSupplier) m);
+      return Optional.of(supplier.getNanoTime());
+    }
+    for (Iterator<Marker> iter = m.iterator(); iter.hasNext(); ) {
+      Marker child = iter.next();
+      if (child instanceof ContextAware) {
+        ((ContextAware) child).setContext(context);
+      }
+      if (child instanceof NanoTimeSupplier) {
+        NanoTimeSupplier supplier = ((NanoTimeSupplier) child);
+        return Optional.of(supplier.getNanoTime());
+      }
+      if (child.hasReferences()) {
+        return fromMarker(context, child);
+      }
+    }
+    return Optional.empty();
   }
 
   public static Optional<Long> fromContainer(ComponentContainer container) {
