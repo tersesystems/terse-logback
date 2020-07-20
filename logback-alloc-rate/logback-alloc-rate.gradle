@@ -1,0 +1,21 @@
+/*
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * Copyright 2018-2020 Will Sargent.
+ *
+ * Licensed under the CC0 Public Domain Dedication;
+ * You may obtain a copy of the License at
+ *
+ *  http://creativecommons.org/publicdomain/zero/1.0/
+ */
+repositories {
+    maven {
+        url "https://repo.clojars.org/"
+    }
+}
+
+dependencies {
+    compile project(':logback-core')
+    compile project(':logback-classic')
+    implementation group: 'com.clojure-goes-fast', name: 'jvm-alloc-rate-meter', version: '0.1.3'
+}
