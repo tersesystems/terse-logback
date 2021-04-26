@@ -1,6 +1,6 @@
 <!---freshmark shields
 output = [
-	link(shield('Bintray', 'bintray', 'tersesystems:terse-logback', 'blue'), 'https://bintray.com/tersesystems/maven/terse-logback/view'),
+	link(shield('Bintray', 'bintray', 'tersesystems:terse-logback', 'blue'), 'https://search.maven.org/search?q=g:com.tersesystems.terse-logback'),
 	link(shield('Latest version', 'latest', '{{previousVersion}}', 'blue'), 'https://github.com/tersesystems/terse-logback/releases/latest'),
 	link(shield('License CC0', 'license', 'CC0', 'blue'), 'https://tldrlegal.com/license/creative-commons-cc0-1.0-universal'),
 	'',
@@ -8,7 +8,7 @@ output = [
 	link(image('Travis CI', 'https://travis-ci.org/tersesystems/terse-logback.svg?branch=master'), 'https://travis-ci.org/tersesystems/terse-logback')
 	].join('\n')
 -->
-[![Bintray](https://img.shields.io/badge/bintray-tersesystems%3Aterse--logback-blue.svg)](https://bintray.com/tersesystems/maven/terse-logback/view)
+[![Maven Central](https://img.shields.io/badge/maven-central-tersesystems%3Aterse--logback-blue.svg)](https://search.maven.org/search?q=g:com.tersesystems.terse-logback)
 [![Latest version](https://img.shields.io/badge/latest-0.16.2-blue.svg)](https://github.com/tersesystems/terse-logback/releases/latest)
 [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
