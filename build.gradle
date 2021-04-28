@@ -18,6 +18,8 @@ plugins {
 
 spotless {
     freshmark {
+        target 'README.md'
+        propertiesFile('gradle.properties')	
         propertiesFile('version.properties')	
     }
 }

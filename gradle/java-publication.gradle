@@ -1,0 +1,56 @@
+//Auxiliary jar files required by Maven module publications
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+//TODO: java.withSourcesJar(), java.withJavadocJar()
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+apply plugin: 'maven-publish'
+publishing { //https://docs.gradle.org/current/userguide/publishing_maven.html
+    publications {
+        maven(MavenPublication) { //name of the publication
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = tasks.jar.archiveBaseName
+                description = "Terse Logback is a collection of Logback extensions that shows how to use Logback effectively for structured logging, ringbuffer logging, system instrumentation, and JDBC."
+                url = "https://github.com/tersesystems/terse-logback"
+                licenses {
+                    license {
+                        name = 'Apache2'
+                        url = 'https://github.com/tersesystems/terse-logback/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'tersesystems'
+                        name = 'Terse Systems'
+                        url = 'https://github.com/tersesystems'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/tersesystems/terse-logback.git'
+                }
+            }
+        }
+    }
+
+    repositories {
+        // useful for testing - running "publish" will create artifacts/pom in a local dir
+        maven { url = "$rootDir/build/repo" }
+    }
+}
+
+apply plugin: 'signing'
+signing { // https://docs.gradle.org/current/userguide/signing_plugin.html
+    // Give up on using PGP_KEY, leverage gpg-agent and release locally
+    useGpgCmd()
+    sign publishing.publications.maven
+}
