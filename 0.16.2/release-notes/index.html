@@ -1,0 +1,1028 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Terse Logback Documentation Site">
+      
+      
+      
+        <meta name="author" content="Will Sargent">
+      
+      
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/0.16.2/release-notes/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.0.6">
+    
+    
+      
+        <title>Release notes - Terse Logback</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2c0c5eaf.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.7fa14f5b.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#0162" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Terse Logback" class="md-header__button md-logo" aria-label="Terse Logback" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Terse Logback
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Release notes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="md-header__options">
+      
+    </div>
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Terse Logback" class="md-nav__button md-logo" aria-label="Terse Logback" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Terse Logback
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structured-logging/" class="md-nav__link">
+        Structured Logging
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        User guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="User guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          User guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/audio/" class="md-nav__link">
+        Audio
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/budget/" class="md-nav__link">
+        Budgeting
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/censor/" class="md-nav__link">
+        Censors
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/composite/" class="md-nav__link">
+        Composite
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/compression/" class="md-nav__link">
+        Compression
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/correlationid/" class="md-nav__link">
+        Correlation Id
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/exception-mapping/" class="md-nav__link">
+        Exception Mapping
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/instrumentation/" class="md-nav__link">
+        Instrumentation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/jdbc/" class="md-nav__link">
+        JDBC
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/ringbuffer/" class="md-nav__link">
+        Ring Buffers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/relativens/" class="md-nav__link">
+        Relative Nanos
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/select/" class="md-nav__link">
+        Select Appender
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/structured-config/" class="md-nav__link">
+        Structured Config
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/systeminfo/" class="md-nav__link">
+        System Info
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/tapfilter/" class="md-nav__link">
+        Tap Filters
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/tracing/" class="md-nav__link">
+        Tracing with Honeycomb
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/typesafeconfig/" class="md-nav__link">
+        Typesafe Config
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/turbomarker/" class="md-nav__link">
+        Turbo Markers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/uniqueid/" class="md-nav__link">
+        Unique ID Appender
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Release notes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Release notes
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0162" class="md-nav__link">
+    0.16.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0161" class="md-nav__link">
+    0.16.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0160" class="md-nav__link">
+    0.16.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0152" class="md-nav__link">
+    0.15.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0151" class="md-nav__link">
+    0.15.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0150" class="md-nav__link">
+    0.15.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0142" class="md-nav__link">
+    0.14.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0141" class="md-nav__link">
+    0.14.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0140" class="md-nav__link">
+    0.14.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0140_1" class="md-nav__link">
+    0.14.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0132" class="md-nav__link">
+    0.13.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0131" class="md-nav__link">
+    0.13.1
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reading/" class="md-nav__link">
+        Further Reading
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0162" class="md-nav__link">
+    0.16.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0161" class="md-nav__link">
+    0.16.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0160" class="md-nav__link">
+    0.16.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0152" class="md-nav__link">
+    0.15.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0151" class="md-nav__link">
+    0.15.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0150" class="md-nav__link">
+    0.15.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0142" class="md-nav__link">
+    0.14.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0141" class="md-nav__link">
+    0.14.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0140" class="md-nav__link">
+    0.14.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0140_1" class="md-nav__link">
+    0.14.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0132" class="md-nav__link">
+    0.13.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0131" class="md-nav__link">
+    0.13.1
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/release-notes.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>Release notes</h1>
+                
+                <p><sup><sup><em>Release notes were automatically generated by <a href="http://shipkit.org/">Shipkit</a></em></sup></sup></p>
+<h4 id="0162">0.16.2<a class="headerlink" href="#0162" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-04-26 - 0 commits by <a href="https://github.com/wsargent">Will Sargent</a> - published to Maven Central</li>
+<li>Shipkit stopped doing these automatically :-(</li>
+</ul>
+<h4 id="0161">0.16.1<a class="headerlink" href="#0161" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-04-23 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.16.0...v0.16.1">5 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.16.1"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.16.1-green.svg" /></a></li>
+<li>Remove mqtools direct api exposure <a href="https://github.com/tersesystems/terse-logback/pull/120">(#120)</a></li>
+</ul>
+<h4 id="0160">0.16.0<a class="headerlink" href="#0160" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-03-14 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.15.2...v0.16.0">6 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.16.0"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.16.0-green.svg" /></a></li>
+<li>Travis <a href="https://github.com/tersesystems/terse-logback/pull/119">(#119)</a></li>
+<li>Add copyright to everything. <a href="https://github.com/tersesystems/terse-logback/pull/118">(#118)</a></li>
+<li>Add component support <a href="https://github.com/tersesystems/terse-logback/pull/117">(#117)</a></li>
+<li>Use nanotime component <a href="https://github.com/tersesystems/terse-logback/pull/116">(#116)</a></li>
+<li>Nanotime support <a href="https://github.com/tersesystems/terse-logback/pull/115">(#115)</a></li>
+</ul>
+<h4 id="0152">0.15.2<a class="headerlink" href="#0152" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-03-08 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.15.1...v0.15.2">13 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.15.2"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.15.2-green.svg" /></a></li>
+<li>Ring buffer cleanup <a href="https://github.com/tersesystems/terse-logback/pull/114">(#114)</a></li>
+<li>Use lock free ring buffer <a href="https://github.com/tersesystems/terse-logback/pull/113">(#113)</a></li>
+<li>Mkdocs <a href="https://github.com/tersesystems/terse-logback/pull/112">(#112)</a></li>
+<li>Add uniqueid field to correlation id <a href="https://github.com/tersesystems/terse-logback/pull/111">(#111)</a></li>
+</ul>
+<h4 id="0151">0.15.1<a class="headerlink" href="#0151" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-03-01 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.15.0...v0.15.1">1 commit</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.15.1"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.15.1-green.svg" /></a></li>
+<li>No pull requests referenced in commit messages.</li>
+</ul>
+<h4 id="0150">0.15.0<a class="headerlink" href="#0150" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-03-01 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.14.2...v0.15.0">1 commit</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.15.0"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.15.0-green.svg" /></a></li>
+<li>Better ring buffer <a href="https://github.com/tersesystems/terse-logback/pull/110">(#110)</a></li>
+</ul>
+<h4 id="0142">0.14.2<a class="headerlink" href="#0142" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-02-24 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.14.1...v0.14.2">2 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.14.2"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.14.2-green.svg" /></a></li>
+<li>Add queue to jdbc appender <a href="https://github.com/tersesystems/terse-logback/pull/109">(#109)</a></li>
+<li>Add jdbc safeguards <a href="https://github.com/tersesystems/terse-logback/pull/108">(#108)</a></li>
+</ul>
+<h4 id="0141">0.14.1<a class="headerlink" href="#0141" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-02-22 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.14.0...v0.14.1">2 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.14.1"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.14.1-green.svg" /></a></li>
+<li>Make honeycomb service <a href="https://github.com/tersesystems/terse-logback/pull/107">(#107)</a></li>
+</ul>
+<h4 id="0140">0.14.0<a class="headerlink" href="#0140" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-02-22 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.13.3...v0.14.0">17 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> (16), sullis (1) - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.14.0"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.14.0-green.svg" /></a></li>
+<li>Make honeycomb service <a href="https://github.com/tersesystems/terse-logback/pull/107">(#107)</a></li>
+<li>fix the case on jdbc <a href="https://github.com/tersesystems/terse-logback/pull/106">(#106)</a></li>
+<li>Update logstash <a href="https://github.com/tersesystems/terse-logback/pull/105">(#105)</a></li>
+<li>Update gradle <a href="https://github.com/tersesystems/terse-logback/pull/104">(#104)</a></li>
+<li>Add more jdbc changes <a href="https://github.com/tersesystems/terse-logback/pull/103">(#103)</a></li>
+<li>Fix correlation tapfilter <a href="https://github.com/tersesystems/terse-logback/pull/102">(#102)</a></li>
+<li>bytebuddy 1.10.8 <a href="https://github.com/tersesystems/terse-logback/pull/101">(#101)</a></li>
+<li>Update readme <a href="https://github.com/tersesystems/terse-logback/pull/100">(#100)</a></li>
+<li>Ensure that jdbc runs in its own pool <a href="https://github.com/tersesystems/terse-logback/pull/99">(#99)</a></li>
+<li>Add JDBC appender <a href="https://github.com/tersesystems/terse-logback/pull/98">(#98)</a></li>
+<li>Add correlation id <a href="https://github.com/tersesystems/terse-logback/pull/97">(#97)</a></li>
+<li>Add tap filter <a href="https://github.com/tersesystems/terse-logback/pull/96">(#96)</a></li>
+<li>Add span events <a href="https://github.com/tersesystems/terse-logback/pull/94">(#94)</a></li>
+</ul>
+<h4 id="0140_1">0.14.0<a class="headerlink" href="#0140_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2020-02-17 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.13.3...v0.14.0">15 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> (14), <a href="https://github.com/sullis">sullis</a> (1) - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.14.0"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.14.0-green.svg" /></a></li>
+<li>fix the case on jdbc <a href="https://github.com/tersesystems/terse-logback/pull/106">(#106)</a></li>
+<li>Update logstash <a href="https://github.com/tersesystems/terse-logback/pull/105">(#105)</a></li>
+<li>Update gradle <a href="https://github.com/tersesystems/terse-logback/pull/104">(#104)</a></li>
+<li>Add more jdbc changes <a href="https://github.com/tersesystems/terse-logback/pull/103">(#103)</a></li>
+<li>Fix correlation tapfilter <a href="https://github.com/tersesystems/terse-logback/pull/102">(#102)</a></li>
+<li>bytebuddy 1.10.8 <a href="https://github.com/tersesystems/terse-logback/pull/101">(#101)</a></li>
+<li>Update readme <a href="https://github.com/tersesystems/terse-logback/pull/100">(#100)</a></li>
+<li>Ensure that jdbc runs in its own pool <a href="https://github.com/tersesystems/terse-logback/pull/99">(#99)</a></li>
+<li>Add JDBC appender <a href="https://github.com/tersesystems/terse-logback/pull/98">(#98)</a></li>
+<li>Add correlation id <a href="https://github.com/tersesystems/terse-logback/pull/97">(#97)</a></li>
+<li>Add tap filter <a href="https://github.com/tersesystems/terse-logback/pull/96">(#96)</a></li>
+<li>Add span events <a href="https://github.com/tersesystems/terse-logback/pull/94">(#94)</a></li>
+</ul>
+<h4 id="0132">0.13.2<a class="headerlink" href="#0132" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2019-12-31 - <a href="https://github.com/tersesystems/terse-logback/compare/v0.13.1...v0.13.2">10 commits</a> by <a href="https://github.com/wsargent">Will Sargent</a> - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.13.2"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.13.2-green.svg" /></a></li>
+<li>Update the manifest for logback-bytebuddy <a href="https://github.com/tersesystems/terse-logback/pull/92">(#92)</a></li>
+<li>Remove graphstream markers. <a href="https://github.com/tersesystems/terse-logback/pull/91">(#91)</a></li>
+<li>Add graphstream JSON <a href="https://github.com/tersesystems/terse-logback/pull/90">(#90)</a></li>
+</ul>
+<h4 id="0131">0.13.1<a class="headerlink" href="#0131" title="Permanent link">&para;</a></h4>
+<ul>
+<li>2019-10-05 - 228 commits by <a href="https://github.com/wsargent">Will Sargent</a> (226), <a href="https://github.com/eudes">eudes</a> (1), <a href="https://github.com/will-sargent-eero">Will Sargent (eero)</a> (1) - published to <a href="https://bintray.com/tersesystems/maven/terse-logback/0.13.1"><img alt="Bintray" src="https://img.shields.io/badge/Bintray-0.13.1-green.svg" /></a></li>
+<li>More cleanup, use java formatting plugin <a href="https://github.com/tersesystems/terse-logback/pull/89">(#89)</a></li>
+<li>Remove Kordamp <a href="https://github.com/tersesystems/terse-logback/pull/88">(#88)</a></li>
+<li>Add versioning <a href="https://github.com/tersesystems/terse-logback/pull/86">(#86)</a></li>
+<li>Use safe arguments <a href="https://github.com/tersesystems/terse-logback/pull/85">(#85)</a></li>
+<li>Make return values and args safe for JSON serialization <a href="https://github.com/tersesystems/terse-logback/pull/84">(#84)</a></li>
+<li>Refactor tracing <a href="https://github.com/tersesystems/terse-logback/pull/83">(#83)</a></li>
+<li>Add tracing info <a href="https://github.com/tersesystems/terse-logback/pull/82">(#82)</a></li>
+<li>Add wildcards and return values to logback-bytebuddy <a href="https://github.com/tersesystems/terse-logback/pull/81">(#81)</a></li>
+<li>Merge back the bytebuddy-impl <a href="https://github.com/tersesystems/terse-logback/pull/80">(#80)</a></li>
+<li>Move the bytebuddy advice to system classloader <a href="https://github.com/tersesystems/terse-logback/pull/79">(#79)</a></li>
+<li>Add line number and source info to instrumentation <a href="https://github.com/tersesystems/terse-logback/pull/78">(#78)</a></li>
+<li>Make start time available across projects <a href="https://github.com/tersesystems/terse-logback/pull/77">(#77)</a></li>
+<li>Update with postgresql JSON appender <a href="https://github.com/tersesystems/terse-logback/pull/76">(#76)</a></li>
+<li>Add OKHTTP honeycomb client <a href="https://github.com/tersesystems/terse-logback/pull/75">(#75)</a></li>
+<li>Add OKHTTP client <a href="https://github.com/tersesystems/terse-logback/pull/74">(#74)</a></li>
+<li>Make playws be 2.12 specific <a href="https://github.com/tersesystems/terse-logback/pull/73">(#73)</a></li>
+<li>this one goes up to 11 <a href="https://github.com/tersesystems/terse-logback/pull/72">(#72)</a></li>
+<li>Add playws as a service <a href="https://github.com/tersesystems/terse-logback/pull/71">(#71)</a></li>
+<li>Add honeycomb support <a href="https://github.com/tersesystems/terse-logback/pull/70">(#70)</a></li>
+<li>ByteBuddy agent <a href="https://github.com/tersesystems/terse-logback/pull/69">(#69)</a></li>
+<li>Add sifting ringbuffer <a href="https://github.com/tersesystems/terse-logback/pull/68">(#68)</a></li>
+<li>Allow bytebuddy instrumentation from config <a href="https://github.com/tersesystems/terse-logback/pull/67">(#67)</a></li>
+<li>Ring buffer appender <a href="https://github.com/tersesystems/terse-logback/pull/66">(#66)</a></li>
+<li>Add sigar <a href="https://github.com/tersesystems/terse-logback/pull/65">(#65)</a></li>
+<li>Add ringbuffer-event <a href="https://github.com/tersesystems/terse-logback/pull/64">(#64)</a></li>
+<li>Add ring buffer logging <a href="https://github.com/tersesystems/terse-logback/pull/63">(#63)</a></li>
+<li>Add launch darkly test <a href="https://github.com/tersesystems/terse-logback/pull/62">(#62)</a></li>
+<li>Add turbomarker <a href="https://github.com/tersesystems/terse-logback/pull/61">(#61)</a></li>
+<li>Commit more providers <a href="https://github.com/tersesystems/terse-logback/pull/60">(#60)</a></li>
+<li>Add JSON exception of structured config <a href="https://github.com/tersesystems/terse-logback/pull/59">(#59)</a></li>
+<li>Exception Mapping <a href="https://github.com/tersesystems/terse-logback/pull/58">(#58)</a></li>
+<li>Add exception message converter <a href="https://github.com/tersesystems/terse-logback/pull/57">(#57)</a></li>
+<li>Update example <a href="https://github.com/tersesystems/terse-logback/pull/56">(#56)</a></li>
+<li>Update example <a href="https://github.com/tersesystems/terse-logback/pull/55">(#55)</a></li>
+<li>Update example <a href="https://github.com/tersesystems/terse-logback/pull/54">(#54)</a></li>
+<li>Add budget evaluator <a href="https://github.com/tersesystems/terse-logback/pull/53">(#53)</a></li>
+<li>Misc improvements to bytebuddy module <a href="https://github.com/tersesystems/terse-logback/pull/52">(#52)</a></li>
+<li>Add transforming encoder <a href="https://github.com/tersesystems/terse-logback/pull/51">(#51)</a></li>
+<li>Make core and classic distinct <a href="https://github.com/tersesystems/terse-logback/pull/50">(#50)</a></li>
+<li>compress encoder <a href="https://github.com/tersesystems/terse-logback/pull/49">(#49)</a></li>
+<li>add logslack <a href="https://github.com/tersesystems/terse-logback/pull/48">(#48)</a></li>
+<li>Move the API stuff out to the different project <a href="https://github.com/tersesystems/terse-logback/pull/47">(#47)</a></li>
+<li>Add decorator pattern <a href="https://github.com/tersesystems/terse-logback/pull/46">(#46)</a></li>
+<li>First pass of select/composite appenders <a href="https://github.com/tersesystems/terse-logback/pull/45">(#45)</a></li>
+<li>Audio markers and appenders <a href="https://github.com/tersesystems/terse-logback/pull/44">(#44)</a></li>
+<li>Add level change propagator <a href="https://github.com/tersesystems/terse-logback/pull/43">(#43)</a></li>
+<li>Update the versions and strip down builds <a href="https://github.com/tersesystems/terse-logback/pull/42">(#42)</a></li>
+<li>Update README <a href="https://github.com/tersesystems/terse-logback/pull/41">(#41)</a></li>
+<li>Add config list converter <a href="https://github.com/tersesystems/terse-logback/pull/40">(#40)</a></li>
+<li>Fix config bugs <a href="https://github.com/tersesystems/terse-logback/pull/38">(#38)</a></li>
+<li>Add slf4j generator <a href="https://github.com/tersesystems/terse-logback/pull/37">(#37)</a></li>
+<li>Use an ID generator and sequence number for centralized logging issues <a href="https://github.com/tersesystems/terse-logback/pull/35">(#35)</a></li>
+<li>Update the readme. <a href="https://github.com/tersesystems/terse-logback/pull/34">(#34)</a></li>
+<li>better censor tests <a href="https://github.com/tersesystems/terse-logback/pull/33">(#33)</a></li>
+<li>Make censor implementation not depend on typesafe-config, add docs <a href="https://github.com/tersesystems/terse-logback/pull/32">(#32)</a></li>
+<li>Add external javadocs  <a href="https://github.com/tersesystems/terse-logback/pull/31">(#31)</a></li>
+<li>Add typesafe-config as dependency of structured config. <a href="https://github.com/tersesystems/terse-logback/pull/30">(#30)</a></li>
+<li>More typesafeconfig stuff <a href="https://github.com/tersesystems/terse-logback/pull/29">(#29)</a></li>
+<li>Update references to <code>classic</code> in README <a href="https://github.com/tersesystems/terse-logback/pull/28">(#28)</a></li>
+<li>Rationalize context   <a href="https://github.com/tersesystems/terse-logback/pull/27">(#27)</a></li>
+<li>Fix typesafe config action to use local scope <a href="https://github.com/tersesystems/terse-logback/pull/26">(#26)</a></li>
+<li>Move censor to logback-core <a href="https://github.com/tersesystems/terse-logback/pull/25">(#25)</a></li>
+<li>fix copyright <a href="https://github.com/tersesystems/terse-logback/pull/24">(#24)</a></li>
+<li>Add tests <a href="https://github.com/tersesystems/terse-logback/pull/23">(#23)</a></li>
+<li>Add better type names <a href="https://github.com/tersesystems/terse-logback/pull/22">(#22)</a></li>
+<li>Enable censored filter <a href="https://github.com/tersesystems/terse-logback/pull/21">(#21)</a></li>
+<li>Add enabled filter <a href="https://github.com/tersesystems/terse-logback/pull/20">(#20)</a></li>
+<li>Add guide submodule <a href="https://github.com/tersesystems/terse-logback/pull/16">(#16)</a></li>
+<li>Add javadoc with external links <a href="https://github.com/tersesystems/terse-logback/pull/15">(#15)</a></li>
+<li>Move from 'classic' to 'structured-config' <a href="https://github.com/tersesystems/terse-logback/pull/14">(#14)</a></li>
+<li>Add travis flag <a href="https://github.com/tersesystems/terse-logback/pull/13">(#13)</a></li>
+<li>Use default interfaces for proxy <a href="https://github.com/tersesystems/terse-logback/pull/12">(#12)</a></li>
+<li>Update published README <a href="https://github.com/tersesystems/terse-logback/pull/11">(#11)</a></li>
+<li>signing <a href="https://github.com/tersesystems/terse-logback/pull/10">(#10)</a></li>
+<li>set gradle to 0.1.0 <a href="https://github.com/tersesystems/terse-logback/pull/9">(#9)</a></li>
+<li>Add signing and bintray publishing <a href="https://github.com/tersesystems/terse-logback/pull/8">(#8)</a></li>
+<li>Update description <a href="https://github.com/tersesystems/terse-logback/pull/7">(#7)</a></li>
+<li>fix logs <a href="https://github.com/tersesystems/terse-logback/pull/6">(#6)</a></li>
+<li>enable travis check <a href="https://github.com/tersesystems/terse-logback/pull/5">(#5)</a></li>
+<li>switch to gradle <a href="https://github.com/tersesystems/terse-logback/pull/4">(#4)</a></li>
+<li>Make logback-core, remove tracer from context <a href="https://github.com/tersesystems/terse-logback/pull/3">(#3)</a></li>
+<li>Update to use maven <a href="https://github.com/tersesystems/terse-logback/pull/2">(#2)</a></li>
+<li>Update with better lazy logging <a href="https://github.com/tersesystems/terse-logback/pull/1">(#1)</a></li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../guide/uniqueid/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Unique ID Appender
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../reading/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Further Reading
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.fb4a9340.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a1c7c35e.min.js"></script>
+      
+    
+  </body>
+</html>
