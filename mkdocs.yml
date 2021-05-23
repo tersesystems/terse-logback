@@ -75,7 +75,6 @@ nav:
       - Tracing with Honeycomb: guide/tracing.md
       - Typesafe Config: guide/typesafeconfig.md
       - Turbo Markers: guide/turbomarker.md
-      - Tap Filter: guide/tapfilter.md
       - Unique ID Appender: guide/uniqueid.md      
   - Release notes: release-notes.md
   - Further Reading: reading/index.md
