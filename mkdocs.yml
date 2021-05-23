@@ -26,7 +26,7 @@ extra:
     accent: 'indigo'
 
   social:
-    - type: 'twitter'
+    - icon: fontawesome/brands/twitter
       link: 'https://twitter.com/will_sargent'
 
 
