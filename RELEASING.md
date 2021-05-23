@@ -23,3 +23,19 @@ And then to run the release, which will increment the version number in `version
 ```bash
 ./gradlew performRelease
 ```
+
+## Documentation
+
+Documentation is done with [gradle-mkdocs-plugin](https://xvik.github.io/gradle-mkdocs-plugin/2.1.1/) and works best on Linux.
+
+To see documentation:
+
+```bash
+./gradlew mkdocsServe --no-daemon
+```
+
+To deploy documentation:
+
+```bash
+./gradlew mkdocsPublish
+```
