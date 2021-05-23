@@ -1,38 +1,23 @@
 # Installation
 
-Installation of Terse Logback requires you add the bintray repo to your build system.
+Installation is pretty straight-forward with the exception of the instrumentation agent, which is covered seperately.
+
+Create a subproject `logging` and make your main codebase depend on it, but only provide `slf4j-api` to the main codebase.
 
 ### Maven
 
-Add the following repository:
+You should install at least `logback-classic`:
 
 ```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
-          xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
-    
-    <profiles>
-        <profile>
-            <repositories>
-                <repository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-tersesystems-maven</id>
-                    <name>bintray</name>
-                    <url>https://dl.bintray.com/tersesystems/maven</url>
-                </repository>
-            </repositories>
-            <id>bintray</id>
-        </profile>
-    </profiles>
-    <activeProfiles>
-        <activeProfile>bintray</activeProfile>
-    </activeProfiles>
-</settings>
+<dependency>
+  <groupId>com.tersesystems.logback</groupId>
+  <artifactId>logback-classic</artifactId>
+  <version>$latestVersion</version>
+  <type>pom</type>
+</dependency>
 ```
 
-Create a subproject `logging` and make your main codebase depend on it, but only provide `slf4j-api` to the main codebase.
+and if you want a "preconfigured" set up you can start with `logback-structured-config`:
 
 ```xml
 <dependency>
@@ -45,17 +30,13 @@ Create a subproject `logging` and make your main codebase depend on it, but only
 
 ### Gradle
 
-Add the following resolver:
+You should install at least `logback-classic`:
 
-```groovy
-repositories {
-    maven {
-        url  "https://dl.bintray.com/tersesystems/maven" 
-    }
-}
+```
+implementation 'com.tersesystems.logback:logback-classic:<latestVersion>'
 ```
 
-Create a subproject `logging` and make your main codebase depend on it, but only provide `slf4j-api` to the main codebase.  In the logging project, add the following:
+and if you want a "preconfigured" set up you can start with `logback-structured-config`:
 
 ```
 implementation 'com.tersesystems.logback:logback-structured-config:<latestVersion>'
@@ -63,12 +44,11 @@ implementation 'com.tersesystems.logback:logback-structured-config:<latestVersio
 
 ### SBT
 
-Create an SBT subproject and include it with your main build.
+Same as Maven and Gradle.  Create an SBT subproject and include it with your main build.
 
 ```
 lazy val logging = (project in file("logging")).settings(
-    resolvers += Resolver.bintrayRepo("tersesystems", "maven"),
-    libraryDependencies += "com.tersesystems.logback" % "logback-structured-config" % "<latestVersion>"
+  libraryDependencies += "com.tersesystems.logback" % "logback-structured-config" % "<latestVersion>"
 )
 
 lazy val impl = (project in file("impl")).settings(

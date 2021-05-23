@@ -13,7 +13,13 @@ plugins {
     id "org.shipkit.java"              version "2.2.6"
     id "com.github.hierynomus.license" version "0.15.0"
 	id 'com.diffplug.gradle.spotless'  version '3.24.3'
+    id 'ru.vyarus.mkdocs'              version '2.1.1'
     //id 'org.inferred.processors'    version '2.3.0'
+}
+
+mkdocs {
+    sourcesDir = projectDir
+    strict = true
 }
 
 spotless {

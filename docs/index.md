@@ -22,7 +22,7 @@ The `logback-structured-config` module contains all the logback code and the app
 
 You can see it on [mvnrepository](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-structured-config) but you will need a custom resolver, so better to read through the whole thing.
 
-This is [not intended](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/) to be a drop in replacement or a straight library dependency.  You will want to modify this to your own tastes.
+This is [not intended](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/) to be a drop in solution or a straight library dependency.  You will want to modify this to your own tastes.
 
 ### Installation
 
