@@ -16,9 +16,10 @@ output = [
 
 Terse Logback is a collection of [Logback](https://logback.qos.ch/) extensions that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for [structured logging](structured-logging.md), [ringbuffer logging](guide/ringbuffer.md), [system instrumentation](guide/instrumentation.md), and [JDBC](guide/jdbc.md).  
 
-Using Terse Logback increases the observability of your application.  Or as [@mipsytipsy](https://twitter.com/mipsytipsy) puts it:
+Other logging projects you may be interested in: 
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">HOLY ROYAL SHITBALLS. To all of you who have been asking (for YEARS) if there are any alternatives to honeycomb for observability: yes, finally YES! <a href="https://twitter.com/will_sargent?ref_src=twsrc%5Etfw">@will_sargent</a> has hacked together the most ingenious little solution using only logs and feature flags:<a href="https://t.co/xwdHWMlcEl">https://t.co/xwdHWMlcEl</a></p>&mdash; Charity Majors (@mipsytipsy) <a href="https://twitter.com/mipsytipsy/status/1153889935536975872?ref_src=twsrc%5Etfw">July 24, 2019</a></blockquote> 
+* [Blacklite](https://github.com/tersesystems/blacklite/), an SQLite appender with memory-mapping and zstandard dictionary compression that clocks around 800K statements per second.
+* [Blindsight](https://github.com/tersesystems/blindsight), a Scala logging API built around modern logging concepts.
 
 ## Documentation
 
