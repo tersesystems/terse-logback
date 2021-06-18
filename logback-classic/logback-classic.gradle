@@ -15,5 +15,6 @@ plugins {
 
 dependencies {
     api project(':logback-core')
+    api "org.slf4j:jul-to-slf4j:$logbackVersion"
     api "ch.qos.logback:logback-classic:$logbackVersion"
 }
