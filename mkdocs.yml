@@ -66,6 +66,7 @@ nav:
       - Exception Mapping: guide/exception-mapping.md
       - Instrumentation: guide/instrumentation.md
       - JDBC: guide/jdbc.md
+      - JUL to SLF4J Bridge: guide/slf4jbridge.md
       - Ring Buffers: guide/ringbuffer.md
       - Relative Nanos: guide/relativens.md
       - Select Appender: guide/select.md
