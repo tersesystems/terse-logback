@@ -42,15 +42,11 @@ implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.11.0'
 
 There are two ways you can install instrumentation -- you can do it using an agent, or you can do it manually.
 
-Using the agent is generally easier (less code) and more powerful (can change JDK classes), but it does require some explicit command line options.
-
-There are Java and Scala projects set up with instrumentation at [https://github.com/tersesystems/logging-instrumentation-example](https://github.com/tersesystems/logging-instrumentation-example).
-
-> NOTE: Because Byte Buddy runs through classloading inspection, it will have a (generally small) impact on the start up time of your application.
+> NOTE: Because Byte Buddy must inspect each class on JVM initialization, it will have a (generally small) impact on the start up time of your application.
 
 ### Agent Installation
 
-Agent Instrumentation
+Using the agent is generally easier (less code) and more powerful (can change JDK classes), but it does require some explicit command line options.
 
 First, you set the java agent, either directly on the command line:
 
@@ -67,6 +63,8 @@ or by using the [`JAVA_TOOLS_OPTIONS` environment variable](https://docs.oracle.
 ```bash
 export JAVA_TOOLS_OPTIONS="..."
 ```
+
+Generally you'll be setting up these options in a build system.  There are example projects in Gradle and sbt set up with agent-based instrumentation at [https://github.com/tersesystems/logging-instrumentation-example](https://github.com/tersesystems/logging-instrumentation-example).
 
 ### Manual Installation
 
@@ -106,20 +104,24 @@ NOTE: There are some limitations to what you can trace.  You can only instrument
 
 ### Setting Loggers to TRACE
 
-Because instrumentation inserts `logger.trace` calls into the code, you must enable logging at `TRACE` level for those loggers to see output.  If you are using the [Config](typesafeconfig.md) module, you can also do this from `logback.conf`:
+Because instrumentation inserts `logger.trace` calls into the code, you must enable logging at `TRACE` level for those loggers to see output.  Setting the level from `logback.xml` works fine:
+
+```xml
+<configuration>
+    <!-- ... -->
+    <logger name="fully.qualified.class.Name" level="TRACE"/>
+    <logger name="play.api.mvc.ActionBuilder" level="TRACE"/>
+    <!-- ... -->
+</configuration>
+```
+
+If you are using the [Config](typesafeconfig.md) module, you can also do this from `logback.conf`:
 
 ```hocon
 levels {
   fully.qualified.class.Name = TRACE
   play.api.mvc.ActionBuilder = TRACE
 }
-```
-
-This is not a requirement, and setting the level from `logback.xml` works fine:
-
-```xml
-<logger name="fully.qualified.class.Name" level="TRACE"/>
-<logger name="play.api.mvc.ActionBuilder" level="TRACE"/>
 ```
 
 Or you can use `ChangeLogLevel` at run time.
