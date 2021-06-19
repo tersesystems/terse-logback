@@ -1,4 +1,4 @@
-# SLF4J Bridge Handler Action
+# JUL to SLF4J Bridge
 
 It's easy to assume that all Java libraries will depend on SLF4J.  But one of the oddities of Java logging is that there's a built-in logging framework called `java.util.logging` (JUL) which is rarely used but does appear in libraries such as [Guice](https://groups.google.com/g/google-guice/c/J2M64gM6Yao), [GRPC](https://github.com/grpc/grpc-java/issues/1577), and [Guava](https://github.com/google/guava/issues/829).
 
@@ -11,14 +11,16 @@ SLF4JBridgeHandler.removeHandlersForRootLogger();
 SLF4JBridgeHandler.install();
 ```
 
-This isn't ideal, as it's very easy to miss that you have to add these lines of code.  Some frameworks such as [Play Framework]() are [smart enough](https://github.com/playframework/playframework/blob/master/core/play-logback/src/main/scala/play/api/libs/logback/LogbackLoggerConfigurator.scala#L86) are smart enough to handle this for you, but there are cases where you're not using those frameworks, and we'd like JUL to just work with SLF4J out of the box.
+This isn't ideal, as it's very easy to miss that you have to add these lines of code.  Some frameworks such as [Play Framework]() are [smart enough](https://github.com/playframework/playframework/blob/master/core/play-logback/src/main/scala/play/api/libs/logback/LogbackLoggerConfigurator.scala#L86) are smart enough to handle this for you, but there are cases where you're not using those frameworks, and we'd like JUL to just work.
 
 This isn't so easy.  JUL is very basic, and accepts configuration from system properties.  The LogManager has two system properties:
 
 - java.util.logging.config.class
 - java.util.logging.config.file
 
-If it doesn't find either, then it looks in `${java.home}/conf/logging.properties` if you're on JDK 11.  There's no way to configure it from classpath, you have to do that [by hand](https://mkyong.com/logging/how-to-load-logging-properties-for-java-util-logging/).  Note that there is discussion on [Stack Overflow](https://stackoverflow.com/a/11245040/5266) and the [SLF4J mailing list](https://www.mail-archive.com/slf4j-dev@qos.ch/msg00738.html) suggesting that JUL looks for `logging.properties` in the classpath.  This is incorrect -- the only way you'll see `logging.properties` is from setting `java.util.logging.config.file` or if you're overwriting `${java.home}/logging.properties`.   Here's the [source code](https://github.com/AdoptOpenJDK/openjdk-jdk/blob/master/src/java.logging/share/classes/java/util/logging/LogManager.java#L1347) so you can check for yourself.
+If it doesn't find either, then it looks in `${java.home}/conf/logging.properties` if you're on JDK 11.  There's no way to configure it from classpath, you have to do that [by hand](https://mkyong.com/logging/how-to-load-logging-properties-for-java-util-logging/).
+
+There is discussion on [Stack Overflow](https://stackoverflow.com/a/11245040/5266) and the [SLF4J mailing list](https://www.mail-archive.com/slf4j-dev@qos.ch/msg00738.html) suggesting that JUL looks for `logging.properties` in the classpath.  This is incorrect -- the only way you'll see `logging.properties` is from setting `java.util.logging.config.file` or if you're overwriting `${java.home}/logging.properties`.   Here's the [source code](https://github.com/AdoptOpenJDK/openjdk-jdk/blob/master/src/java.logging/share/classes/java/util/logging/LogManager.java#L1347) so you can check for yourself.
 
 However, since we're using Logback, we can leverage the fact that Logback searches through the classpath for `logback.xml`.  All we need is a custom action to wrap `SLF4JBridgeHandler` and we can have a code free solution.  This is what `SLF4JBridgeHandlerAction` does.  You should also configure the `LevelChangePropagator`, to [reduce the impact of logging](http://logback.qos.ch/manual/configuration.html#LevelChangePropagator), and you must make sure that the `LoggerFactory` is called before any JUL dependent code.
 
@@ -52,7 +54,16 @@ You should set your `logback.xml` roughly as follows:
 </configuration>
 ```
 
-And then call `org.slf4j.LoggerFactory.getLogger` as a static final to prevent any initialization problems:
+As of 0.17.0, `logback-classic` has a dependency on `jul-to-slf4j` so the following will work in `build.gradle`:
+
+```groovy
+dependencies {
+  implementation "com.google.inject:guice:5.0.1"
+  implementation 'com.tersesystems.logback:logback-classic:0.17.0'
+}
+```
+
+And then you should call `org.slf4j.LoggerFactory.getLogger` as a static final to prevent any initialization problems:
 
 ```java
 package example;
