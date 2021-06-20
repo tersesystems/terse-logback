@@ -53,7 +53,7 @@ public class CorrelationIdFilterTest {
 
     // Everything below this point should be logged.
     MDC.put("correlationId", correlationId);
-    logger.info("info three"); // should not be logged
+    logger.info("info three");
     logger.info(correlationIdMarker, "info four");
 
     ListAppender<ILoggingEvent> listAppender = getListAppender(loggerFactory);
