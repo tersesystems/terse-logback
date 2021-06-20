@@ -10,7 +10,6 @@
  */
 pluginManagement {
     repositories {
-        jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 }
@@ -44,9 +43,6 @@ includeProject 'logback-exception-mapping'
 includeProject 'logback-exception-mapping-providers'
 includeProject 'logback-turbomarker'
 includeProject 'logback-ringbuffer'
-// These are not quite ready for general consumption...
-//includeProject 'logback-ringbuffer-event'
-//includeProject 'logback-ringbuffer-appender'
 includeProject 'logback-sigar'
 includeProject 'logback-tracing'
 includeProject 'logback-jdbc-appender'
