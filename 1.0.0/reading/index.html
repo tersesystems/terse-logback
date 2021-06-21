@@ -1,0 +1,953 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Terse Logback Documentation Site">
+      
+      
+      
+        <meta name="author" content="Will Sargent">
+      
+      
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/1.0.0/reading/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.0.6">
+    
+    
+      
+        <title>Further Reading - Terse Logback</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2c0c5eaf.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.7fa14f5b.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#further-reading" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Terse Logback" class="md-header__button md-logo" aria-label="Terse Logback" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Terse Logback
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Further Reading
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="md-header__options">
+      
+    </div>
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Terse Logback" class="md-nav__button md-logo" aria-label="Terse Logback" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Terse Logback
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structured-logging/" class="md-nav__link">
+        Structured Logging
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        User guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="User guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          User guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/audio/" class="md-nav__link">
+        Audio
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/budget/" class="md-nav__link">
+        Budgeting
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/censor/" class="md-nav__link">
+        Censors
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/composite/" class="md-nav__link">
+        Composite
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/compression/" class="md-nav__link">
+        Compression
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/correlationid/" class="md-nav__link">
+        Correlation Id
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/exception-mapping/" class="md-nav__link">
+        Exception Mapping
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/instrumentation/" class="md-nav__link">
+        Instrumentation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/jdbc/" class="md-nav__link">
+        JDBC
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/slf4jbridge/" class="md-nav__link">
+        JUL to SLF4J Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/ringbuffer/" class="md-nav__link">
+        Ring Buffers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/relativens/" class="md-nav__link">
+        Relative Nanos
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/select/" class="md-nav__link">
+        Select Appender
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/structured-config/" class="md-nav__link">
+        Structured Config
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/systeminfo/" class="md-nav__link">
+        System Info
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/tapfilter/" class="md-nav__link">
+        Tap Filters
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/tracing/" class="md-nav__link">
+        Tracing with Honeycomb
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/typesafeconfig/" class="md-nav__link">
+        Typesafe Config
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/turbomarker/" class="md-nav__link">
+        Turbo Markers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/uniqueid/" class="md-nav__link">
+        Unique ID Appender
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/" class="md-nav__link">
+        Release notes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Further Reading
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Further Reading
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    Best Practices
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#level-up-logs" class="md-nav__link">
+    Level Up Logs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-anti-patterns" class="md-nav__link">
+    Logging Anti Patterns
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clean-code-clean-logs" class="md-nav__link">
+    Clean Code, clean logs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-logging" class="md-nav__link">
+    JSON Logging
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maple" class="md-nav__link">
+    Maple
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eliot" class="md-nav__link">
+    Eliot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treelog" class="md-nav__link">
+    TreeLog
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bunyan" class="md-nav__link">
+    Bunyan
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timbre" class="md-nav__link">
+    Timbre
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logback-encoders-and-appenders" class="md-nav__link">
+    Logback Encoders and Appenders
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    Best Practices
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#level-up-logs" class="md-nav__link">
+    Level Up Logs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-anti-patterns" class="md-nav__link">
+    Logging Anti Patterns
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clean-code-clean-logs" class="md-nav__link">
+    Clean Code, clean logs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-logging" class="md-nav__link">
+    JSON Logging
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maple" class="md-nav__link">
+    Maple
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eliot" class="md-nav__link">
+    Eliot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treelog" class="md-nav__link">
+    TreeLog
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bunyan" class="md-nav__link">
+    Bunyan
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timbre" class="md-nav__link">
+    Timbre
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logback-encoders-and-appenders" class="md-nav__link">
+    Logback Encoders and Appenders
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/reading/index.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h1>
+<p>Everything I write on logging is going to be here:</p>
+<ul>
+<li><a href="https://tersesystems.com/category/logging/">Terse Systems</a></li>
+</ul>
+<h3 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h3>
+<p>Many of these are logback specific, but still good overall.</p>
+<ul>
+<li><a href="https://www.loomsystems.com/blog/single-post/2017/01/26/9-logging-best-practices-based-on-hands-on-experience">9 Logging Best Practices Based on Hands-on Experience</a></li>
+<li><a href="https://orange-opensource.github.io/woofer/logging-code/">Woofer: logging in (best) practices</a>: Spring Boot</li>
+<li><a href="http://stevetarver.github.io/2016/04/20/whole-product-logging.html">A whole product concern logging implementation</a></li>
+<li><a href="https://allegro.tech/2015/10/there-is-more-to-logging-than-meets-the-eye.html">There is more to logging than meets the eye</a></li>
+<li><a href="https://techbeacon.com/enterprise-it/monitoring-demystified-guide-logging-tracing-metrics">Monitoring demystified: A guide for logging, tracing, metrics</a></li>
+<li><a href="https://news.ycombinator.com/item?id=19497788">Application-Level Logging Best Practices</a></li>
+</ul>
+<p>Stack Overflow has a couple of good tips on SLF4J and Logging:</p>
+<ul>
+<li><a href="https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels">When to use the different log levels</a></li>
+<li><a href="https://softwareengineering.stackexchange.com/questions/279690/why-does-the-trace-level-exist-and-when-should-i-use-it-rather-than-debug">Why does the TRACE level exist, and when should I use it rather than DEBUG?</a></li>
+<li><a href="https://stackoverflow.com/questions/4165558/best-practices-for-using-markers-in-slf4j-logback">Best practices for using Markers in SLF4J/Logback</a></li>
+<li><a href="https://stackoverflow.com/questions/43496695/java-logging-best-practices-in-multi-node-environment">Stackoverflow: Logging best practices in multi-node environment</a></li>
+</ul>
+<h4 id="level-up-logs">Level Up Logs<a class="headerlink" href="#level-up-logs" title="Permanent link">&para;</a></h4>
+<p><a href="https://looking4q.blogspot.com/">Alberto Navarro</a> has a great series</p>
+<ol>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-introduction.html">Introduction</a> (Everyone)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-your-logs-and-elk-json-logs.html">JSON as logs format</a> (Everyone)</li>
+<li><b><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-logging-best.html">Logging best practices with Logback</a> (Targetting Java DEVs)</b></li>
+<li><a href="https://looking4q.blogspot.com/2018/11/logging-cutting-edge-practices.html">Logging cutting-edge practices</a> (Targetting Java DEVs)&nbsp;</li>
+<li><a href="https://looking4q.blogspot.com/2019/01/level-up-logs-and-elk-contract-first.html">Contract first log generator</a> (Targetting Java DEVs) </li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-elasticsearch.html">ElasticSearch VRR Estimation Strategy</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-java-logback.html">VRR Java + Logback configuration</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-filebeat.html">VRR FileBeat configuration</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-logstash.html">VRR Logstash configuration and Index templates</a> (Targetting OPS)</li>
+<li><a href="http://looking4q.blogspot.com/2018/09/level-up-logs-and-elk-vrr-curator.html">VRR Curator configuration</a> (Targetting OPS)</li>
+<li><a href="https://looking4q.blogspot.com/2018/10/level-up-logs-and-elk-logstash-grok.html">Logstash Grok, JSON Filter and JSON Input performance comparison</a> (Targetting OPS) </li>
+</ol>
+
+<h4 id="logging-anti-patterns">Logging Anti Patterns<a class="headerlink" href="#logging-anti-patterns" title="Permanent link">&para;</a></h4>
+<p>Logging Anti-Patterns by <a href="https://rolf-engelhard.de/">Rolf Engelhard</a>:</p>
+<ul>
+<li><a href="http://rolf-engelhard.de/2013/03/logging-anti-patterns-part-i/">Logging Anti-Patterns</a></li>
+<li><a href="http://rolf-engelhard.de/2013/04/logging-anti-patterns-part-ii/">Logging Anti-Patterns, Part II</a></li>
+<li><a href="https://rolf-engelhard.de/2013/10/logging-anti-patterns-part-iii/">Logging Anti-Patterns, Part III</a></li>
+</ul>
+<h4 id="clean-code-clean-logs">Clean Code, clean logs<a class="headerlink" href="#clean-code-clean-logs" title="Permanent link">&para;</a></h4>
+<p><a href="https://www.nurkiewicz.com/">Tomasz Nurkiewicz</a> has a great series on logging:</p>
+<ul>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-use-appropriate.html">Clean code, clean logs: use appropriate tools (1/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-tune-your-pattern.html">Clean code, clean logs: logging levels are there for you (2/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-do-you-know-what.html">Clean code, clean logs: do you know what you are logging? (3/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-avoid-side.html">Clean code, clean logs: avoid side effects (4/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-concise-and.html">Clean code, clean logs: concise and descriptive (5/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-tune-your-pattern.html">Clean code, clean logs: tune your pattern (6/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-log-method.html">Clean code, clean logs: log method arguments and return values (7/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-watch-out-for.html">Clean code, clean logs: watch out for external systems (8/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-log-exceptions.html">Clean code, clean logs: log exceptions properly (9/10)</a></li>
+<li><a href="https://www.nurkiewicz.com/2010/05/clean-code-clean-logs-easy-to-read-easy.html">Clean code, clean logs: easy to read, easy to parse (10/10)</a></li>
+<li><a href="https://www.javacodegeeks.com/2011/01/10-tips-proper-application-logging.html">Condensed 10 Tips on javacodegeeks</a></li>
+</ul>
+<h3 id="json-logging">JSON Logging<a class="headerlink" href="#json-logging" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="http://www.asynchronous.org/blog/archives/2006/01/25/logging-in-json">Logging in JSON</a></li>
+<li><a href="https://paul.querna.org/articles/2011/12/26/log-for-machines-in-json/">Write Logs for Machines, not Humans</a></li>
+</ul>
+<h3 id="maple">Maple<a class="headerlink" href="#maple" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/Randgalt/maple">Maple</a></li>
+</ul>
+<h3 id="eliot">Eliot<a class="headerlink" href="#eliot" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://eliot.readthedocs.io/en/stable/quickstart.html">Eliot</a></li>
+<li><a href="https://github.com/jonathanj/eliottree">Eliot Tree</a></li>
+</ul>
+<h3 id="treelog">TreeLog<a class="headerlink" href="#treelog" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/lancewalton/treelog">Treelog</a></li>
+</ul>
+<h3 id="bunyan">Bunyan<a class="headerlink" href="#bunyan" title="Permanent link">&para;</a></h3>
+<p>Bunyan stands out for a number of innovations: ring buffers and JSON specifically.</p>
+<ul>
+<li><a href="https://timboudreau.com/blog/bunyan/read">Bunyan</a></li>
+<li><a href="https://strongloop.com/strongblog/compare-node-js-logging-winston-bunyan/">Comparison of Winston and Bunyan</a></li>
+<li><a href="https://trentm.com/2012/03/service-logging-in-json-with-bunyan.html">Service logging in JSON with Bunyan</a></li>
+<li><a href="https://trentm.com/talk-bunyan-in-prod/#/8">Bunyan Logging in Production at Joyent</a></li>
+</ul>
+<h3 id="timbre">Timbre<a class="headerlink" href="#timbre" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/ptaoussanis/timbre/blob/master/README.md">Timbre</a></li>
+</ul>
+<h3 id="logback-encoders-and-appenders">Logback Encoders and Appenders<a class="headerlink" href="#logback-encoders-and-appenders" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/takari/concurrent-build-logger">concurrent-build-logger</a> (encoders and appenders both)</li>
+<li><a href="https://github.com/logzio/logzio-logback-appender">logzio-logback-appender</a></li>
+<li><a href="https://github.com/internetitem/logback-elasticsearch-appender">logback-elasticsearch-appender</a></li>
+<li><a href="https://github.com/sndyuk/logback-more-appenders">logback-more-appenders</a></li>
+<li><a href="https://github.com/ArpNetworking/logback-steno">logback-steno</a></li>
+<li><a href="https://github.com/gmethvin/logslack">logslack</a></li>
+<li><a href="https://logz.io/blog/lessons-learned-writing-new-logback-appender/">Lessons Learned Writing New Logback Appender</a></li>
+<li><a href="https://zenidas.wordpress.com/recipes/extending-logstash-logback-encoder/">Extending logstash-logback-encoder</a></li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../release-notes/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Release notes
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.fb4a9340.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a1c7c35e.min.js"></script>
+      
+    
+  </body>
+</html>
