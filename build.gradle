@@ -10,12 +10,15 @@
  */
 plugins {
     id 'java'
-    id "org.shipkit.java"              version "2.2.6"
     id "com.github.hierynomus.license" version "0.15.0"
 	id 'com.diffplug.gradle.spotless'  version '3.24.3'
     id 'ru.vyarus.mkdocs'              version '2.1.1'
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
+    id "org.shipkit.shipkit-auto-version" version "1.1.19"
     //id 'org.inferred.processors'    version '2.3.0'
 }
+
+apply from: "gradle/release.gradle"
 
 mkdocs {
     sourcesDir = projectDir
@@ -32,10 +35,12 @@ spotless {
 
 allprojects {
     repositories {
-        jcenter()
         mavenCentral()
     }
 }
+
+// Root project shouldn't publish
+tasks.withType(PublishToMavenRepository).configureEach { it.enabled = false }
 
 subprojects { subproj ->
     apply plugin: 'java'
