@@ -36,6 +36,11 @@ public class LoggingInstrumentationByteBuddyBuilder {
 
   private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
 
+  // Is there a better way to handle upgrades here?
+  // As far as I can tell, we just want the highest number possible.
+  // https://stackoverflow.com/questions/63399682/how-do-i-map-asms-api-version-in-opcodes-to-java-version
+  private static final int ASM_API = Opcodes.ASM9;
+
   /**
    * Creates a builder from the element matchers.
    *
@@ -74,7 +79,7 @@ public class LoggingInstrumentationByteBuddyBuilder {
         MethodList<?> methods,
         int writerFlags,
         int readerFlags) {
-      return new ClassVisitor(Opcodes.ASM5, classVisitor) {
+      return new ClassVisitor(ASM_API, classVisitor) {
         private String className;
         private String source;
 
