@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/com.tersesystems.securitybuilder/securitybuilder)](https://search.maven.org/artifact/com.tersesystems.securitybuilder/securitybuilder) [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
+[![Maven Central](https://img.shields.io/maven-central/v/com.tersesystems.logback/)](https://search.maven.org/artifact/com.tersesystems.logback/) [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
 # Terse Logback
 
