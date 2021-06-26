@@ -1,16 +1,4 @@
-<!---freshmark shields
-output = [
-	 link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
-	link(shield('License CC0', 'license', 'CC0', 'blue'), 'https://tldrlegal.com/license/creative-commons-cc0-1.0-universal'),
-	'',
-	link(image('Travis CI', 'https://travis-ci.org/tersesystems/terse-logback.svg?branch=master'), 'https://travis-ci.org/tersesystems/terse-logback')
-	].join('\n')
--->
-[![Maven central](https://img.shields.io/badge/mavencentral-com.tersesystems.logback%3Alogback--core-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.tersesystems.logback%22%20AND%20a%3A%22logback-core%22)
-[![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
-
-[![Travis CI](https://travis-ci.org/tersesystems/terse-logback.svg?branch=master)](https://travis-ci.org/tersesystems/terse-logback)
-<!---freshmark /shields -->
+[![Maven Central](https://img.shields.io/maven-central/v/com.tersesystems.securitybuilder/securitybuilder)](https://search.maven.org/artifact/com.tersesystems.securitybuilder/securitybuilder) [![License CC0](https://img.shields.io/badge/license-CC0-blue.svg)](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal)
 
 # Terse Logback
 

@@ -37,6 +37,8 @@ public class LoggingInstrumentationByteBuddyBuilder {
   private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
 
   // Is there a better way to handle upgrades here?
+  // As far as I can tell, we just want the highest number possible.
+  // https://stackoverflow.com/questions/63399682/how-do-i-map-asms-api-version-in-opcodes-to-java-version
   private static final int ASM_API = Opcodes.ASM9;
 
   /**

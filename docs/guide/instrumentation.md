@@ -33,11 +33,11 @@ See [Application Logging in Java: Tracing 3rd Party Code](https://tersesystems.c
 You'll need to install `logback-bytebuddy` and `logback-tracing`, and provide a `byte-buddy` implementation.
 
 ```
-implementation group: 'com.tersesystems.logback', name: 'logback-classic', version: '0.16.2'
-implementation group: 'com.tersesystems.logback', name: 'logback-bytebuddy', version: '0.16.2'
-implementation group: 'com.tersesystems.logback', name: 'logback-tracing', version: '0.16.2'
+implementation group: 'com.tersesystems.logback', name: 'logback-classic', version: 'LATEST'
+implementation group: 'com.tersesystems.logback', name: 'logback-bytebuddy', version: 'LATEST'
+implementation group: 'com.tersesystems.logback', name: 'logback-tracing', version: 'LATEST'
 
-implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.11.0'
+implementation group: 'net.bytebuddy', name: 'byte-buddy', version: 'LATEST'
 ```
 
 There are two ways you can install instrumentation -- you can do it using an agent, or you can do it manually.
