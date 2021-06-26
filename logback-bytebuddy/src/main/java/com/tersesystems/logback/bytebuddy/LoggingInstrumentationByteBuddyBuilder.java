@@ -36,6 +36,9 @@ public class LoggingInstrumentationByteBuddyBuilder {
 
   private static final Class<?> INSTRUMENTATION_ADVICE_CLASS = LoggingInstrumentationAdvice.class;
 
+  // Is there a better way to handle upgrades here?
+  private static final int ASM_API = Opcodes.ASM9;
+
   /**
    * Creates a builder from the element matchers.
    *
@@ -74,7 +77,7 @@ public class LoggingInstrumentationByteBuddyBuilder {
         MethodList<?> methods,
         int writerFlags,
         int readerFlags) {
-      return new ClassVisitor(Opcodes.ASM5, classVisitor) {
+      return new ClassVisitor(ASM_API, classVisitor) {
         private String className;
         private String source;
 
