@@ -18,8 +18,6 @@ In addition, measuring time is a real concern with ring buffer logging.  When yo
 
 Ring Buffers are first class objects that must be referenced at several points.  You need to set up an appender that can add logging events to a ring buffer, and another that can dump elements.  
 
-The [showcase](https://github.com/tersesystems/terse-logback-showcase) contains an example of ringbuffer logging that we'll describe in more detail here.
-
 To create a ring buffer, add the following actions:
 
 ```xml
