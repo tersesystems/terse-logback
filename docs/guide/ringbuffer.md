@@ -1,18 +1,22 @@
 # Ring Buffers
 
-There may be situations where there is no visible target for diagnostic logging, for example in the case where there is a race condition or a subtle data corruption that only shows up every so often.  In this case, the ideal workflow would be to keep the most recent diagnostic information available, but only see it when the appropriate condition is triggered.
+When something goes wrong and produces, it can be useful to keep a store of diagnostic (`DEBUG` and `TRACE`) logs on hand so that the operation leading up to to the error is available.
 
-This is a pattern called ring buffer logging, described in [Using Ring Buffer Logging to Help Find Bugs](http://www.exampler.com/writing/ring-buffer.pdf) by [Brian Marick](https://twitter.com/marick).  
+However, there are some constraints to logging diagnostic information -- the store must be bounded, and storage must be very fast.  One common pattern, dating all the way back to the [Apollo Mission](https://tersesystems.com/blog/2019/07/28/triggering-diagnostic-logging-on-exception/), is to store the logs in memory.  This is a pattern called ring buffer logging, described in [Using Ring Buffer Logging to Help Find Bugs](http://www.exampler.com/writing/ring-buffer.pdf) by [Brian Marick](https://twitter.com/marick).  
 
 In ring buffer logging, all debug events related to the logger are stored, but are stored in a [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) that is overwritten by the latest logs.  When triggered, the entire buffer is flushed to appenders.  This is in contrast to tap filters, which will immediately create events and then flush them to appenders, and do not keep them in memory.
+
+## Drawbacks
+
+**Please consider using [Blacklite](https://github.com/tersesystems/blacklite/) over ring buffer logging**, as it's specifically designed to address very fast bounded diagnostic logging.  You can still use ring buffers, but it does have drawbacks
+
+The biggest drawback is that logging to an in-memory ring buffer is just that: in-memory.  Logs are not accessible by external processes, and Java does not have an easy way to do external off-heap memory management.  As such, memory cannot be easily shared for IPC, and there is significant additional complexity in flushing the buffer on request, since most logging is not typically designed with explicit flushes in mind.
+
+In addition, measuring time is a real concern with ring buffer logging.  When you dump the ring buffer contents, unless you are dumping into a JDBC database, the elements will be out of sequence to the logs as a whole.  Also, because logging to an in-memory ringbuffer is extremely fast and involves no processing, multiple events can be logged in the same millisecond.
 
 ## Using Ring Buffers 
 
 Ring Buffers are first class objects that must be referenced at several points.  You need to set up an appender that can add logging events to a ring buffer, and another that can dump elements.  
-
-> **NOTE**: Measuring time is a real concern with ring buffer logging.  When you dump the ring buffer contents, unless you are dumping into a JDBC database, the elements will be out of sequence to the logs as a whole.  Also, because logging to an in-memory ringbuffer is extremely fast and involves no processing, multiple events can be logged in the same millisecond.
-
-The [showcase](https://github.com/tersesystems/terse-logback-showcase) contains an example of ringbuffer logging that we'll describe in more detail here.
 
 To create a ring buffer, add the following actions:
 
