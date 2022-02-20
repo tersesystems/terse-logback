@@ -11,7 +11,7 @@
 dependencies {
     implementation project(":logback-core")
 
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
-    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
 }

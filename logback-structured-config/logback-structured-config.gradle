@@ -9,20 +9,20 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-audio')
-    compile project(':logback-budget')
-    compile project(':logback-censor')
-    compile project(':logback-classic')
-    compile project(':logback-compress-encoder')
-    compile project(':logback-uniqueid-appender')
-    compile project(':logback-typesafe-config')
-    compile project(':logback-turbomarker')
-    compile project(':logback-exception-mapping')
-    compile project(':logback-exception-mapping-providers')
+    implementation project(':logback-audio')
+    implementation project(':logback-budget')
+    implementation project(':logback-censor')
+    implementation project(':logback-classic')
+    implementation project(':logback-compress-encoder')
+    implementation project(':logback-uniqueid-appender')
+    implementation project(':logback-typesafe-config')
+    implementation project(':logback-turbomarker')
+    implementation project(':logback-exception-mapping')
+    implementation project(':logback-exception-mapping-providers')
 
-    compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
-    compile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9"
-    compile 'org.fusesource.jansi:jansi:1.17.1'
-    compile 'org.codehaus.janino:janino:3.0.11'
+    implementation "org.slf4j:jul-to-slf4j:$slf4jVersion"
+    implementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9"
+    implementation 'org.fusesource.jansi:jansi:1.17.1'
+    implementation 'org.codehaus.janino:janino:3.0.11'
 }

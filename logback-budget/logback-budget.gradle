@@ -9,8 +9,8 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-core')
-    compile project(':logback-classic')
+    implementation project(':logback-core')
+    implementation project(':logback-classic')
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 }

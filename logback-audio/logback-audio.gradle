@@ -9,8 +9,8 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-core')
-    compile project(':logback-classic')
-    compile group: 'com.googlecode.soundlibs', name: 'mp3spi', version: '1.9.5.4'
-    compile group: 'com.github.trilarion', name: 'vorbis-support', version: '1.1.0'
+    implementation project(':logback-core')
+    implementation project(':logback-classic')
+    implementation group: 'com.googlecode.soundlibs', name: 'mp3spi', version: '1.9.5.4'
+    implementation group: 'com.github.trilarion', name: 'vorbis-support', version: '1.1.0'
 }

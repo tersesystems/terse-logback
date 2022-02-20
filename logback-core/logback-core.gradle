@@ -8,8 +8,12 @@
  *
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
+plugins {
+    id 'java-library'
+}
+
 dependencies {
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "ch.qos.logback:logback-core:$logbackVersion"
-    testCompile "ch.qos.logback:logback-classic:$logbackVersion"
+    api "org.slf4j:slf4j-api:$slf4jVersion"
+    implementation "ch.qos.logback:logback-core:$logbackVersion"
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }

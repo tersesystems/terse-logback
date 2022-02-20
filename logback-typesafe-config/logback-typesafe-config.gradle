@@ -8,7 +8,11 @@
  *
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
+plugins {
+    id 'java-library'
+}
+
 dependencies {
-    compile "ch.qos.logback:logback-classic:$logbackVersion"
-    compile "com.typesafe:config:$configVersion"
+    api "ch.qos.logback:logback-classic:$logbackVersion"
+    api "com.typesafe:config:$configVersion"
 }
