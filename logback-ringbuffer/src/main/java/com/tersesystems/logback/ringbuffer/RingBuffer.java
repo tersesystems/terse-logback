@@ -10,10 +10,10 @@ public interface RingBuffer<T> {
   interface Supplier<T> {
     /**
      * This method will return the next value to be written to the queue. As such the queue
-     * implementations are commited to insert the value once the call is made.
+     * implementations are committed to insert the value once the call is made.
      *
      * <p>Users should be aware that underlying queue implementations may upfront claim parts of the
-     * queue for batch operations and this will effect the view on the queue from the supplier
+     * queue for batch operations and this will affect the view on the queue from the supplier
      * method. In particular size and any offer methods may take the view that the full batch has
      * already happened.
      *
@@ -50,8 +50,6 @@ public interface RingBuffer<T> {
     /**
      * This method can implement static or dynamic backoff. Dynamic backoff will rely on the counter
      * for estimating how long the caller has been idling. The expected usage is:
-     *
-     * <p>
      *
      * <pre>
      * <code>
@@ -172,8 +170,6 @@ public interface RingBuffer<T> {
    * Remove up to <i>limit</i> elements from the queue and hand to consume. This should be
    * semantically similar to:
    *
-   * <p>
-   *
    * <pre>{@code
    * M m;
    * int i = 0;
@@ -189,6 +185,8 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Consumer#accept} make
    * sure you have read and understood these before using this method.
    *
+   * @param c     the consumer
+   * @param limit the limit
    * @return the number of polled elements
    * @throws IllegalArgumentException c is {@code null}
    * @throws IllegalArgumentException if limit is negative
@@ -197,8 +195,6 @@ public interface RingBuffer<T> {
 
   /**
    * Stuff the queue with up to <i>limit</i> elements from the supplier. Semantically similar to:
-   *
-   * <p>
    *
    * <pre>{@code
    * for(int i=0; i < limit && relaxedOffer(s.get()); i++);
@@ -210,6 +206,8 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Supplier#get} make sure
    * you have read and understood these before using this method.
    *
+   * @param s     the supplier
+   * @param limit the limit
    * @return the number of offered elements
    * @throws IllegalArgumentException s is {@code null}
    * @throws IllegalArgumentException if limit is negative
@@ -233,6 +231,7 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Consumer#accept} make
    * sure you have read and understood these before using this method.
    *
+   * @param c the consumer
    * @return the number of polled elements
    * @throws IllegalArgumentException c is {@code null}
    */
@@ -253,6 +252,7 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Supplier#get} make sure
    * you have read and understood these before using this method.
    *
+   * @param s the supplier
    * @return the number of offered elements
    * @throws IllegalArgumentException s is {@code null}
    */
@@ -260,8 +260,6 @@ public interface RingBuffer<T> {
 
   /**
    * Remove elements from the queue and hand to consume forever. Semantically similar to:
-   *
-   * <p>
    *
    * <pre>
    *  int idleCounter = 0;
@@ -281,14 +279,15 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Consumer#accept} make
    * sure you have read and understood these before using this method.
    *
+   * @param c    the consumer
+   * @param wait the wait strategy
+   * @param exit the exit condition
    * @throws IllegalArgumentException c OR wait OR exit are {@code null}
    */
   void drain(Consumer<T> c, WaitStrategy wait, ExitCondition exit);
 
   /**
    * Stuff the queue with elements from the supplier forever. Semantically similar to:
-   *
-   * <p>
    *
    * <pre>
    * <code>
@@ -311,6 +310,9 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Supplier#get} make sure
    * you have read and understood these before using this method.
    *
+   * @param s    the supplier
+   * @param wait the wait strategy
+   * @param exit the exit condition
    * @throws IllegalArgumentException s OR wait OR exit are {@code null}
    */
   void fill(Supplier<T> s, WaitStrategy wait, ExitCondition exit);

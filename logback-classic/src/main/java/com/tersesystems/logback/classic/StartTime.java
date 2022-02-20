@@ -14,20 +14,24 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.spi.ContextAware;
 import com.tersesystems.logback.core.ComponentContainer;
+
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
+
 import org.slf4j.Marker;
 
-/** This class pulls an Instant from a StartTimeSupplier. */
+/**
+ * This class pulls an Instant from a StartTimeSupplier.
+ */
 public final class StartTime {
 
   /**
-   * Returns an start time from the event, then marker, then finally if not found will use the
+   * Returns a start time from the event, then marker, then finally if not found will use the
    * event's timestamp as the marker.
    *
    * @param context the logging context
-   * @param event the logging event event
+   * @param event   the logging event
    * @return an instant representing the start time.
    */
   public static Instant from(Context context, ILoggingEvent event) {
@@ -37,6 +41,10 @@ public final class StartTime {
   /**
    * Pulls a start time from the logging event, looking for the supplier on the event first, and
    * then looking for a StartTimeMarker.
+   *
+   * @param context the logback context
+   * @param event the event
+   * @return an optional start time, using both a container and marker as possible sources.
    */
   public static Optional<Instant> fromOptional(Context context, ILoggingEvent event) {
     if (event instanceof ComponentContainer) {
@@ -48,7 +56,12 @@ public final class StartTime {
     return fromMarker(context, event.getMarker());
   }
 
-  /** Looks for a StartTimeMarker in the marker and in all of the children of the marker. */
+  /**
+   * Looks for a StartTimeMarker in the marker and in all the children of the marker.
+   * @param context the logback context
+   * @param m the logback marker
+   * @return an optional start time.
+   */
   public static Optional<Instant> fromMarker(Context context, Marker m) {
     if (m instanceof StartTimeSupplier) {
       StartTimeSupplier supplier = ((StartTimeSupplier) m);
