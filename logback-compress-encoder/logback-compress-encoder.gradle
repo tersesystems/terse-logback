@@ -9,10 +9,10 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-classic')
+    implementation project(':logback-classic')
 
-    compile group: 'org.apache.commons', name: 'commons-compress', version: '1.18'
-    compile "com.github.luben:zstd-jni:$zstdVersion"
+    implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.18'
+    implementation "com.github.luben:zstd-jni:$zstdVersion"
 
-    testCompile "ch.qos.logback:logback-classic:$logbackVersion"
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }

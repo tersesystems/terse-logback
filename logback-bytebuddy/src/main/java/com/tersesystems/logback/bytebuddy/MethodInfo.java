@@ -12,7 +12,9 @@ package com.tersesystems.logback.bytebuddy;
 
 import java.util.Objects;
 
-/** Provides line number and source at compile time without the overhead of fillInStackTrace. */
+/**
+ * Provides line number and source at implementation time without the overhead of fillInStackTrace.
+ */
 public class MethodInfo {
   final String methodName;
   final String descriptor;

@@ -5,9 +5,9 @@ You can connect Logback to Honeycomb directly through the Honeycomb Logback appe
 Add the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-okhttp':
 
 ```gradle
-compile group: 'com.tersesystems.logback', name: 'logback-tracing'
-compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
-compile group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
+implementation group: 'com.tersesystems.logback', name: 'logback-tracing'
+implementation group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
+implementation group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
 ```
 
 The appender is of type `com.tersesystems.logback.honeycomb.HoneycombAppender`, and makes use of the client under the hood.  Because the honeycomb appender uses an HTTP client under the hood, there are a couple of important notes.

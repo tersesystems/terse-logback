@@ -9,17 +9,17 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-classic')
-    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    implementation project(':logback-classic')
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
 
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
-    testCompile "com.launchdarkly:launchdarkly-java-server-sdk:4.6.6"
-    testCompile "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
-    testCompile "com.typesafe:config:$configVersion"
-    //testCompile "com.fasterxml.jackson.module:jackson-datatype-jdk8"
-    //testCompile "com.fasterxml.jackson.module:jackson-datatype-jsr310"
-    testCompile 'org.apiguardian:apiguardian-api:1.1.0'
-    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.9'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
+    testImplementation "com.launchdarkly:launchdarkly-java-server-sdk:4.6.6"
+    testImplementation "net.logstash.logback:logstash-logback-encoder:$logstashVersion"
+    testImplementation "com.typesafe:config:$configVersion"
+    //testImplementation "com.fasterxml.jackson.module:jackson-datatype-jdk8"
+    //testImplementation "com.fasterxml.jackson.module:jackson-datatype-jsr310"
+    testImplementation 'org.apiguardian:apiguardian-api:1.1.0'
+    testImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.9'
 
 }

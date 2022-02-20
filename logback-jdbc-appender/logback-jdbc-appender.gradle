@@ -8,8 +8,12 @@
  *
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
+plugins {
+    id 'java-library'
+}
+
 dependencies {
-    compile project(':logback-classic')
+    api project(':logback-classic')
 
     // .200 has the JSON data type
     implementation "com.zaxxer:HikariCP:3.4.2"

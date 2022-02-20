@@ -9,16 +9,16 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-classic')
+    implementation project(':logback-classic')
 
     // Don't include log4j 1.2 in with the project
-    compile('org.fusesource:sigar:1.6.4') {
+    implementation('org.fusesource:sigar:1.6.4') {
         exclude group: 'log4j'
     }
 
     // ensure that we're using slf4j to ensure sigar logging works
-    compile group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.26'
+    implementation group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.26'
 
     // sigar-loader handles all the JVM stuff.
-    compile group: 'io.kamon', name: 'sigar-loader', version: '1.6.6'
+    implementation group: 'io.kamon', name: 'sigar-loader', version: '1.6.6'
 }

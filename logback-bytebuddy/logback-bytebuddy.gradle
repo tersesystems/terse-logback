@@ -40,7 +40,7 @@ jar {
 }
 
 shadowJar {
-    archiveName = "$baseName-$version.$extension"
+    archiveFileName = "$archiveBaseName-$archiveVersion.$archiveExtension"
 
     // Shade typesafe config and bytebuddy itself since this is used in bootstrap classloader
     // and so would be visible to everything downstream

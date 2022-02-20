@@ -9,8 +9,8 @@
  *  http://creativecommons.org/publicdomain/zero/1.0/
  */
 dependencies {
-    compile project(':logback-classic')
+    implementation project(':logback-classic')
 
-    compile group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
-    compile 'net.mguenther.idem:idem-core:0.1.0'
+    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
+    implementation 'net.mguenther.idem:idem-core:0.1.0'
 }
