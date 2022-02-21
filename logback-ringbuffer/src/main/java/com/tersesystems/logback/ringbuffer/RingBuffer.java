@@ -185,7 +185,7 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Consumer#accept} make
    * sure you have read and understood these before using this method.
    *
-   * @param c     the consumer
+   * @param c the consumer
    * @param limit the limit
    * @return the number of polled elements
    * @throws IllegalArgumentException c is {@code null}
@@ -206,7 +206,7 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Supplier#get} make sure
    * you have read and understood these before using this method.
    *
-   * @param s     the supplier
+   * @param s the supplier
    * @param limit the limit
    * @return the number of offered elements
    * @throws IllegalArgumentException s is {@code null}
@@ -279,7 +279,7 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Consumer#accept} make
    * sure you have read and understood these before using this method.
    *
-   * @param c    the consumer
+   * @param c the consumer
    * @param wait the wait strategy
    * @param exit the exit condition
    * @throws IllegalArgumentException c OR wait OR exit are {@code null}
@@ -310,7 +310,7 @@ public interface RingBuffer<T> {
    * <p><b>WARNING</b>: Explicit assumptions are made with regards to {@link Supplier#get} make sure
    * you have read and understood these before using this method.
    *
-   * @param s    the supplier
+   * @param s the supplier
    * @param wait the wait strategy
    * @param exit the exit condition
    * @throws IllegalArgumentException s OR wait OR exit are {@code null}

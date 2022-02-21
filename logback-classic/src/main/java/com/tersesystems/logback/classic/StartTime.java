@@ -14,16 +14,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.spi.ContextAware;
 import com.tersesystems.logback.core.ComponentContainer;
-
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
-
 import org.slf4j.Marker;
 
-/**
- * This class pulls an Instant from a StartTimeSupplier.
- */
+/** This class pulls an Instant from a StartTimeSupplier. */
 public final class StartTime {
 
   /**
@@ -31,7 +27,7 @@ public final class StartTime {
    * event's timestamp as the marker.
    *
    * @param context the logging context
-   * @param event   the logging event
+   * @param event the logging event
    * @return an instant representing the start time.
    */
   public static Instant from(Context context, ILoggingEvent event) {
@@ -58,6 +54,7 @@ public final class StartTime {
 
   /**
    * Looks for a StartTimeMarker in the marker and in all the children of the marker.
+   *
    * @param context the logback context
    * @param m the logback marker
    * @return an optional start time.
