@@ -93,5 +93,6 @@ public class ExceptionMessageWithMappingsConverter extends ExceptionMessageConve
         sb.append("\"");
       }
     }
-  };
+  }
+  ;
 }

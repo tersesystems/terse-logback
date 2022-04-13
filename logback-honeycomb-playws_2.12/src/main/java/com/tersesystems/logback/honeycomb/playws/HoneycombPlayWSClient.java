@@ -62,7 +62,8 @@ public class HoneycombPlayWSClient<E>
   @Override
   public CompletionStage<HoneycombResponse> post(HoneycombRequest<E> request) {
     return post(request, this.defaultEncodeFunction);
-  };
+  }
+  ;
 
   @Override
   public <F> CompletionStage<HoneycombResponse> post(
