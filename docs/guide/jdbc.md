@@ -8,7 +8,7 @@ This implementation assumes a single table, with a user defined extensible schem
 
 Database timestamps record time with microsecond resolution, whereas millisecond resolution is commonplace for logging, so for convenience both the timestamp with time zone and the time since epoch are recorded.  For span information, the start time must also be recorded as TSE.  Likewise, the level is recorded as both a text string for visual reference, and a level value so that you can order and filter database queries.
 
-Querying a database can be particuarly helpful when errors occur, because you can pull out all logs with a correlation id.  See the `logback-correlationid` module for an example.
+Querying a database can be helpful when errors occur, because you can pull out all logs with a correlation id.  See the `logback-correlationid` module for an example.
 
 ### Logging using in-memory H2 Database
 

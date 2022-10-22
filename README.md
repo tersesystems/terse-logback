@@ -2,12 +2,13 @@
 
 # Terse Logback
 
-Terse Logback is a collection of [Logback](https://logback.qos.ch/) extensions that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for [structured logging](structured-logging.md), [ringbuffer logging](guide/ringbuffer.md), [system instrumentation](guide/instrumentation.md), and [JDBC](guide/jdbc.md).  
+Terse Logback is a collection of [Logback](https://logback.qos.ch/) extensions that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively. 
 
 Other logging projects you may be interested in: 
 
 * [Blacklite](https://github.com/tersesystems/blacklite/), an SQLite appender with memory-mapping and zstandard dictionary compression that clocks around 800K statements per second.
-* [Blindsight](https://github.com/tersesystems/blindsight), a Scala logging API built around modern logging concepts.
+* [Blindsight](https://github.com/tersesystems/blindsight), a Scala logging API that extends SLF4J.
+* [Echopraxia](https://github.com/tersesystems/echopraxia), a Java and Scala logging API built around structured logging.
 
 ## Documentation
 
