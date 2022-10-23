@@ -2,7 +2,7 @@
 
 The `logback-correlationid` module is a set of classes designed to encompass the idea of a correlation id in events.
 
-It consists of a correlation id filter, a tap filter that always logs events with a correlation id to an appender, a JDBC appender that writes correlation id to a column in a database schema, and a correlation id marker. 
+It consists of a correlation id filter, a tap filter that always logs events with a correlation id to an appender, and a correlation id marker. 
 
 ## Correlation ID Filter
 
@@ -41,7 +41,14 @@ public class CorrelationIdFilterTest {
 
 ## CorrelationIdTapFilter
 
-The `CorrelationIdTapFilter` is a turbofilter that always logs to a given appender if the correlation id appears, even if the appender is not configured for logging.
+The `CorrelationIdTapFilter` is a turbofilter that always logs to a given appender if the correlation id appears, even if the appender is not configured for logging.  
+
+This functions as a <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/WireTap.html">wiretap</a>.
+
+Tap Filters are very useful as a way to send data to an appender.  They completely bypass any kind of logging level configured on the front end, so you can set a logger to INFO level but still have access to all TRACE events when an error occurs, through the tap filter's appenders.
+
+For example, a tap filter can automatically log everything with a correlation id at a TRACE level, without requiring filters or altering the log level as a whole.  Let's run a simple HTTP client program that calls out to Google and prints a result.
+
 
 ```xml
 <configuration>
@@ -76,51 +83,6 @@ A `CorrelationIdMarker` implements the `CorrelationIdProvider` interface to expo
 ```java
 CorrelationIdMarker correlationIdMarker = CorrelationIdMarker.create(correlationId);
 String sameId = correlationIdMarker.getCorrelationId();
-```
-
-## CorrelationIdJDBCAppender
-
-A `CorrelationIdJDBCAppender` is a JDBC appender that can write out a correlation id to a row, extending the normal JDBC correlator.
-
-```xml
-<configuration>
-
-    <appender name="ASYNC_JDBC" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
-        <appender class="com.tersesystems.logback.correlationid.CorrelationIdJDBCAppender">
-            <mdcKey>correlationId</mdcKey>
-
-            <!--          <driver>com.p6spy.engine.spy.P6SpyDriver</driver>-->
-            <!--          <url>jdbc:p6spy:h2:mem:terse-logback;DB_CLOSE_DELAY=-1</url>-->
-            <driver>org.h2.Driver</driver>
-            <url>jdbc:h2:mem:terse-logback;DB_CLOSE_DELAY=-1</url>
-            <username>sa</username>
-            <password></password>
-
-            <createStatements>
-                CREATE TABLE IF NOT EXISTS events (
-                ID NUMERIC NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                ts TIMESTAMP(9) WITH TIME ZONE NOT NULL,
-                relative_ns BIGINT NULL,
-                start_ms BIGINT NULL,
-                level_value int NOT NULL,
-                level VARCHAR(7) NOT NULL,
-                evt JSON NOT NULL,
-                correlation_id VARCHAR(255) NOT NULL,
-                event_id VARCHAR(255) NULL
-                );
-                CREATE INDEX IF NOT EXISTS event_id_idx ON events(event_id);
-                CREATE INDEX IF NOT EXISTS correlation_id_idx ON events(correlation_id);
-            </createStatements>
-            <insertStatement>
-                insert into events(ts, relative_ns, start_ms, level_value, level, evt, correlation_id, event_id) values(?, ?, ?, ?, ?, ?, ?, ?)
-            </insertStatement>
-
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            </encoder>
-        </appender>
-    </appender>
-
-</configuration>
 ```
 
 ## CorrelationIdUtils

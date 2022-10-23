@@ -6,7 +6,6 @@ Add the appender module 'logback-honeycomb-appender' and the implementation 'log
 
 ```gradle
 implementation group: 'com.tersesystems.logback', name: 'logback-tracing'
-implementation group: 'com.tersesystems.logback', name: 'logback-honeycomb-appender'
 implementation group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
 ```
 

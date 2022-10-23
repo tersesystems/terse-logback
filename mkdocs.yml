@@ -1,7 +1,7 @@
 site_name: Terse Logback
 
 # Meta tags (placed in header)
-site_description: "Terse Logback Documentation Site"
+site_description: "Terse Logback Documentation"
 
 site_author: "Will Sargent"
 site_url: "https://tersesystems.github.io/terse-logback"
@@ -54,11 +54,9 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Installation: installation.md
-  - Structured Logging: structured-logging.md
   - User guide:
       - Audio: guide/audio.md
-      - Budgeting: guide/budget.md
+      - Budgeting / Rate Limiting: guide/budget.md
       - Censors: guide/censor.md    
       - Composite: guide/composite.md
       - Compression: guide/compression.md
@@ -67,15 +65,9 @@ nav:
       - Instrumentation: guide/instrumentation.md
       - JDBC: guide/jdbc.md
       - JUL to SLF4J Bridge: guide/slf4jbridge.md
-      - Ring Buffers: guide/ringbuffer.md
       - Relative Nanos: guide/relativens.md
       - Select Appender: guide/select.md
-      - Structured Config: guide/structured-config.md
-      - System Info: guide/systeminfo.md
-      - Tap Filters: guide/tapfilter.md
       - Tracing with Honeycomb: guide/tracing.md
       - Typesafe Config: guide/typesafeconfig.md
       - Turbo Markers: guide/turbomarker.md
-      - Unique ID Appender: guide/uniqueid.md      
-  - Release notes: release-notes.md
-  - Further Reading: reading/index.md
+      - Unique ID Appender: guide/uniqueid.md

@@ -1,49 +1,42 @@
 # Terse Logback
 
-Terse Logback is a collection of [Logback](https://logback.qos.ch/) extensions that shows how to use [Logback](https://logback.qos.ch/manual/index.html) effectively for [structured logging](structured-logging.md), [ringbuffer logging](guide/ringbuffer.md), [system instrumentation](guide/instrumentation.md), and [JDBC](guide/jdbc.md).  
-
-Using Terse Logback increases the observability of your application.  Or as [@mipsytipsy](https://twitter.com/mipsytipsy) puts it:
-
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">HOLY ROYAL SHITBALLS. To all of you who have been asking (for YEARS) if there are any alternatives to honeycomb for observability: yes, finally YES! <a href="https://twitter.com/will_sargent?ref_src=twsrc%5Etfw">@will_sargent</a> has hacked together the most ingenious little solution using only logs and feature flags:<a href="https://t.co/xwdHWMlcEl">https://t.co/xwdHWMlcEl</a></p>&mdash; Charity Majors (@mipsytipsy) <a href="https://twitter.com/mipsytipsy/status/1153889935536975872?ref_src=twsrc%5Etfw">July 24, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+Terse Logback is a collection of [Logback](https://logback.qos.ch/) modules that extend [Logback](https://logback.qos.ch/manual/index.html) functionality.  
 
 I've written about the reasoning and internal architecture in a series of blog posts.  The [full list](https://tersesystems.com/category/logging/) is available on [https://tersesystems.com](https://tersesystems.com).
+
+## Installation
+
+You can find modules using [https://mvnrepository.com/artifact/com.tersesystems.logback](https://mvnrepository.com/artifact/com.tersesystems.logback).  
+
+For example, the typesafe config module can be found under [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config/1.0.3](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config/1.0.3) and selecting Maven will let you paste it:
+
+```xml
+<dependency>
+    <groupId>com.tersesystems.logback</groupId>
+    <artifactId>logback-typesafe-config</artifactId>
+    <version>$VERSION$</version>
+</dependency>
+```
 
 ## Showcase
 
 If you want to see a running application, there is a [showcase web application](https://github.com/tersesystems/terse-logback-showcase) that run out of the box that demonstrates some of the more advanced features, and shows you can integrate terse-logback with [Sentry](https://sentry.io) and [Honeycomb](https://www.honeycomb.io).
 
-## Quickstart
+## Modules
 
-You want to start up a project immediately and figure things out?  Okay then.
-
-The project is configured into several modules.  The most relevant one to start with is [`logback-structured-config`](https://github.com/tersesystems/terse-logback/tree/master/logback-structured-config/src/main/resources) which gives you a starting point.
-
-The `logback-structured-config` module contains all the logback code and the appenders, and is intended to be deployed as a small helper library for your other projects, managed through Maven and an artifact manager, or just by packaging the JAR.
-
-You can see it on [mvnrepository](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-structured-config) but you will need a custom resolver, so better to read through the whole thing.
-
-This is [not intended](https://tersesystems.com/blog/2019/04/23/application-logging-in-java-part-1/) to be a drop in solution or a straight library dependency.  You will want to modify this to your own tastes.
-
-### Installation
-
-See the [installation](installation.md) guide.
-
-### Configuration
-
-After you've set up the resolvers and library dependencies for your build, you'll add the following to `src/main/resources/logback.xml`:
-
-```xml
-<configuration debug="true">
-  <include resource="terse-logback/default.xml"/>
-</configuration>
-```
-
-Then add a `logback.conf` file that contains the following:
-
-```hocon
-levels {
-  ROOT = DEBUG
-}
-```
-
-That should give you a fairly verbose logging setup and allow you to change the configuration.  See the [reference section](guide/structured-config.md) for more details.
+- [Audio](guide/audio.md): Play audio when you log by attaching markers to your logging statements.
+- [Budgeting / Rate Limiting](guide/budget.md): Limit the amount of debugging or tracing statements in a time period.
+- [Censors](guide/censor.md): Censor sensitive information in logging statements.     
+- [Composite](guide/composite.md): Presents a single appender that composes several appenders. 
+- [Compression](guide/compression.md): Write to a compressed zstandard file. 
+- [Correlation Id](guide/correlationid.md): Adds markers and filters for correlation id.
+- [Exception Mapping](guide/exception-mapping.md): Show the important details of an exception, including the root cause in a summary format.
+- [Instrumentation](guide/instrumentation.md): Decorates any (including JVM) class with enter and exit logging statements at runtime.
+- [JDBC](guide/jdbc.md): Use Postgres JSON to write structured logging to a single table.
+- [JUL to SLF4J Bridge](guide/slf4jbridge.md): Configure java.util.logging to write to SLF4J with no [manual coding](https://mkyong.com/logging/how-to-load-logging-properties-for-java-util-logging/).
+- [Relative Nanos](guide/relativens.md): Composes a logging event to contain relative nanoseconds based off `System.nanoTime`.
+- [Select Appender](guide/select.md): Appender that selects an appender from a list based on key.
+- [Tracing](guide/tracing.md): Sends logging events and traces to [Honeycomb Event API](https://docs.honeycomb.io/api/events/).
+- [Typesafe Config](guide/typesafeconfig.md): Configure Logback properties using [HOCON](https://github.com/lightbend/config/blob/main/HOCON.md).
+- [Turbo Markers](guide/turbomarker.md): [Turbo Filters](https://logback.qos.ch/manual/filters.html#TurboFilter) that depend on arbitrary deciders that can log at debug level for sessions. 
+- [Unique ID Appender](guide/uniqueid.md): Composes logging event to contain a unique id across multiple appenders. 
