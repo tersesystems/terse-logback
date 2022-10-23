@@ -12,7 +12,7 @@ Other logging projects you may be interested in:
 
 ## Documentation
 
-Documentation is available at [https://tersesystems.github.io/terse-logback](https://tersesystems.github.io/terse-logback).
+Documentation is available at [https://tersesystems.github.io/terse-logback](https://tersesystems.github.io/terse-logback/1.0.3).
 
 ## Showcase
 
