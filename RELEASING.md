@@ -83,7 +83,9 @@ Do not use `-Porg.gradle.parallel=false` and don't use `--parallel` when publish
 
 ## Documentation
 
-Documentation is done with [gradle-mkdocs-plugin](https://xvik.github.io/gradle-mkdocs-plugin/2.1.1/) and works best on Linux.
+Documentation is done with [gradle-mkdocs-plugin](https://xvik.github.io/gradle-mkdocs-plugin/) and works best on Linux.
+
+Need to have [Python 3.8](https://tech.serhatteker.com/post/2019-12/upgrade-python38-on-ubuntu/), virtualenv is not enough.
 
 To see documentation:
 

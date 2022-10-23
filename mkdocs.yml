@@ -10,7 +10,7 @@ site_url: "https://tersesystems.github.io/terse-logback"
 repo_name: terse-logback
 
 repo_url: "https://github.com/tersesystems/terse-logback"
-edit_uri: "edit/master/guide/src/doc/docs/"
+edit_uri: "edit/master/docs/"
 
 #Copyright (shown at the footer)
 #copyright: 'Copyright &copy; 2017 Your Name'
@@ -21,6 +21,9 @@ edit_uri: "edit/master/guide/src/doc/docs/"
 theme: 'material'
 
 extra:
+  version:
+    provider: mike
+
   palette:
     primary: 'indigo'
     accent: 'indigo'

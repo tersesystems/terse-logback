@@ -11,8 +11,9 @@
 plugins {
     id 'java'
     id "com.github.hierynomus.license" version "0.15.0"
-    id "com.diffplug.spotless"         version "6.3.0"
-    id 'ru.vyarus.mkdocs'              version '2.2.0'
+    id "com.diffplug.spotless"         version "6.11.0"
+    id 'ru.vyarus.use-python'          version '3.0.0'
+    id 'ru.vyarus.mkdocs'              version '2.4.0'
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
     id "org.shipkit.shipkit-auto-version" version "1.1.19"
     //id 'org.inferred.processors'    version '2.3.0'
@@ -23,6 +24,12 @@ apply from: "gradle/release.gradle"
 mkdocs {
     sourcesDir = projectDir
     strict = true
+}
+
+python {
+    minPythonVersion = '3.7'
+    // mkdocs requires 3.7.x
+    scope = VIRTUALENV
 }
 
 spotless {
