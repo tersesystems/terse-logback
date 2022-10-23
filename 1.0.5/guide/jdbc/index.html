@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://tersesystems.github.io/terse-logback/1.0.5/guide/jdbc/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.2">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -23,27 +23,28 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.816931ca.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.9204c3b2.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
         
       
+      
     
     
     
       
+        
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
     
-    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../..":"../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -74,6 +75,12 @@
       
     </div>
     
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+        </aside>
+      </div>
+    
     
       
 
@@ -82,11 +89,11 @@
     <a href="../.." title="Terse Logback" class="md-header__button md-logo" aria-label="Terse Logback" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -108,7 +115,7 @@
     
     
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -116,13 +123,13 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
       
@@ -142,10 +149,10 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/tersesystems/terse-logback" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     terse-logback
@@ -180,17 +187,17 @@
     <a href="../.." title="Terse Logback" class="md-nav__button md-logo" aria-label="Terse Logback" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     Terse Logback
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/tersesystems/terse-logback" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     terse-logback
@@ -589,9 +596,10 @@
             <article class="md-content__inner md-typeset">
               
                 
-<a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/jdbc.md" title="Edit this page" class="md-content__button md-icon">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-</a>
+  <a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/jdbc.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
 
 
 <h1 id="jdbc">JDBC<a class="headerlink" href="#jdbc" title="Permanent link">&para;</a></h1>
@@ -629,57 +637,57 @@
 </code></pre></div>
 <h3 id="logging-using-postgressql">Logging using PostgresSQL<a class="headerlink" href="#logging-using-postgressql" title="Permanent link">&para;</a></h3>
 <p>If you want something larger scale, you'll probably be using Postgres instead of H2.  You can log JSON to PostgreSQL, using the <a href="https://www.postgresql.org/docs/current/functions-json.html">built-in JSON datatype</a>.  Postgres uses a custom JDBC type of <code>PGObject</code>, so the <code>insertEvent</code> method must be subclassed.  This is what's in the <code>logback-postgresjson-appender</code> module:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PostgresJsonAppender</span> <span class="kd">extends</span> <span class="n">JDBCAppender</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PostgresJsonAppender</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JDBCAppender</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">objectType</span> <span class="o">=</span> <span class="s">&quot;json&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">objectType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;json&quot;</span><span class="p">;</span><span class="w"></span>
 
-  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getObjectType</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">objectType</span><span class="p">;</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getObjectType</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">objectType</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setObjectType</span><span class="p">(</span><span class="n">String</span> <span class="n">objectType</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="na">objectType</span> <span class="o">=</span> <span class="n">objectType</span><span class="p">;</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setObjectType</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">objectType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">objectType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectType</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">super</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
-    <span class="n">setDriver</span><span class="p">(</span><span class="s">&quot;org.postgresql.Driver&quot;</span><span class="p">);</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">start</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">super</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">setDriver</span><span class="p">(</span><span class="s">&quot;org.postgresql.Driver&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="nd">@Override</span>
-  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">insertEvent</span><span class="p">(</span><span class="n">ILoggingEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">LongAdder</span> <span class="n">adder</span><span class="p">,</span> <span class="n">PreparedStatement</span> <span class="n">statement</span><span class="p">)</span>
-      <span class="kd">throws</span> <span class="n">SQLException</span> <span class="p">{</span>
-    <span class="n">PGobject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PGobject</span><span class="p">();</span>
-    <span class="n">jsonObject</span><span class="p">.</span><span class="na">setType</span><span class="p">(</span><span class="n">getObjectType</span><span class="p">());</span>
-    <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">getEncoder</span><span class="p">().</span><span class="na">encode</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
-    <span class="n">jsonObject</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="k">new</span> <span class="n">String</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span> <span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">));</span>
-    <span class="n">statement</span><span class="p">.</span><span class="na">setObject</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span> <span class="n">jsonObject</span><span class="p">);</span>
-    <span class="n">adder</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">  </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">insertEvent</span><span class="p">(</span><span class="n">ILoggingEvent</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">LongAdder</span><span class="w"> </span><span class="n">adder</span><span class="p">,</span><span class="w"> </span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">statement</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="kd">throws</span><span class="w"> </span><span class="n">SQLException</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">PGobject</span><span class="w"> </span><span class="n">jsonObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PGobject</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">setType</span><span class="p">(</span><span class="n">getObjectType</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getEncoder</span><span class="p">().</span><span class="na">encode</span><span class="p">(</span><span class="n">event</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">statement</span><span class="p">.</span><span class="na">setObject</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span><span class="w"> </span><span class="n">jsonObject</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">adder</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>First, install PostgreSQL, create a database <code>logback</code>, a role <code>logback</code> and a password <code>logback</code> and add the following table:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">logging_table</span> <span class="p">(</span>
-   <span class="n">ID</span> <span class="nb">serial</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-   <span class="n">ts</span> <span class="n">TIMESTAMPTZ</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">tse_ms</span> <span class="nb">numeric</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">start_ms</span> <span class="nb">numeric</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">level_value</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="k">level</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">evt</span> <span class="n">jsonb</span> <span class="k">NOT</span> <span class="k">NULL</span>
-<span class="p">);</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idxgin</span> <span class="k">ON</span> <span class="n">logging_table</span> <span class="k">USING</span> <span class="n">gin</span> <span class="p">(</span><span class="n">evt</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">logging_table</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="n">ID</span><span class="w"> </span><span class="nb">serial</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">ts</span><span class="w"> </span><span class="n">TIMESTAMPTZ</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">tse_ms</span><span class="w"> </span><span class="nb">numeric</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">start_ms</span><span class="w"> </span><span class="nb">numeric</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">level_value</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="k">level</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">evt</span><span class="w"> </span><span class="n">jsonb</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idxgin</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">logging_table</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">gin</span><span class="w"> </span><span class="p">(</span><span class="n">evt</span><span class="p">);</span><span class="w"></span>
 </code></pre></div>
 <p>Because logs are inherently time-series data, you can use the <a href="https://docs.timescale.com/latest/introduction">timescaleDB postgresql extension</a> as described in <a href="https://www.komu.engineer/blogs/timescaledb/timescaledb-for-logs">Store application logs in timescaleDB/postgres</a>, but that's not required.</p>
 <p>Then, add the following <code>logback.xml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;configuration&gt;</span>
-    <span class="c">&lt;!-- async appender needs a shutdown hook to make sure this clears --&gt;</span>
+    <span class="cm">&lt;!-- async appender needs a shutdown hook to make sure this clears --&gt;</span>
     <span class="nt">&lt;shutdownHook</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.hook.DelayingShutdownHook&quot;</span><span class="nt">/&gt;</span>
 
     <span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">&quot;startTime&quot;</span> <span class="na">converterClass=</span><span class="s">&quot;com.tersesystems.logback.classic.StartTimeConverter&quot;</span> <span class="nt">/&gt;</span>
 
-    <span class="c">&lt;!-- SQL is blocking, so use an async lmax appender here --&gt;</span>
+    <span class="cm">&lt;!-- SQL is blocking, so use an async lmax appender here --&gt;</span>
     <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;ASYNC_POSTGRES&quot;</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender&quot;</span><span class="nt">&gt;</span>
         <span class="nt">&lt;appender</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.postgresjson.PostgresJsonAppender&quot;</span><span class="nt">&gt;</span>
             <span class="nt">&lt;createStatements&gt;</span>
@@ -695,7 +703,7 @@
                 CREATE INDEX idxgin ON logging_table USING gin (evt);
            <span class="nt">&lt;/createStatements&gt;</span>
 
-           <span class="c">&lt;!-- SQL statement takes a TIMESTAMP, LONG, INT, VARCHAR, PGObject --&gt;</span>
+           <span class="cm">&lt;!-- SQL statement takes a TIMESTAMP, LONG, INT, VARCHAR, PGObject --&gt;</span>
            <span class="nt">&lt;insertStatement&gt;</span>insert into logging_table(ts, tse_ms, start_ms, level_value, level, evt) values(?, ?, ?, ?, ?, ?)<span class="nt">&lt;/insertStatement&gt;</span>
 
             <span class="nt">&lt;url&gt;</span>jdbc:postgresql://localhost:5432/logback<span class="nt">&lt;/url&gt;</span>
@@ -740,76 +748,77 @@
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
 <p><a href="http://clarkdave.net/2013/06/what-can-you-do-with-postgresql-and-json/">Querying</a> requires a little bit of extra syntax, using <code>evt-&gt;'myfield'</code> to select:</p>
-<div class="highlight"><pre><span></span><code><span class="k">select</span> 
-  <span class="n">ts</span> <span class="k">as</span> <span class="n">end_date</span><span class="p">,</span> 
-  <span class="n">start_ms</span> <span class="k">as</span> <span class="n">epoch_start</span><span class="p">,</span> 
-  <span class="n">tse_ms</span> <span class="k">as</span> <span class="n">epoch_end</span><span class="p">,</span> 
-  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.span_id&#39;</span> <span class="k">as</span> <span class="n">span_id</span><span class="p">,</span> 
-  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;name&#39;</span> <span class="k">as</span> <span class="n">name</span><span class="p">,</span> 
-  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;message&#39;</span> <span class="k">as</span> <span class="n">message</span><span class="p">,</span>  
-  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.parent_id&#39;</span> <span class="k">as</span> <span class="n">parent</span><span class="p">,</span>
-  <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;duration_ms&#39;</span> <span class="k">as</span> <span class="n">duration_ms</span> 
-<span class="k">from</span> <span class="n">logging_table</span> <span class="k">where</span> <span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.trace_id&#39;</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">order</span> <span class="k">by</span> <span class="n">ts</span> <span class="k">desc</span> <span class="k">limit</span> <span class="mi">5</span>
+<div class="highlight"><pre><span></span><code><span class="k">select</span><span class="w"> </span>
+<span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">end_date</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">start_ms</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">epoch_start</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">tse_ms</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">epoch_end</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.span_id&#39;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">span_id</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;name&#39;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;message&#39;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w">  </span>
+<span class="w">  </span><span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.parent_id&#39;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;duration_ms&#39;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">duration_ms</span><span class="w"> </span>
+<span class="k">from</span><span class="w"> </span><span class="n">logging_table</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">evt</span><span class="o">-&gt;</span><span class="s1">&#39;trace.trace_id&#39;</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">ts</span><span class="w"> </span><span class="k">desc</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">5</span><span class="w"></span>
 </code></pre></div>
 <p>If you have extra logs that you want to import into PostgreSQL, you can <a href="https://stackoverflow.com/questions/39224382/how-can-i-import-a-json-file-into-postgresql/57445995#57445995">use PSQL to do that</a>.</p>
 <h3 id="extending-jdbc-appender-with-extra-fields">Extending JDBC Appender with extra fields<a class="headerlink" href="#extending-jdbc-appender-with-extra-fields" title="Permanent link">&para;</a></h3>
 <p>The JDBC appender can be extended so you can add extra information to the table. </p>
 <p>In the <code>logback-correlationid</code> module, there's a <code>CorrelationIdJdbcAppender</code> that adds extra information into the event so you can query by the correlation id specifically, by using the <code>insertAdditionalData</code> hook:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CorrelationIdJdbcAppender</span> <span class="kd">extends</span> <span class="n">JDBCAppender</span> <span class="p">{</span>
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">mdcKey</span> <span class="o">=</span> <span class="s">&quot;correlation_id&quot;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CorrelationIdJdbcAppender</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JDBCAppender</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">mdcKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;correlation_id&quot;</span><span class="p">;</span><span class="w"></span>
 
-  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getMdcKey</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">mdcKey</span><span class="p">;</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getMdcKey</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">mdcKey</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMdcKey</span><span class="p">(</span><span class="n">String</span> <span class="n">mdcKey</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="na">mdcKey</span> <span class="o">=</span> <span class="n">mdcKey</span><span class="p">;</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setMdcKey</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">mdcKey</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">mdcKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mdcKey</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="kd">protected</span> <span class="n">CorrelationIdUtils</span> <span class="n">utils</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">protected</span><span class="w"> </span><span class="n">CorrelationIdUtils</span><span class="w"> </span><span class="n">utils</span><span class="p">;</span><span class="w"></span>
 
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">super</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
-    <span class="n">utils</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CorrelationIdUtils</span><span class="p">(</span><span class="n">mdcKey</span><span class="p">);</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">start</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">super</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">utils</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CorrelationIdUtils</span><span class="p">(</span><span class="n">mdcKey</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="nd">@Override</span>
-  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">insertAdditionalData</span><span class="p">(</span>
-      <span class="n">ILoggingEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">LongAdder</span> <span class="n">adder</span><span class="p">,</span> <span class="n">PreparedStatement</span> <span class="n">statement</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="p">{</span>
-    <span class="n">insertCorrelationId</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">adder</span><span class="p">,</span> <span class="n">statement</span><span class="p">);</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">  </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">insertAdditionalData</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">ILoggingEvent</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">LongAdder</span><span class="w"> </span><span class="n">adder</span><span class="p">,</span><span class="w"> </span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">statement</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">SQLException</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">insertCorrelationId</span><span class="p">(</span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">adder</span><span class="p">,</span><span class="w"> </span><span class="n">statement</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">insertCorrelationId</span><span class="p">(</span>
-      <span class="n">ILoggingEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">LongAdder</span> <span class="n">adder</span><span class="p">,</span> <span class="n">PreparedStatement</span> <span class="n">statement</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="p">{</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">maybeCorrelationId</span> <span class="o">=</span> <span class="n">utils</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">getMarker</span><span class="p">());</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">maybeCorrelationId</span><span class="p">.</span><span class="na">isPresent</span><span class="p">())</span> <span class="p">{</span>
-      <span class="n">statement</span><span class="p">.</span><span class="na">setString</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span> <span class="n">maybeCorrelationId</span><span class="p">.</span><span class="na">get</span><span class="p">());</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="n">statement</span><span class="p">.</span><span class="na">setNull</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span> <span class="n">Types</span><span class="p">.</span><span class="na">VARCHAR</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="n">adder</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">insertCorrelationId</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">ILoggingEvent</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">LongAdder</span><span class="w"> </span><span class="n">adder</span><span class="p">,</span><span class="w"> </span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">statement</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">SQLException</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">maybeCorrelationId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">utils</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">getMarker</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">maybeCorrelationId</span><span class="p">.</span><span class="na">isPresent</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">statement</span><span class="p">.</span><span class="na">setString</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span><span class="w"> </span><span class="n">maybeCorrelationId</span><span class="p">.</span><span class="na">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">statement</span><span class="p">.</span><span class="na">setNull</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">intValue</span><span class="p">(),</span><span class="w"> </span><span class="n">Types</span><span class="p">.</span><span class="na">VARCHAR</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">adder</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>Then set up the table and add an index on the correlation id:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">events</span> <span class="p">(</span>
-   <span class="n">ID</span> <span class="nb">NUMERIC</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
-   <span class="n">ts</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span> <span class="k">WITH</span> <span class="k">TIME</span> <span class="k">ZONE</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">tse_ms</span> <span class="nb">numeric</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">start_ms</span> <span class="nb">numeric</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">level_value</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="k">level</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">evt</span> <span class="n">JSON</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-   <span class="n">correlation_id</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NULL</span>
-<span class="p">);</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">correlation_id_idx</span> <span class="k">ON</span> <span class="n">events</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="n">ID</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">ts</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">ZONE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">tse_ms</span><span class="w"> </span><span class="nb">numeric</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">start_ms</span><span class="w"> </span><span class="nb">numeric</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">level_value</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="k">level</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">evt</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">correlation_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">correlation_id_idx</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">events</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">);</span><span class="w"></span>
 </code></pre></div>
 <p>And then you can query from there.</p>
 <p>See <a href="https://tersesystems.com/blog/2019/09/18/logging-structured-data-to-database/">Logging Structured Data to Database</a> for more details.</p>
 
               
             </article>
+            
           </div>
         </div>
         
@@ -817,12 +826,13 @@
       
         <footer class="md-footer">
   
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
         <a href="../instrumentation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Instrumentation" rel="prev">
           <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
           <div class="md-footer__title">
             <div class="md-ellipsis">
@@ -846,7 +856,7 @@
             </div>
           </div>
           <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
           </div>
         </a>
       
@@ -872,7 +882,7 @@
       
     
     <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
     </a>
   
 </div>
@@ -885,10 +895,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.01824240.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.ff0eccb3.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a877e258.min.js"></script>
       
     
   </body>

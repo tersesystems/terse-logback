@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://tersesystems.github.io/terse-logback/1.0.3/guide/turbomarker/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.2">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -23,27 +23,28 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.816931ca.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.9204c3b2.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
         
       
+      
     
     
     
       
+        
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
     
-    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../..":"../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -74,6 +75,12 @@
       
     </div>
     
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+        </aside>
+      </div>
+    
     
       
 
@@ -82,11 +89,11 @@
     <a href="../.." title="Terse Logback" class="md-header__button md-logo" aria-label="Terse Logback" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -108,7 +115,7 @@
     
     
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -116,13 +123,13 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
       
@@ -142,10 +149,10 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/tersesystems/terse-logback" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     terse-logback
@@ -180,17 +187,17 @@
     <a href="../.." title="Terse Logback" class="md-nav__button md-logo" aria-label="Terse Logback" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     Terse Logback
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/tersesystems/terse-logback/" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/tersesystems/terse-logback" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     terse-logback
@@ -515,108 +522,109 @@
             <article class="md-content__inner md-typeset">
               
                 
-<a href="https://github.com/tersesystems/terse-logback/edit/master/guide/src/doc/docs/guide/turbomarker.md" title="Edit this page" class="md-content__button md-icon">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-</a>
+  <a href="https://github.com/tersesystems/terse-logback/edit/master/docs/guide/turbomarker.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
 
 
 <h1 id="turbo-markers">Turbo Markers<a class="headerlink" href="#turbo-markers" title="Permanent link">&para;</a></h1>
 <p><a href="https://logback.qos.ch/manual/filters.html#TurboFilter">Turbo filters</a> are filters that decide whether a logging event should be created or not.  They are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are <code>ch.qos.logback.classic.turbo.MarkerFilter</code> and <code>ch.qos.logback.classic.turbo.MDCFilter</code>.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.</p>
 <p>What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.</p>
 <p>We start by pulling the <code>decide</code> method to an interface, <a href="https://github.com/tersesystems/terse-logback/blob/master/logback-classic/src/main/java/com/tersesystems/logback/classic/TurboFilterDecider.java"><code>TurboFilterDecider</code></a>:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">TurboFilterDecider</span> <span class="p">{</span>
-    <span class="n">FilterReply</span> <span class="nf">decide</span><span class="p">(</span><span class="n">Marker</span> <span class="n">marker</span><span class="p">,</span> <span class="n">Logger</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Level</span> <span class="n">level</span><span class="p">,</span> <span class="n">String</span> <span class="n">format</span><span class="p">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">params</span><span class="p">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="p">);</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">TurboFilterDecider</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">FilterReply</span><span class="w"> </span><span class="nf">decide</span><span class="p">(</span><span class="n">Marker</span><span class="w"> </span><span class="n">marker</span><span class="p">,</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">Level</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>And have the turbo filter <a href="https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/TurboMarkerTurboFilter.java">delegate to markers that implement the TurboFilterDecider interface</a>:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TurboMarkerTurboFilter</span> <span class="kd">extends</span> <span class="n">TurboFilter</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TurboMarkerTurboFilter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">TurboFilter</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">FilterReply</span> <span class="nf">decide</span><span class="p">(</span><span class="n">Marker</span> <span class="n">rootMarker</span><span class="p">,</span> <span class="n">Logger</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Level</span> <span class="n">level</span><span class="p">,</span> <span class="n">String</span> <span class="n">format</span><span class="p">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">params</span><span class="p">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// ...</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">FilterReply</span><span class="w"> </span><span class="nf">decide</span><span class="p">(</span><span class="n">Marker</span><span class="w"> </span><span class="n">rootMarker</span><span class="p">,</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">Level</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// ...</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">private</span> <span class="n">FilterReply</span> <span class="nf">evaluateMarker</span><span class="p">(</span><span class="n">Marker</span> <span class="n">marker</span><span class="p">,</span> <span class="n">Marker</span> <span class="n">rootMarker</span><span class="p">,</span> <span class="n">Logger</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Level</span> <span class="n">level</span><span class="p">,</span> <span class="n">String</span> <span class="n">format</span><span class="p">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">params</span><span class="p">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">marker</span> <span class="k">instanceof</span> <span class="n">TurboFilterDecider</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">TurboFilterDecider</span> <span class="n">decider</span> <span class="o">=</span> <span class="p">(</span><span class="n">TurboFilterDecider</span><span class="p">)</span> <span class="n">marker</span><span class="p">;</span>
-            <span class="k">return</span> <span class="n">decider</span><span class="p">.</span><span class="na">decide</span><span class="p">(</span><span class="n">rootMarker</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">format</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="n">FilterReply</span><span class="p">.</span><span class="na">NEUTRAL</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">FilterReply</span><span class="w"> </span><span class="nf">evaluateMarker</span><span class="p">(</span><span class="n">Marker</span><span class="w"> </span><span class="n">marker</span><span class="p">,</span><span class="w"> </span><span class="n">Marker</span><span class="w"> </span><span class="n">rootMarker</span><span class="p">,</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">Level</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">marker</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">TurboFilterDecider</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">TurboFilterDecider</span><span class="w"> </span><span class="n">decider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">TurboFilterDecider</span><span class="p">)</span><span class="w"> </span><span class="n">marker</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">decider</span><span class="p">.</span><span class="na">decide</span><span class="p">(</span><span class="n">rootMarker</span><span class="p">,</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">FilterReply</span><span class="p">.</span><span class="na">NEUTRAL</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>This gets us part of the way there.  We can then set up a <a href="https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/ContextAwareTurboFilterDecider.java"><code>ContextAwareTurboFilterDecider</code></a>, which does the same thing but assumes that you have a type <code>C</code> that is your external context.</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="n">FilterReply</span> <span class="nf">decide</span><span class="p">(</span><span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span> <span class="n">marker</span><span class="p">,</span> <span class="n">C</span> <span class="n">context</span><span class="p">,</span> <span class="n">Marker</span> <span class="n">rootMarker</span><span class="p">,</span> <span class="n">Logger</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Level</span> <span class="n">level</span><span class="p">,</span> <span class="n">String</span> <span class="n">format</span><span class="p">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">params</span><span class="p">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="p">);</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">FilterReply</span><span class="w"> </span><span class="nf">decide</span><span class="p">(</span><span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">marker</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">Marker</span><span class="w"> </span><span class="n">rootMarker</span><span class="p">,</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">Level</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>Then we add a marker class that <a href="https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/ContextAwareTurboMarker.java">incorporates that context in decision making</a>:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">TurboMarker</span> <span class="kd">implements</span> <span class="n">TurboFilterDecider</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">C</span> <span class="n">context</span><span class="p">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span> <span class="n">contextAwareDecider</span><span class="p">;</span>
-    <span class="c1">// ... initializers and such</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">FilterReply</span> <span class="nf">decide</span><span class="p">(</span><span class="n">Marker</span> <span class="n">rootMarker</span><span class="p">,</span> <span class="n">Logger</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Level</span> <span class="n">level</span><span class="p">,</span> <span class="n">String</span> <span class="n">format</span><span class="p">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">params</span><span class="p">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">contextAwareDecider</span><span class="p">.</span><span class="na">decide</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">rootMarker</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">format</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">TurboMarker</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">TurboFilterDecider</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">contextAwareDecider</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ... initializers and such</span><span class="w"></span>
+<span class="w">    </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">FilterReply</span><span class="w"> </span><span class="nf">decide</span><span class="p">(</span><span class="n">Marker</span><span class="w"> </span><span class="n">rootMarker</span><span class="p">,</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">Level</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">contextAwareDecider</span><span class="p">.</span><span class="na">decide</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">rootMarker</span><span class="p">,</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">level</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>This may look good in the abstract, but it may make more sense to see it in action.  To do this, we'll set up an example application context:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApplicationContext</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ApplicationContext</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">userId</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="p">;</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="nf">ApplicationContext</span><span class="p">(</span><span class="n">String</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="na">userId</span> <span class="o">=</span> <span class="n">userId</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ApplicationContext</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">userId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userId</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserId</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">userId</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">currentUserId</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">userId</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>and a factory that contains the decider:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">com.tersesystems.logback.turbomarker.*</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">com.tersesystems.logback.turbomarker.*</span><span class="p">;</span><span class="w"></span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserMarkerFactory</span> <span class="p">{</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserMarkerFactory</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">userIdSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentSkipListSet</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">userIdSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ConcurrentSkipListSet</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w"></span>
 
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ContextDecider</span><span class="o">&lt;</span><span class="n">ApplicationContext</span><span class="o">&gt;</span> <span class="n">decider</span> <span class="o">=</span> <span class="n">context</span> <span class="o">-&gt;</span>
-        <span class="n">userIdSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="na">currentUserId</span><span class="p">())</span> <span class="o">?</span> <span class="n">FilterReply</span><span class="p">.</span><span class="na">ACCEPT</span> <span class="p">:</span> <span class="n">FilterReply</span><span class="p">.</span><span class="na">NEUTRAL</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ContextDecider</span><span class="o">&lt;</span><span class="n">ApplicationContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">decider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="n">userIdSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="na">currentUserId</span><span class="p">())</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">FilterReply</span><span class="p">.</span><span class="na">ACCEPT</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">FilterReply</span><span class="p">.</span><span class="na">NEUTRAL</span><span class="p">;</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addUserId</span><span class="p">(</span><span class="n">String</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">userIdSet</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addUserId</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">userIdSet</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">clear</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">userIdSet</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">clear</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">userIdSet</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="n">UserMarker</span> <span class="nf">create</span><span class="p">(</span><span class="n">ApplicationContext</span> <span class="n">applicationContext</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">UserMarker</span><span class="p">(</span><span class="s">&quot;userMarker&quot;</span><span class="p">,</span> <span class="n">applicationContext</span><span class="p">,</span> <span class="n">decider</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">UserMarker</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">ApplicationContext</span><span class="w"> </span><span class="n">applicationContext</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UserMarker</span><span class="p">(</span><span class="s">&quot;userMarker&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">applicationContext</span><span class="p">,</span><span class="w"> </span><span class="n">decider</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>and a <code>UserMarker</code>, which is only around for the logging evaluation:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserMarker</span> <span class="kd">extends</span> <span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">ApplicationContext</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="kd">public</span> <span class="nf">UserMarker</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">,</span>
-                      <span class="n">ApplicationContext</span> <span class="n">applicationContext</span><span class="p">,</span>
-                      <span class="n">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">ApplicationContext</span><span class="o">&gt;</span> <span class="n">decider</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">super</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">applicationContext</span><span class="p">,</span> <span class="n">decider</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserMarker</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">ApplicationContext</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">UserMarker</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"></span>
+<span class="w">                      </span><span class="n">ApplicationContext</span><span class="w"> </span><span class="n">applicationContext</span><span class="p">,</span><span class="w"></span>
+<span class="w">                      </span><span class="n">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">ApplicationContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">decider</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">applicationContext</span><span class="p">,</span><span class="w"> </span><span class="n">decider</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>and then we can set up logging that will only work for user "28":</p>
-<div class="highlight"><pre><span></span><code><span class="n">String</span> <span class="n">userId</span> <span class="o">=</span> <span class="s">&quot;28&quot;</span><span class="p">;</span>
-<span class="n">ApplicationContext</span> <span class="n">applicationContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ApplicationContext</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
-<span class="n">UserMarkerFactory</span> <span class="n">userMarkerFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UserMarkerFactory</span><span class="p">();</span>
-<span class="n">userMarkerFactory</span><span class="p">.</span><span class="na">addUserId</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span> <span class="c1">// say we want logging events created for this user id</span>
+<div class="highlight"><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;28&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="n">ApplicationContext</span><span class="w"> </span><span class="n">applicationContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApplicationContext</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span><span class="w"></span>
+<span class="n">UserMarkerFactory</span><span class="w"> </span><span class="n">userMarkerFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UserMarkerFactory</span><span class="p">();</span><span class="w"></span>
+<span class="n">userMarkerFactory</span><span class="p">.</span><span class="na">addUserId</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span><span class="w"> </span><span class="c1">// say we want logging events created for this user id</span><span class="w"></span>
 
-<span class="n">UserMarker</span> <span class="n">userMarker</span> <span class="o">=</span> <span class="n">userMarkerFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">applicationContext</span><span class="p">);</span>
+<span class="n">UserMarker</span><span class="w"> </span><span class="n">userMarker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userMarkerFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">applicationContext</span><span class="p">);</span><span class="w"></span>
 
-<span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">userMarker</span><span class="p">,</span> <span class="s">&quot;Hello world, I am info and log for everyone&quot;</span><span class="p">);</span>
-<span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="n">userMarker</span><span class="p">,</span> <span class="s">&quot;Hello world, I am debug and only log for user 28&quot;</span><span class="p">);</span>
+<span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">userMarker</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello world, I am info and log for everyone&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="n">userMarker</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello world, I am debug and only log for user 28&quot;</span><span class="p">);</span><span class="w"></span>
 </code></pre></div>
 <p>This works especially well with a configuration management service like <a href="https://docs.launchdarkly.com/docs/java-sdk-reference#section-variation">Launch Darkly</a>, where you can <a href="https://docs.launchdarkly.com/docs/targeting-users#section-assigning-users-to-a-variation">target particular users</a> and set up logging based on the user variation.  </p>
 <p>The LaunchDarkly blog has <a href="https://launchdarkly.com/blog/operational-flags-best-practices/">best practices for operational flags</a>:</p>
@@ -624,90 +632,91 @@
 <p>Verbose logs are great for debugging and troubleshooting but always running an application in debug mode is not viable. The amount of log data generated would be overwhelming. Changing logging levels on the fly typically requires changing a configuration file and restarting the application. A multivariate operational flag enables you to change the logging level from WARNING to DEBUG in real-time.</p>
 </blockquote>
 <p>But we can give an example using the Java SDK.  You can set up a factory like so:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.Logger</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">ch.qos.logback.core.spi.FilterReply</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">com.launchdarkly.client.LDClientInterface</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">com.launchdarkly.client.LDUser</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ch.qos.logback.classic.Logger</span><span class="p">;</span><span class="w"></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ch.qos.logback.core.spi.FilterReply</span><span class="p">;</span><span class="w"></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.launchdarkly.client.LDClientInterface</span><span class="p">;</span><span class="w"></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.launchdarkly.client.LDUser</span><span class="p">;</span><span class="w"></span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LDMarkerFactory</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">LaunchDarklyDecider</span> <span class="n">decider</span><span class="p">;</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LDMarkerFactory</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LaunchDarklyDecider</span><span class="w"> </span><span class="n">decider</span><span class="p">;</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="nf">LDMarkerFactory</span><span class="p">(</span><span class="n">LDClientInterface</span> <span class="n">client</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="na">decider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LaunchDarklyDecider</span><span class="p">(</span><span class="n">requireNonNull</span><span class="p">(</span><span class="n">client</span><span class="p">));</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LDMarkerFactory</span><span class="p">(</span><span class="n">LDClientInterface</span><span class="w"> </span><span class="n">client</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">decider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LaunchDarklyDecider</span><span class="p">(</span><span class="n">requireNonNull</span><span class="p">(</span><span class="n">client</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="n">LDMarker</span> <span class="nf">create</span><span class="p">(</span><span class="n">String</span> <span class="n">featureFlag</span><span class="p">,</span> <span class="n">LDUser</span> <span class="n">user</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">LDMarker</span><span class="p">(</span><span class="n">featureFlag</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">decider</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">LDMarker</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">featureFlag</span><span class="p">,</span><span class="w"> </span><span class="n">LDUser</span><span class="w"> </span><span class="n">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LDMarker</span><span class="p">(</span><span class="n">featureFlag</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">decider</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">LaunchDarklyDecider</span> <span class="kd">implements</span> <span class="n">MarkerContextDecider</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span> <span class="p">{</span>
-        <span class="kd">private</span> <span class="kd">final</span> <span class="n">LDClientInterface</span> <span class="n">ldClient</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LaunchDarklyDecider</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MarkerContextDecider</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LDClientInterface</span><span class="w"> </span><span class="n">ldClient</span><span class="p">;</span><span class="w"></span>
 
-        <span class="n">LaunchDarklyDecider</span><span class="p">(</span><span class="n">LDClientInterface</span> <span class="n">ldClient</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">this</span><span class="p">.</span><span class="na">ldClient</span> <span class="o">=</span> <span class="n">ldClient</span><span class="p">;</span>
-        <span class="p">}</span>
+<span class="w">        </span><span class="n">LaunchDarklyDecider</span><span class="p">(</span><span class="n">LDClientInterface</span><span class="w"> </span><span class="n">ldClient</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">ldClient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ldClient</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
 
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="n">FilterReply</span> <span class="nf">apply</span><span class="p">(</span><span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span> <span class="n">marker</span><span class="p">,</span> <span class="n">LDUser</span> <span class="n">ldUser</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">ldClient</span><span class="p">.</span><span class="na">boolVariation</span><span class="p">(</span><span class="n">marker</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span> <span class="n">ldUser</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span> <span class="o">?</span>
-                    <span class="n">FilterReply</span><span class="p">.</span><span class="na">ACCEPT</span> <span class="p">:</span>
-                    <span class="n">FilterReply</span><span class="p">.</span><span class="na">NEUTRAL</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="nd">@Override</span><span class="w"></span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">FilterReply</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span><span class="w"> </span><span class="n">marker</span><span class="p">,</span><span class="w"> </span><span class="n">LDUser</span><span class="w"> </span><span class="n">ldUser</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">ldClient</span><span class="p">.</span><span class="na">boolVariation</span><span class="p">(</span><span class="n">marker</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span><span class="w"> </span><span class="n">ldUser</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"></span>
+<span class="w">                    </span><span class="n">FilterReply</span><span class="p">.</span><span class="na">ACCEPT</span><span class="w"> </span><span class="p">:</span><span class="w"></span>
+<span class="w">                    </span><span class="n">FilterReply</span><span class="p">.</span><span class="na">NEUTRAL</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">LDMarker</span> <span class="kd">extends</span> <span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span> <span class="p">{</span>
-        <span class="n">LDMarker</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">,</span> <span class="n">LDUser</span> <span class="n">context</span><span class="p">,</span> <span class="n">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span> <span class="n">decider</span><span class="p">)</span> <span class="p">{</span>
-            <span class="kd">super</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">decider</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LDMarker</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">ContextAwareTurboMarker</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">LDMarker</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">LDUser</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">ContextAwareTurboFilterDecider</span><span class="o">&lt;</span><span class="n">LDUser</span><span class="o">&gt;</span><span class="w"> </span><span class="n">decider</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="kd">super</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">decider</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>and then use the feature flag as the marker name and target the beta testers group:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LDMarkerTest</span> <span class="p">{</span>
-  <span class="kd">private</span> <span class="kd">static</span> <span class="n">LDClientInterface</span> <span class="n">client</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LDMarkerTest</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">LDClientInterface</span><span class="w"> </span><span class="n">client</span><span class="p">;</span><span class="w"></span>
 
-  <span class="nd">@BeforeAll</span>
-  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="p">()</span> <span class="p">{</span>
-      <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LDClient</span><span class="p">(</span><span class="s">&quot;sdk-key&quot;</span><span class="p">);</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="nd">@BeforeAll</span><span class="w"></span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setUp</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LDClient</span><span class="p">(</span><span class="s">&quot;sdk-key&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="nd">@AfterAll</span>
-  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">shutDown</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">try</span> <span class="p">{</span>
-      <span class="n">client</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
-    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">IOException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="nd">@AfterAll</span><span class="w"></span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shutDown</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">client</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">IOException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testMatchingMarker</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">JoranException</span> <span class="p">{</span>
-    <span class="n">LoggerContext</span> <span class="n">loggerContext</span> <span class="o">=</span> <span class="p">(</span><span class="n">LoggerContext</span><span class="p">)</span> <span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getILoggerFactory</span><span class="p">();</span>
-    <span class="n">ch</span><span class="p">.</span><span class="na">qos</span><span class="p">.</span><span class="na">logback</span><span class="p">.</span><span class="na">classic</span><span class="p">.</span><span class="na">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">loggerContext</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">org</span><span class="p">.</span><span class="na">slf4j</span><span class="p">.</span><span class="na">Logger</span><span class="p">.</span><span class="na">ROOT_LOGGER_NAME</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testMatchingMarker</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JoranException</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">LoggerContext</span><span class="w"> </span><span class="n">loggerContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">LoggerContext</span><span class="p">)</span><span class="w"> </span><span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getILoggerFactory</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">ch</span><span class="p">.</span><span class="na">qos</span><span class="p">.</span><span class="na">logback</span><span class="p">.</span><span class="na">classic</span><span class="p">.</span><span class="na">Logger</span><span class="w"> </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loggerContext</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">org</span><span class="p">.</span><span class="na">slf4j</span><span class="p">.</span><span class="na">Logger</span><span class="p">.</span><span class="na">ROOT_LOGGER_NAME</span><span class="p">);</span><span class="w"></span>
 
-    <span class="n">LDMarkerFactory</span> <span class="n">markerFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LDMarkerFactory</span><span class="p">(</span><span class="n">client</span><span class="p">);</span>
-    <span class="n">LDUser</span> <span class="n">ldUser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LDUser</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="s">&quot;UNIQUE IDENTIFIER&quot;</span><span class="p">)</span>
-            <span class="p">.</span><span class="na">firstName</span><span class="p">(</span><span class="s">&quot;Bob&quot;</span><span class="p">)</span>
-            <span class="p">.</span><span class="na">lastName</span><span class="p">(</span><span class="s">&quot;Loblaw&quot;</span><span class="p">)</span>
-            <span class="p">.</span><span class="na">customString</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">,</span> <span class="n">singletonList</span><span class="p">(</span><span class="s">&quot;beta_testers&quot;</span><span class="p">))</span>
-            <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="n">LDMarkerFactory</span><span class="w"> </span><span class="n">markerFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LDMarkerFactory</span><span class="p">(</span><span class="n">client</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">LDUser</span><span class="w"> </span><span class="n">ldUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LDUser</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="s">&quot;UNIQUE IDENTIFIER&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="p">.</span><span class="na">firstName</span><span class="p">(</span><span class="s">&quot;Bob&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="p">.</span><span class="na">lastName</span><span class="p">(</span><span class="s">&quot;Loblaw&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="p">.</span><span class="na">customString</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">singletonList</span><span class="p">(</span><span class="s">&quot;beta_testers&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w"></span>
 
-    <span class="n">LDMarkerFactory</span><span class="p">.</span><span class="na">LDMarker</span> <span class="n">ldMarker</span> <span class="o">=</span> <span class="n">markerFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;turbomarker&quot;</span><span class="p">,</span> <span class="n">ldUser</span><span class="p">);</span>
+<span class="w">    </span><span class="n">LDMarkerFactory</span><span class="p">.</span><span class="na">LDMarker</span><span class="w"> </span><span class="n">ldMarker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">markerFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;turbomarker&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ldUser</span><span class="p">);</span><span class="w"></span>
 
-    <span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">ldMarker</span><span class="p">,</span> <span class="s">&quot;Hello world, I am info&quot;</span><span class="p">);</span>
-    <span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="n">ldMarker</span><span class="p">,</span> <span class="s">&quot;Hello world, I am debug&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">ldMarker</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello world, I am info&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="n">ldMarker</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello world, I am debug&quot;</span><span class="p">);</span><span class="w"></span>
 
-    <span class="n">ListAppender</span><span class="o">&lt;</span><span class="n">ILoggingEvent</span><span class="o">&gt;</span> <span class="n">appender</span> <span class="o">=</span> <span class="p">(</span><span class="n">ListAppender</span><span class="o">&lt;</span><span class="n">ILoggingEvent</span><span class="o">&gt;</span><span class="p">)</span> <span class="n">logger</span><span class="p">.</span><span class="na">getAppender</span><span class="p">(</span><span class="s">&quot;LIST&quot;</span><span class="p">);</span>
-    <span class="n">assertThat</span><span class="p">(</span><span class="n">appender</span><span class="p">.</span><span class="na">list</span><span class="p">.</span><span class="na">size</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ListAppender</span><span class="o">&lt;</span><span class="n">ILoggingEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="n">appender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ListAppender</span><span class="o">&lt;</span><span class="n">ILoggingEvent</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">logger</span><span class="p">.</span><span class="na">getAppender</span><span class="p">(</span><span class="s">&quot;LIST&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">appender</span><span class="p">.</span><span class="na">list</span><span class="p">.</span><span class="na">size</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
 
-    <span class="n">appender</span><span class="p">.</span><span class="na">list</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="n">appender</span><span class="p">.</span><span class="na">list</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>This is also a reason why <a href="https://lemire.me/blog/2016/06/21/i-do-not-use-a-debugger/">diagnostic logging is better than a debugger</a>.  Debuggers are ephemeral, can't be used in production, and don't produce a consistent record of events: debugging log statements are the single best way to dump internal state and manage code flows in an application.</p>
 <p>See <a href="https://tersesystems.com/blog/2019/07/22/targeted-diagnostic-logging-in-production/">Targeted Diagnostic Logging in Production</a> for more details.</p>
 
               
             </article>
+            
           </div>
         </div>
         
@@ -715,12 +724,13 @@
       
         <footer class="md-footer">
   
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
         <a href="../typesafeconfig/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Typesafe Config" rel="prev">
           <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
           <div class="md-footer__title">
             <div class="md-ellipsis">
@@ -744,7 +754,7 @@
             </div>
           </div>
           <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
           </div>
         </a>
       
@@ -770,7 +780,7 @@
       
     
     <a href="https://twitter.com/will_sargent" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
     </a>
   
 </div>
@@ -783,10 +793,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.01824240.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.ff0eccb3.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a877e258.min.js"></script>
       
     
   </body>
