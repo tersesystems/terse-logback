@@ -27,7 +27,7 @@ import net.logstash.logback.decorate.JsonGeneratorDecorator;
 public class CensoringJsonGeneratorDecorator extends ContextAwareBase
     implements CensorAttachable, JsonGeneratorDecorator, LifeCycle {
 
-  private CensorContextAware censor;
+  private final List<CensorContextAware> censors = new ArrayList<>();
   private boolean started;
 
   @Override
@@ -38,13 +38,12 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase
         substitutionDelegate, new CensoringTokenFilter(), true, true);
   }
 
-  public CensorContextAware getCensor() {
-    return censor;
+  public List<CensorContextAware> getCensors() {
+    return censors;
   }
 
-  @Override
-  public void setCensor(CensorContextAware censor) {
-    this.censor = censor;
+  public void addCensor(CensorContextAware censor) {
+    this.censors.add(censor);
   }
 
   @Override
@@ -55,6 +54,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase
   @Override
   public void stop() {
     filterKeys.clear();
+    censors.clear();
     started = false;
   }
 
@@ -63,7 +63,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase
     return started;
   }
 
-  private List<String> filterKeys = new ArrayList<>();
+  private final List<String> filterKeys = new ArrayList<>();
 
   public void addFilterKey(String filterKey) {
     this.filterKeys.add(filterKey);
@@ -85,7 +85,7 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase
     }
 
     private boolean shouldFilter(String name) {
-      return filterKeys != null && filterKeys.contains(name);
+      return filterKeys.contains(name);
     }
 
     @Override
@@ -101,11 +101,13 @@ public class CensoringJsonGeneratorDecorator extends ContextAwareBase
     }
 
     private String censorSensitiveMessage(String original) {
-      if (censor != null) {
-        return String.valueOf(censor.censorText(original));
-      } else {
-        return original;
+      String value = original;
+      final List<CensorContextAware> censors = getCensors();
+      for (CensorContextAware censor : censors) {
+        value = String.valueOf(censor.censorText(value));
       }
+
+      return value;
     }
 
     @Override
