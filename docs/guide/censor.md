@@ -62,7 +62,8 @@ If you are working with a componentized framework, you'll want to use the `censo
         <file>file3.log</file>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
-                <censor-ref ref="json-censor"/>
+                <censor-ref ref="first-censor"/>
+                <censor-ref ref="second-censor"/>
             </jsonGeneratorDecorator>
         </encoder>
     </appender>
