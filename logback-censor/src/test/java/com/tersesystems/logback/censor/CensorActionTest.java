@@ -61,8 +61,8 @@ public class CensorActionTest {
     ch.qos.logback.classic.Logger root = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
     TestAppender test = (TestAppender) root.getAppender("TEST3");
     assertThat(test).isNotNull();
-    byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter3"));
-    assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("\"message\":\"[CENSOR3]\"");
+    byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter3 hunter4"));
+    assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("\"message\":\"[CENSOR3] [CENSOR4]\"");
   }
 
   @Test

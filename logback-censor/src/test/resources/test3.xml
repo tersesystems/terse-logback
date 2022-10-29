@@ -18,15 +18,21 @@
 
     <conversionRule conversionWord="censor" converterClass="com.tersesystems.logback.censor.CensorConverter" />
 
-    <censor name="json-censor" class="com.tersesystems.logback.censor.RegexCensor">
+    <censor name="hunter3-censor" class="com.tersesystems.logback.censor.RegexCensor">
         <regex>hunter3</regex>
         <replacementText>[CENSOR3]</replacementText>
+    </censor>
+
+    <censor name="hunter4-censor" class="com.tersesystems.logback.censor.RegexCensor">
+        <regex>hunter4</regex>
+        <replacementText>[CENSOR4]</replacementText>
     </censor>
 
     <appender name="TEST3" class="com.tersesystems.logback.censor.TestAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <jsonGeneratorDecorator class="com.tersesystems.logback.censor.CensoringJsonGeneratorDecorator">
-                <censor-ref ref="json-censor"/>
+                <censor-ref ref="hunter3-censor"/>
+                <censor-ref ref="hunter4-censor"/>
             </jsonGeneratorDecorator>
         </encoder>
     </appender>

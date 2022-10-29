@@ -72,7 +72,7 @@ public class CensorRefAction extends Action {
             + censorAttachable
             + "at "
             + getLineNumber(ec));
-    censorAttachable.setCensor(censor);
+    censorAttachable.addCensor(censor);
   }
 
   public void end(InterpretationContext ec, String n) {}

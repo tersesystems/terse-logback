@@ -24,15 +24,23 @@ public class CensoringJsonGeneratorDecoratorTest {
   @Test
   public void basicCensor() throws Exception {
     LoggerContext context = new LoggerContext();
-    RegexCensor censor = new RegexCensor();
-    censor.setContext(context);
-    censor.setReplacementText("*******");
-    censor.setRegex("hunter2");
-    censor.start();
+    RegexCensor censor1 = new RegexCensor();
+    censor1.setContext(context);
+    censor1.setReplacementText("*******");
+    censor1.setRegex("hunter2");
+    censor1.start();
+
+    RegexCensor censor2 = new RegexCensor();
+    censor2.setContext(context);
+    censor2.setReplacementText("!!!!!!");
+    censor2.setRegex("message");
+    censor2.start();
+
 
     CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
     decorator.setContext(context);
-    decorator.setCensor(censor);
+    decorator.addCensor(censor1);
+    decorator.addCensor(censor2);
     decorator.start();
 
     StringWriter writer = new StringWriter();
@@ -44,7 +52,7 @@ public class CensoringJsonGeneratorDecoratorTest {
     generator.writeEndObject();
     generator.flush();
 
-    assertThat(writer.toString()).isEqualTo("{\"message\":\"My ******* message\"}");
+    assertThat(writer.toString()).isEqualTo("{\"message\":\"My ******* !!!!!!\"}");
   }
 
   @Test
@@ -76,7 +84,7 @@ public class CensoringJsonGeneratorDecoratorTest {
 
     CensoringJsonGeneratorDecorator decorator = new CensoringPrettyPrintingJsonGeneratorDecorator();
     decorator.setContext(context);
-    decorator.setCensor(censor);
+    decorator.addCensor(censor);
     decorator.start();
 
     StringWriter writer = new StringWriter();
