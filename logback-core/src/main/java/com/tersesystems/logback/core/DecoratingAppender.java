@@ -63,4 +63,13 @@ public abstract class DecoratingAppender<E, EE extends E> extends Unsynchronized
   public boolean detachAppender(String name) {
     return aai.detachAppender(name);
   }
+
+  public void stop() {
+    if (isStarted()) {
+      if (aai != null) {
+        aai.detachAndStopAllAppenders();
+      }
+    }
+    super.stop();
+  }
 }
