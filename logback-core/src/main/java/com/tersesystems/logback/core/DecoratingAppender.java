@@ -66,9 +66,7 @@ public abstract class DecoratingAppender<E, EE extends E> extends Unsynchronized
 
   public void stop() {
     if (isStarted()) {
-      if (aai != null) {
-        aai.detachAndStopAllAppenders();
-      }
+      aai.detachAndStopAllAppenders();
     }
     super.stop();
   }

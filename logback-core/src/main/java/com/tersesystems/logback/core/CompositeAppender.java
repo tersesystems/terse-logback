@@ -31,8 +31,10 @@ public class CompositeAppender<E> extends UnsynchronizedAppenderBase<E>
 
   @Override
   public void stop() {
+    if (isStarted()) {
+      detachAndStopAllAppenders();
+    }
     super.stop();
-    detachAndStopAllAppenders();
   }
 
   @Override
