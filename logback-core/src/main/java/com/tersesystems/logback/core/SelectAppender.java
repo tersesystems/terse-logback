@@ -35,6 +35,7 @@ public class SelectAppender<E> extends AppenderBase<E> implements AppenderAttach
   @Override
   public void stop() {
     super.stop();
+    detachAndStopAllAppenders();
   }
 
   @Override

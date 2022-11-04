@@ -62,7 +62,8 @@ public class CensorActionTest {
     TestAppender test = (TestAppender) root.getAppender("TEST3");
     assertThat(test).isNotNull();
     byte[] bytes = test.getEncoder().encode(createLoggingEvent(root, "hunter3 hunter4"));
-    assertThat(new String(bytes, StandardCharsets.UTF_8)).contains("\"message\":\"[CENSOR3] [CENSOR4]\"");
+    assertThat(new String(bytes, StandardCharsets.UTF_8))
+        .contains("\"message\":\"[CENSOR3] [CENSOR4]\"");
   }
 
   @Test

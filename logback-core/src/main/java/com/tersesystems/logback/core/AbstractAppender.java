@@ -48,6 +48,11 @@ public abstract class AbstractAppender<E> extends UnsynchronizedAppenderBase<E>
     return aai.iteratorForAppenders();
   }
 
+  public void stop() {
+    super.stop();
+    aai.detachAndStopAllAppenders();
+  }
+
   public Appender<E> getAppender(String name) {
     return aai.getAppender(name);
   }

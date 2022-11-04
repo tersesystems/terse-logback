@@ -30,6 +30,12 @@ public class CompositeAppender<E> extends UnsynchronizedAppenderBase<E>
   protected AppenderAttachableImpl<E> aai = new AppenderAttachableImpl<E>();
 
   @Override
+  public void stop() {
+    super.stop();
+    detachAndStopAllAppenders();
+  }
+
+  @Override
   protected void append(E eventObject) {
     aai.appendLoopOnAppenders(eventObject);
   }
