@@ -23,7 +23,7 @@ import java.util.Map;
  * <p>Note that this does not filter out marker text or additional information related to the event,
  * i.e. it does not filter out exception text.
  *
- * Note also that the censor converter only picks out one censor from the list.
+ * <p>Note also that the censor converter only picks out one censor from the list.
  *
  * <pre>{@code
  * <conversionRule conversionWord="censor"

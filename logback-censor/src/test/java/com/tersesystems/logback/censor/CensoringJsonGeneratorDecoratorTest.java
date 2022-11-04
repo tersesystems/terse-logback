@@ -36,7 +36,6 @@ public class CensoringJsonGeneratorDecoratorTest {
     censor2.setRegex("message");
     censor2.start();
 
-
     CensoringJsonGeneratorDecorator decorator = new CensoringJsonGeneratorDecorator();
     decorator.setContext(context);
     decorator.addCensor(censor1);
