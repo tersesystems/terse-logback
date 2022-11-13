@@ -4,6 +4,12 @@ There are instances where loggers may be overly chatty, and will log more than n
 
 This is easy to do with the `logback-budget` module, which uses an internal [circuit breaker](https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/concurrent/CircuitBreaker.html) to regulate the flow of messages.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-budget](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-budget).
+
+## Usage
+
 The time unit corresponds to the text value of `java.util.concurrent.TimeUnit` i.e. `nanoseconds`, `microseconds`, `milliseconds`, `seconds`, `minutes`, `hours`, `days`, case-insensitive.
 
 ```xml

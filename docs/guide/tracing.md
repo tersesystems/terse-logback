@@ -1,21 +1,22 @@
 # Tracing to Honeycomb
 
-You can connect Logback to Honeycomb directly through the Honeycomb Logback appender.  The appender is split into the appender and an HTTP client implementation, which can be OKHTTP or Play WS.
+You can connect Logback to Honeycomb directly through the Honeycomb Logback appender, using the [Events API](https://docs.honeycomb.io/api/events/).  Posting data directly to Honeycomb lets you leverage Honeycomb's trace API to show logs as hierarchical traces and spans.  
 
-Add the appender module 'logback-honeycomb-appender' and the implementation 'logback-honeycomb-okhttp':
+Bear in mind that the tracing feature here is optional -- you can use the Honeycomb appender out of the box without tracing with just plain logs.
 
-```gradle
-implementation group: 'com.tersesystems.logback', name: 'logback-tracing'
-implementation group: 'com.tersesystems.logback', name: 'logback-honeycomb-okhttp'
-```
+However, adding tracing through logging is interesting in a couple of different ways.  Using Honeycomb means logs can be immediately visualized and queried without setting up extensive infrastructure.  From a tracing perspective, it completely avoids the OpenTelemetry manual instrumentation usually needed for tracing, and allows for tweaks and customization without the sampling or collector assumptions involved.
+
+## Implementation
+
+Add the library dependency using [hhttps://mvnrepository.com/artifact/com.tersesystems.logback/logback-honeycomb-okhttp](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-honeycomb-okhttp) for the honeycomb appender.
+
+To set up tracing, add [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing) and [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic) for the start time converter.
+
+## Usage
 
 The appender is of type `com.tersesystems.logback.honeycomb.HoneycombAppender`, and makes use of the client under the hood.  Because the honeycomb appender uses an HTTP client under the hood, there are a couple of important notes.
 
-> **NOTE**: Because the HTTP client runs on a different thread, you **must** have a [shutdown hook](http://logback.qos.ch/manual/configuration.html#shutdownHook) configured so that shutting down can be delayed until the events are posted. 
-
-and
-
-> **NOTE**: Because the HTTP client may have non-daemon threads running, you **should** call System.exit explicitly to stop the application if you are not in a long-running service.  
+> **NOTE**: Because the HTTP client runs on a different thread, you should make sure you either shutdown Logback explicitly by calling `loggerContext.stop`, or use [shutdown hook](http://logback.qos.ch/manual/configuration.html#shutdownHook) configured so that shutting down can be delayed until the events are posted.
 
 The appender is as follows:
 
@@ -90,7 +91,6 @@ return spanInfo.withChild("doSomething", childInfo -> {
 ```
 
 or asking for a child builder that you can build yourself:
-
 
 ```java
 SpanInfo childInfo = spanInfo.childBuilder().setSpanName("doSomething").buildNow();

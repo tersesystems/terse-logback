@@ -30,7 +30,11 @@ See [Application Logging in Java: Tracing 3rd Party Code](https://tersesystems.c
 
 ## Installation
 
-You'll need to install `logback-bytebuddy` and `logback-tracing`, and provide a `byte-buddy` implementation.
+
+You'll need to install [logback-bytebuddy](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-bytebuddy) and [logback-tracing](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing).
+
+You should also install [byte-buddy](https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy).
+
 
 ```
 implementation group: 'com.tersesystems.logback', name: 'logback-classic', version: 'LATEST'

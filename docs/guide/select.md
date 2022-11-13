@@ -18,42 +18,27 @@ Operations wants:
 
 Logback is not aware of different environments.  There's no out of the box way to say "in this environment I want these sets of appenders, but in this other environment I want these other sets of appenders."
 
-Fortunately, adding this is pretty easy, by leveraging `AppenderAttachable` and pulling a key to select on:
+## Installation
 
-```java
-public class SelectAppender extends AppenderBase<ILoggingEvent> implements AppenderAttachable<ILoggingEvent> {
-    private AppenderAttachableImpl<ILoggingEvent> aai = new AppenderAttachableImpl<ILoggingEvent>();
-    private String appenderKey;
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core).
 
-    @Override
-    protected void append(ILoggingEvent eventObject) {
-        Appender<ILoggingEvent> appender = aai.getAppender(appenderKey);
-        if (appender == null) {
-            addError("No appender found for appenderKey " + appenderKey);
-        } else {
-            appender.doAppend(eventObject);
-        }
-    }
-
-    // ...
-}
-```
+## Usage
 
 The logback appenders under selection must have the name defined as an element, because Logback only looks for the name attribute at the top level, but otherwise they're the same.  Here, we select the set of appenders we want based on the `LOGBACK_ENVIRONMENT` environment variable.
 
 ```xml
 <configuration>
-    <appender name="SELECT" class="com.tersesystems.logback.SelectAppender">
+    <appender name="SELECT" class="com.tersesystems.logback.core.SelectAppender">
         <appenderKey>${LOGBACK_ENVIRONMENT}</appenderKey>
 
-        <appender class="com.tersesystems.logback.CompositeAppender">
+        <appender class="com.tersesystems.logback.core.CompositeAppender">
             <name>test</name>
             <appender class="ch.qos.logback.core.read.ListAppender">
                 <name>test-list</name>
             </appender>
         </appender>
 
-        <appender class="com.tersesystems.logback.CompositeAppender">
+        <appender class="com.tersesystems.logback.core.CompositeAppender">
             <name>development</name>
             <appender class="ch.qos.logback.core.ConsoleAppender">
                 <name>development-console</name>
@@ -63,7 +48,7 @@ The logback appenders under selection must have the name defined as an element, 
             </appender>
         </appender>
 
-        <appender class="com.tersesystems.logback.CompositeAppender">
+        <appender class="com.tersesystems.logback.core.CompositeAppender">
             <name>staging</name>
             <appender class="ch.qos.logback.core.ConsoleAppender">
                 <name>staging-console</name>

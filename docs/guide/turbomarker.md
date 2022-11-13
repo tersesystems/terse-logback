@@ -2,11 +2,19 @@
 
 [Turbo filters](https://logback.qos.ch/manual/filters.html#TurboFilter) are filters that decide whether a logging event should be created or not.  They are not appender specific in the way that normal filters are, and so are used to override logger levels.  However, there's a problem with the way that the turbo filter is set up: the two implementing classes are `ch.qos.logback.classic.turbo.MarkerFilter` and `ch.qos.logback.classic.turbo.MDCFilter`.  The marker filter will always log if the given marker is applied, and the MDC filter relies on an attribute being populated in the MDC map.
 
-What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.
+What we'd really like to do is say "for this particular user, log everything he does at DEBUG level" and not have it rely on thread-local state at all, and carry out an arbitrary computation at call time.  We can do this by adding a decider to a turbo filter, and adding "turbo markers."
+
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-turbomarker](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-turbomarker).
+
+## Usage
 
 We start by pulling the `decide` method to an interface, [`TurboFilterDecider`](https://github.com/tersesystems/terse-logback/blob/master/logback-classic/src/main/java/com/tersesystems/logback/classic/TurboFilterDecider.java):
 
 ```java
+package com.tersesystems.logback.classic;
+
 public interface TurboFilterDecider {
     FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t);
 }
@@ -15,6 +23,8 @@ public interface TurboFilterDecider {
 And have the turbo filter [delegate to markers that implement the TurboFilterDecider interface](https://github.com/tersesystems/terse-logback/blob/master/logback-turbomarker/src/main/java/com/tersesystems/logback/turbomarker/TurboMarkerTurboFilter.java):
 
 ```java
+package com.tersesystems.logback.turbomarker;
+
 public class TurboMarkerTurboFilter extends TurboFilter {
 
     @Override

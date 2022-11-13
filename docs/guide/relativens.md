@@ -15,6 +15,10 @@ All logging events are computed using `System.nanoTime - NanoTime.start`, where 
 
 See the [showcase](https://github.com/tersesystems/terse-logback-showcase) for an example.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic).
+
 ## Usage
 
 ```xml

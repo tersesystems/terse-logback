@@ -2,13 +2,21 @@
 
 There is a JDBC appender included which can be subclassed and extended as necessary in the `logback-jdbc-appender` module.  Using a database for logging can be a big help when you just want to get at the logs of the last 30 seconds from inside the application.  Because JDBC is both accessible and understandable, there's very little work required for querying.
 
+Also consider using [Blacklite](https://github.com/tersesystems/blacklite/), an SQLite appender configured for low latency and high throughput.
+
 Logback **does** have a native JDBC appender, but unfortunately it requires three tables and is not set up for easy subclassing.  This one is better.
- 
-This implementation assumes a single table, with a user defined extensible schema, and is set up with [HikariCP](https://github.com/brettwooldridge/HikariCP)  and a thread pool executor to serve JDBC with minimal blocking.  Note that you should **always** use a JDBC appender behind an `LoggingEventAsyncDisruptorAppender` and you should have an [appropriately sized connection pool](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing) for your database traffic.
+
+This implementation assumes a single table, with a user defined extensible schema, and is set up with [HikariCP](https://github.com/brettwooldridge/HikariCP)  and a thread pool executor to serve JDBC with minimal blocking.  Note that you should **always** use a JDBC appender behind an async appender like `LoggingEventAsyncDisruptorAppender` and you should have an [appropriately sized connection pool](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing) for your database traffic.
 
 Database timestamps record time with microsecond resolution, whereas millisecond resolution is commonplace for logging, so for convenience both the timestamp with time zone and the time since epoch are recorded.  For span information, the start time must also be recorded as TSE.  Likewise, the level is recorded as both a text string for visual reference, and a level value so that you can order and filter database queries.
 
-Querying a database can be helpful when errors occur, because you can pull out all logs with a correlation id.  See the `logback-correlationid` module for an example.
+Querying a database can be helpful when errors occur, because you can pull out all logs with a correlation id.  See the [correlationid module](correlationid.md) for an example.
+
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-jdbc-appender](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-jdbc-appender).
+
+## Usage
 
 ### Logging using in-memory H2 Database
 

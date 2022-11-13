@@ -2,9 +2,15 @@
 
 The `logback-correlationid` module is a set of classes designed to encompass the idea of a correlation id in events.
 
-It consists of a correlation id filter, a tap filter that always logs events with a correlation id to an appender, and a correlation id marker. 
+## Installation
 
-## Correlation ID Filter
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-correlationid](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-correlationid).
+
+## Usage
+
+It consists of a correlation id filter, a tap filter that always logs events with a correlation id to an appender, and a correlation id marker.
+
+### Correlation ID Filter
 
 A correlation id filter will filter for a correlation id set either as an MDC value, or as a marker created from `CorrelationIdMarker`.  
 
@@ -39,7 +45,7 @@ public class CorrelationIdFilterTest {
 }
 ```
 
-## CorrelationIdTapFilter
+### CorrelationIdTapFilter
 
 The `CorrelationIdTapFilter` is a turbofilter that always logs to a given appender if the correlation id appears, even if the appender is not configured for logging.  
 

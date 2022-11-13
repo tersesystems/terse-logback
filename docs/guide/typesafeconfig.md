@@ -2,6 +2,14 @@
 
 The `TypesafeConfigAction` will search in a variety of places for configuration using [standard fallback behavior](https://github.com/lightbend/config#standard-behavior) for Typesafe Config, which gives a richer experience to end users.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config).
+
+## Usage
+
+The configuration is derived as follows:
+
 ```java
 Config config = systemProperties        // Look for a property from system properties first...
         .withFallback(file)          // if we don't find it, then look in an explicitly defined file...
