@@ -10,6 +10,8 @@ Add the library dependency using [https://mvnrepository.com/artifact/com.tersesy
 
 ## Usage
 
+The time unit corresponds to the text value of `java.util.concurrent.TimeUnit` i.e. `nanoseconds`, `microseconds`, `milliseconds`, `seconds`, `minutes`, `hours`, `days`, case-insensitive.
+
 ```xml
 <configuration>
 
