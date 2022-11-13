@@ -1,0 +1,805 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Terse Logback Documentation">
+      
+      
+        <meta name="author" content="Will Sargent">
+      
+      
+        <link rel="canonical" href="https://tersesystems.github.io/terse-logback/1.0.11/guide/tracing/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
+    
+    
+      
+        <title>Tracing with Honeycomb - Terse Logback</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tracing-to-honeycomb" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+        </aside>
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Terse Logback" class="md-header__button md-logo" aria-label="Terse Logback" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Terse Logback
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tracing with Honeycomb
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tersesystems/terse-logback" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Terse Logback" class="md-nav__button md-logo" aria-label="Terse Logback" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Terse Logback
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tersesystems/terse-logback" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terse-logback
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Modules
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Modules" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Modules
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../audio/" class="md-nav__link">
+        Audio
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../budget/" class="md-nav__link">
+        Budgeting / Rate Limiting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../censor/" class="md-nav__link">
+        Censors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../composite/" class="md-nav__link">
+        Composite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compression/" class="md-nav__link">
+        Compression
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../correlationid/" class="md-nav__link">
+        Correlation Id
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exception-mapping/" class="md-nav__link">
+        Exception Mapping
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instrumentation/" class="md-nav__link">
+        Instrumentation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jdbc/" class="md-nav__link">
+        JDBC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../slf4jbridge/" class="md-nav__link">
+        JUL to SLF4J Bridge
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relativens/" class="md-nav__link">
+        Relative Nanos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../select/" class="md-nav__link">
+        Select Appender
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Tracing with Honeycomb
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Tracing with Honeycomb
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    Implementation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typesafeconfig/" class="md-nav__link">
+        Typesafe Config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../turbomarker/" class="md-nav__link">
+        Turbo Markers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uniqueid/" class="md-nav__link">
+        Unique ID Appender
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    Implementation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/tersesystems/terse-logback/edit/master/docs/guide/tracing.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="tracing-to-honeycomb">Tracing to Honeycomb<a class="headerlink" href="#tracing-to-honeycomb" title="Permanent link">&para;</a></h1>
+<p>You can connect Logback to Honeycomb directly through the Honeycomb Logback appender, using the <a href="https://docs.honeycomb.io/api/events/">Events API</a>.  Posting data directly to Honeycomb lets you leverage Honeycomb's trace API to show logs as hierarchical traces and spans.  </p>
+<p>Bear in mind that the tracing feature here is optional -- you can use the Honeycomb appender out of the box without tracing with just plain logs.</p>
+<p>However, adding tracing through logging is interesting in a couple of different ways.  Using Honeycomb means logs can be immediately visualized and queried without setting up extensive infrastructure.  From a tracing perspective, it completely avoids the OpenTelemetry manual instrumentation usually needed for tracing, and allows for tweaks and customization without the sampling or collector assumptions involved.</p>
+<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
+<p>Add the library dependency using <a href="https://mvnrepository.com/artifact/com.tersesystems.logback/logback-honeycomb-okhttp">com.tersesystems.logback:logback-honeycomb-okhttp</a> for the honeycomb appender.</p>
+<p>To set up tracing, add <a href="https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing">com.tersesystems.logback:logback-tracing</a> and <a href="https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic">com.tersesystems.logback:logback-classic</a> for the start time converter.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<p>The appender is of type <code>com.tersesystems.logback.honeycomb.HoneycombAppender</code>, and makes use of the client under the hood.  Because the honeycomb appender uses an HTTP client under the hood, there are a couple of important notes.</p>
+<blockquote>
+<p><strong>NOTE</strong>: Because the HTTP client runs on a different thread, you should make sure you either shutdown Logback explicitly by calling <code>loggerContext.stop</code>, or use <a href="http://logback.qos.ch/manual/configuration.html#shutdownHook">shutdown hook</a> configured so that shutting down can be delayed until the events are posted.</p>
+</blockquote>
+<p>The appender is as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;shutdownHook</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.hook.DelayingShutdownHook&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;delay&gt;</span>1000<span class="nt">&lt;/delay&gt;</span>
+  <span class="nt">&lt;/shutdownHook&gt;</span>
+
+  <span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">&quot;startTime&quot;</span> <span class="na">converterClass=</span><span class="s">&quot;com.tersesystems.logback.classic.StartTimeConverter&quot;</span> <span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;HONEYCOMB&quot;</span> <span class="na">class=</span><span class="s">&quot;com.tersesystems.logback.honeycomb.HoneycombAppender&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;apiKey&gt;</span>${HONEYCOMB_API_KEY}<span class="nt">&lt;/apiKey&gt;</span>
+      <span class="nt">&lt;dataSet&gt;</span>terse-logback<span class="nt">&lt;/dataSet&gt;</span>
+      <span class="nt">&lt;sampleRate&gt;</span>1<span class="nt">&lt;/sampleRate&gt;</span>
+      <span class="nt">&lt;queueSize&gt;</span>10<span class="nt">&lt;/queueSize&gt;</span>
+      <span class="nt">&lt;batch&gt;</span>true<span class="nt">&lt;/batch&gt;</span>
+      <span class="nt">&lt;includeCallerData&gt;</span>false<span class="nt">&lt;/includeCallerData&gt;</span>
+
+      <span class="nt">&lt;encoder</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;providers&gt;</span>
+              <span class="nt">&lt;message/&gt;</span>
+              <span class="nt">&lt;loggerName/&gt;</span>
+              <span class="nt">&lt;threadName/&gt;</span>
+              <span class="nt">&lt;logLevel/&gt;</span>
+              <span class="nt">&lt;stackHash/&gt;</span>
+              <span class="nt">&lt;mdc/&gt;</span>
+              <span class="nt">&lt;logstashMarkers/&gt;</span>
+              <span class="nt">&lt;pattern&gt;</span>
+                <span class="nt">&lt;pattern&gt;</span>
+                    { &quot;start_ms&quot;: &quot;#asLong{%startTime}&quot; }
+                <span class="nt">&lt;/pattern&gt;</span>
+             <span class="nt">&lt;/pattern&gt;</span>
+              <span class="nt">&lt;arguments/&gt;</span>
+              <span class="nt">&lt;stackTrace&gt;</span>
+                  <span class="nt">&lt;throwableConverter</span> <span class="na">class=</span><span class="s">&quot;net.logstash.logback.stacktrace.ShortenedThrowableConverter&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;rootCauseFirst&gt;</span>true<span class="nt">&lt;/rootCauseFirst&gt;</span>
+                  <span class="nt">&lt;/throwableConverter&gt;</span>
+              <span class="nt">&lt;/stackTrace&gt;</span>
+          <span class="nt">&lt;/providers&gt;</span>
+      <span class="nt">&lt;/encoder&gt;</span>
+  <span class="nt">&lt;/appender&gt;</span>
+
+  <span class="cm">&lt;!-- </span>
+<span class="cm">    don&#39;t send the logs from the http engine to the appender or you</span>
+<span class="cm">    may end up in a loop</span>
+<span class="cm">  --&gt;</span>
+  <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;okhttp&quot;</span> <span class="na">level=</span><span class="s">&quot;ERROR&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&quot;INFO&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;HONEYCOMB&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/root&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+<p>You can also send tracing information to Honeycomb through SLF4J markers, using the <code>SpanMarkerFactory</code>.  Underneath the hood, the SpanInfo puts together logstash markers according to <a href="https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#manual-tracing">manual tracing</a>.</p>
+<p>The way this works in practice is that you start up a <code>SpanInfo</code> at the beginning of a request, and call <code>buildNow</code> to mark the start of the span.  At the end of the operation, you log with a marker, by passing through the marker factory:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SpanInfo</span><span class="w"> </span><span class="n">spanInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">setRootSpan</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">).</span><span class="na">buildNow</span><span class="p">();</span><span class="w"></span>
+<span class="c1">// ...</span><span class="w"></span>
+<span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">markerFactory</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="n">spanInfo</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;completed successfully!&quot;</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+<p>If you want to create a child span, you can do it from the parent using <code>withChild</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">return</span><span class="w"> </span><span class="n">spanInfo</span><span class="p">.</span><span class="na">withChild</span><span class="p">(</span><span class="s">&quot;doSomething&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">childInfo</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">doSomething</span><span class="p">(</span><span class="n">childInfo</span><span class="p">);</span><span class="w"></span>
+<span class="p">});</span><span class="w"></span>
+</code></pre></div>
+<p>or asking for a child builder that you can build yourself:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SpanInfo</span><span class="w"> </span><span class="n">childInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spanInfo</span><span class="p">.</span><span class="na">childBuilder</span><span class="p">().</span><span class="na">setSpanName</span><span class="p">(</span><span class="s">&quot;doSomething&quot;</span><span class="p">).</span><span class="na">buildNow</span><span class="p">();</span><span class="w"></span>
+</code></pre></div>
+<p>The start time information is captured in a <code>StartTimeMarker</code> which can be extracted by <code>StartTime.from</code> and is used in building the Honeycomb Request.  The event timestamp serves as the span's end time.  This is useful in Honeycomb Tracing, as the timestamp is the start time, not the time that the log entry was posted.</p>
+<p>For example, in Play you might run a controller as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nn">com</span><span class="p">.</span><span class="nn">tersesystems</span><span class="p">.</span><span class="nn">logback</span><span class="p">.</span><span class="nn">tracing</span><span class="p">.</span><span class="nc">SpanMarkerFactory</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com</span><span class="p">.</span><span class="nn">tersesystems</span><span class="p">.</span><span class="nn">logback</span><span class="p">.</span><span class="nn">tracing</span><span class="p">.</span><span class="nc">SpanInfo</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">javax</span><span class="p">.</span><span class="nn">inject</span><span class="p">.</span><span class="n">_</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">org</span><span class="p">.</span><span class="nn">slf4j</span><span class="p">.</span><span class="nc">LoggerFactory</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">play</span><span class="p">.</span><span class="nn">api</span><span class="p">.</span><span class="nn">libs</span><span class="p">.</span><span class="nn">concurrent</span><span class="p">.</span><span class="nc">Futures</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">play</span><span class="p">.</span><span class="nn">api</span><span class="p">.</span><span class="nn">mvc</span><span class="p">.</span><span class="n">_</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">scala</span><span class="p">.</span><span class="nn">concurrent</span><span class="p">.{</span><span class="nc">ExecutionContext</span><span class="p">,</span><span class="w"> </span><span class="nc">Future</span><span class="p">}</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">scala</span><span class="p">.</span><span class="nn">util</span><span class="p">.{</span><span class="nc">Failure</span><span class="p">,</span><span class="w"> </span><span class="nc">Success</span><span class="p">}</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">scala</span><span class="p">.</span><span class="nn">concurrent</span><span class="p">.</span><span class="nn">duration</span><span class="p">.</span><span class="n">_</span>
+
+<span class="nd">@Singleton</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HomeController</span><span class="w"> </span><span class="nd">@Inject</span><span class="p">()(</span><span class="n">cc</span><span class="p">:</span><span class="w"> </span><span class="nc">ControllerComponents</span><span class="p">,</span><span class="w"> </span><span class="n">futures</span><span class="p">:</span><span class="w"> </span><span class="nc">Futures</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">(</span><span class="k">implicit</span><span class="w"> </span><span class="n">ec</span><span class="p">:</span><span class="w"> </span><span class="nc">ExecutionContext</span><span class="p">)</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nc">AbstractController</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="n">markerFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">SpanMarkerFactory</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LoggerFactory</span><span class="p">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">getClass</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">def</span><span class="w"> </span><span class="nf">builder</span><span class="p">:</span><span class="w"> </span><span class="nc">SpanInfo</span><span class="p">.</span><span class="nc">Builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">SpanInfo</span><span class="p">.</span><span class="n">builder</span><span class="p">().</span><span class="n">setServiceName</span><span class="p">(</span><span class="s">&quot;play_hello_world&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span><span class="w"> </span><span class="nc">Action</span><span class="p">[</span><span class="nc">AnyContent</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Action</span><span class="p">.</span><span class="n">async</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">implicit</span><span class="w"> </span><span class="n">request</span><span class="p">:</span><span class="w"> </span><span class="nc">Request</span><span class="p">[</span><span class="nc">AnyContent</span><span class="p">]</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="n">spanInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">setRootSpan</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">).</span><span class="n">buildNow</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="n">f</span><span class="p">:</span><span class="w"> </span><span class="nc">Future</span><span class="p">[</span><span class="nc">Result</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spanInfo</span><span class="p">.</span><span class="n">withChild</span><span class="p">(</span><span class="s">&quot;renderPage&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">renderPage</span><span class="p">(</span><span class="n">_</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="n">f</span><span class="p">.</span><span class="n">andThen</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="nc">Success</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="n">markerFactory</span><span class="p">(</span><span class="n">spanInfo</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;index completed successfully!&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="nc">Failure</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="n">markerFactory</span><span class="p">(</span><span class="n">spanInfo</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;index completed with error&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">renderPage</span><span class="p">(</span><span class="n">spanInfo</span><span class="p">:</span><span class="w"> </span><span class="nc">SpanInfo</span><span class="p">):</span><span class="w"> </span><span class="nc">Future</span><span class="p">[</span><span class="nc">Result</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">futures</span><span class="p">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">5</span><span class="p">.</span><span class="n">seconds</span><span class="p">).</span><span class="n">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"></span>
+<span class="w">      </span><span class="nc">Ok</span><span class="p">(</span><span class="n">views</span><span class="p">.</span><span class="n">html</span><span class="p">.</span><span class="n">index</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="p">}.</span><span class="n">andThen</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">       </span><span class="k">case</span><span class="w"> </span><span class="nc">Success</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"></span>
+<span class="w">         </span><span class="n">logger</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="n">markerFactory</span><span class="p">(</span><span class="n">spanInfo</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;renderPage completed successfully!&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">       </span><span class="k">case</span><span class="w"> </span><span class="nc">Failure</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"></span>
+<span class="w">         </span><span class="n">logger</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="n">markerFactory</span><span class="p">(</span><span class="n">spanInfo</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;renderPage completed with error&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>This generates a trace with a root span of "index", a child span of "renderPage" each with their own durations.</p>
+<p>You can also send <a href="https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#span-events">span events</a> and <a href="https://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#links">span links</a> using the <code>LinkMarkerFactory</code> and <code>EventMarkerFactory</code>, similar to the <code>SpanMarkerFactory</code>.</p>
+<p>See <a href="https://tersesystems.com/blog/2019/08/22/tracing-with-logback-and-honeycomb/">Tracing With Logback and Honeycomb</a> and <a href="https://tersesystems.com/blog/2019/09/15/hierarchical-instrumented-tracing-with-logback/">Hierarchical Instrumented Tracing with Logback</a> for more details.</p>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../select/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Select Appender" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Select Appender
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../typesafeconfig/" class="md-footer__link md-footer__link--next" aria-label="Next: Typesafe Config" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Typesafe Config
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://mastodon.xyz/web/@will_sargent" target="_blank" rel="noopener" title="mastodon.xyz" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M433 179.11c0-97.2-63.71-125.7-63.71-125.7-62.52-28.7-228.56-28.4-290.48 0 0 0-63.72 28.5-63.72 125.7 0 115.7-6.6 259.4 105.63 289.1 40.51 10.7 75.32 13 103.33 11.4 50.81-2.8 79.32-18.1 79.32-18.1l-1.7-36.9s-36.31 11.4-77.12 10.1c-40.41-1.4-83-4.4-89.63-54a102.54 102.54 0 0 1-.9-13.9c85.63 20.9 158.65 9.1 178.75 6.7 56.12-6.7 105-41.3 111.23-72.9 9.8-49.8 9-121.5 9-121.5zm-75.12 125.2h-46.63v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.33V197c0-58.5-64-56.6-64-6.9v114.2H90.19c0-122.1-5.2-147.9 18.41-175 25.9-28.9 79.82-30.8 103.83 6.1l11.6 19.5 11.6-19.5c24.11-37.1 78.12-34.8 103.83-6.1 23.71 27.3 18.4 53 18.4 175z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a877e258.min.js"></script>
+      
+    
+  </body>
+</html>
