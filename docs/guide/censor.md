@@ -4,6 +4,12 @@ There may be sensitive information that you don't want to show up in the logs.  
 
 There are two rules and a converter that are used in Logback to define and reference censors: `CensorAction`, `CensorRefAction` and the `censor` converter.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-censor](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-censor).
+
+## Usage
+
 ```xml
 <configuration>
     <newRule pattern="*/censor"

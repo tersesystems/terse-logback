@@ -4,20 +4,6 @@ Terse Logback is a collection of [Logback](https://logback.qos.ch/) modules that
 
 I've written about the reasoning and internal architecture in a series of blog posts.  The [full list](https://tersesystems.com/category/logging/) is available on [https://tersesystems.com](https://tersesystems.com).
 
-## Installation
-
-You can find modules using [https://mvnrepository.com/artifact/com.tersesystems.logback](https://mvnrepository.com/artifact/com.tersesystems.logback).  
-
-For example, the typesafe config module can be found under [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config/1.0.3](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config/1.0.3) and selecting Maven will let you paste it:
-
-```xml
-<dependency>
-    <groupId>com.tersesystems.logback</groupId>
-    <artifactId>logback-typesafe-config</artifactId>
-    <version>$VERSION$</version>
-</dependency>
-```
-
 ## Showcase
 
 If you want to see a running application, there is a [showcase web application](https://github.com/tersesystems/terse-logback-showcase) that run out of the box that demonstrates some of the more advanced features, and shows you can integrate terse-logback with [Sentry](https://sentry.io) and [Honeycomb](https://www.honeycomb.io).

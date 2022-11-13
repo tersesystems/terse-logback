@@ -4,6 +4,12 @@ It's easy to assume that all Java libraries will depend on SLF4J.  But one of th
 
 When errors happen in these frameworks, they may never show up in logging at all, because JUL will write out to standard output and standard error by default.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic).
+
+## Usage
+
 `SLF4JBridgeHandler` is a logging bridge, which is available in [jul-to-slf4j](http://www.slf4j.org/legacy.html#jul-to-slf4j).  It does the job, but it does require some custom code to be added on startup to tell JUL that the handler is SLF4J:
 
 ```java
@@ -52,15 +58,6 @@ You should set your `logback.xml` roughly as follows:
         </appender>
     </root>
 </configuration>
-```
-
-As of 0.17.0, `logback-classic` has a dependency on `jul-to-slf4j` so the following will work in `build.gradle`:
-
-```groovy
-dependencies {
-  implementation "com.google.inject:guice:5.0.1"
-  implementation 'com.tersesystems.logback:logback-classic:0.17.0'
-}
 ```
 
 And then you should call `org.slf4j.LoggerFactory.getLogger` as a static final to prevent any initialization problems:

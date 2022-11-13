@@ -2,6 +2,12 @@
 
 The audio appender uses a system beep configured through `SystemPlayer` to notify on warnings and errors, and limits excessive beeps with a budget evaluator.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-audio](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-audio).
+
+## Usage
+
 The XML is as follows:
 
 ```xml

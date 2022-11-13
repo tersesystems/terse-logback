@@ -2,7 +2,13 @@
 
 Exception Mapping is done to show the important details of an exception, including the root cause in a summary format.  This is especially useful in line oriented formats, because rendering a stacktrace can take up screen real estate without providing much value.
 
-An example will help.  Given the following program:
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping) and  [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping-providers](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping-providers).
+
+## Usage
+
+Given the following program:
 
 ```java
 public class Thrower {

@@ -2,6 +2,12 @@
 
 The composite appender presents a single appender and appends to several appenders.  It is very useful for referring to a list of appenders by a single name.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core).
+
+## Usage
+
 ```xml
 <configuration debug="true">
 

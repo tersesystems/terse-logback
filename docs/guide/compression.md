@@ -2,6 +2,12 @@
 
 Encoders are powerful and useful.  They give you access to the raw bytes, and let you manipulate them before they get to an appender.  But you'll have to put them together inside an appender if you want to do byte transformation.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-compress-encoder](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-compress-encoder).
+
+## Usage
+
 As an example, say that we want to write out files directly in [zstandard](http://facebook.github.io/zstd/) or [brotli](https://en.wikipedia.org/wiki/Brotli) using Logback.  The easiest way to do this is to provide a `FileAppender` with a swapped out compression encoder, while presenting a public API that looks just like a regular encoder.
 
 Here's the appender as `logback.xml` sees it:

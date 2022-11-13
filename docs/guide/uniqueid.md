@@ -16,6 +16,10 @@ You can search for this string in `application.json` and see more detail on the 
 
 See the [showcase](https://github.com/tersesystems/terse-logback-showcase) for an example.
 
+## Installation
+
+Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-uniqueid-appender](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-uniqueid-appender).
+
 ## Usage
 
 ```xml
