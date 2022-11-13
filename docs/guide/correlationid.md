@@ -4,7 +4,7 @@ The `logback-correlationid` module is a set of classes designed to encompass the
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-correlationid](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-correlationid).
+Add the library dependency using [com.tersesystems.logback:logback-correlationid](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-correlationid).
 
 ## Usage
 

@@ -6,7 +6,7 @@ When errors happen in these frameworks, they may never show up in logging at all
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic).
+Add the library dependency using [com.tersesystems.logback:logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic).
 
 ## Usage
 

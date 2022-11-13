@@ -14,7 +14,7 @@ Querying a database can be helpful when errors occur, because you can pull out a
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-jdbc-appender](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-jdbc-appender).
+Add the library dependency using [com.tersesystems.logback:logback-jdbc-appender](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-jdbc-appender).
 
 ## Usage
 

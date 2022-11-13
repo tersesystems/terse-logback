@@ -6,7 +6,7 @@ There are two rules and a converter that are used in Logback to define and refer
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-censor](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-censor).
+Add the library dependency using [com.tersesystems.logback:logback-censor](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-censor).
 
 ## Usage
 

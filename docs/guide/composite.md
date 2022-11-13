@@ -4,7 +4,7 @@ The composite appender presents a single appender and appends to several appende
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core).
+Add the library dependency using [com.tersesystems.logback:logback-core](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core).
 
 ## Usage
 

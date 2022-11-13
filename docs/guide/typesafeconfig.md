@@ -4,7 +4,7 @@ The `TypesafeConfigAction` will search in a variety of places for configuration 
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config).
+Add the library dependency using [com.tersesystems.logback:logback-typesafe-config](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-typesafe-config).
 
 ## Usage
 

@@ -4,7 +4,7 @@ The audio appender uses a system beep configured through `SystemPlayer` to notif
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-audio](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-audio).
+Add the library dependency using [com.tersesystems.logback:logback-audio](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-audio).
 
 ## Usage
 

@@ -18,7 +18,7 @@ See the [showcase](https://github.com/tersesystems/terse-logback-showcase) for a
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-uniqueid-appender](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-uniqueid-appender).
+Add the library dependency using [com.tersesystems.logback:logback-uniqueid-appender](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-uniqueid-appender).
 
 ## Usage
 

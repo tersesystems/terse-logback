@@ -4,7 +4,7 @@ Encoders are powerful and useful.  They give you access to the raw bytes, and le
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-compress-encoder](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-compress-encoder).
+Add the library dependency using [com.tersesystems.logback:logback-compress-encoder](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-compress-encoder).
 
 ## Usage
 

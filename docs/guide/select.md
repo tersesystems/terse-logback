@@ -20,7 +20,7 @@ Logback is not aware of different environments.  There's no out of the box way t
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core).
+Add the library dependency using [com.tersesystems.logback:logback-core](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-core).
 
 ## Usage
 

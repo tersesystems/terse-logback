@@ -8,9 +8,9 @@ However, adding tracing through logging is interesting in a couple of different 
 
 ## Implementation
 
-Add the library dependency using [hhttps://mvnrepository.com/artifact/com.tersesystems.logback/logback-honeycomb-okhttp](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-honeycomb-okhttp) for the honeycomb appender.
+Add the library dependency using [com.tersesystems.logback:logback-honeycomb-okhttp](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-honeycomb-okhttp) for the honeycomb appender.
 
-To set up tracing, add [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing) and [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic) for the start time converter.
+To set up tracing, add [com.tersesystems.logback:logback-tracing](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-tracing) and [com.tersesystems.logback:logback-classic](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-classic) for the start time converter.
 
 ## Usage
 

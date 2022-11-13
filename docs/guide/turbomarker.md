@@ -6,7 +6,7 @@ What we'd really like to do is say "for this particular user, log everything he 
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-turbomarker](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-turbomarker).
+Add the library dependency using [com.tersesystems.logback:logback-turbomarker](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-turbomarker).
 
 ## Usage
 

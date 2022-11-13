@@ -6,7 +6,7 @@ This is easy to do with the `logback-budget` module, which uses an internal [cir
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-budget](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-budget).
+Add the library dependency using [com.tersesystems.logback:logback-budget](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-budget).
 
 ## Usage
 

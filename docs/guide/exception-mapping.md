@@ -4,7 +4,7 @@ Exception Mapping is done to show the important details of an exception, includi
 
 ## Installation
 
-Add the library dependency using [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping) and  [https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping-providers](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping-providers).
+Add the library dependency using [com.tersesystems.logback:logback-exception-mapping](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping) and  [com.tersesystems.logback:logback-exception-mapping-providers](https://mvnrepository.com/artifact/com.tersesystems.logback/logback-exception-mapping-providers).
 
 ## Usage
 

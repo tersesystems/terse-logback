@@ -29,8 +29,8 @@ extra:
     accent: 'indigo'
 
   social:
-    - icon: fontawesome/brands/twitter
-      link: 'https://twitter.com/will_sargent'
+    - icon: fontawesome/brands/mastodon
+      link: 'https://mastodon.xyz/web/@will_sargent'
 
 
 # Google Analytics
@@ -57,7 +57,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - User guide:
+  - Modules:
       - Audio: guide/audio.md
       - Budgeting / Rate Limiting: guide/budget.md
       - Censors: guide/censor.md    
