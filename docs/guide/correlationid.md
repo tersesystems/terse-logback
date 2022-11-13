@@ -82,7 +82,7 @@ For example, a tap filter can automatically log everything with a correlation id
 </configuration>
 ```
 
-## CorrelationIdMarker
+### CorrelationIdMarker
 
 A `CorrelationIdMarker` implements the `CorrelationIdProvider` interface to expose a marker which is known to contain a correlation id.
 
@@ -91,6 +91,6 @@ CorrelationIdMarker correlationIdMarker = CorrelationIdMarker.create(correlation
 String sameId = correlationIdMarker.getCorrelationId();
 ```
 
-## CorrelationIdUtils
+### CorrelationIdUtils
 
 `CorrelationIdUtils` contains utility methods like `get` which retrieve a correlation id from either a marker or MDC.
