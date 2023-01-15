@@ -1,18 +1,9 @@
-/*
- * SPDX-License-Identifier: CC0-1.0
- *
- * Copyright 2018-2020 Will Sargent.
- *
- * Licensed under the CC0 Public Domain Dedication;
- * You may obtain a copy of the License at
- *
- *  http://creativecommons.org/publicdomain/zero/1.0/
- */
 package com.tersesystems.logback.budget;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.boolex.EventEvaluatorBase;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.turbo.TurboFilter;
+import ch.qos.logback.core.spi.FilterReply;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,15 +11,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.concurrent.CircuitBreaker;
 import org.apache.commons.lang3.concurrent.EventCountCircuitBreaker;
+import org.slf4j.Marker;
 
-/** Returns true if logging the event is within budget, false otherwise. */
-public class BudgetEvaluator extends EventEvaluatorBase<ILoggingEvent>
-    implements BudgetRuleAttachable {
+public class BudgetTurboFilter extends TurboFilter implements BudgetRuleAttachable {
 
   private List<BudgetRule> budgetRules = new ArrayList<>();
   private Map<String, CircuitBreaker<Integer>> levelRules = new HashMap<>();
 
-  @Override
   public void start() {
     for (BudgetRule budgetRule : budgetRules) {
       CircuitBreaker<Integer> breaker = createCircuitBreaker(budgetRule);
@@ -66,21 +55,21 @@ public class BudgetEvaluator extends EventEvaluatorBase<ILoggingEvent>
   }
 
   @Override
-  public boolean evaluate(ILoggingEvent event) {
+  public FilterReply decide(
+      Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
     if (levelRules.isEmpty()) {
-      return true; // not applicable
+      return getOnMatch(); // not applicable
     }
 
-    Level level = event.getLevel();
     CircuitBreaker<Integer> breaker = levelRules.get(level.levelStr);
     if (breaker == null) {
-      return true; // does not apply to this level
+      return getOnMatch(); // does not apply to this level
     }
 
     if (breaker.checkState()) {
-      return breaker.incrementAndCheckState(1);
+      return breaker.incrementAndCheckState(1) ? getOnMatch() : getOnMismatch();
     } else {
-      return false;
+      return getOnMismatch();
     }
   }
 
@@ -92,5 +81,24 @@ public class BudgetEvaluator extends EventEvaluatorBase<ILoggingEvent>
   @Override
   public void clearAllBudgetRules() {
     budgetRules.clear();
+  }
+
+  protected FilterReply onMatch = FilterReply.NEUTRAL;
+  protected FilterReply onMismatch = FilterReply.DENY;
+
+  public final void setOnMatch(FilterReply reply) {
+    this.onMatch = reply;
+  }
+
+  public final void setOnMismatch(FilterReply reply) {
+    this.onMismatch = reply;
+  }
+
+  public final FilterReply getOnMatch() {
+    return onMatch;
+  }
+
+  public final FilterReply getOnMismatch() {
+    return onMismatch;
   }
 }
