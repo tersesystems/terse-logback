@@ -1,6 +1,9 @@
 # Budget Aware Logging
 
-There are instances where loggers may be overly chatty, and will log more than necessary.  Rather than hunt down all the individual loggers and whitelist or blacklist the lot of them, you may want to assign a budget that will budget INFO messages to 5 statements a second.
+There are instances where logging may be overly chatty, and will log more than necessary.  
+
+Rather than hunt down all the individual loggers and whitelist or blacklist the lot of them, you can assign a 
+budget that will budget INFO messages to 5 statements a second.
 
 This is easy to do with the `logback-budget` module, which uses an internal [circuit breaker](https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/concurrent/CircuitBreaker.html) to regulate the flow of messages.
 
@@ -15,13 +18,15 @@ The time unit corresponds to the text value of `java.util.concurrent.TimeUnit` i
 ```xml
 <configuration>
 
-    <newRule pattern="*/budget-rule"
-             actionClass="com.tersesystems.logback.budget.BudgetRuleAction"/>
-
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="com.tersesystems.logback.budget.BudgetEvaluator">
-              <budget-rule name="INFO" threshold="5" interval="1" timeUnit="seconds"/>
+                <budgetRule>
+                    <name>INFO</name>
+                    <threshold>5</threshold>
+                    <interval>1</interval>
+                    <timeUnit>seconds</timeUnit>
+                </budgetRule>
             </evaluator>
             <OnMismatch>DENY</OnMismatch>
             <OnMatch>NEUTRAL</OnMatch>
@@ -39,4 +44,33 @@ The time unit corresponds to the text value of `java.util.concurrent.TimeUnit` i
 </configuration>
 ```
 
-See [Application Logging in Java: Filters](https://tersesystems.com/blog/2019/06/15/application-logging-in-java-part-9/) for more details.
+## Turbo Filter
+
+You can also apply the budget rule as a turbo filter if you want to have the rule apply across all appenders, using `com.tersesystems.logback.budget.BudgetTurboFilter`.
+
+```xml
+<configuration>
+    
+    <turboFilter class="com.tersesystems.logback.budget.BudgetTurboFilter">
+        <budgetRule>
+            <name>INFO</name>
+            <threshold>5</threshold>
+            <interval>1</interval>
+            <timeUnit>second</timeUnit>
+        </budgetRule>
+        <OnMismatch>DENY</OnMismatch>
+        <OnMatch>NEUTRAL</OnMatch>
+    </turboFilter>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
+```
