@@ -12,12 +12,16 @@ package com.tersesystems.logback.uniqueid;
 
 import net.mguenther.idem.flake.Flake128S;
 import net.mguenther.idem.provider.LinearTimeProvider;
-import net.mguenther.idem.provider.StaticWorkerIdProvider;
+import net.mguenther.idem.provider.MacAddressWorkerIdProvider;
 
+/**
+ * This class generates a 128 bit flake id with a macaddress workerid according to <a
+ * href="https://github.com/mguenther/idem">https://github.com/mguenther/idem</a>.
+ */
 public class FlakeIdGenerator implements IdGenerator {
 
   private static final Flake128S flake64 =
-      new Flake128S(new LinearTimeProvider(), new StaticWorkerIdProvider("logback"));
+      new Flake128S(new LinearTimeProvider(), new MacAddressWorkerIdProvider());
 
   @Override
   public String generateId() {
