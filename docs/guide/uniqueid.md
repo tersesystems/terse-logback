@@ -41,7 +41,7 @@ To extract the unique ID, register a converter:
 
 Unique IDs come with several options.  Flake ID is the default.
 
-### Flake ID
+### Flake ID Generator
 
 Flake IDs are decentralized and k-ordered, meaning that they are "roughly time-ordered when sorted lexicographically."
 
@@ -54,7 +54,7 @@ This implementation uses [idem](https://github.com/mguenther/idem) with `Flake12
 </appender>
 ```
 
-### Random UUID
+### Random UUID Generator
 
 Generates a Random UUIDv4 using a ThreadLocalRandom according to <a href="https://github.com/f4b6a3/uuid-creator">https://github.com/f4b6a3/uuid-creator</a>.
 
@@ -65,11 +65,11 @@ Generates a Random UUIDv4 using a ThreadLocalRandom according to <a href="https:
 </appender>
 ```
 
-## TSID Generator
+### TSID Generator
 
 Generates a TSID according to <a href="https://github.com/f4b6a3/tsid-creator">https://github.com/f4b6a3/tsid-creator</a>.
 
-**Highly recommended to set a *tsidcreator.node* system property in your application to configure the node id.
+**Highly recommended to set a *tsidcreator.node* system property in your application to configure the node id.**
 
 ```xml
 <appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
@@ -78,7 +78,7 @@ Generates a TSID according to <a href="https://github.com/f4b6a3/tsid-creator">h
 </appender>
 ```
 
-## ULID Generator
+### ULID Generator
 
 Creates a monotonic ULID using a threadlocal random according to <a href="https://github.com/f4b6a3/ulid-creator">https://github.com/f4b6a3/ulid-creator</a>.
 
@@ -89,7 +89,7 @@ Creates a monotonic ULID using a threadlocal random according to <a href="https:
 </appender>
 ```
 
-## KSU ID Generator
+### KSU ID Generator
 
 Creates a subsecond KSUID according to <a href="https://github.com/f4b6a3/ksuid-creator">https://github.com/f4b6a3/ksuid-creator</a>.
 
