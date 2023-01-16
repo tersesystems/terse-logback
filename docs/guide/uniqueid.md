@@ -39,14 +39,64 @@ To extract the unique ID, register a converter:
 
 ## ID Generators
 
-Unique IDs come with two different options.  Flake ID is the default.
-
-### Random UUID
-
-This implementation uses `RandomBasedGenerator` from [Java UUID Generator](https://github.com/cowtowncoder/java-uuid-generator/).  This is faster than using `java.util.UUID.randomUUID`, because it avoids the [synchronization lock](https://braveo.blogspot.com/2013/05/uuidrandomuuid-is-slow.html).
+Unique IDs come with several options.  Flake ID is the default.
 
 ### Flake ID
 
 Flake IDs are decentralized and k-ordered, meaning that they are "roughly time-ordered when sorted lexicographically."
 
 This implementation uses [idem](https://github.com/mguenther/idem) with `Flake128S`.
+
+```xml
+<appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+  <idGenerator class="com.tersesystems.logback.uniqueid.FlakeIdGenerator"/>
+  <!-- ... -->
+</appender>
+```
+
+### Random UUID
+
+Generates a Random UUIDv4 using a ThreadLocalRandom according to <a href="https://github.com/f4b6a3/uuid-creator">https://github.com/f4b6a3/uuid-creator</a>.
+
+```xml
+<appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+  <idGenerator class="com.tersesystems.logback.uniqueid.RandomUUIDIdGenerator"/>
+  <!-- ... -->
+</appender>
+```
+
+## TSID Generator
+
+Generates a TSID according to <a href="https://github.com/f4b6a3/tsid-creator">https://github.com/f4b6a3/tsid-creator</a>.
+
+**Highly recommended to set a *tsidcreator.node* system property in your application to configure the node id.
+
+```xml
+<appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+  <idGenerator class="com.tersesystems.logback.uniqueid.TsidIdgenerator"/>
+  <!-- ... -->
+</appender>
+```
+
+## ULID Generator
+
+Creates a monotonic ULID using a threadlocal random according to <a href="https://github.com/f4b6a3/ulid-creator">https://github.com/f4b6a3/ulid-creator</a>.
+
+```xml
+<appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+  <idGenerator class="com.tersesystems.logback.uniqueid.UlidIdGenerator"/>
+  <!-- ... -->
+</appender>
+```
+
+## KSU ID Generator
+
+Creates a subsecond KSUID according to <a href="https://github.com/f4b6a3/ksuid-creator">https://github.com/f4b6a3/ksuid-creator</a>.
+
+```xml
+<appender name="selector-with-unique-id" class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+  <idGenerator class="com.tersesystems.logback.uniqueid.KsuidSubsecondIdGenerator"/>
+  <!-- ... -->
+</appender>
+```
+

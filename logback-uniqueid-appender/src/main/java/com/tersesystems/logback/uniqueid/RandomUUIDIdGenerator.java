@@ -10,15 +10,23 @@
  */
 package com.tersesystems.logback.uniqueid;
 
-import com.fasterxml.uuid.impl.RandomBasedGenerator;
+import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Generates a Random UUIDv4 using a ThreadLocalRandom from <a
+ * href="https://github.com/f4b6a3/uuid-creator">https://github.com/f4b6a3/uuid-creator</a>
+ */
 public class RandomUUIDIdGenerator implements IdGenerator {
+  private Random random() {
+    return ThreadLocalRandom.current();
+  }
 
-  // Using java.util.UUID.fromRandom() has thread contention issues due to synchronized block.
-  private static final RandomBasedGenerator idgen = new RandomBasedGenerator(null);
+  private final RandomBasedFactory factory = new RandomBasedFactory(() -> random().nextLong());
 
   @Override
   public String generateId() {
-    return idgen.generate().toString();
+    return factory.create().toString();
   }
 }

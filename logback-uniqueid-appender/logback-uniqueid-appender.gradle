@@ -11,6 +11,18 @@
 dependencies {
     implementation project(':logback-classic')
 
-    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.2.0'
+    // https://github.com/f4b6a3/ulid-creator
+    implementation 'com.github.f4b6a3:ulid-creator:5.1.0'
+
+    // https://github.com/f4b6a3/tsid-creator
+    implementation 'com.github.f4b6a3:tsid-creator:5.1.0'
+
+    // https://github.com/f4b6a3/uuid-creator
+    implementation 'com.github.f4b6a3:uuid-creator:5.2.0'
+
+    // https://github.com/f4b6a3/ksuid-creator
+    implementation 'com.github.f4b6a3:ksuid-creator:4.1.0'
+
+    // https://github.com/mguenther/idem
     implementation 'net.mguenther.idem:idem-core:0.1.0'
 }
